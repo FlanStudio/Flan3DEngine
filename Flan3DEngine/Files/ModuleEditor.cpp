@@ -34,9 +34,23 @@ update_status ModuleEditor::PreUpdate(float dt)
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow(&showdemowindow);
+	//Editor setup down here
 
+	if(showdemowindow)
+		ImGui::ShowDemoWindow(&showdemowindow);
 
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("Application"))
+		{
+			if (ImGui::MenuItem("Toggle demo window"))
+				showdemowindow = !showdemowindow;
+			if (ImGui::MenuItem("Quit"))
+				return update_status::UPDATE_STOP;
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -48,7 +62,6 @@ update_status ModuleEditor::Update(float dt)
 update_status ModuleEditor::PostUpdate(float dt)
 {
 	ImGui::Render();
-	//glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	/*SDL_GL_SwapWindow(App->window->window);*/
 	ImGui::EndFrame();
@@ -59,6 +72,3 @@ bool ModuleEditor::CleanUp()
 {
 	return true;
 }
-
-void ModuleEditor::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{}
