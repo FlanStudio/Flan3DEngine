@@ -1,5 +1,4 @@
 #include "PhysBody3D.h"
-#include "glmath.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
 // =================================================
@@ -51,14 +50,14 @@ void PhysBody3D::SetPos(float x, float y, float z)
 // ---------------------------------------------------------
 void PhysBody3D::SetAsSensor(bool is_sensor)
 {
-	if(this->is_sensor != is_sensor)
+	/*if(this->is_sensor != is_sensor)
 	{
 		this->is_sensor = is_sensor;
 		if(is_sensor == true)
 			body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		else
 			body->setCollisionFlags(body->getCollisionFlags() &~ btCollisionObject::CF_NO_CONTACT_RESPONSE);
-	}
+	}*/
 }
 
 // ---------------------------------------------------------

@@ -3,7 +3,7 @@
 #include <gl/GL.h>
 //#include <gl/GLU.h>
 
-Light::Light() : ref(-1), on(false), position(0.0f, 0.0f, 0.0f)
+Light::Light() : ref(-1), on(false) /*,position(0.0f, 0.0f, 0.0f)*/
 {}
 
 void Light::Init()
@@ -14,16 +14,16 @@ void Light::Init()
 
 void Light::SetPos(float x, float y, float z)
 {
-	position.x = x;
+	/*position.x = x;
 	position.y = y;
-	position.z = z;
+	position.z = z;*/
 }
 
 void Light::Render()
 {
 	if(on)
 	{
-		float pos[] = {position.x, position.y, position.z, 1.0f};
+		float pos[] = {/*position.x, position.y, position.z,*/ 1.0f};
 		glLightfv(ref, GL_POSITION, pos);
 	}
 }

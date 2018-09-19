@@ -1,7 +1,6 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "Primitive.h"
 
 #define MAX_SNAKE 2
 
@@ -21,6 +20,6 @@ public:
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 public:
-	Cube s;
+	/*Cube s;*/
 	PhysBody3D* sensor;
 };
