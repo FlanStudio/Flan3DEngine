@@ -1,12 +1,9 @@
 #include "Application.h"
 #include "ModuleEditor.h"
 
-#include "MathGeoLib/MathGeoLib.h"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl2.h"
-
 #include "SDL/include/SDL.h"
 
 ModuleEditor::ModuleEditor(Application* app, bool start_enabled) : Module(app, start_enabled) {}
@@ -28,11 +25,6 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
-
-
-
-
-
 	return true;	
 }
 
@@ -64,9 +56,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
-	int i = 0;
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_STATE::KEY_DOWN)
-		//Random here?
 	return UPDATE_CONTINUE;
 }
 
