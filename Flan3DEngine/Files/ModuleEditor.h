@@ -24,4 +24,7 @@ public:
 
 private:
 	bool showdemowindow = false;
+	bool showMGLwindow = false;
+	bool somethingiscolliding = false;
+	
 };
