@@ -37,6 +37,9 @@
     <Filter Include="Sources\Tools\MathGeoLib\Time">
       <UniqueIdentifier>{cfda4898-94b9-4cf5-a88e-e033f3a0a113}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\imgui\tabs">
+      <UniqueIdentifier>{1d99ac0f-68f0-427d-bdd0-25fb9ee6e8c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -282,6 +285,9 @@
     <ClInclude Include="MathGeoLib_1.5\Time\Clock.h">
       <Filter>Sources\Tools\MathGeoLib\Time</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\tabs\imgui_tabs.h">
+      <Filter>Sources\Tools\imgui\tabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -436,6 +442,9 @@
     </ClCompile>
     <ClCompile Include="MathGeoLib_1.5\Time\Clock.cpp">
       <Filter>Sources\Tools\MathGeoLib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\tabs\imgui_tabs.cpp">
+      <Filter>Sources\Tools\imgui\tabs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

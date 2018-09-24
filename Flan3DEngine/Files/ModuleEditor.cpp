@@ -12,7 +12,6 @@
 //ENDTEMP
 
 
-
 #include "SDL/include/SDL.h"
 
 ModuleEditor::ModuleEditor(Application* app, bool start_enabled) : Module(app, start_enabled) {}
@@ -34,6 +33,7 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
+
 	return true;	
 }
 
@@ -47,13 +47,14 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if(showdemowindow)
 		ImGui::ShowDemoWindow(&showdemowindow);
-
+	
 	if (showMGLwindow)
 	{
 		ImGui::Begin("MathGeoLib Info", &showMGLwindow);
 
 		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
 		{
+			logWindow.Log("Sphere spawned %d", 1111);
 			//TODO: Spawn sphere
 			Sphere sp;
 			sp.pos = { 0,1,0 };
@@ -92,6 +93,11 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::End();
 	}
 
+	if (logEnabled)
+	{
+		logWindow.Draw("LogWindow", &logEnabled);
+	}
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))
@@ -100,6 +106,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 				showdemowindow = !showdemowindow;
 			if (ImGui::MenuItem("Toggle MGL window"))
 				showMGLwindow = !showMGLwindow;
+			if (ImGui::MenuItem("Toggle LOG"))
+				logEnabled = !logEnabled;
 			if (ImGui::MenuItem("Quit"))
 				return update_status::UPDATE_STOP;
 			ImGui::EndMenu();
@@ -108,7 +116,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 	}
 
 	
-
 
 	return UPDATE_CONTINUE;
 }
@@ -130,4 +137,84 @@ update_status ModuleEditor::PostUpdate(float dt)
 bool ModuleEditor::CleanUp()
 {
 	return true;
+}
+
+
+void LogWindow::Log(const char* format, ...)
+{
+	numLogs++;
+	va_list args;
+	va_start(args, format);
+	NormalBuf.appendfv(format, args);
+	NormalBuf.appendfv("\n", args);
+	va_end(args);
+	ScrollToBottom = true;
+}
+void LogWindow::LogWarning(const char* format, ...)
+{
+	numwarnings++;
+	va_list args;
+	va_start(args, format);
+	WarningBuf.appendfv(format, args);
+	WarningBuf.appendfv("\n", args);
+	va_end(args);
+	ScrollToBottom = true;
+}
+void LogWindow::LogError(const char* format, ...)
+{
+	numerrors++;
+	va_list args;
+	va_start(args, format);
+	ErrorBuf.appendfv(format, args);
+	ErrorBuf.appendfv("\n", args);
+	va_end(args);
+	ScrollToBottom = true;
+}
+void LogWindow::Draw(const char* title, bool* p_opened)
+{
+	ImGui::Begin(title, p_opened);
+	if (ImGui::Button("Log"))
+	{
+		Log("Hay un caballo volador");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("LogWarning"))
+	{
+		LogWarning("Al caballo volador no le des drogas");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("LogError"))
+	{
+		LogError("Al caballo volador le has dado muchas drogas");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Clear"))
+	{
+		Clear();
+	}
+	
+	
+	ImGui::BeginTabBar("");
+	logsTitle = std::string(std::string("Logs (") + std::to_string(numLogs) + std::string(")")).c_str();
+	if (ImGui::AddTab(logsTitle.data()))
+	{
+		ImGui::TextUnformatted(NormalBuf.begin());
+	}
+	warningTitle = std::string(std::string("Warnings (") + std::to_string(numwarnings) + std::string(")")).c_str();
+	if (ImGui::AddTab(warningTitle.data()))
+	{
+		ImGui::TextColored(ImVec4(255, 255, 0, 255), WarningBuf.begin());
+	}
+
+	errorTitle = std::string(std::string("Errors (") + std::to_string(numerrors) + std::string(")")).c_str();
+	if (ImGui::AddTab(errorTitle.data()))
+	{
+		ImGui::TextColored(ImVec4(255, 0, 0, 255), ErrorBuf.begin());
+	}
+	ImGui::EndTabBar();
+	
+	if (ScrollToBottom)
+		ImGui::SetScrollHere(1.0f);
+	ScrollToBottom = false;
+	ImGui::End();
 }
