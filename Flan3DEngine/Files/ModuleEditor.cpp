@@ -140,9 +140,23 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{
 		ImGui::Begin("About", &showAbout);
 		
-		if (ImGui::CollapsingHeader("Name"))
+		if (ImGui::CollapsingHeader("About Us"))
 		{
-			ImGui::Text("%s", App->window->winTitle.data());
+			ImGui::Text("%s\n", App->window->winTitle.data());
+			if (ImGui::Button("Download Latest"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			if (ImGui::Button("Report a Bug##b2"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/issues", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			if (ImGui::Button("Documentation##b3"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine", NULL, NULL, SW_SHOWNORMAL);
+			}
 		}
 
 		if (ImGui::CollapsingHeader("Description"))
@@ -166,7 +180,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 				ShellExecuteA(NULL, "Open", "https://github.com/orioldedios", NULL, NULL, SW_SHOWNORMAL);
 			}
 		}
-
 		if (ImGui::CollapsingHeader("Libraries"))
 		{
 			ImGui::Text("Bullet 2.87 \t\t");
@@ -218,6 +231,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		ImGui::End();
 	}
+
 
 	if (ImGui::BeginMainMenuBar())
 	{
