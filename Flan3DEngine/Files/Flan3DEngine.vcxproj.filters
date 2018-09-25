@@ -40,6 +40,9 @@
     <Filter Include="Sources\Tools\imgui\tabs">
       <UniqueIdentifier>{1d99ac0f-68f0-427d-bdd0-25fb9ee6e8c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\pcg_numgen">
+      <UniqueIdentifier>{c4bddcf8-639e-4ca4-95b5-ec92913c443b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -291,6 +294,9 @@
     <ClInclude Include="imgui\imgui_stl.h">
       <Filter>Sources\Tools\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h">
+      <Filter>Sources\Tools\pcg_numgen</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -451,6 +457,9 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_stl.cpp">
       <Filter>Sources\Tools\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="pcg-c-basic-0.9\pcg_basic.cpp">
+      <Filter>Sources\Tools\pcg_numgen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
