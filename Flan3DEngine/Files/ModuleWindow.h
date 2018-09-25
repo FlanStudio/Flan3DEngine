@@ -19,16 +19,21 @@ public:
 	bool Init();
 	update_status Update(float dt);
 	bool CleanUp();
-	void SetTitle(char* title);
+
 
 public:
+
+	void SetTitle(char* title);
+	bool setFullScreenWindow(bool boolean);
+	bool setFullScreenDesktop(bool boolean);
+	bool setResizable(bool boolean);
+public:
 	//The window we'll be rendering to
-	SDL_Window* window;
+	SDL_Window* window = nullptr;
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
 
-public: 
 	std::string winTitle = "Flan3DEngine";
 	std::string organization = "FlanStudio";
 };

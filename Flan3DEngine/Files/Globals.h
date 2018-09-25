@@ -28,11 +28,11 @@ enum update_status
 };
 
 // Configuration -----------
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1024
-#define SCREEN_SIZE 1
-#define WIN_FULLSCREEN false
-#define WIN_RESIZABLE true
-#define WIN_BORDERLESS false
-#define WIN_FULLSCREEN_DESKTOP false
-#define VSYNC false
+static int SCREEN_WIDTH = 1280;
+static int SCREEN_HEIGHT = 1024;
+static float SCREEN_SIZE = 1;
+static bool WIN_FULLSCREEN = false;
+static bool WIN_RESIZABLE = true;
+static bool WIN_BORDERLESS = false;
+static bool WIN_FULLSCREEN_DESKTOP = false;
+static bool VSYNC = false;

@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ModuleEditor.h"
+#include "Globals.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -129,11 +130,20 @@ update_status ModuleEditor::PreUpdate(float dt)
 			sprintf(msTitle, "ms %.2f", App->ms[App->ms_index]);
 			ImGui::PlotHistogram("", App->ms.data(), App->ms.size(), App->ms_index, msTitle, 0, 100, ImVec2(336, 75));
 
-
 		}
+
 		if (ImGui::CollapsingHeader("Window"))
 		{
-			ImGui::Text("You opened window");
+			if (ImGui::Checkbox("FullScreen\t", &WIN_FULLSCREEN))
+			{
+				App->window->setFullScreenWindow(WIN_FULLSCREEN);
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("FullScreen Desktop", &WIN_FULLSCREEN_DESKTOP))
+			{
+				App->window->setFullScreenDesktop(WIN_FULLSCREEN_DESKTOP);
+			}
+			
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{

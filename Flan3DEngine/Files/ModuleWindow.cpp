@@ -35,30 +35,29 @@ bool ModuleWindow::Init()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if(WIN_FULLSCREEN == true)
+		if (WIN_FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(WIN_RESIZABLE == true)
+		if (WIN_RESIZABLE == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(WIN_BORDERLESS == true)
+		if (WIN_BORDERLESS == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(WIN_FULLSCREEN_DESKTOP == true)
+		if (WIN_FULLSCREEN_DESKTOP == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
-
 		window = SDL_CreateWindow(winTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
-		if(window == NULL)
+		if (window == NULL)
 		{
 			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
@@ -97,3 +96,64 @@ void ModuleWindow::SetTitle(char* title)
 {
 	winTitle = title;
 }
+
+bool ModuleWindow::setFullScreenWindow(bool boolean)
+{
+	bool ret = true;
+	if (boolean != WIN_FULLSCREEN)
+	{
+		WIN_FULLSCREEN = boolean;
+		if (WIN_FULLSCREEN == true)
+		{
+			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) != 0)
+			{
+				LOG("Could not switch to fullscreen: %s\n", SDL_GetError());
+				ret = false;
+			}
+			WIN_FULLSCREEN_DESKTOP = false;
+		}
+		else
+		{
+			if (SDL_SetWindowFullscreen(window, 0) != 0)
+			{
+				LOG("Could not switch to windowed: %s\n", SDL_GetError());
+				ret = false;
+			}
+		}
+	}
+	return ret;
+}
+
+bool ModuleWindow::setFullScreenDesktop(bool boolean)
+{
+	bool ret = true;
+	if (boolean != WIN_FULLSCREEN_DESKTOP)
+	{
+		WIN_FULLSCREEN_DESKTOP = boolean;
+		if (WIN_FULLSCREEN_DESKTOP == true)
+		{
+			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+			{
+				LOG("Could not switch to fullscreen: %s\n", SDL_GetError());
+				ret = false;
+			}
+			WIN_FULLSCREEN = false;
+		}
+		else
+		{
+			if (SDL_SetWindowFullscreen(window, 0) != 0)
+			{
+				LOG("Could not switch to windowed: %s\n", SDL_GetError());
+				ret = false;
+			}
+		}
+	}
+	return ret;
+}
+
+bool ModuleWindow::setResizable(bool boolean)
+{
+	WIN_RESIZABLE = boolean;
+	return true;
+}
+
