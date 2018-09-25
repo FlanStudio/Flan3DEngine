@@ -63,13 +63,17 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	dt = (float)ms_timer.Read() / 1000.0f;
 	ms_timer.Start();
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+	dt = (float)ms_timer.Read() / 1000.0f;
+	if (dt < (1.0f / maxFPS))
+	{
+		SDL_Delay(((1.0f / maxFPS) - dt) * 1000.0f);
+	}
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules

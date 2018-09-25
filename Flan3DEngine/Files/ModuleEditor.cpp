@@ -102,18 +102,14 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{	
 		ImGui::Begin("Configuration", &showConfig);
 
-		
 		if(ImGui::BeginMenu("options", true, true))
 		{
 			if (ImGui::MenuItem("Option1"))
 			{
-
 			}
 			if (ImGui::MenuItem("Option2"))
 			{
-
-			}
-				
+			}		
 			ImGui::EndMenu();
 		}
 
@@ -123,6 +119,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 			flags |= ImGuiInputTextFlags_EnterReturnsTrue;
 			ImGui::InputText("\tEngine Name", &App->window->winTitle, flags);
 			ImGui::InputText("\tOrganization", &App->window->organization, flags);
+			ImGui::DragFloat("\tFPS", &ImGui::GetIO().Framerate);
+
 		}
 		if (ImGui::CollapsingHeader("Window"))
 		{
@@ -135,7 +133,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		ImGui::End();
 	}
-
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -164,8 +161,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		
 		ImGui::EndMainMenuBar();
 	}
-
-	
 
 	return UPDATE_CONTINUE;
 }
