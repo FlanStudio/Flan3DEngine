@@ -5,16 +5,16 @@
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl2.h"
 
-//TEMP
-#include "MathGeoLib_1.5/Geometry/Sphere.h"
-#include "MathGeoLib_1.5/Geometry/AABB.h"
-
-//ENDTEMP
-
+#include "imgui/tabs/imgui_tabs.h"
 
 #include "SDL/include/SDL.h"
 
-ModuleEditor::ModuleEditor(Application* app, bool start_enabled) : Module(app, start_enabled) {}
+//TEMP
+#include "MathGeoLib_1.5/Geometry/Sphere.h"
+#include "MathGeoLib_1.5/Geometry/AABB.h"
+//ENDTEMP
+
+ModuleEditor::ModuleEditor(bool start_enabled) : Module(start_enabled) {}
 ModuleEditor::~ModuleEditor() {}
 
 bool ModuleEditor::Init()
@@ -33,7 +33,6 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
-
 	return true;	
 }
 
@@ -54,7 +53,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
 		{
-			logWindow.Log("Sphere spawned %d", 1111);
+			Debug.Log("Sphere spawned %d", 1111);
 			//TODO: Spawn sphere
 			Sphere sp;
 			sp.pos = { 0,1,0 };
@@ -95,7 +94,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (logEnabled)
 	{
-		logWindow.Draw("LogWindow", &logEnabled);
+		Debug.Draw("LogWindow", &logEnabled);
 	}
 
 	if (ImGui::BeginMainMenuBar())
@@ -139,7 +138,6 @@ bool ModuleEditor::CleanUp()
 	return true;
 }
 
-
 void LogWindow::Log(const char* format, ...)
 {
 	numLogs++;
@@ -173,33 +171,38 @@ void LogWindow::LogError(const char* format, ...)
 void LogWindow::Draw(const char* title, bool* p_opened)
 {
 	ImGui::Begin(title, p_opened);
-	if (ImGui::Button("Log"))
+
+	if (ImGui::Button("Log", ImVec2(80, 25)))
 	{
 		Log("Hay un caballo volador");
 	}
+
 	ImGui::SameLine();
-	if (ImGui::Button("LogWarning"))
+	if (ImGui::Button("LogWarning", ImVec2(80, 25)))
 	{
 		LogWarning("Al caballo volador no le des drogas");
 	}
+
 	ImGui::SameLine();
-	if (ImGui::Button("LogError"))
+	if (ImGui::Button("LogError", ImVec2(80, 25)))
 	{
 		LogError("Al caballo volador le has dado muchas drogas");
 	}
+
 	ImGui::SameLine();
-	if (ImGui::Button("Clear"))
+	if (ImGui::Button("Clear", ImVec2(80,25)))
 	{
 		Clear();
 	}
-	
-	
+
 	ImGui::BeginTabBar("");
+
 	logsTitle = std::string(std::string("Logs (") + std::to_string(numLogs) + std::string(")")).c_str();
 	if (ImGui::AddTab(logsTitle.data()))
 	{
 		ImGui::TextUnformatted(NormalBuf.begin());
 	}
+
 	warningTitle = std::string(std::string("Warnings (") + std::to_string(numwarnings) + std::string(")")).c_str();
 	if (ImGui::AddTab(warningTitle.data()))
 	{
@@ -216,5 +219,6 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	if (ScrollToBottom)
 		ImGui::SetScrollHere(1.0f);
 	ScrollToBottom = false;
+
 	ImGui::End();
 }

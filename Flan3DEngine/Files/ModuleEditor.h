@@ -3,7 +3,6 @@
 #include "Module.h"
 #include "Globals.h"
 #include "imgui/imgui.h"
-#include "imgui/tabs/imgui_tabs.h"
 #include <string>
 
 struct LogWindow
@@ -27,16 +26,14 @@ public:
 	void    LogWarning(const char* format, ...);
 	void    LogError(const char* format, ...);
 	void Draw(const char* title, bool* p_opened = NULL);
-
 };
+
+static LogWindow Debug;
 
 class ModuleEditor : public Module
 {
 public:
-	LogWindow logWindow;
-public:
-
-	ModuleEditor(Application* app, bool start_enabled = true);
+	ModuleEditor(bool start_enabled = true);
 	virtual ~ModuleEditor();
 
 	bool Init();
@@ -51,7 +48,6 @@ public:
 
 	bool CleanUp();
 
-	
 private:
 	bool showdemowindow = false;
 	bool showMGLwindow = false;
