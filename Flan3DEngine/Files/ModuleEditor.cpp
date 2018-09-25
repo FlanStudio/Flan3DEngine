@@ -97,6 +97,36 @@ update_status ModuleEditor::PreUpdate(float dt)
 		Debug.Draw("LogWindow", &logEnabled);
 	}
 
+	if (showConfig)
+	{	
+		ImGui::Begin("Configuration", &showConfig);
+
+		
+		if(ImGui::BeginMenu("options"))
+		{
+			
+				
+			ImGui::EndMenu();
+		}
+
+
+		if (ImGui::CollapsingHeader("Application"))
+		{
+			ImGui::Text("You opened application");
+		}
+		if (ImGui::CollapsingHeader("Window"))
+		{
+			ImGui::Text("You opened window");
+		}
+		if (ImGui::CollapsingHeader("Hardware"))
+		{
+			ImGui::Text("You opened hardware");
+		}
+
+		ImGui::End();
+	}
+
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))

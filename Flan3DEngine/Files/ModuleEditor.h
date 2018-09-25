@@ -53,4 +53,5 @@ private:
 	bool showMGLwindow = false;
 	bool somethingiscolliding = false;
 	bool logEnabled = false;
+	bool showConfig = true;
 };
