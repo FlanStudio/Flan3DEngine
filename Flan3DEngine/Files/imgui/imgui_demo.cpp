@@ -160,7 +160,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
     static bool show_app_main_menu_bar = false;
     static bool show_app_console = false;
     static bool show_app_log = false;
-    static bool show_app_layout = true;
+    static bool show_app_layout = false;
     static bool show_app_property_editor = false;
     static bool show_app_long_text = false;
     static bool show_app_auto_resize = false;

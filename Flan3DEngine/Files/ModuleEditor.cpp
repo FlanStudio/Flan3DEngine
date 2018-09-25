@@ -137,16 +137,27 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{
 		if (ImGui::BeginMenu("Application"))
 		{
-			if (ImGui::MenuItem("Toggle demo window"))
-				showdemowindow = !showdemowindow;
-			if (ImGui::MenuItem("Toggle MGL window"))
-				showMGLwindow = !showMGLwindow;
-			if (ImGui::MenuItem("Toggle LOG"))
-				logEnabled = !logEnabled;
 			if (ImGui::MenuItem("Quit"))
 				return update_status::UPDATE_STOP;
+
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			
+			ImGui::MenuItem("Demo Window", "", &showdemowindow);
+				
+			ImGui::MenuItem("MGL window", "", &showMGLwindow);
+
+			ImGui::MenuItem("LOG", "", &logEnabled);
+
+			ImGui::MenuItem("Config", "", &showConfig);
+
+			ImGui::EndMenu();
+		}
+
+		
 		ImGui::EndMainMenuBar();
 	}
 
