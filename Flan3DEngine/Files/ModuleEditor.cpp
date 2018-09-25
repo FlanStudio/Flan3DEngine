@@ -102,13 +102,19 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::Begin("Configuration", &showConfig);
 
 		
-		if(ImGui::BeginMenu("options"))
+		if(ImGui::BeginMenu("options", true, true))
 		{
-			
+			if (ImGui::MenuItem("Option1"))
+			{
+
+			}
+			if (ImGui::MenuItem("Option2"))
+			{
+
+			}
 				
 			ImGui::EndMenu();
 		}
-
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
