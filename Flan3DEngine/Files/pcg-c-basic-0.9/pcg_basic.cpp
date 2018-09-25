@@ -34,6 +34,7 @@
 #include <iomanip>
 #include <sstream>
 #include "../Globals.h"
+#include "../SDL/include/SDL_assert.h"
  //
 #include <climits>
 
@@ -139,12 +140,9 @@ float Random_float_Between_0_and_1(pcg32_random_t* seed)
 
 int Random_int_Between_Max_and_Min(int Minimum, int Maximum, pcg32_random_t* seed)
 {
-	if (Minimum < 0 || Maximum < Minimum)
-	{
-		LOG("ERROR: Minimum must be > 0!!!!!!!");
-		return 0;
-	}
-	return Minimum + pcg32_boundedrand_r(seed ? seed : &pcg32_global, Maximum - Minimum + 1);
+
+	SDL_assert(Maximum > Minimum);
+	return (pcg32_boundedrand_r(seed ? seed : &pcg32_global, Maximum - Minimum + 1) + Minimum);
 }
 
 
