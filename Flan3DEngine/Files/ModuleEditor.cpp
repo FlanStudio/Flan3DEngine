@@ -6,6 +6,7 @@
 #include "imgui/imgui_impl_opengl2.h"
 
 #include "imgui/tabs/imgui_tabs.h"
+#include "imgui/imgui_stl.h"
 
 #include "SDL/include/SDL.h"
 
@@ -118,7 +119,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
-			ImGui::Text("You opened application");
+			ImGuiInputTextFlags flags = 0;
+			flags |= ImGuiInputTextFlags_EnterReturnsTrue;
+			ImGui::InputText("\tEngine Name", &App->window->winTitle, flags);
+			ImGui::InputText("\tOrganization", &App->window->organization, flags);
 		}
 		if (ImGui::CollapsingHeader("Window"))
 		{
@@ -187,12 +191,16 @@ bool ModuleEditor::CleanUp()
 
 void LogWindow::Log(const char* format, ...)
 {
+	int oldsize = NormalBuf.size();
 	numLogs++;
 	va_list args;
 	va_start(args, format);
 	NormalBuf.appendfv(format, args);
 	NormalBuf.appendfv("\n", args);
 	va_end(args);
+	for (int new_size = oldsize; oldsize < new_size; oldsize++)
+		if (NormalBuf[oldsize] == '\n')
+			LineOffsets.push_back(oldsize);
 	ScrollToBottom = true;
 }
 void LogWindow::LogWarning(const char* format, ...)
@@ -217,6 +225,7 @@ void LogWindow::LogError(const char* format, ...)
 }
 void LogWindow::Draw(const char* title, bool* p_opened)
 {
+	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
 	ImGui::Begin(title, p_opened);
 
 	if (ImGui::Button("Log", ImVec2(80, 25)))
@@ -243,6 +252,9 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	}
 
 	ImGui::BeginTabBar("");
+	ImGui::Separator();
+	ImGui::BeginChild("scrolling");
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
 
 	logsTitle = std::string(std::string("Logs (") + std::to_string(numLogs) + std::string(")")).c_str();
 	if (ImGui::AddTab(logsTitle.data()))
@@ -262,7 +274,9 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 		ImGui::TextColored(ImVec4(255, 0, 0, 255), ErrorBuf.begin());
 	}
 	ImGui::EndTabBar();
-	
+	ImGui::PopStyleVar();
+	ImGui::EndChild();
+
 	if (ScrollToBottom)
 		ImGui::SetScrollHere(1.0f);
 	ScrollToBottom = false;

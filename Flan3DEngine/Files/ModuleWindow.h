@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
+#include <string>
 
 class Application;
 
@@ -16,9 +17,9 @@ public:
 	virtual ~ModuleWindow();
 
 	bool Init();
+	update_status Update(float dt);
 	bool CleanUp();
-
-	void SetTitle(const char* title);
+	void SetTitle(char* title);
 
 public:
 	//The window we'll be rendering to
@@ -26,6 +27,10 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
+
+public: 
+	std::string winTitle = "Flan3DEngine";
+	std::string organization = "FlanStudio";
 };
 
 #endif // __ModuleWindow_H__

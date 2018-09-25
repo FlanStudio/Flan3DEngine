@@ -15,6 +15,9 @@ private:
 	int numwarnings = 0;
 	int numerrors = 0;
 
+	ImGuiTextFilter     Filter;
+	ImVector<int>       LineOffsets;        // Index to lines offset
+
 	ImGuiTextBuffer     NormalBuf;
 	ImGuiTextBuffer     WarningBuf;
 	ImGuiTextBuffer     ErrorBuf;

@@ -288,6 +288,9 @@
     <ClInclude Include="imgui\tabs\imgui_tabs.h">
       <Filter>Sources\Tools\imgui\tabs</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\imgui_stl.h">
+      <Filter>Sources\Tools\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -445,6 +448,9 @@
     </ClCompile>
     <ClCompile Include="imgui\tabs\imgui_tabs.cpp">
       <Filter>Sources\Tools\imgui\tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stl.cpp">
+      <Filter>Sources\Tools\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
