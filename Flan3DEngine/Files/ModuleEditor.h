@@ -57,4 +57,5 @@ private:
 	bool somethingiscolliding = false;
 	bool logEnabled = false;
 	bool showConfig = false;
+	bool showAbout = false;
 };

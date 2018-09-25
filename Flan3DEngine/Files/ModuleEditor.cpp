@@ -153,6 +153,103 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::End();
 	}
 
+	if (showAbout)
+	{
+		ImGui::Begin("About", &showAbout);
+		
+		if (ImGui::CollapsingHeader("About Us"))
+		{
+			ImGui::Text("%s\n", App->window->winTitle.data());
+			if (ImGui::Button("Download Latest"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/releases", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			if (ImGui::Button("Report a Bug##b2"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/issues", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			if (ImGui::Button("Documentation##b3"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine", NULL, NULL, SW_SHOWNORMAL);
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Description"))
+		{
+			ImGui::Text("%s is a Game Engine for producing awesome videogames.", App->window->winTitle.data());
+		}
+
+		if (ImGui::CollapsingHeader("Authors"))
+		{
+			ImGui::Text("Jonathan Molina-Prados\t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Github"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/Jony635", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("Oriol de Dios \t\t\t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Github##b2"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/orioldedios", NULL, NULL, SW_SHOWNORMAL);
+			}
+		}
+		if (ImGui::CollapsingHeader("Libraries"))
+		{
+			ImGui::Text("Bullet 2.87 \t\t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library"))
+			{
+				ShellExecuteA(NULL, "Open", "https://pybullet.org/wordpress/", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("Imgui   \t\t\t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b2"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("MathGeoLib 1.5  \t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b3"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("pcg c basic 0.9 \t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b4"))
+			{
+				ShellExecuteA(NULL, "Open", "http://www.pcg-random.org/", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("SDL  2.0.8  \t\t");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b5"))
+			{
+				ShellExecuteA(NULL, "Open", "https://www.libsdl.org/download-2.0.php", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+		}
+
+		if (ImGui::CollapsingHeader("License"))
+		{
+			ImGui::Text("Copyright (c) 2018 FlanStudio\t");
+			ImGui::SameLine();
+			if (ImGui::Button("MIT License"))
+			{
+				ShellExecuteA(NULL, "Open", "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL);
+			}
+		}
+
+		ImGui::End();
+	}
+
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))
@@ -174,9 +271,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 			ImGui::MenuItem("Config", "", &showConfig);
 
+			ImGui::MenuItem("About", "", &showAbout);
+
 			ImGui::EndMenu();
 		}
-
 		
 		ImGui::EndMainMenuBar();
 	}
