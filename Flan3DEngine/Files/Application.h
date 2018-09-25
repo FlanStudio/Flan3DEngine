@@ -13,6 +13,7 @@
 #include "ModuleEditor.h"
 
 #include <list>
+#include <vector>
 
 class Application
 {
@@ -27,10 +28,19 @@ public:
 	ModuleEditor* editor;
 
 private:
-
 	Timer	ms_timer;
 	float	dt;
 	std::list<Module*> list_modules;
+
+
+public:
+	std::vector<float>FPS;
+	int FPS_index = 0;
+
+	std::vector<float>ms;
+	int ms_index = 0;
+
+	int maxFPS = 60;
 
 public:
 
