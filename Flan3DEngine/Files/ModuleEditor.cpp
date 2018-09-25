@@ -118,8 +118,17 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGuiInputTextFlags flags = 0;
 			flags |= ImGuiInputTextFlags_EnterReturnsTrue;
 			ImGui::InputText("\tEngine Name", &App->window->winTitle, flags);
-			ImGui::InputText("\tOrganization", &App->window->organization, flags);
-			ImGui::DragFloat("\tFPS", &ImGui::GetIO().Framerate);
+			ImGui::InputText("\tOrganization", &App->window->organization, flags);	
+			ImGui::SliderInt("\tMax FPS", &App->maxFPS, 0, 125);
+
+			char FPSTitle[50];
+			sprintf(FPSTitle, "FPS %.1f", App->FPS[App->FPS_index]);
+			ImGui::PlotHistogram("", App->FPS.data(), App->FPS.size(), App->FPS_index, FPSTitle, 0, 100, ImVec2(336, 250));
+
+			char msTitle[50];
+			sprintf(msTitle, "ms %.2f", App->ms[App->ms_index]);
+			ImGui::PlotHistogram("", App->ms.data(), App->ms.size(), App->ms_index, msTitle, 0, 100, ImVec2(336, 75));
+
 
 		}
 		if (ImGui::CollapsingHeader("Window"))

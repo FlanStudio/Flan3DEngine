@@ -26,10 +26,15 @@ Application::Application()
 	AddModule(scene_intro);
 	// Renderer last!
 	AddModule(renderer3D);
+
+	FPS.resize(50);
+	ms.resize(50);
 }
 
 Application::~Application()
 {
+	FPS.clear();
+	ms.clear();
 	std::list <Module*>::reverse_iterator it;
 	for (it = list_modules.rbegin(); it != list_modules.rend(); ++it)
 	{
@@ -64,16 +69,30 @@ bool Application::Init()
 void Application::PrepareUpdate()
 {
 	ms_timer.Start();
+
+	
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
 	dt = (float)ms_timer.Read() / 1000.0f;
-	if (dt < (1.0f / maxFPS))
+	float timeFrame = 1.0f / maxFPS;
+	
+	if (dt < timeFrame)
 	{
-		SDL_Delay(((1.0f / maxFPS) - dt) * 1000.0f);
+		
+		SDL_Delay((timeFrame - dt) * 1000.0f);
 	}
+
+	FPS[FPS_index++] = ImGui::GetIO().Framerate;
+	if (FPS_index >= FPS.size())
+		FPS_index = 0;
+
+	ms[ms_index++] = (timeFrame - dt) * 1000;
+	if (ms_index >= ms.size())
+		ms_index = 0;
+
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
