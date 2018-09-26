@@ -101,59 +101,56 @@ void ModuleWindow::SetTitle(char* title)
 bool ModuleWindow::setFullScreenWindow(bool boolean)
 {
 	bool ret = true;
-	if (boolean != WIN_FULLSCREEN)
+	
+	if (WIN_FULLSCREEN == true)
 	{
-		WIN_FULLSCREEN = boolean;
-		if (WIN_FULLSCREEN == true)
+		if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) != 0)
 		{
-			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) != 0)
-			{
-				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
-				ret = false;
-			}
-			WIN_FULLSCREEN_DESKTOP = false;
+			Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
+			ret = false;
 		}
-		else
+		WIN_FULLSCREEN_DESKTOP = false;
+	}
+	else
+	{
+		if (SDL_SetWindowFullscreen(window, 0) != 0)
 		{
-			if (SDL_SetWindowFullscreen(window, 0) != 0)
-			{
-				Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
-				ret = false;
-			}
+			Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
+			ret = false;
 		}
 	}
+	
 	return ret;
 }
 
 bool ModuleWindow::setFullScreenDesktop(bool boolean)
 {
 	bool ret = true;
-	if (boolean != WIN_FULLSCREEN_DESKTOP)
+	
+	if (WIN_FULLSCREEN_DESKTOP == true)
 	{
-		WIN_FULLSCREEN_DESKTOP = boolean;
-		if (WIN_FULLSCREEN_DESKTOP == true)
+		if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 		{
-			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
-			{
-				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
-				ret = false;
-			}
-			WIN_FULLSCREEN = false;
+			Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
+			ret = false;
 		}
-		else
+		WIN_FULLSCREEN = false;
+	}
+	else
+	{
+		if (SDL_SetWindowFullscreen(window, 0) != 0)
 		{
-			if (SDL_SetWindowFullscreen(window, 0) != 0)
-			{
-				Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
-				ret = false;
-			}
+			Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
+			ret = false;
 		}
 	}
+	
 	return ret;
 }
 
 bool ModuleWindow::setBrightness(float bright)
 {
+	BRIGHTNESS = bright;
 	return SDL_SetWindowBrightness(window, bright) == 0;
 }
 
@@ -173,12 +170,14 @@ bool ModuleWindow::setWindowHeight(int height)
 
 bool ModuleWindow::setBorderless(bool boolean)
 {
+	WIN_BORDERLESS = boolean;
 	SDL_SetWindowBordered(window, SDL_bool(!boolean));
 	return true;
 }
 
 bool ModuleWindow::setResizable(bool boolean)
 {
+	WIN_RESIZABLE = boolean;
 	SDL_SetWindowResizable(window, SDL_bool(boolean));
 	return true;
 }

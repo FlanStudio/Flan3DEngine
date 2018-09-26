@@ -461,6 +461,9 @@
     <ClCompile Include="pcg-c-basic-0.9\pcg_basic.cpp">
       <Filter>Sources\Tools\pcg_numgen</Filter>
     </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib_1.5\Math\Matrix.inl">
