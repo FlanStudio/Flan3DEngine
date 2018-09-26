@@ -176,7 +176,27 @@ update_status ModuleEditor::PreUpdate(float dt)
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-			ImGui::Text("You opened hardware");
+			SDL_version version;
+			SDL_GetVersion(&version);
+			ImGui::Text("SDL Version: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(255, 255, 0, 255), "%d.%d.%d", version.major, version.minor, version.patch);
+			ImGui::Separator();
+			ImGui::Text("CPUs: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(255, 255, 0, 255), "%d (Cache: %dkb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+			ImGui::Text("System RAM: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(255, 255, 0, 255), "%.1fGb", ((float)SDL_GetSystemRAM())*0.001);
+			
+			ImGui::Text("Caps: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s %s %s %s %s %s %s %s %s %s %s",
+															SDL_HasRDTSC() ? "RDTSC" : "", SDL_HasMMX() ? "MMX" : "", SDL_HasSSE() ? "SSE" : "", SDL_HasSSE2() ? "SSE2" : "",
+															SDL_HasSSE3() ? "SSE3" : "", SDL_HasSSE41() ? "SSE41" : "", SDL_HasSSE42() ? "SSE42" : "", SDL_HasAVX() ? "AVX" : "",
+															SDL_HasAVX2() ? "AVX2" : "", SDL_HasAltiVec() ? "AltiVec" : "", SDL_Has3DNow() ? "3DNOW" : "");
+
+			ImGui::Separator();
+			ImGui::Text("GPU: ");
+			ImGui::Text("Brand");
+			ImGui::Text("VRAM Budget: ");
+			ImGui::Text("VRAM Usage: ");
+			ImGui::Text("VRAM Available: ");
+			ImGui::Text("VRAM Reserved: ");
+
+
 		}
 
 		ImGui::End();

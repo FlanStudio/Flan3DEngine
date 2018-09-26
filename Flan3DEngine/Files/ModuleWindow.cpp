@@ -76,6 +76,7 @@ update_status ModuleWindow::Update(float dt)
 	SDL_SetWindowTitle(window, (winTitle + "_" + organization).c_str());
 	return UPDATE_CONTINUE;
 }
+
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
