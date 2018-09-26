@@ -132,7 +132,6 @@ bool ModuleWindow::setFullScreenDesktop(bool boolean)
 		WIN_FULLSCREEN_DESKTOP = boolean;
 		if (WIN_FULLSCREEN_DESKTOP == true)
 		{
-			SDL_WindowFlags
 			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 			{
 				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
