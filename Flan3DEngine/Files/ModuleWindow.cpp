@@ -132,6 +132,7 @@ bool ModuleWindow::setFullScreenDesktop(bool boolean)
 		WIN_FULLSCREEN_DESKTOP = boolean;
 		if (WIN_FULLSCREEN_DESKTOP == true)
 		{
+			SDL_WindowFlags
 			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 			{
 				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
@@ -151,9 +152,43 @@ bool ModuleWindow::setFullScreenDesktop(bool boolean)
 	return ret;
 }
 
-bool ModuleWindow::setResizable(bool boolean)
+bool ModuleWindow::setBrightness(float bright)
 {
-	WIN_RESIZABLE = boolean;
+	return SDL_SetWindowBrightness(window, bright) == 0;
+}
+
+bool ModuleWindow::setWindowWidth(int width)
+{
+	SDL_SetWindowSize(window, width, SCREEN_HEIGHT);
+	SCREEN_WIDTH = width;
 	return true;
 }
+
+bool ModuleWindow::setWindowHeight(int height)
+{
+	SDL_SetWindowSize(window, SCREEN_WIDTH, height);
+	SCREEN_HEIGHT = height;
+	return true;
+}
+
+bool ModuleWindow::setBorderless(bool boolean)
+{
+	SDL_SetWindowBordered(window, SDL_bool(!boolean));
+	return true;
+}
+
+bool ModuleWindow::setResizable(bool boolean)
+{
+	SDL_SetWindowResizable(window, SDL_bool(boolean));
+	return true;
+}
+
+int ModuleWindow::getRefreshRate() const
+{
+	SDL_DisplayMode dm;
+	SDL_GetCurrentDisplayMode(0, &dm);
+
+	return dm.refresh_rate;
+}
+
 

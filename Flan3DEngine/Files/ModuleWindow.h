@@ -27,6 +27,12 @@ public:
 	bool setFullScreenWindow(bool boolean);
 	bool setFullScreenDesktop(bool boolean);
 	bool setResizable(bool boolean);
+	bool setBrightness(float bright);
+	bool setWindowWidth(int width);
+	bool setWindowHeight(int height);
+	bool setBorderless(bool boolean);
+	int getRefreshRate() const;
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window = nullptr;

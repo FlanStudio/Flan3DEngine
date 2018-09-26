@@ -124,16 +124,21 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 			char FPSTitle[50];
 			sprintf(FPSTitle, "FPS %.1f", App->FPS[App->FPS_index]);
-			ImGui::PlotHistogram("", App->FPS.data(), App->FPS.size(), App->FPS_index, FPSTitle, 0, 100, ImVec2(336, 250));
-
+			ImGui::PlotHistogram("", App->FPS.data(), App->FPS.size(), App->FPS_index, FPSTitle, 0, 120, ImVec2(ImGui::GetWindowWidth() * 0.65, 250));
+						
 			char msTitle[50];
 			sprintf(msTitle, "ms %.2f", App->ms[App->ms_index]);
-			ImGui::PlotHistogram("", App->ms.data(), App->ms.size(), App->ms_index, msTitle, 0, 100, ImVec2(336, 75));
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6);
+			ImGui::PlotHistogram("", App->ms.data(), App->ms.size(), App->ms_index, msTitle, 0, 30, ImVec2(ImGui::GetWindowWidth() * 0.65, 75));
 
 		}
 
 		if (ImGui::CollapsingHeader("Window"))
 		{
+			ImGui::Text("Refresh Rate: "); ImGui::SameLine();
+			ImGui::TextColored(ImVec4(255, 255, 0, 255), "%d", App->window->getRefreshRate());
+			ImGui::NewLine();
+
 			if (ImGui::Checkbox("FullScreen\t", &WIN_FULLSCREEN))
 			{
 				App->window->setFullScreenWindow(WIN_FULLSCREEN);
@@ -143,7 +148,31 @@ update_status ModuleEditor::PreUpdate(float dt)
 			{
 				App->window->setFullScreenDesktop(WIN_FULLSCREEN_DESKTOP);
 			}
-			
+
+			if (ImGui::SliderFloat("Brightness", &BRIGHTNESS, 0.0, 1.0, "%.2f"))
+			{
+				App->window->setBrightness(BRIGHTNESS);
+			}
+
+			if (ImGui::SliderInt("Width", &SCREEN_WIDTH, 0, 1920))
+			{
+				App->window->setWindowWidth(SCREEN_WIDTH);
+			}
+
+			if (ImGui::SliderInt("Height", &SCREEN_HEIGHT, 0, 1080))
+			{
+				App->window->setWindowHeight(SCREEN_HEIGHT);
+			}
+
+			if (ImGui::Checkbox("Borderless\t", &WIN_BORDERLESS))
+			{
+				App->window->setBorderless(WIN_BORDERLESS);
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Resizable", &WIN_RESIZABLE))
+			{
+				App->window->setResizable(WIN_RESIZABLE);
+			}
 		}
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
