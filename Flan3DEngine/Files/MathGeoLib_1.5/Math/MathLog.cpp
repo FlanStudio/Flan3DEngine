@@ -14,7 +14,7 @@
 
 /** @file Log.cpp
 	@author Jukka Jylänki
-	@brief The LOG and LOGUSER macros. Provides an unified mechanism for logging. */
+	@brief The Debug.Log and LOGUSER macros. Provides an unified mechanism for logging. */
 #include "MathLog.h"
 
 #include <cstring>

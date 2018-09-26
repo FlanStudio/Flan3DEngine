@@ -249,7 +249,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::End();
 	}
 
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))
@@ -301,40 +300,6 @@ bool ModuleEditor::CleanUp()
 	return true;
 }
 
-void LogWindow::Log(const char* format, ...)
-{
-	int oldsize = NormalBuf.size();
-	numLogs++;
-	va_list args;
-	va_start(args, format);
-	NormalBuf.appendfv(format, args);
-	NormalBuf.appendfv("\n", args);
-	va_end(args);
-	for (int new_size = oldsize; oldsize < new_size; oldsize++)
-		if (NormalBuf[oldsize] == '\n')
-			LineOffsets.push_back(oldsize);
-	ScrollToBottom = true;
-}
-void LogWindow::LogWarning(const char* format, ...)
-{
-	numwarnings++;
-	va_list args;
-	va_start(args, format);
-	WarningBuf.appendfv(format, args);
-	WarningBuf.appendfv("\n", args);
-	va_end(args);
-	ScrollToBottom = true;
-}
-void LogWindow::LogError(const char* format, ...)
-{
-	numerrors++;
-	va_list args;
-	va_start(args, format);
-	ErrorBuf.appendfv(format, args);
-	ErrorBuf.appendfv("\n", args);
-	va_end(args);
-	ScrollToBottom = true;
-}
 void LogWindow::Draw(const char* title, bool* p_opened)
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);

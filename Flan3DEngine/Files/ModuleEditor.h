@@ -5,33 +5,7 @@
 #include "imgui/imgui.h"
 #include <string>
 
-struct LogWindow
-{
-private:
-	std::string logsTitle;
-	std::string warningTitle;
-	std::string errorTitle;
-	int numLogs=0;
-	int numwarnings = 0;
-	int numerrors = 0;
 
-	ImGuiTextFilter     Filter;
-	ImVector<int>       LineOffsets;        // Index to lines offset
-
-	ImGuiTextBuffer     NormalBuf;
-	ImGuiTextBuffer     WarningBuf;
-	ImGuiTextBuffer     ErrorBuf;
-
-public:
-	bool                ScrollToBottom = true;
-	void    Clear() { NormalBuf.clear(); WarningBuf.clear(); ErrorBuf.clear(); numLogs = 0; numwarnings = 0; numerrors = 0; }
-	void    Log(const char* format, ...);
-	void    LogWarning(const char* format, ...);
-	void    LogError(const char* format, ...);
-	void Draw(const char* title, bool* p_opened = NULL);
-};
-
-static LogWindow Debug;
 
 class ModuleEditor : public Module
 {

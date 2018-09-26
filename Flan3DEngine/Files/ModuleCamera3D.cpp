@@ -21,16 +21,15 @@ ModuleCamera3D::~ModuleCamera3D()
 // -----------------------------------------------------------------
 bool ModuleCamera3D::Start()
 {
-	LOG("Setting up the camera");
+	Debug.Log("Setting up the camera");
 	bool ret = true;
-
 	return ret;
 }
 
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
-	LOG("Cleaning camera");
+	Debug.Log("Cleaning camera");
 
 	return true;
 }

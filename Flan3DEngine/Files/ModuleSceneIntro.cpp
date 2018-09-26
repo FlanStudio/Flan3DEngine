@@ -13,7 +13,7 @@ ModuleSceneIntro::~ModuleSceneIntro()
 // Load assets
 bool ModuleSceneIntro::Start()
 {
-	LOG("Loading Intro assets");
+	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
 	/*App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -32,7 +32,7 @@ bool ModuleSceneIntro::Start()
 // Load assets
 bool ModuleSceneIntro::CleanUp()
 {
-	LOG("Unloading Intro scene");
+	Debug.Log("Unloading Intro scene");
 
 	return true;
 }
@@ -52,6 +52,6 @@ update_status ModuleSceneIntro::Update(float dt)
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	LOG("Hit!");
+	Debug.Log("Hit!");
 }
 

@@ -16,12 +16,12 @@ ModuleWindow::~ModuleWindow()
 // Called before render is available
 bool ModuleWindow::Init()
 {
-	LOG("Init SDL window & surface");
+	Debug.Log("Init SDL window & surface");
 	bool ret = true;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
+		Debug.Log("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	else
@@ -59,7 +59,7 @@ bool ModuleWindow::Init()
 
 		if (window == NULL)
 		{
-			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+			Debug.Log("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
@@ -79,7 +79,7 @@ update_status ModuleWindow::Update(float dt)
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	LOG("Destroying SDL window and quitting all SDL systems");
+	Debug.Log("Destroying SDL window and quitting all SDL systems");
 
 	//Destroy window
 	if(window != NULL)
@@ -107,7 +107,7 @@ bool ModuleWindow::setFullScreenWindow(bool boolean)
 		{
 			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) != 0)
 			{
-				LOG("Could not switch to fullscreen: %s\n", SDL_GetError());
+				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
 				ret = false;
 			}
 			WIN_FULLSCREEN_DESKTOP = false;
@@ -116,7 +116,7 @@ bool ModuleWindow::setFullScreenWindow(bool boolean)
 		{
 			if (SDL_SetWindowFullscreen(window, 0) != 0)
 			{
-				LOG("Could not switch to windowed: %s\n", SDL_GetError());
+				Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
 				ret = false;
 			}
 		}
@@ -134,7 +134,7 @@ bool ModuleWindow::setFullScreenDesktop(bool boolean)
 		{
 			if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 			{
-				LOG("Could not switch to fullscreen: %s\n", SDL_GetError());
+				Debug.Log("Could not switch to fullscreen: %s\n", SDL_GetError());
 				ret = false;
 			}
 			WIN_FULLSCREEN = false;
@@ -143,7 +143,7 @@ bool ModuleWindow::setFullScreenDesktop(bool boolean)
 		{
 			if (SDL_SetWindowFullscreen(window, 0) != 0)
 			{
-				LOG("Could not switch to windowed: %s\n", SDL_GetError());
+				Debug.Log("Could not switch to windowed: %s\n", SDL_GetError());
 				ret = false;
 			}
 		}

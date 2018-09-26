@@ -27,6 +27,7 @@ Application::Application()
 	// Renderer last!
 	AddModule(renderer3D);
 
+	Debug;
 	FPS.resize(50);
 	ms.resize(50);
 }
@@ -46,7 +47,6 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
-
 	// Call Init() in all modules
 	std::list<Module*>::iterator it;
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
@@ -55,7 +55,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	LOG("Application Start --------------");
+	Debug.Log("Application Start --------------");
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
 	{
 		ret = (*it)->Start();
@@ -137,3 +137,16 @@ void Application::AddModule(Module* mod)
 {
 	list_modules.push_back(mod);
 }
+
+//void LogWindow::Log(const char* format, ...)
+//{
+//	
+//}
+//void LogWindow::LogWarning(const char* format, ...)
+//{
+//	
+//}
+//void LogWindow::LogError(const char* format, ...)
+//{
+//	
+//}
