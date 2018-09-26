@@ -75,7 +75,7 @@ public:
 	void Draw(const char* title, bool* p_opened = NULL);
 };
 
-static LogWindow Debug;
+extern LogWindow Debug;
 
 
 class Application

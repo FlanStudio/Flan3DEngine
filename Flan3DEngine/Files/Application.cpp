@@ -1,5 +1,7 @@
 #include "Application.h"
 
+LogWindow Debug;
+
 Application::Application()
 {
 	window = new ModuleWindow();
@@ -27,7 +29,6 @@ Application::Application()
 	// Renderer last!
 	AddModule(renderer3D);
 
-	Debug;
 	FPS.resize(50);
 	ms.resize(50);
 }
