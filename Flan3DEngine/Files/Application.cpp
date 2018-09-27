@@ -12,6 +12,7 @@ Application::Application()
 	camera = new ModuleCamera3D();
 	physics = new ModulePhysics3D();
 	editor = new ModuleEditor();
+	fs = new ModuleFileSystem();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -21,6 +22,7 @@ Application::Application()
 	AddModule(window);
 	AddModule(camera);
 	AddModule(input);
+	AddModule(fs);
 	AddModule(audio);
 	AddModule(physics);
 	AddModule(editor);

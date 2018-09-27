@@ -46,6 +46,9 @@
     <Filter Include="Sources\Tools\Parson">
       <UniqueIdentifier>{9542de0e-bdeb-4740-857b-a217d66dd81d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\PhysFS">
+      <UniqueIdentifier>{f612bc11-6e2f-4c9c-8b2d-b7c09188da4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -303,6 +306,12 @@
     <ClInclude Include="Parson\parson.h">
       <Filter>Sources\Tools\Parson</Filter>
     </ClInclude>
+    <ClInclude Include="PhysFS\physfs.h">
+      <Filter>Sources\Tools\PhysFS</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFileSystem.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -472,6 +481,9 @@
     </ClCompile>
     <ClCompile Include="Parson\parson.c">
       <Filter>Sources\Tools\Parson</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFileSystem.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

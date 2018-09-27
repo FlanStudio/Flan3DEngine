@@ -11,6 +11,7 @@
 #include "ModuleCamera3D.h"
 #include "ModulePhysics3D.h"
 #include "ModuleEditor.h"
+#include "ModuleFileSystem.h"
 
 #include <list>
 #include <vector>
@@ -89,6 +90,7 @@ public:
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
 	ModuleEditor* editor;
+	ModuleFileSystem* fs;
 
 private:
 	Timer	ms_timer;
