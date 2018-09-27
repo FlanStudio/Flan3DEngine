@@ -21,6 +21,8 @@ bool ModuleFileSystem::Init()
 	AddPath("./saves", "saves");
 	setWriteDir("./saves");
 
+	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
+
 	return true;
 }
 
@@ -54,6 +56,7 @@ bool ModuleFileSystem::AddPath(char* path, char* mount)
 bool ModuleFileSystem::setWriteDir(char* path)
 {
 	bool ret = true;
+
 	if (PHYSFS_setWriteDir(path) != 0)
 	{
 		Debug.Log("FILESYSTEM: Write dir correctly set to \"%s\"", path);
