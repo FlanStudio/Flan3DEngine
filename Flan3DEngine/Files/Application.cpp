@@ -6,7 +6,7 @@ Application::Application()
 {
 	window = new ModuleWindow();
 	input = new ModuleInput();
-	audio = new ModuleAudio(true);
+	audio = new ModuleAudio();
 	scene_intro = new ModuleSceneIntro();
 	renderer3D = new ModuleRenderer3D();
 	camera = new ModuleCamera3D();
@@ -61,7 +61,8 @@ bool Application::Init()
 	Debug.Log("Application Start --------------");
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
 	{
-		ret = (*it)->Start();
+		if((*it)->isEnabled())
+			ret = (*it)->Start();
 	}
 	
 	ms_timer.Start();
@@ -79,6 +80,8 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+	//dt calculations
+
 	dt = (float)ms_timer.Read() / 1000.0f;
 	float timeFrame = 1.0f / maxFPS;
 	
@@ -95,6 +98,21 @@ void Application::FinishUpdate()
 	ms[ms_index++] = (timeFrame - dt) * 1000;
 	if (ms_index >= ms.size())
 		ms_index = 0;
+
+
+	//Save and Load config
+
+	if (save)
+	{
+		save = false;
+		SaveNow();
+	}
+
+	if (load)
+	{
+		load = false;
+		LoadNow();
+	}
 
 }
 
@@ -131,7 +149,8 @@ bool Application::CleanUp()
 	std::list<Module*>::reverse_iterator it;
 	for (it = list_modules.rbegin(); it != list_modules.rend() && ret == UPDATE_CONTINUE; ++it)
 	{
-		ret = (*it)->CleanUp();
+		if((*it)->isEnabled())
+			ret = (*it)->CleanUp();
 	}
 	return ret;
 }
@@ -141,15 +160,67 @@ void Application::AddModule(Module* mod)
 	list_modules.push_back(mod);
 }
 
-//void LogWindow::Log(const char* format, ...)
-//{
-//	
-//}
-//void LogWindow::LogWarning(const char* format, ...)
-//{
-//	
-//}
-//void LogWindow::LogError(const char* format, ...)
-//{
-//	
-//}
+void Application::Load()
+{
+	load = true;
+}
+
+void Application::Save()
+{
+	save = true;
+}
+
+bool Application::LoadNow()
+{
+	bool ret = true;
+
+
+
+
+
+
+	JSON_Value* root = json_value_init_object();
+	JSON_Object* rootObj = json_value_get_object(root);
+
+	std::list<Module*>::iterator it;
+	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
+	{
+		char* name = (char*)(*it)->getName();
+		
+		JSON_Value* itValue = json_value_init_object();
+		JSON_Object* itObj = json_value_get_object(itValue);
+		json_object_set_value(rootObj, name, itValue);
+
+		ret = (*it)->Load(itObj);
+
+	}
+
+	return ret;
+}
+
+bool Application::SaveNow()const
+{
+	bool ret = true;
+
+	JSON_Value* root = json_value_init_object();
+	JSON_Object* rootObj = json_value_get_object(root);
+
+	std::list<Module*>::const_iterator it;
+	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
+	{
+		char* name = (char*)(*it)->getName();
+
+		JSON_Value* itValue = json_value_init_object();
+		JSON_Object* itObj = json_value_get_object(itValue);
+		json_object_set_value(rootObj, name, itValue);
+
+		ret = (*it)->Save(itObj);
+	}
+
+	int size = json_serialization_size_pretty(root);
+	char* jsonFile = new char[size];
+	json_serialize_to_buffer_pretty(root, jsonFile, size);
+	App->fs->OpenWrite("config/config.json", jsonFile);
+	delete[] jsonFile;
+	return ret;
+}

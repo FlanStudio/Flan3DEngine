@@ -13,6 +13,8 @@
 #include "ModuleEditor.h"
 #include "ModuleFileSystem.h"
 
+#include "Parson/parson.h"
+
 #include <list>
 #include <vector>
 
@@ -96,7 +98,8 @@ private:
 	Timer	ms_timer;
 	float	dt;
 	std::list<Module*> list_modules;
-
+	bool load = false;
+	bool save = false;
 
 public:
 	std::vector<float>FPS;
@@ -115,9 +118,13 @@ public:
 	bool Init();
 	update_status Update();
 	bool CleanUp();
+	void Load();
+	void Save();
 
 private:
 
+	bool LoadNow();
+	bool SaveNow() const;
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();

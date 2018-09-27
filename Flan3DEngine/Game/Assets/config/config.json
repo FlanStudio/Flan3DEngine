@@ -1,0 +1,11 @@
+{
+    "ModuleWindow": {},
+    "ModuleCamera3D": {},
+    "ModuleInput": {},
+    "ModuleFileSystem": {},
+    "ModuleAudio": {},
+    "ModulePhysics3D": {},
+    "ModuleEditor": {},
+    "ModuleSceneIntro": {},
+    "ModuleRenderer": {}
+}

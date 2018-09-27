@@ -3,7 +3,7 @@
 #include "ModuleSceneIntro.h"
 #include "PhysBody3D.h"
 
-ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module(start_enabled)
+ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
 }
 

@@ -18,7 +18,7 @@
 #include "MathGeoLib_1.5/Geometry/AABB.h"
 //ENDTEMP
 
-ModuleEditor::ModuleEditor(bool start_enabled) : Module(start_enabled) {}
+ModuleEditor::ModuleEditor(bool start_enabled) : Module("ModuleEditor", start_enabled) {}
 ModuleEditor::~ModuleEditor() {}
 
 bool ModuleEditor::Init()
@@ -37,6 +37,7 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
+
 	return true;	
 }
 
@@ -58,7 +59,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
 		{
 			Debug.Log("Sphere spawned %d", 1111);
-			//TODO: Spawn sphere
 			Sphere sp;
 			sp.pos = { 0,1,0 };
 			sp.r = 1;
@@ -70,7 +70,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::SameLine();
 		if (ImGui::Button("Spawn 2 Spheres at 0,0", ImVec2(170, 50)))
 		{
-			//TODO: Spawn sphere
 			Sphere sp;
 			sp.pos = { 0,1,0 };
 			sp.r = 1;
@@ -90,7 +89,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::Text("Something is colliding?:");
 		ImGui::SameLine();
 
-		//TODO: CHECKCOLLISIONS
 		ImGui::Text(somethingiscolliding ? "true" : "false");
 		
 		ImGui::End();
@@ -107,12 +105,20 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if(ImGui::BeginMenu("options", true, true))
 		{
-			if (ImGui::MenuItem("Option1"))
+			if (ImGui::MenuItem("SaveConfig"))
 			{
+				App->Save();
 			}
-			if (ImGui::MenuItem("Option2"))
+			if (ImGui::MenuItem("LoadConfig"))
+			{}		
+			if (ImGui::IsItemHovered())
 			{
-			}		
+				ImGui::BeginTooltip();
+				ImGui::Text("Not implemented yet");
+				ImGui::EndTooltip();
+
+			}
+
 			ImGui::EndMenu();
 		}
 
@@ -191,6 +197,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 															SDL_HasAVX2() ? "AVX2" : "", SDL_HasAltiVec() ? "AltiVec" : "", SDL_Has3DNow() ? "3DNOW" : "");
 
 			ImGui::Separator();
+			//TODO: GPU INFO
 			ImGui::Text("GPU: ");
 			ImGui::Text("Brand");
 			ImGui::Text("VRAM Budget: ");

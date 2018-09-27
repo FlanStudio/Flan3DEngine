@@ -3,7 +3,7 @@
 #include "PhysFS/physfs.h"
 #pragma comment (lib, "PhysFS/physfs.lib")
 
-ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled) {}
+ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::Init()
