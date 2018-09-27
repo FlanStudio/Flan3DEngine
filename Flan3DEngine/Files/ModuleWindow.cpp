@@ -190,4 +190,15 @@ int ModuleWindow::getRefreshRate() const
 	return dm.refresh_rate;
 }
 
+bool ModuleWindow::Save(JSON_Object* obj) const
+{
+	json_object_set_boolean(obj, "FullscreenWindow", WIN_FULLSCREEN);
+	json_object_set_boolean(obj, "FullscreenDesktop", WIN_FULLSCREEN_DESKTOP);
+	json_object_set_boolean(obj, "Resizable", WIN_RESIZABLE);
+	json_object_set_boolean(obj, "Borderless", WIN_BORDERLESS);
+	json_object_set_number(obj, "ScreenWidth", SCREEN_WIDTH);
+	json_object_set_number(obj, "ScreenHeight", SCREEN_HEIGHT);
+	json_object_set_number(obj, "Brightness", BRIGHTNESS);
+	return true;
+}
 

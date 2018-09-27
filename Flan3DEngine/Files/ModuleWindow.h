@@ -33,6 +33,10 @@ public:
 	bool setBorderless(bool boolean);
 	int getRefreshRate() const;
 
+private:
+	
+	bool Save(JSON_Object* obj) const override;
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window = nullptr;
@@ -42,6 +46,9 @@ public:
 
 	std::string winTitle = "Flan3DEngine";
 	std::string organization = "FlanStudio";
+
+
+
 };
 
 #endif // __ModuleWindow_H__

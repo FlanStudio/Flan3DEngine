@@ -1,5 +1,13 @@
 {
-    "ModuleWindow": {},
+    "ModuleWindow": {
+        "FullscreenWindow": false,
+        "FullscreenDesktop": false,
+        "Resizable": false,
+        "Borderless": false,
+        "ScreenWidth": 1920,
+        "ScreenHeight": 1080,
+        "Brightness": 1
+    },
     "ModuleCamera3D": {},
     "ModuleInput": {},
     "ModuleFileSystem": {},
