@@ -43,6 +43,9 @@
     <Filter Include="Sources\Tools\pcg_numgen">
       <UniqueIdentifier>{c4bddcf8-639e-4ca4-95b5-ec92913c443b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\Parson">
+      <UniqueIdentifier>{9542de0e-bdeb-4740-857b-a217d66dd81d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -297,6 +300,9 @@
     <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h">
       <Filter>Sources\Tools\pcg_numgen</Filter>
     </ClInclude>
+    <ClInclude Include="Parson\parson.h">
+      <Filter>Sources\Tools\Parson</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -463,6 +469,9 @@
     </ClCompile>
     <ClCompile Include="Globals.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Parson\parson.c">
+      <Filter>Sources\Tools\Parson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

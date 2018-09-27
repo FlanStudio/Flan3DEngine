@@ -4,7 +4,7 @@
 #include "Globals.h"
 #include "imgui/imgui.h"
 #include <string>
-
+#include "Parson/parson.h"
 
 
 class ModuleEditor : public Module
@@ -32,4 +32,6 @@ private:
 	bool logEnabled = false;
 	bool showConfig = false;
 	bool showAbout = false;
+
+	std::string nameJSON;
 };
