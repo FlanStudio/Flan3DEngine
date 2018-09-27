@@ -202,3 +202,24 @@ bool ModuleWindow::Save(JSON_Object* obj) const
 	return true;
 }
 
+bool ModuleWindow::Load(const JSON_Object* obj)
+{
+	WIN_FULLSCREEN = json_object_get_boolean(obj, "FullscreenWindow");
+	WIN_FULLSCREEN_DESKTOP = json_object_get_boolean(obj, "FullscreenDesktop");
+	WIN_RESIZABLE = json_object_get_boolean(obj, "Resizable");
+	WIN_BORDERLESS = json_object_get_boolean(obj, "Borderless");
+	SCREEN_WIDTH = json_object_get_number(obj, "ScreenWidth");
+	SCREEN_HEIGHT = json_object_get_number(obj, "ScreenHeight");
+	BRIGHTNESS = json_object_get_number(obj, "Brightness");
+
+	setFullScreenWindow(WIN_FULLSCREEN);
+	setFullScreenDesktop(WIN_FULLSCREEN_DESKTOP);
+	setResizable(WIN_RESIZABLE);
+	setBorderless(WIN_BORDERLESS);
+	setWindowWidth(SCREEN_WIDTH);
+	setWindowHeight(SCREEN_HEIGHT);
+	setBrightness(BRIGHTNESS);
+
+	return true;
+}
+

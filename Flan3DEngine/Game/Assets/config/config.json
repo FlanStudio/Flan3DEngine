@@ -1,4 +1,7 @@
 {
+    "Application": {
+        "maxFPS": 60
+    },
     "ModuleWindow": {
         "FullscreenWindow": false,
         "FullscreenDesktop": false,

@@ -36,6 +36,7 @@ public:
 private:
 	
 	bool Save(JSON_Object* obj) const override;
+	bool Load(const JSON_Object* obj);
 
 public:
 	//The window we'll be rendering to

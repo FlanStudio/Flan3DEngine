@@ -98,7 +98,7 @@ private:
 	Timer	ms_timer;
 	float	dt;
 	std::list<Module*> list_modules;
-	bool load = false;
+	bool load = true;
 	bool save = false;
 
 public:

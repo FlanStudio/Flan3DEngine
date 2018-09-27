@@ -174,25 +174,37 @@ bool Application::LoadNow()
 {
 	bool ret = true;
 
-
-
-
-
-
-	JSON_Value* root = json_value_init_object();
-	JSON_Object* rootObj = json_value_get_object(root);
-
-	std::list<Module*>::iterator it;
-	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
+	char* buf;
+	int size;
+	if (fs->OpenRead("config/config.json", &buf, size))
 	{
-		char* name = (char*)(*it)->getName();
-		
-		JSON_Value* itValue = json_value_init_object();
-		JSON_Object* itObj = json_value_get_object(itValue);
-		json_object_set_value(rootObj, name, itValue);
+		JSON_Value* root = json_parse_string(buf);
+		JSON_Object* rootObj = json_value_get_object(root);
 
-		ret = (*it)->Load(itObj);
+		JSON_Object* AppObj = json_object_get_object(rootObj, "Application");
+		if (AppObj)
+		{
+			maxFPS = json_object_get_number(AppObj, "maxFPS");
+		}
+		else
+			ret = false;
 
+		std::list<Module*>::iterator it;
+		for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
+		{
+			char* name = (char*)(*it)->getName();
+
+			JSON_Object* itObj = json_object_get_object(rootObj, name);
+			if (itObj)
+				(*it)->Load(itObj);
+			else
+				ret = false;
+		}
+		delete[] buf;
+	}
+	else
+	{
+		ret = false;
 	}
 
 	return ret;
@@ -204,6 +216,13 @@ bool Application::SaveNow()const
 
 	JSON_Value* root = json_value_init_object();
 	JSON_Object* rootObj = json_value_get_object(root);
+
+	//Save App config
+	JSON_Value* itValue = json_value_init_object();
+	JSON_Object* itObj = json_value_get_object(itValue);
+	json_object_set_value(rootObj, "Application", itValue);
+	json_object_set_number(itObj, "maxFPS", maxFPS);
+
 
 	std::list<Module*>::const_iterator it;
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)

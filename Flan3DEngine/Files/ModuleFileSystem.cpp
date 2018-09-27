@@ -15,8 +15,10 @@ bool ModuleFileSystem::Init()
 	AddPath(".");
 
 	//Read/Write directory
-	AddPath("./Assets", "Assets");
+	AddPath("./Assets/", "Assets");
 	setWriteDir("./Assets");
+	AddPath("./Assets/config/", "config");
+
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 

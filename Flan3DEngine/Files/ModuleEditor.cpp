@@ -110,15 +110,9 @@ update_status ModuleEditor::PreUpdate(float dt)
 				App->Save();
 			}
 			if (ImGui::MenuItem("LoadConfig"))
-			{}		
-			if (ImGui::IsItemHovered())
 			{
-				ImGui::BeginTooltip();
-				ImGui::Text("Not implemented yet");
-				ImGui::EndTooltip();
-
-			}
-
+				App->Load();
+			}		
 			ImGui::EndMenu();
 		}
 
