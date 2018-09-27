@@ -11,6 +11,8 @@
 
 #include "SDL/include/SDL.h"
 
+#include "ModuleFileSystem.h"
+
 //TEMP
 #include "MathGeoLib_1.5/Geometry/Sphere.h"
 #include "MathGeoLib_1.5/Geometry/AABB.h"
@@ -35,11 +37,6 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
-
-	JSON_Value* value = json_parse_file("../Game/test.json");
-	JSON_Object* obj = json_value_get_object(value);
-	std::string name = json_object_get_string(obj, "name");
-
 	return true;	
 }
 
