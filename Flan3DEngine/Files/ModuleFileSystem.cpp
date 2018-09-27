@@ -11,15 +11,12 @@ bool ModuleFileSystem::Init()
 	//Initialize PhysFS library
 	PHYSFS_init(nullptr);
 
-	//Add root directory
+	//Add root directory (Read-Only)
 	AddPath(".");
 
-	//Read-only directory
-	AddPath("./Assets", "Assets");
-
 	//Read/Write directory
-	AddPath("./saves", "saves");
-	setWriteDir("./saves");
+	AddPath("./Assets", "Assets");
+	setWriteDir("./Assets");
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 
