@@ -1,0 +1,65 @@
+version: 0.{build}
+image: Visual Studio 2017
+platform: x86
+configuration: Release
+skip_tags: true
+build:
+  verbosity: minimal
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+    - releases
+    - master
+for:
+-
+  branches:
+    only:
+      - releases
+  configuration: Release
+
+  after_build:
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Release\Flan3DEngine.exe" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - 7z a Flan3DEngine.zip %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    
+  artifacts:  
+  - path: "Flan3DEngine.zip"
+
+  deploy:
+  - provider: GitHub
+    release: Flan3DEngine Release: v$(appveyor_build_version)
+    artifact: "Flan3DEngine.zip"
+    auth_token:
+      secure: drB35QM5tuFmrkxtwPD8uf3wA51k4eR6HcKojiMpJy0PE03x+NXyY9E4DhNuuMwQ
+    draft: false
+    prerelease: false
+    on:
+      appveyor_repo_tag: false
+
+  notifications:
+    - provider: Email
+      on_build_success: true
+      on_build_failure: false
+      on_build_status_changed: false
+      to:
+        - jony635molina@gmail.com
+      subject: 'Success Flan3DEngine release {{buildVersion}}'
+      message: "Good Job!"
+
+-
+  branches:
+    only:
+      - master
+  notifications:    
+      - provider: Email
+        on_build_success: false
+        on_build_failure: true
+        on_build_status_changed: false
+        to:
+          - '{{commitAuthorEmail}}'
+        subject: 'Failed Flan3DEngine Build {{buildVersion}}'
+        message: "Check it!"
