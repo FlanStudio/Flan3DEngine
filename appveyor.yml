@@ -35,7 +35,7 @@ for:
     release: "Flan3DEngine Release: v$(appveyor_build_version)"
     artifact: "Flan3DEngine.zip"
     auth_token:
-      secure: drB35QM5tuFmrkxtwPD8uf3wA51k4eR6HcKojiMpJy0PE03x+NXyY9E4DhNuuMwQ
+      secure: G9a/44W1kkQ8mHYTXB3yRuchwYrzLa60KsfJVAhK0OuWP86eW1mkVYLT/HJkG5yK
     draft: false
     prerelease: false
     on:
