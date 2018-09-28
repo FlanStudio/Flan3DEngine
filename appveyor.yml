@@ -19,22 +19,23 @@ for:
   configuration: Release
 
   after_build:
-    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
-    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
-    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Release\Flan3DEngine.exe" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
-    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
-    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
-    - 7z a Flan3DEngine.zip %APPVEYOR_BUILD_FOLDER%\Flan3DEngine
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Release\Flan3DEngine.exe" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - 7z a Flan3DEngine.zip %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
     
   artifacts:  
   - path: "Flan3DEngine.zip"
 
   deploy:
   - provider: GitHub
-    release: Flan3DEngine Release: v$(appveyor_build_version)
+    release: "Flan3DEngine Release: v$(appveyor_build_version)"
     artifact: "Flan3DEngine.zip"
     auth_token:
-      secure: drB35QM5tuFmrkxtwPD8uf3wA51k4eR6HcKojiMpJy0PE03x+NXyY9E4DhNuuMwQ
+      secure: AcLsWoiEDhzeBTFH0I3wStfZTjTN35OJcrb9ittkPrWjUfNYQzrgLIZ05pL+mD+g
     draft: false
     prerelease: false
     on:
