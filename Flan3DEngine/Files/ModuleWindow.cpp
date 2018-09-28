@@ -55,7 +55,7 @@ bool ModuleWindow::Init()
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
-		window = SDL_CreateWindow(winTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		window = SDL_CreateWindow(App->engineName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if (window == NULL)
 		{
@@ -73,7 +73,7 @@ bool ModuleWindow::Init()
 }
 update_status ModuleWindow::Update(float dt)
 {
-	SDL_SetWindowTitle(window, (winTitle + "_" + organization).c_str());
+	SDL_SetWindowTitle(window, (App->engineName + "_" + App->organization).c_str());
 	return UPDATE_CONTINUE;
 }
 
@@ -95,7 +95,7 @@ bool ModuleWindow::CleanUp()
 
 void ModuleWindow::SetTitle(char* title)
 {
-	winTitle = title;
+	SDL_SetWindowTitle(window, title);
 }
 
 bool ModuleWindow::setFullScreenWindow(bool boolean)

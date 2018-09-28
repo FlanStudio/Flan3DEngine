@@ -38,16 +38,16 @@ int main(int argc, char ** argv)
 
 		case MAIN_START:
 
-			Debug.Log("-------------- Application Init --------------");
+			Debug.Log("-------------- Application Init ------------------");
 			if (App->Init() == false)
 			{
-				Debug.Log("Application Init exits with ERROR");
+				Debug.LogError("Application Init exits with ERROR");
 				state = MAIN_EXIT;
 			}
 			else
 			{
 				state = MAIN_UPDATE;
-				Debug.Log("-------------- Application Update --------------");
+				Debug.Log("-------------- Application Update -----------------");
 			}
 
 			break;
@@ -58,7 +58,7 @@ int main(int argc, char ** argv)
 
 			if (update_return == UPDATE_ERROR)
 			{
-				Debug.Log("Application Update exits with ERROR");
+				Debug.LogError("Application Update exits with ERROR");
 				state = MAIN_EXIT;
 			}
 
@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
 			Debug.Log("-------------- Application CleanUp --------------");
 			if (App->CleanUp() == false)
 			{
-				Debug.Log("Application CleanUp exits with ERROR");
+				Debug.LogError("Application CleanUp exits with ERROR");
 			}
 			else
 				main_return = EXIT_SUCCESS;

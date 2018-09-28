@@ -120,8 +120,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 		{
 			ImGuiInputTextFlags flags = 0;
 			flags |= ImGuiInputTextFlags_EnterReturnsTrue;
-			ImGui::InputText("\tEngine Name", &App->window->winTitle, flags);
-			ImGui::InputText("\tOrganization", &App->window->organization, flags);	
+			ImGui::InputText("\tEngine Name", &App->engineName, flags);
+			ImGui::InputText("\tOrganization", &App->organization, flags);	
 			ImGui::SliderInt("\tMax FPS", &App->maxFPS, 0, 125);
 
 			char FPSTitle[50];
@@ -211,7 +211,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 		
 		if (ImGui::CollapsingHeader("About Us"))
 		{
-			ImGui::Text("%s\n", App->window->winTitle.data());
+			ImGui::Text("%s\n", App->engineName.data());
 			if (ImGui::Button("Download Latest"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/releases", NULL, NULL, SW_SHOWNORMAL);
@@ -230,7 +230,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::CollapsingHeader("Description"))
 		{
-			ImGui::Text("%s is a Game Engine for producing awesome videogames.", App->window->winTitle.data());
+			ImGui::Text("%s is a Game Engine for producing awesome videogames.", App->engineName.data());
 		}
 
 		if (ImGui::CollapsingHeader("Authors"))

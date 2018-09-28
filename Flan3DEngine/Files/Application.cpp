@@ -58,7 +58,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	Debug.Log("Application Start --------------");
+	Debug.Log("-------------- Application Start ------------------");
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
 	{
 		if((*it)->isEnabled())
@@ -185,6 +185,8 @@ bool Application::LoadNow()
 		if (AppObj)
 		{
 			maxFPS = json_object_get_number(AppObj, "maxFPS");
+			engineName = json_object_get_string(AppObj, "engineName");
+			organization = json_object_get_string(AppObj, "organization");
 		}
 		else
 			ret = false;
@@ -204,8 +206,11 @@ bool Application::LoadNow()
 	}
 	else
 	{
-		ret = false;
+		Debug.LogWarning("Config file not found. Default configuration loaded");
 	}
+
+	if (ret)
+		Debug.Log("Configuration succesfully loaded");
 
 	return ret;
 }
@@ -222,7 +227,8 @@ bool Application::SaveNow()const
 	JSON_Object* itObj = json_value_get_object(itValue);
 	json_object_set_value(rootObj, "Application", itValue);
 	json_object_set_number(itObj, "maxFPS", maxFPS);
-
+	json_object_set_string(itObj, "engineName", engineName.data());
+	json_object_set_string(itObj, "organization", organization.data());
 
 	std::list<Module*>::const_iterator it;
 	for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
@@ -236,10 +242,23 @@ bool Application::SaveNow()const
 		ret = (*it)->Save(itObj);
 	}
 
-	int size = json_serialization_size_pretty(root);
-	char* jsonFile = new char[size];
-	json_serialize_to_buffer_pretty(root, jsonFile, size);
-	App->fs->OpenWrite("config/config.json", jsonFile);
-	delete[] jsonFile;
+	if (ret)
+	{
+		int size = json_serialization_size_pretty(root);
+		char* jsonFile = new char[size];
+		json_serialize_to_buffer_pretty(root, jsonFile, size);
+		ret = App->fs->OpenWrite("config/config.json", jsonFile);
+		delete[] jsonFile;
+
+		if (ret)
+			Debug.Log("Configuration succesfully saved");
+		else
+			Debug.LogError("Failed saving \"config/config.json\"");
+	}
+	else
+	{
+		Debug.LogError("Error: configuration couldn't be saved");
+	}
+
 	return ret;
 }

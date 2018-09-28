@@ -3,7 +3,6 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
-#include <string>
 
 class Application;
 
@@ -44,12 +43,6 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
-
-	std::string winTitle = "Flan3DEngine";
-	std::string organization = "FlanStudio";
-
-
-
 };
 
 #endif // __ModuleWindow_H__

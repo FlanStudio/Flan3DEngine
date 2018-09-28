@@ -1,6 +1,8 @@
 {
     "Application": {
-        "maxFPS": 60
+        "maxFPS": 60,
+        "engineName": "Flan3DEngine",
+        "organization": "FlanStudio"
     },
     "ModuleWindow": {
         "FullscreenWindow": false,

@@ -17,6 +17,7 @@
 
 #include <list>
 #include <vector>
+#include <string>
 
 struct LogWindow
 {
@@ -109,6 +110,8 @@ public:
 	int ms_index = 0;
 
 	int maxFPS = 60;
+	std::string engineName = "Flan3DEngine";
+	std::string organization = "FlanStudio";
 
 public:
 
