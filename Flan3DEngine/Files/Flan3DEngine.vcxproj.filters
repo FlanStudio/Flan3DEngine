@@ -49,6 +49,9 @@
     <Filter Include="Sources\Tools\PhysFS">
       <UniqueIdentifier>{f612bc11-6e2f-4c9c-8b2d-b7c09188da4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\glew">
+      <UniqueIdentifier>{744f6a00-c038-4844-a58d-ffe7ce39c60d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -311,6 +314,18 @@
     </ClInclude>
     <ClInclude Include="ModuleFileSystem.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Glew\include\eglew.h">
+      <Filter>Sources\Tools\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="Glew\include\glew.h">
+      <Filter>Sources\Tools\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="Glew\include\glxew.h">
+      <Filter>Sources\Tools\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="Glew\include\wglew.h">
+      <Filter>Sources\Tools\glew</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

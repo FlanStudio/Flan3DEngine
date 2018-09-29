@@ -192,8 +192,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 			ImGui::Separator();
 			//TODO: GPU INFO
-			ImGui::Text("GPU: ");
-			ImGui::Text("Brand");
+			App->renderer3D->guiGPU();
 			ImGui::Text("VRAM Budget: ");
 			ImGui::Text("VRAM Usage: ");
 			ImGui::Text("VRAM Available: ");

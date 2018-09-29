@@ -17,6 +17,7 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
+	void guiGPU()const;
 
 public:
 

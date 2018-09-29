@@ -1,11 +1,15 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+
+#include "Glew/include/glew.h"
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
+
 #include "imgui/imgui.h"
 
+#pragma comment (lib, "Glew/glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -27,7 +31,7 @@ bool ModuleRenderer3D::Init()
 	context = SDL_GL_CreateContext(App->window->window);
 	if(context == NULL)
 	{
-		Debug.Log("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		Debug.LogError("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -37,7 +41,7 @@ bool ModuleRenderer3D::Init()
 		if (VSYNC)
 		{
 			if (SDL_GL_SetSwapInterval(1) < 0)
-				Debug.Log("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+				Debug.LogError("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 		}
 		else
 		{
@@ -106,6 +110,16 @@ bool ModuleRenderer3D::Init()
 
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	GLenum error = glewInit();
+	if (GLEW_OK != error)
+	{
+		Debug.LogError("Init glew failed. Error: %s\n", glewGetErrorString(error));
+	}
+	else
+	{
+		Debug.Log("Using Glew %s", glewGetString(GLEW_VERSION));
+	}
 	return ret;
 }
 
@@ -116,14 +130,14 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
-	//glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->camera->GetViewMatrix());
 
 	// light 0 on cam pos
-	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
-	/*for(uint i = 0; i < MAX_LIGHTS; ++i)
+	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
-*/
+
 	return UPDATE_CONTINUE;
 }
 
@@ -144,7 +158,6 @@ bool ModuleRenderer3D::CleanUp()
 	return true;
 }
 
-
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -156,4 +169,21 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+void ModuleRenderer3D::guiGPU()const
+{
+	ImGui::Text("Brand: "); ImGui::SameLine();
+	ImGui::TextColored({ 255,255,0,255 }, "%s", glGetString(GL_VENDOR));
+
+	ImGui::Text("GPU: "); ImGui::SameLine();
+	ImGui::TextColored({ 255,255,0,255 }, "%s", glGetString(GL_RENDERER));
+
+	ImGui::Text("OpenGL version supported: "); ImGui::SameLine();
+	ImGui::TextColored({ 255,255,0,255 }, "%s", glGetString(GL_VERSION));
+
+	ImGui::Text("GLSL: "); ImGui::SameLine();
+	ImGui::TextColored({ 255,255,0,255 }, "%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+	ImGui::NewLine();
 }
