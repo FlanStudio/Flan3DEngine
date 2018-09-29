@@ -274,6 +274,7 @@ bool ModuleRenderer3D::Save(JSON_Object* obj) const
 	json_object_set_boolean(obj, "lighting", lighting);
 	json_object_set_boolean(obj, "colorMaterial", colorMaterial);
 	json_object_set_boolean(obj, "texture2D", texture2D);
+	json_object_set_boolean(obj, "wireframeMode", wireframe);
 	return true;
 }
 
@@ -284,6 +285,15 @@ bool ModuleRenderer3D::Load(const JSON_Object* obj)
 	lighting = json_object_get_boolean(obj, "lighting");
 	colorMaterial = json_object_get_boolean(obj, "colorMaterial");
 	texture2D = json_object_get_boolean(obj, "texture2D");
+	wireframe = json_object_get_boolean(obj, "wireframeMode");
+
+	depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+	cullFace ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+	lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
+	colorMaterial ? glEnable(GL_COLOR_MATERIAL) : glDisable(GL_COLOR_MATERIAL);
+	texture2D ? glEnable(GL_TEXTURE_2D) : glDisable(GL_TEXTURE_2D);
+	setWireframe(wireframe);
+
 	return true;
 }
 
@@ -291,5 +301,5 @@ void ModuleRenderer3D::setWireframe(bool boolean)
 {
 	wireframe = boolean;
 	glPolygonMode(GL_FRONT_AND_BACK, boolean ? GL_LINE : GL_FILL);
-	Debug.Log("Renderer: WIREFRAME_MODE %s", boolean ? "enabled" : "disabled");
+	//Debug.Log("Renderer: WIREFRAME_MODE %s", boolean ? "enabled" : "disabled");
 }

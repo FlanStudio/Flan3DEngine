@@ -25,6 +25,7 @@
         "cullFace": true,
         "lighting": true,
         "colorMaterial": true,
-        "texture2D": false
+        "texture2D": false,
+        "wireframeMode": false
     }
 }
