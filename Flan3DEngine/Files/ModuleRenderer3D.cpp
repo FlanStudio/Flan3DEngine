@@ -8,6 +8,7 @@
 #include <gl/GLU.h>
 
 #include "imgui/imgui.h"
+#include "Parson/parson.h"
 
 #pragma comment (lib, "Glew/glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -102,10 +103,14 @@ bool ModuleRenderer3D::Init()
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 		
 		glEnable(GL_DEPTH_TEST);
+		depthTest = true;
 		glEnable(GL_CULL_FACE);
+		cullFace = true;
 		lights[0].Active(true);
 		glEnable(GL_LIGHTING);
+		lighting = true;
 		glEnable(GL_COLOR_MATERIAL);
+		colorMaterial = true;
 	}
 
 	// Projection matrix for
@@ -126,17 +131,18 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+	Color color = App->camera->background;
+	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
 
-	// light 0 on cam pos
-	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+	//// light 0 on cam pos
+	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
-	for(uint i = 0; i < MAX_LIGHTS; ++i)
-		lights[i].Render();
+	//for(uint i = 0; i < MAX_LIGHTS; ++i)
+	//	lights[i].Render();
 
 	return UPDATE_CONTINUE;
 }
@@ -186,4 +192,93 @@ void ModuleRenderer3D::guiGPU()const
 	ImGui::TextColored({ 255,255,0,255 }, "%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	ImGui::NewLine();
+}
+
+void ModuleRenderer3D::guiRenderer()
+{
+	if(ImGui::Checkbox("DEPTH_TEST", &depthTest))
+	{
+		if (depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			Debug.Log("Renderer: DEPTH_TEST enabled");
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+			Debug.Log("Renderer: DEPTH_TEST disabled");
+		}	
+	} ImGui::SameLine();
+	if (ImGui::Checkbox("CULL_FACE", &cullFace))
+	{
+		if (cullFace)
+		{
+			glEnable(GL_CULL_FACE);
+			Debug.Log("Renderer: CULL_FACE enabled");
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+			Debug.Log("Renderer: CULL_FACE disabled");
+		}
+	}
+	if (ImGui::Checkbox("LIGHTNING ", &lighting))
+	{
+		if (lighting)
+		{
+			glEnable(GL_LIGHTING);
+			Debug.Log("Renderer: LIGHTING enabled");
+		}
+		else
+		{
+			glDisable(GL_LIGHTING);
+			Debug.Log("Renderer: LIGHTING disabled");
+		}
+	} ImGui::SameLine();
+	if (ImGui::Checkbox("COLOR_MATERIAL", &colorMaterial))
+	{
+		if (colorMaterial)
+		{
+			glEnable(GL_COLOR_MATERIAL);
+			Debug.Log("Renderer: COLOR_MATERIAL enabled");
+		}
+		else
+		{
+			glDisable(GL_COLOR_MATERIAL);
+			Debug.Log("Renderer: COLOR_MATERIAL disabled");
+		}
+	}
+	if (ImGui::Checkbox("TEXTURE2D", &texture2D))
+	{
+		if (texture2D)
+		{
+			glEnable(GL_TEXTURE_2D);
+			Debug.Log("Renderer: TEXTURE_2D enabled");
+		}
+		else
+		{
+			glDisable(GL_TEXTURE_2D);
+			Debug.Log("Renderer: TEXTURE_2D disabled");
+		}
+	}
+}
+
+bool ModuleRenderer3D::Save(JSON_Object* obj) const
+{
+	json_object_set_boolean(obj, "depthTest", depthTest);
+	json_object_set_boolean(obj, "cullFace", cullFace);
+	json_object_set_boolean(obj, "lighting", lighting);
+	json_object_set_boolean(obj, "colorMaterial", colorMaterial);
+	json_object_set_boolean(obj, "texture2D", texture2D);
+	return true;
+}
+
+bool ModuleRenderer3D::Load(const JSON_Object* obj)
+{
+	depthTest = json_object_get_boolean(obj, "depthTest");
+	cullFace = json_object_get_boolean(obj, "cullFace");
+	lighting = json_object_get_boolean(obj, "lighting");
+	colorMaterial = json_object_get_boolean(obj, "colorMaterial");
+	texture2D = json_object_get_boolean(obj, "texture2D");
+	return true;
 }

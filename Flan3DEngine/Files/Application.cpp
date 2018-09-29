@@ -25,9 +25,14 @@ Application::Application()
 	AddModule(fs);
 	AddModule(audio);
 	AddModule(physics);
-	AddModule(editor);
+
 	// Scenes
 	AddModule(scene_intro);
+
+	//Debug geometry here
+	//AddModule(debug);
+
+	AddModule(editor);
 	// Renderer last!
 	AddModule(renderer3D);
 

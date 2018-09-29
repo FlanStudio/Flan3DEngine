@@ -26,6 +26,7 @@ private:
 public:
 	
 	float3 X, Y, Z, Position, Reference;
+	Color background = {0,0,0,255};
 
 private:
 

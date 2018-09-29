@@ -16,11 +16,8 @@ bool ModuleSceneIntro::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	/*App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
-	App->camera->LookAt(vec3(0, 0, 0));*/
-
-	//s.size = vec3(5, 3, 1);
-	//s.SetPos(0, 2.5f, 20);
+	App->camera->Move(float3(1.0f, 1.0f, 0.0f));
+	App->camera->LookAt(float3(0, 0, 0));
 
 	//sensor = App->physics->AddBody(s, 0.0f);
 	/*sensor->SetAsSensor(true);
@@ -40,13 +37,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	//Plane p(0, 1, 0, 0);
-	/*p.axis = true;
-	p.Render();*/
-
-	/*sensor->GetTransform(&s.transform);
-	s.Render();*/
-
 	return UPDATE_CONTINUE;
 }
 

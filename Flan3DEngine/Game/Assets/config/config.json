@@ -18,7 +18,13 @@
     "ModuleFileSystem": {},
     "ModuleAudio": {},
     "ModulePhysics3D": {},
-    "ModuleEditor": {},
     "ModuleSceneIntro": {},
-    "ModuleRenderer": {}
+    "ModuleEditor": {},
+    "ModuleRenderer": {
+        "depthTest": true,
+        "cullFace": true,
+        "lighting": true,
+        "colorMaterial": true,
+        "texture2D": false
+    }
 }

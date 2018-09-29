@@ -176,6 +176,12 @@ update_status ModuleEditor::PreUpdate(float dt)
 				App->window->setResizable(WIN_RESIZABLE);
 			}
 		}
+
+		if (ImGui::CollapsingHeader("Renderer"))
+		{
+			App->renderer3D->guiRenderer();
+		}
+
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
 			SDL_version version;
@@ -200,6 +206,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 
 		}
+
+
 
 		ImGui::End();
 	}
