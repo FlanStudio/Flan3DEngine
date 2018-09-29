@@ -364,7 +364,7 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
 	ImGui::Begin(title, p_opened);
 
-	if (ImGui::Button("Log", ImVec2(80, 25)))
+	/*if (ImGui::Button("Log", ImVec2(80, 25)))
 	{
 		Log("Hay un caballo volador");
 	}
@@ -381,7 +381,8 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 		LogError("Al caballo volador le has dado muchas drogas");
 	}
 
-	ImGui::SameLine();
+	ImGui::SameLine();*/
+
 	if (ImGui::Button("Clear", ImVec2(80,25)))
 	{
 		Clear();

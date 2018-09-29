@@ -260,6 +260,10 @@ void ModuleRenderer3D::guiRenderer()
 			glDisable(GL_TEXTURE_2D);
 			Debug.Log("Renderer: TEXTURE_2D disabled");
 		}
+	} ImGui::SameLine();
+	if (ImGui::Checkbox("WIREFRAME_MODE", &wireframe))
+	{
+		setWireframe(wireframe);
 	}
 }
 
@@ -281,4 +285,11 @@ bool ModuleRenderer3D::Load(const JSON_Object* obj)
 	colorMaterial = json_object_get_boolean(obj, "colorMaterial");
 	texture2D = json_object_get_boolean(obj, "texture2D");
 	return true;
+}
+
+void ModuleRenderer3D::setWireframe(bool boolean)
+{
+	wireframe = boolean;
+	glPolygonMode(GL_FRONT_AND_BACK, boolean ? GL_LINE : GL_FILL);
+	Debug.Log("Renderer: WIREFRAME_MODE %s", boolean ? "enabled" : "disabled");
 }

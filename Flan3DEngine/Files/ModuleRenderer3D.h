@@ -25,7 +25,7 @@ public:
 	void OnResize(int width, int height);
 	void guiGPU()const;
 	void guiRenderer();
-
+	void setWireframe(bool boolean);
 public:
 
 	Light lights[MAX_LIGHTS];
