@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
+#include "MathGeoLib_1.5/Math/float4x4.h"
 
 #define MAX_LIGHTS 8
 
@@ -26,6 +27,12 @@ public:
 	void guiGPU()const;
 	void guiRenderer();
 	void setWireframe(bool boolean);
+
+private:
+	float4x4 Perspective(float fovy, float aspect, float znear, float zfar);
+	
+
+
 public:
 
 	Light lights[MAX_LIGHTS];
@@ -34,5 +41,6 @@ public:
 private:
 	bool depthTest = false, cullFace = false, lighting = false, colorMaterial = false, texture2D = false;
 	bool wireframe = false;
+	float4x4 ProjectionMatrix;
 	//TODO: TWO OTHERS
 };

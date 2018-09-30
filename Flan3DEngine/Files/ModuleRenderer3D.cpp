@@ -9,6 +9,7 @@
 
 #include "imgui/imgui.h"
 #include "Parson/parson.h"
+#include "MathGeoLib_1.5/Math/MathConstants.h"
 
 #pragma comment (lib, "Glew/glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -36,6 +37,22 @@ bool ModuleRenderer3D::Init()
 		ret = false;
 	}
 	
+	if (ret)
+	{
+		glewExperimental = GL_TRUE;
+		GLenum error = glewInit();
+		if (GLEW_OK != error)
+		{
+			Debug.LogError("Init glew failed. Error: %s\n", glewGetErrorString(error));
+			ret = false;
+		}
+		else
+		{
+			Debug.Log("Using Glew %s", glewGetString(GLEW_VERSION));
+		}
+	}
+	
+
 	if(ret == true)
 	{
 		//Use Vsync
@@ -75,7 +92,7 @@ bool ModuleRenderer3D::Init()
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
-		
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
@@ -111,20 +128,14 @@ bool ModuleRenderer3D::Init()
 		lighting = true;
 		glEnable(GL_COLOR_MATERIAL);
 		colorMaterial = true;
+
+
 	}
 
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	GLenum error = glewInit();
-	if (GLEW_OK != error)
-	{
-		Debug.LogError("Init glew failed. Error: %s\n", glewGetErrorString(error));
-	}
-	else
-	{
-		Debug.Log("Using Glew %s", glewGetString(GLEW_VERSION));
-	}
+	
 	return ret;
 }
 
@@ -134,6 +145,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	Color color = App->camera->background;
 	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
@@ -152,7 +164,6 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 
 	
-
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
@@ -174,8 +185,8 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	//glLoadMatrixf(&ProjectionMatrix);
+	ProjectionMatrix = Perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	glLoadMatrixf(ProjectionMatrix.ptr());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -252,7 +263,7 @@ void ModuleRenderer3D::guiRenderer()
 			Debug.Log("Renderer: COLOR_MATERIAL disabled");
 		}
 	}
-	if (ImGui::Checkbox("TEXTURE2D", &texture2D))
+	if (ImGui::Checkbox("TEXTURE2D ", &texture2D))
 	{
 		if (texture2D)
 		{
@@ -306,4 +317,30 @@ void ModuleRenderer3D::setWireframe(bool boolean)
 	wireframe = boolean;
 	glPolygonMode(GL_FRONT_AND_BACK, boolean ? GL_LINE : GL_FILL);
 	//Debug.Log("Renderer: WIREFRAME_MODE %s", boolean ? "enabled" : "disabled");
+}
+
+float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float znear, float zfar)
+{
+	math::float4x4 Perspective;
+
+	float coty = 1.0f / tan(fovy * (float)pi / 360.0f);
+
+	Perspective[0][0] = coty / aspect;
+	Perspective[0][1] = 0.0f;
+	Perspective[0][2] = 0.0f;
+	Perspective[0][3] = 0.0f;
+	Perspective[1][0] = 0.0f;
+	Perspective[1][1] = coty;
+	Perspective[1][2] = 0.0f;
+	Perspective[1][3] = 0.0f;
+	Perspective[2][0] = 0.0f;
+	Perspective[2][1] = 0.0f;
+	Perspective[2][2] = (znear + zfar) / (znear - zfar);
+	Perspective[2][3] = -1.0f;
+	Perspective[3][0] = 0.0f;
+	Perspective[3][1] = 0.0f;
+	Perspective[3][2] = 2.0f * znear * zfar / (znear - zfar);
+	Perspective[3][3] = 0.0f;
+
+	return Perspective;
 }

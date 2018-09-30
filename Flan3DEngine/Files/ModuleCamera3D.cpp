@@ -12,7 +12,7 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module("ModuleCamera3D", st
 	Y = float3(0.0f, 1.0f, 0.0f);
 	Z = float3(0.0f, 0.0f, 1.0f);
 
-	Position = float3(0.0f, 0.0f, 5.0f);
+	Position = float3(0.0f, 0.0f, 1.0f);
 	Reference = float3(0.0f, 0.0f, 0.0f);
 }
 
@@ -102,11 +102,11 @@ update_status ModuleCamera3D::Update(float dt)
 			/*Y = rotate(Y, DeltaY, X);
 			Z = rotate(Z, DeltaY, X);*/
 
-			//if(Y.y < 0.0f)
-			//{
-			//	/*Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-			//	Y = cross(Z, X);*/
-			//}
+			if(Y.y < 0.0f)
+			{
+				/*Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = cross(Z, X);*/
+			}
 		}
 
 		Position = Reference + Z * Position.Length();

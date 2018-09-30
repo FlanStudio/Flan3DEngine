@@ -31,8 +31,8 @@ Application::Application()
 
 	//Debug geometry here
 	//AddModule(debug);
-
 	AddModule(editor);
+	
 	// Renderer last!
 	AddModule(renderer3D);
 

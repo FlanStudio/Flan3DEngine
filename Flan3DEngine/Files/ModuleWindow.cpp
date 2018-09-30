@@ -29,11 +29,25 @@ bool ModuleWindow::Init()
 		//Create window
 		int width = SCREEN_WIDTH * SCREEN_SIZE;
 		int height = SCREEN_HEIGHT * SCREEN_SIZE;
-		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		Uint32 flags = SDL_WINDOW_OPENGL;
 
 		//Use OpenGL 3.1
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		
+		ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3) == 0;
+		if (ret)
+			ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1) == 0;
+		if(ret)
+			ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) == 0;
+		if (ret)
+			ret = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) == 0;
+		if(ret)
+			ret = SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) == 0;
+		if(ret)
+			ret = SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8) == 0;
+
+		if (!ret)
+			Debug.LogError("Some window atributes couldn't be loaded!");
+
 
 
 
