@@ -145,7 +145,7 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	BROFILER_CATEGORY("3DRenderer_PREupdate", Profiler::Color::Azure)
+	BROFILER_CATEGORY("ModuleRenderer3D_Preupdate", Profiler::Color::Azure)
 
 	Color color = App->camera->background;
 	glClearColor(color.r, color.g, color.b, color.a);
@@ -167,7 +167,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
-	BROFILER_CATEGORY("3DRenderer_POSTupdate", Profiler::Color::Azure)
+	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;

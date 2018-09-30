@@ -75,7 +75,7 @@ bool ModulePhysics3D::Start()
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
-	BROFILER_CATEGORY("Phisics_PREupdate", Profiler::Color::Aquamarine)
+	BROFILER_CATEGORY("ModulePhysics3D_Preupdate", Profiler::Color::Aquamarine)
 
 	world->stepSimulation(dt, 15);
 
@@ -114,7 +114,7 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
-	BROFILER_CATEGORY("Phisics_Update", Profiler::Color::Aquamarine)
+	BROFILER_CATEGORY("ModulePhysics3D_Update", Profiler::Color::Aquamarine)
 
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
@@ -139,7 +139,7 @@ update_status ModulePhysics3D::Update(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PostUpdate(float dt)
 {
-	BROFILER_CATEGORY("Phisics_POSTupdate", Profiler::Color::Aquamarine)
+	BROFILER_CATEGORY("ModulePhysics3D_Postupdate", Profiler::Color::Aquamarine)
 
 	return UPDATE_CONTINUE;
 }

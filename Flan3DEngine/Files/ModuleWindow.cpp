@@ -93,7 +93,7 @@ bool ModuleWindow::Init()
 }
 update_status ModuleWindow::Update(float dt)
 {
-	BROFILER_CATEGORY("Window_Update", Profiler::Color::Azure)
+	BROFILER_CATEGORY("ModuleWindow_Update", Profiler::Color::Azure)
 
 	SDL_SetWindowTitle(window, (App->engineName + "_" + App->organization).c_str());
 	return UPDATE_CONTINUE;

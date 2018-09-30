@@ -40,7 +40,7 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
-	BROFILER_CATEGORY("Imput_PREupdate", Profiler::Color::Aqua)
+	BROFILER_CATEGORY("ModuleInput_Preupdate", Profiler::Color::Aqua)
 
 	SDL_PumpEvents();
 

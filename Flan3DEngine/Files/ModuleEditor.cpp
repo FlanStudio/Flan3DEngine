@@ -47,7 +47,7 @@ bool ModuleEditor::Start()
 
 update_status ModuleEditor::PreUpdate(float dt)
 {
-	BROFILER_CATEGORY("Editor_PREupdate", Profiler::Color::AntiqueWhite)
+	BROFILER_CATEGORY("ModuleEditor_Preupdate", Profiler::Color::AntiqueWhite)
 
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
@@ -350,14 +350,14 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
-	BROFILER_CATEGORY("Editor_Update", Profiler::Color::AntiqueWhite)
+	BROFILER_CATEGORY("ModuleEditor_Update", Profiler::Color::AntiqueWhite)
 
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleEditor::PostUpdate(float dt)
 {
-	BROFILER_CATEGORY("Editor_POSTupdate", Profiler::Color::AntiqueWhite)
+	BROFILER_CATEGORY("ModuleEditor_Postupdate", Profiler::Color::AntiqueWhite)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());

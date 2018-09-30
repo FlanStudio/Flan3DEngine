@@ -79,8 +79,6 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	BROFILER_CATEGORY("App_PREupdate", Profiler::Color::Yellow)
-
 	ms_timer.Start();
 
 }
@@ -88,8 +86,6 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
-	BROFILER_CATEGORY("App_POSTupdate", Profiler::Color::Yellow)
-
 	//dt calculations
 
 	dt = (float)ms_timer.Read() / 1000.0f;
