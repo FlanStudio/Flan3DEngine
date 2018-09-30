@@ -11,6 +11,9 @@
 #include "Parson/parson.h"
 #include "MathGeoLib_1.5/Math/MathConstants.h"
 
+#include "Brofiler\Brofiler.h"
+
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 #pragma comment (lib, "Glew/glew32.lib")
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -142,6 +145,8 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+	BROFILER_CATEGORY("3DRenderer_PREupdate", Profiler::Color::Azure)
+
 	Color color = App->camera->background;
 	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,8 +167,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
-
-	
+	BROFILER_CATEGORY("3DRenderer_POSTupdate", Profiler::Color::Azure)
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;

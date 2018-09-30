@@ -3,6 +3,9 @@
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
 #include "MathGeoLib_1.5/Math/float3x3.h"
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
+
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module("ModuleCamera3D", start_enabled)
 {
@@ -38,6 +41,8 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	BROFILER_CATEGORY("Camera_Update", Profiler::Color::AliceBlue)
+
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 

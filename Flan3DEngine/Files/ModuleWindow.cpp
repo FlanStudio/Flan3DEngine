@@ -1,6 +1,10 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "Brofiler\Brofiler.h"
+
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
+
 
 ModuleWindow::ModuleWindow(bool start_enabled) : Module("ModuleWindow", start_enabled)
 {
@@ -89,6 +93,8 @@ bool ModuleWindow::Init()
 }
 update_status ModuleWindow::Update(float dt)
 {
+	BROFILER_CATEGORY("Window_Update", Profiler::Color::Azure)
+
 	SDL_SetWindowTitle(window, (App->engineName + "_" + App->organization).c_str());
 	return UPDATE_CONTINUE;
 }

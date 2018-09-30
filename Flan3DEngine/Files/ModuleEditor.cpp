@@ -13,6 +13,10 @@
 
 #include "ModuleFileSystem.h"
 
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
+
+
 //TEMP
 #include "MathGeoLib_1.5/Geometry/Sphere.h"
 #include "MathGeoLib_1.5/Geometry/AABB.h"
@@ -43,6 +47,8 @@ bool ModuleEditor::Start()
 
 update_status ModuleEditor::PreUpdate(float dt)
 {
+	BROFILER_CATEGORY("Editor_PREupdate", Profiler::Color::AntiqueWhite)
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
@@ -258,14 +264,14 @@ update_status ModuleEditor::PreUpdate(float dt)
 		}
 		if (ImGui::CollapsingHeader("Libraries"))
 		{
-			ImGui::Text("Bullet 2.87 \t\t");
-			ImGui::SameLine();
-			if (ImGui::Button("Link to Library"))
-			{
-				ShellExecuteA(NULL, "Open", "https://pybullet.org/wordpress/", NULL, NULL, SW_SHOWNORMAL);
-			}
+			//ImGui::Text("Bullet  \t\t");
+			//ImGui::SameLine();
+			//if (ImGui::Button("Link to Library"))
+			//{
+			//	ShellExecuteA(NULL, "Open", "https://pybullet.org/wordpress/", NULL, NULL, SW_SHOWNORMAL);
+			//}
 
-			ImGui::Text("Imgui   \t\t\t");
+			ImGui::Text("Imgui  %s \t\t", IMGUI_VERSION);
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b2"))
 			{
@@ -286,7 +292,9 @@ update_status ModuleEditor::PreUpdate(float dt)
 				ShellExecuteA(NULL, "Open", "http://www.pcg-random.org/", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			ImGui::Text("SDL  2.0.8  \t\t");
+			SDL_version version;
+			SDL_GetVersion(&version);
+			ImGui::Text("SDL  %d.%d.%d  \t\t", version.major, version.minor, version.patch);
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b5"))
 			{
@@ -342,11 +350,15 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
+	BROFILER_CATEGORY("Editor_Update", Profiler::Color::AntiqueWhite)
+
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleEditor::PostUpdate(float dt)
 {
+	BROFILER_CATEGORY("Editor_POSTupdate", Profiler::Color::AntiqueWhite)
+
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	/*SDL_GL_SwapWindow(App->window->window);*/

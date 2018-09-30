@@ -1,4 +1,6 @@
 #include "Application.h"
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 LogWindow Debug;
 
@@ -77,14 +79,17 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
+	BROFILER_CATEGORY("App_PREupdate", Profiler::Color::Yellow)
+
 	ms_timer.Start();
 
-	
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+	BROFILER_CATEGORY("App_POSTupdate", Profiler::Color::Yellow)
+
 	//dt calculations
 
 	dt = (float)ms_timer.Read() / 1000.0f;
@@ -124,6 +129,8 @@ void Application::FinishUpdate()
 // Call PreUpdate, Update and PostUpdate on all modules
 update_status Application::Update()
 {
+	BROFILER_CATEGORY("App_Update", Profiler::Color::Yellow)
+
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 	

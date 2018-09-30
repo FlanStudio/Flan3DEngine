@@ -327,6 +327,9 @@
     <ClInclude Include="Glew\include\wglew.h">
       <Filter>Sources\Tools\glew</Filter>
     </ClInclude>
+    <ClInclude Include="Brofiler\Brofiler.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">

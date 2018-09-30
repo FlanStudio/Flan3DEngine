@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "ModulePhysics3D.h"
 #include "PhysBody3D.h"
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 
 #include <list>
@@ -73,6 +75,8 @@ bool ModulePhysics3D::Start()
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
+	BROFILER_CATEGORY("Phisics_PREupdate", Profiler::Color::Aquamarine)
+
 	world->stepSimulation(dt, 15);
 
 	int numManifolds = world->getDispatcher()->getNumManifolds();
@@ -110,6 +114,8 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
+	BROFILER_CATEGORY("Phisics_Update", Profiler::Color::Aquamarine)
+
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
@@ -133,6 +139,8 @@ update_status ModulePhysics3D::Update(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PostUpdate(float dt)
 {
+	BROFILER_CATEGORY("Phisics_POSTupdate", Profiler::Color::Aquamarine)
+
 	return UPDATE_CONTINUE;
 }
 

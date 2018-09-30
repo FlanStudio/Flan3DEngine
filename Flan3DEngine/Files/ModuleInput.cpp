@@ -2,6 +2,9 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "imgui/imgui_impl_sdl.h"
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
+
 
 #define MAX_KEYS 300
 
@@ -37,6 +40,8 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
+	BROFILER_CATEGORY("Imput_PREupdate", Profiler::Color::Aqua)
+
 	SDL_PumpEvents();
 
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
