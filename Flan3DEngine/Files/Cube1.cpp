@@ -23,6 +23,7 @@ void Cube1::pRender()
 	float angle = rotation.Length();
 	float3 axis = rotation.Normalized();
 	glRotatef(angle, axis.x, axis.y, axis.z);
+	glColor4f(color.x, color.y, color.z, color.w);
 	//glRotatef(40, 0, 1, .3);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

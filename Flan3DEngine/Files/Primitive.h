@@ -7,9 +7,9 @@ class Primitive
 protected:
 	//TODO: USE POSITION AND TRANSLATE THE PRIMITIVES
 	float3 position = {0,0,0};
-
 	float3 scale = {1,1,1};
 	float3 rotation = {0,0,0};
+	float4 color = { 0,0,0,1 };
 public:
 
 	Primitive()
@@ -42,6 +42,11 @@ public:
 	{
 		//TODO: DO SOMETHING HERE
 		Refresh();
+	}
+
+	void setColor(float4 color)
+	{
+		this->color = color;
 	}
 
 	virtual void Refresh()	{}

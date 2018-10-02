@@ -11,6 +11,7 @@
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 #include "Cube1.h"
+#include "Cube2.h"
 
 struct PhysBody3D;
 struct PhysMotor3D;
@@ -33,4 +34,5 @@ public:
 	/*Cube s;*/
 	PhysBody3D* sensor;
 	Cube1 cube;
+	Cube2 cube2;
 };
