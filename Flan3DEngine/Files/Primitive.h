@@ -4,9 +4,12 @@
 
 class Primitive
 {
-private:
+protected:
+	//TODO: USE POSITION AND TRANSLATE THE PRIMITIVES
 	float3 position = {0,0,0};
+
 	float3 scale = {1,1,1};
+	float3 rotation = {0,0,0};
 public:
 
 	Primitive()
@@ -21,6 +24,29 @@ public:
 	{
 		pRender();
 	}
+
+	void setScale(float x, float y, float z)
+	{
+		scale = { x,y,z };
+		Refresh();
+	}
+	
+	void Rotate(float angle, float axis_x, float axis_y, float axis_z)
+	{
+		float3 axis = { axis_x, axis_y, axis_z };
+		axis.Normalize();
+		rotation = {axis.x * angle, axis.y * angle, axis.z * angle};
+	}
+
+	void Translate()
+	{
+		//TODO: DO SOMETHING HERE
+		Refresh();
+	}
+
+	virtual void Refresh()	{}
+
+protected:
 	//Override this method to draw your triangles and stuff
 	virtual void pRender()
 	{

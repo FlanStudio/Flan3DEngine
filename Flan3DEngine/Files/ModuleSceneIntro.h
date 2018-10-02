@@ -10,8 +10,7 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
-
-#define MAX_SNAKE 2
+#include "Cube1.h"
 
 struct PhysBody3D;
 struct PhysMotor3D;
@@ -33,4 +32,5 @@ public:
 public:
 	/*Cube s;*/
 	PhysBody3D* sensor;
+	Cube1 cube;
 };

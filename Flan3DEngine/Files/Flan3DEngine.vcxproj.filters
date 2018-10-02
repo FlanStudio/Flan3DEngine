@@ -336,6 +336,9 @@
     <ClInclude Include="Primitive.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="Cube1.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -511,6 +514,9 @@
     </ClCompile>
     <ClCompile Include="Primitive.cpp">
       <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube1.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
