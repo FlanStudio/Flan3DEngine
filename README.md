@@ -1,6 +1,6 @@
 # Flan3DEngine
 
-3D Engine made by Jonathan Molina and Oriol de Diosduring the third year of Game Design and Developement degree at CITM.
+3D Engine made by Jonathan Molina and Oriol de Dios during the third year of Game Design and Developement degree at CITM/UPC.
 
 Link to [Github Repository](https://github.com/FlanStudio/Flan3DEngine)
 
