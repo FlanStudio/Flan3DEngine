@@ -52,6 +52,9 @@
     <Filter Include="Sources\Tools\glew">
       <UniqueIdentifier>{744f6a00-c038-4844-a58d-ffe7ce39c60d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Primitives">
+      <UniqueIdentifier>{dcaf377b-cdb6-4c40-85cc-51cc5e9b462d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -330,6 +333,9 @@
     <ClInclude Include="Brofiler\Brofiler.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -502,6 +508,9 @@
     </ClCompile>
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

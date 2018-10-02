@@ -166,6 +166,7 @@
     <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h" />
     <ClInclude Include="PhysBody3D.h" />
     <ClInclude Include="PhysFS\physfs.h" />
+    <ClInclude Include="Primitive.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +226,7 @@
     <ClCompile Include="Parson\parson.c" />
     <ClCompile Include="pcg-c-basic-0.9\pcg_basic.cpp" />
     <ClCompile Include="PhysBody3D.cpp" />
+    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
