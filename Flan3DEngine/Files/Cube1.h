@@ -14,7 +14,6 @@ public:
 public:
 	void Init();
 	void pRender();
-	void Refresh();
 
 private:
 	

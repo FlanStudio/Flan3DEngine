@@ -32,12 +32,11 @@ bool ModuleEditor::Init()
 
 bool ModuleEditor::Start()
 {
-	SDL_GLContext gl_context = SDL_GL_CreateContext(App->window->window);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, gl_context);
+	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();

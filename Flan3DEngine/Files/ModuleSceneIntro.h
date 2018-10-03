@@ -3,12 +3,6 @@
 #include "Globals.h"
 
 #include "Glew/include/glew.h"
-#include "SDL\include\SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
-#pragma comment (lib, "Glew/glew32.lib")
-#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
-#pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 #include "Cube1.h"
 #include "Cube2.h"

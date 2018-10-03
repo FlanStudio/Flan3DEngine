@@ -3,6 +3,8 @@
 #include "ModuleSceneIntro.h"
 #include "PhysBody3D.h"
 
+#include "ModuleRenderer3D.h"
+#include "ModuleWindow.h"
 
 ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
@@ -25,14 +27,17 @@ bool ModuleSceneIntro::Start()
 	sensor->collision_listeners.push_back(this);*/
 
 	cube.Init();
-	//cube.setScale(0.25, 0.25, 0.25);
+	cube.setScale(.1, .25, .1);
+	cube.setColor( .5,0,0,1 );
 	cube.Rotate(40, -1, -1, -1);
-	cube.setColor({ .5, 0, 0, 1 });
+	cube.setPos(0, .20, 0);
 
 	cube2.Init();
-	cube2.setScale(.1, .1, .1);
-	cube2.setColor({ .5,0,0,1 });
-	cube2.Rotate(40, 1, 0, 1);
+	cube2.setScale(.1, .25, .1);
+	cube2.setColor( .5,0,0,1 );
+	cube2.Rotate(40, -1, -1, -1);
+	//cube2.setPos(-1, 0, 0);
+
 	return ret;
 }
 

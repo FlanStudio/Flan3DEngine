@@ -28,7 +28,6 @@ public:
 	void setScale(float x, float y, float z)
 	{
 		scale = { x,y,z };
-		Refresh();
 	}
 	
 	void Rotate(float angle, float axis_x, float axis_y, float axis_z)
@@ -38,18 +37,15 @@ public:
 		rotation = {axis.x * angle, axis.y * angle, axis.z * angle};
 	}
 
-	void Translate()
+	void setPos(float x, float y, float z)
 	{
-		//TODO: DO SOMETHING HERE
-		Refresh();
+		position = { x,y,z };
 	}
 
-	void setColor(float4 color)
+	void setColor(float r, float g, float b, float a)
 	{
-		this->color = color;
+		color = {r,g,b,a};
 	}
-
-	virtual void Refresh()	{}
 
 protected:
 	//Override this method to draw your triangles and stuff

@@ -12,7 +12,6 @@ public:
 public:
 	void Init();
 	void pRender();
-	void Refresh();
 
 private:
 	uint indexID = 0;

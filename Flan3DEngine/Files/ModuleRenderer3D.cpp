@@ -3,7 +3,7 @@
 #include "ModuleRenderer3D.h"
 
 #include "Glew/include/glew.h"
-#include "SDL\include\SDL_opengl.h"
+#include "SDL/include/SDL_opengl.h"
 
 #include "imgui/imgui.h"
 #include "Parson/parson.h"
@@ -12,9 +12,10 @@
 #include "Brofiler\Brofiler.h"
 
 #pragma comment( lib, "Brofiler/ProfilerCore32.lib")
-#pragma comment (lib, "Glew/glew32.lib")
-#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
+
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
+#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
+#pragma comment (lib, "Glew/glew32.lib")
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module("ModuleRenderer", start_enabled)
 {
@@ -92,7 +93,7 @@ bool ModuleRenderer3D::Init()
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
@@ -150,7 +151,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	Color color = App->camera->background;
 	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	
+	//OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());

@@ -180,6 +180,7 @@ bool ModuleWindow::setWindowWidth(int width)
 {
 	SDL_SetWindowSize(window, width, SCREEN_HEIGHT);
 	SCREEN_WIDTH = width;
+	App->renderer3D->OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	return true;
 }
 
@@ -187,6 +188,7 @@ bool ModuleWindow::setWindowHeight(int height)
 {
 	SDL_SetWindowSize(window, SCREEN_WIDTH, height);
 	SCREEN_HEIGHT = height;
+	App->renderer3D->OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	return true;
 }
 
