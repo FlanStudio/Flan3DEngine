@@ -25,13 +25,14 @@ bool ModuleSceneIntro::Start()
 	sensor->collision_listeners.push_back(this);*/
 
 	cube.Init();
-	cube.setScale(0.25, 0.25, 0.25);
+	//cube.setScale(0.25, 0.25, 0.25);
 	cube.Rotate(40, -1, -1, -1);
+	cube.setColor({ .5, 0, 0, 1 });
 
-	cube2.Init();
-	cube2.setScale(.1, .1, .1);
-	cube2.setColor({ .5,0,0,1 });
-	cube2.Rotate(40, 1, 0, 1);
+	//cube2.Init();
+	//cube2.setScale(.1, .1, .1);
+	//cube2.setColor({ .5,0,0,1 });
+	//cube2.Rotate(40, 1, 0, 1);
 	return ret;
 }
 
@@ -62,8 +63,8 @@ update_status ModuleSceneIntro::Update(float dt)
 
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {	
-	//cube.Render();
-	cube2.Render();
+	cube.Render();
+	//cube2.Render();
 
 
 	return update_status::UPDATE_CONTINUE;

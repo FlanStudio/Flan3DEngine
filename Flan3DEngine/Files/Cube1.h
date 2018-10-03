@@ -19,6 +19,7 @@ private:
 	
 	uint bufferId = 0;
 	std::vector<float> vertex;
+	
 };
 
 

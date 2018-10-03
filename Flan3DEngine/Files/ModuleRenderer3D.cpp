@@ -138,6 +138,9 @@ bool ModuleRenderer3D::Init()
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	/*cube.Init();
+	cube.Rotate(40, -1, -1, -1);
+	cube.setColor({ .5, 0, 0, 1 });*/
 	
 	return ret;
 }
@@ -169,6 +172,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 
+
+	//cube.Render();
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }

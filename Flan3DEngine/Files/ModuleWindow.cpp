@@ -37,7 +37,7 @@ bool ModuleWindow::Init()
 
 		//Use OpenGL 3.1
 		
-		ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3) == 0;
+		ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2) == 0;
 		if (ret)
 			ret = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1) == 0;
 		if(ret)

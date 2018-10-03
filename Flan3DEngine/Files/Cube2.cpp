@@ -8,7 +8,7 @@ void Cube2::Init()
 	index = { 0,1,3,1,2,3, 1,5,2,5,6,2, 4,0,7,0,3,7, 4,7,6,4,6,5, 3,2,7,2,6,7, 0,4,1,4,5,1 };
 	vertex = { 0,0,0, scale.x,0,0, scale.x,scale.y,0, 0,scale.y,0, 0,0,scale.z, scale.x,0,scale.z, scale.x,scale.y,scale.z, 0,scale.y,scale.z };
 
-	uint id = 0;
+	/*uint id = 0;
 	glGenBuffers(1, &id);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 36, &index[0], GL_STATIC_DRAW);
@@ -16,7 +16,7 @@ void Cube2::Init()
 	uint otherid = 0;
 	glGenBuffers(1, &otherid);
 	glBindBuffer(GL_ARRAY_BUFFER, otherid);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, &vertex[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, &vertex[0], GL_STATIC_DRAW);*/
 
 
 

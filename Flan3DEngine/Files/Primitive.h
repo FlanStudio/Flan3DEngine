@@ -7,7 +7,7 @@ class Primitive
 protected:
 	//TODO: USE POSITION AND TRANSLATE THE PRIMITIVES
 	float3 position = {0,0,0};
-	float3 scale = {1,1,1};
+	float3 scale = {.25,.25,.25};
 	float3 rotation = {0,0,0};
 	float4 color = { 0,0,0,1 };
 public:
