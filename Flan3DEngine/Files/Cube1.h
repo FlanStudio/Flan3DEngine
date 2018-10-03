@@ -9,6 +9,7 @@ class Cube1 : public Primitive
 public:
 	Cube1() : Primitive() { }
 	Cube1(float3 pos) : Primitive(pos) { }
+	~Cube1();
 
 public:
 	void Init();

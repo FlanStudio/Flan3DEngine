@@ -1,6 +1,11 @@
 #include "Application.h"
 #include "Cube1.h"
 
+Cube1::~Cube1()
+{
+	glDeleteBuffers(1, &bufferId);
+}
+
 void Cube1::Init()
 {	
 	vertex.resize(36 * 3);
@@ -34,13 +39,6 @@ void Cube1::pRender()
 	float angle = rotation.Length();
 	float3 axis = rotation.Normalized();
 
-
-
-	/*glGenBuffers(1, (GLuint*)&(bufferId));
-	glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, vertex.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-*/
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, vertex.data(), GL_STATIC_DRAW);
