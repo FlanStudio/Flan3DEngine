@@ -218,7 +218,11 @@ bool Application::LoadNow()
 	}
 
 	if (ret)
+	{
 		Debug.Log("Configuration succesfully loaded");
+		App->renderer3D->OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	}
+		
 
 	return ret;
 }

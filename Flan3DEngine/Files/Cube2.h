@@ -15,6 +15,8 @@ public:
 	void Refresh();
 
 private:
+	uint indexID = 0;
+	uint vertexID = 0;
 	std::vector<float> vertex;
 	std::vector<uint> index;
 };

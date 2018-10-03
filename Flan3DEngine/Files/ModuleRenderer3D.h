@@ -37,7 +37,6 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	Cube1 cube;
 private:
 	bool depthTest = false, cullFace = false, lighting = false, colorMaterial = false, texture2D = false;
 	bool wireframe = false;

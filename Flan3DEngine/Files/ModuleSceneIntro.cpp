@@ -29,10 +29,10 @@ bool ModuleSceneIntro::Start()
 	cube.Rotate(40, -1, -1, -1);
 	cube.setColor({ .5, 0, 0, 1 });
 
-	//cube2.Init();
-	//cube2.setScale(.1, .1, .1);
-	//cube2.setColor({ .5,0,0,1 });
-	//cube2.Rotate(40, 1, 0, 1);
+	cube2.Init();
+	cube2.setScale(.1, .1, .1);
+	cube2.setColor({ .5,0,0,1 });
+	cube2.Rotate(40, 1, 0, 1);
 	return ret;
 }
 
@@ -64,7 +64,7 @@ update_status ModuleSceneIntro::Update(float dt)
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {	
 	cube.Render();
-	//cube2.Render();
+	cube2.Render();
 
 
 	return update_status::UPDATE_CONTINUE;

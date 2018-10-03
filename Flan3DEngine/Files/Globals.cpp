@@ -1,8 +1,8 @@
 #include "Globals.h"
 
 // Configuration -----------
-int SCREEN_WIDTH = 1920;
-int SCREEN_HEIGHT = 1200;
+int SCREEN_WIDTH = 1000;
+int SCREEN_HEIGHT = 1000;
 float SCREEN_SIZE = 1;
 bool WIN_FULLSCREEN = false;
 bool WIN_RESIZABLE = false;

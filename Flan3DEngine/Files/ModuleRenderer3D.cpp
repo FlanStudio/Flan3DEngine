@@ -4,8 +4,6 @@
 
 #include "Glew/include/glew.h"
 #include "SDL\include\SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
 
 #include "imgui/imgui.h"
 #include "Parson/parson.h"
@@ -42,7 +40,6 @@ bool ModuleRenderer3D::Init()
 	
 	if (ret)
 	{
-		glewExperimental = GL_TRUE;
 		GLenum error = glewInit();
 		if (GLEW_OK != error)
 		{
@@ -173,7 +170,6 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 
 
-	//cube.Render();
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }

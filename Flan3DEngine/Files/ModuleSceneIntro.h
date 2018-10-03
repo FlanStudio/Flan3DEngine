@@ -34,5 +34,5 @@ public:
 	/*Cube s;*/
 	PhysBody3D* sensor;
 	Cube1 cube;
-	//Cube2 cube2;
+	Cube2 cube2;
 };
