@@ -16,6 +16,8 @@
 #include "Brofiler\Brofiler.h"
 #pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
+#include "assimp/include/version.h"
+
 
 //TEMP
 #include "MathGeoLib_1.5/Geometry/Sphere.h"
@@ -270,7 +272,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 			//	ShellExecuteA(NULL, "Open", "https://pybullet.org/wordpress/", NULL, NULL, SW_SHOWNORMAL);
 			//}
 
-			ImGui::Text("Imgui  %s \t\t", IMGUI_VERSION);
+			ImGui::Text("Imgui  %s \t", IMGUI_VERSION);
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b2"))
 			{
@@ -298,6 +300,13 @@ update_status ModuleEditor::PreUpdate(float dt)
 			if (ImGui::Button("Link to Library##b5"))
 			{
 				ShellExecuteA(NULL, "Open", "https://www.libsdl.org/download-2.0.php", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("assimp %i\t\t\t", aiGetVersionMajor());
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b6"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/assimp/assimp", NULL, NULL, SW_SHOWNORMAL);
 			}
 
 		}
