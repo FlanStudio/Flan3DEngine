@@ -12,6 +12,7 @@
 #include "ModulePhysics3D.h"
 #include "ModuleEditor.h"
 #include "ModuleFileSystem.h"
+#include "FBXLoader.h"
 
 #include "Parson/parson.h"
 
@@ -94,6 +95,7 @@ public:
 	ModulePhysics3D* physics;
 	ModuleEditor* editor;
 	ModuleFileSystem* fs;
+	FBXLoader* fbxLoader;
 
 private:
 	Timer	ms_timer;

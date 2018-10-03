@@ -69,7 +69,7 @@ update_status ModuleSceneIntro::Update(float dt)
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {	
 	cube.Render();
-	cube2.Render();
+	//cube2.Render();
 
 
 	return update_status::UPDATE_CONTINUE;
