@@ -19,6 +19,8 @@ public:
 
 	Primitive(float3 pos) : position(pos) {}
 
+	virtual ~Primitive() {}
+
 	//Call this method to render your primitive
 	void Render() 
 	{
