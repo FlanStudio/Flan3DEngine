@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Module.h"
+#include "Globals.h"
 
 #include "assimp/include/cimport.h"
+#include <vector>
 
+static const uint maxMeshes = 5;
 
-struct VertexData
+struct Mesh
 {
 	uint id_index = 0;			// index in VRAM
 	uint num_index = 0;
@@ -42,7 +45,9 @@ public:
 
 private:
 	aiLogStream stream;
+	std::vector<Mesh*> meshes;
+
 
 };
-void Test(const char*, char*);
+void LogCallback(const char*, char*);
 

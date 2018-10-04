@@ -10,7 +10,7 @@
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
 
-void Test(const char* message, char* user)
+void LogCallback(const char* message, char* user)
 {
 	std::string log(message);
 	if(log.find("Error") != std::string::npos)
@@ -21,8 +21,10 @@ void Test(const char* message, char* user)
 
 bool FBXLoader::Start()
 {
+	meshes.reserve(maxMeshes);
+
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
-	stream.callback = Test;
+	stream.callback = LogCallback;
 	aiAttachLogStream(&stream);
 
 	return true;
@@ -67,7 +69,17 @@ void FBXLoader::LoadFBX(char* path)
 	if (scene != nullptr && scene->HasMeshes())
 	{
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
-
+		for (int i = 0; i < scene->mNumMeshes; ++i)
+		{
+			Mesh* mymesh = new Mesh();
+			aiMesh* mesh = scene->mMeshes[i];
+			
+			mymesh->num_vertex = mesh->mNumVertices;
+			mymesh->vertex = new float[mesh->mNumVertices * 3];
+			memcpy(mymesh->vertex, mesh->mVertices, sizeof(float) * mesh->mNumVertices * 3);
+			meshes.push_back(mymesh);
+			Debug.Log("New mesh loaded with &d vertices", mymesh->num_vertex);
+		}
 
 
 		aiReleaseImport(scene);
