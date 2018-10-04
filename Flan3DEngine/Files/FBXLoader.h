@@ -10,11 +10,11 @@ static const uint maxMeshes = 5;
 
 struct Mesh
 {
-	uint id_index = 0;			// index in VRAM
+	uint index_ID = 0;			// index in VRAM
 	uint num_index = 0;
 	uint* index = nullptr;
 
-	uint id_vertex = 0;			// unique vertex in VRAM
+	uint vertex_ID = 0;		// unique vertex in VRAM
 	uint num_vertex = 0;
 	float* vertex = nullptr;
 
@@ -23,9 +23,6 @@ struct Mesh
 	void destroyBuffers();
 	void Draw();
 
-private:
-	uint vertex_ID = 0;
-	uint index_ID = 0;
 };
 	
 
@@ -50,7 +47,7 @@ public:
 
 public:
 
-	const Mesh* LoadFBX(char* path);
+	bool LoadFBX(char* path);
 	void deleteFBX(Mesh* mesh);
 	void clearMeshes();
 

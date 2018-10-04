@@ -12,11 +12,13 @@
 
 void LogCallback(const char* message, char* user)
 {
+	Debug.enter = false;
 	std::string log(message);
 	if(log.find("Error") != std::string::npos)
 		Debug.LogError("Assimp Error: %s", message);
 	else
 		Debug.Log("Assimp Log: %s", message);
+	Debug.enter = true;
 }
 
 bool FBXLoader::Start()
@@ -26,6 +28,9 @@ bool FBXLoader::Start()
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
 	stream.callback = LogCallback;
 	aiAttachLogStream(&stream);
+
+	LoadFBX("Assets/warrior.FBX");
+
 
 	return true;
 }
@@ -48,6 +53,10 @@ update_status FBXLoader::Update(float dt)
 
 update_status FBXLoader::PostUpdate(float dt)
 {
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->Draw();
+	}
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -63,15 +72,15 @@ bool FBXLoader::Load(const JSON_Object* obj)
 	return true;
 }
 
-const Mesh* FBXLoader::LoadFBX(char* path)
+bool FBXLoader::LoadFBX(char* path)
 {
-	Mesh* ret = nullptr;
+	bool ret = false;
 	int size_buffer = 0;
 	char* buffer;
 	if(!App->fs->OpenRead(path, &buffer, size_buffer))
 	{
 		Debug.LogError("Loading geometries failed, FileSystem reported an error");
-		return nullptr;
+		return false;
 	}
 
 	const aiScene* scene = aiImportFileFromMemory(buffer, size_buffer, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
@@ -99,8 +108,7 @@ const Mesh* FBXLoader::LoadFBX(char* path)
 						memcpy(&mymesh->index[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(uint)); //copy the 3 index into the right place in our index array
 				}
 			}
-			mymesh->genBuffers();
-			ret = mymesh;
+			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
 			Debug.Log("New mesh loaded with %d vertices", mymesh->num_vertex);
 		}
@@ -110,7 +118,7 @@ const Mesh* FBXLoader::LoadFBX(char* path)
 	else
 	{
 		Debug.LogError("Error loading the scene %s. Error: %s", path, aiGetErrorString());
-		return nullptr;
+		ret = false;
 	}
 	return ret;
 }
@@ -149,7 +157,7 @@ void Mesh::genBuffers()
 
 	glGenBuffers(1, &index_ID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * num_index * 3, index, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * num_index, index, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
@@ -157,4 +165,18 @@ void Mesh::destroyBuffers()
 {
 	glDeleteBuffers(1, &vertex_ID);
 	glDeleteBuffers(1, &index_ID);
+}
+
+void Mesh::Draw()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_ID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
+	glDrawElements(GL_TRIANGLES, num_index, GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

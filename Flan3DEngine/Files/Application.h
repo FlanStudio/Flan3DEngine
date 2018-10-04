@@ -36,6 +36,7 @@ public:
 	ImGuiTextBuffer     NormalBuf;
 	ImGuiTextBuffer     WarningBuf;
 	ImGuiTextBuffer     ErrorBuf;
+	bool enter = true;
 
 public:
 	bool    ScrollToBottom = true;
@@ -47,7 +48,9 @@ public:
 		va_list args;
 		va_start(args, format);
 		NormalBuf.appendfv(format, args);
-		NormalBuf.appendfv("\n", args);
+		std::string str(format);
+		if(enter)
+			NormalBuf.appendfv("\n", args);
 		va_end(args);
 		int newsize = NormalBuf.size();
 		for (int i = oldsize; i < newsize; i++)
