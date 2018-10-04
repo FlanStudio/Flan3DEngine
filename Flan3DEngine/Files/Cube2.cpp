@@ -1,6 +1,12 @@
 #include "Application.h"
 #include "Cube2.h"
 
+Cube2::~Cube2()
+{
+	glDeleteBuffers(1, &indexID);
+	glDeleteBuffers(1, &vertexID);
+}
+
 void Cube2::Init()
 {
 	index = { 0,1,3,1,2,3, 1,5,2,5,6,2, 4,0,7,0,3,7, 4,7,6,4,6,5, 3,2,7,2,6,7, 0,4,1,4,5,1 };

@@ -302,7 +302,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 				ShellExecuteA(NULL, "Open", "https://www.libsdl.org/download-2.0.php", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			ImGui::Text("assimp %i\t\t\t", aiGetVersionMajor());
+			ImGui::Text("assimp %i.%i.%i\t\t", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b6"))
 			{
