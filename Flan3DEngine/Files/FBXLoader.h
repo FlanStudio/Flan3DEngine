@@ -17,6 +17,15 @@ struct Mesh
 	uint id_vertex = 0;			// unique vertex in VRAM
 	uint num_vertex = 0;
 	float* vertex = nullptr;
+
+	~Mesh();
+	void genBuffers();
+	void destroyBuffers();
+	void Draw();
+
+private:
+	uint vertex_ID = 0;
+	uint index_ID = 0;
 };
 	
 
@@ -41,7 +50,9 @@ public:
 
 public:
 
-	void LoadFBX(char* path);
+	const Mesh* LoadFBX(char* path);
+	void deleteFBX(Mesh* mesh);
+	void clearMeshes();
 
 private:
 	aiLogStream stream;
