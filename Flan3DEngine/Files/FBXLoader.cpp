@@ -29,9 +29,6 @@ bool FBXLoader::Start()
 	stream.callback = LogCallback;
 	aiAttachLogStream(&stream);
 
-	//LoadFBX("Assets/warrior.FBX");
-
-
 	return true;
 }
 
@@ -56,7 +53,9 @@ update_status FBXLoader::PostUpdate(float dt)
 	for (int i = 0; i < meshes.size(); ++i)
 	{		
 		meshes[i]->Draw();
-		meshes[i]->drawNormals();
+
+		if(drawNormals)
+			meshes[i]->drawNormals();
 		
 	}
 	return update_status::UPDATE_CONTINUE;
@@ -144,7 +143,26 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 					}
 				}
 			}
-		
+
+			int uvChannels = mesh->GetNumUVChannels();
+			{
+				if (uvChannels > 0)
+				{
+					for (int i = 0; i < uvChannels; ++i)
+					{
+						if (mesh->HasTextureCoords(i))
+						{
+							if (mesh->mNumUVComponents[i] == 2)	//We only support plain textures for now
+							{
+								mymesh->textureCoords = new float[mymesh->num_index * 3]; //The original array comes as x,y,z.
+								memcpy(mymesh->textureCoords, mesh->mTextureCoords[i], sizeof(mymesh->num_index * 3));
+								break; //Only 1 texture coord per vertex for now
+							}							
+						}
+					}
+				}
+			}
+
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
 			Debug.Log("New mesh loaded with %d vertices", mymesh->num_vertex);
@@ -179,6 +197,14 @@ void FBXLoader::clearMeshes()
 		delete meshes[i];
 	}
 	std::vector<Mesh*>().swap(meshes); //Clear, but deleting the preallocated memory
+}
+
+void FBXLoader::UpdateNormalsLenght()
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->UpdateNormalsLenght();
+	}
 }
 
 //-----------------Mesh methods--------------------------
@@ -228,6 +254,14 @@ void Mesh::genBuffers()
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 4, colors, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
+
+	if (textureCoords)
+	{
+		glGenBuffers(1, &textureCoords_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3, textureCoords, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 }
 
 void Mesh::destroyBuffers()
@@ -237,7 +271,8 @@ void Mesh::destroyBuffers()
 	glDeleteBuffers(1, &normals_ID);
 	glDeleteBuffers(1, &normalLines_ID);
 	glDeleteBuffers(1, &colors_ID);
-	vertex_ID = index_ID = normals_ID = normalLines_ID = colors_ID = 0;
+	glDeleteBuffers(1, &textureCoords_ID);
+	vertex_ID = index_ID = normals_ID = normalLines_ID = colors_ID = textureCoords_ID = 0;
 }
 
 void Mesh::Draw()
@@ -253,6 +288,10 @@ void Mesh::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, colors_ID);
 	glColorPointer(4, GL_FLOAT, 0, NULL);	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
+	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
@@ -273,10 +312,33 @@ void Mesh::genNormalLines()
 		normalLines[i*6+2]		=	vertex[index[i]*3 + 2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3]	=	normals[i*3] * 30 + normalLines[i*6];				//x
-		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * 30 + normalLines[i*6 + 1];		//y
-		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * 30 + normalLines[i*6 + 2];		//z
+		normalLines[i * 6 + 3]	=	normals[i*3] * App->fbxLoader->normalsLenght + normalLines[i*6];				//x
+		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * App->fbxLoader->normalsLenght + normalLines[i*6 + 1];		//y
+		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * App->fbxLoader->normalsLenght + normalLines[i*6 + 2];		//z
 	}
+}
+
+void Mesh::UpdateNormalsLenght()
+{
+	if (!normalLines)
+		return;
+
+	for (int i = 0; i < num_index; i++)
+	{
+		//origin coordinates
+		normalLines[i * 6] = vertex[index[i] * 3];									//x
+		normalLines[i * 6 + 1] = vertex[index[i] * 3 + 1];							//y
+		normalLines[i * 6 + 2] = vertex[index[i] * 3 + 2];								//z
+
+		//destination coordinates
+		normalLines[i * 6 + 3] = normals[i * 3] * App->fbxLoader->normalsLenght + normalLines[i * 6];				//x
+		normalLines[i * 6 + 4] = normals[i * 3 + 1] * App->fbxLoader->normalsLenght + normalLines[i * 6 + 1];		//y
+		normalLines[i * 6 + 5] = normals[i * 3 + 2] * App->fbxLoader->normalsLenght + normalLines[i * 6 + 2];		//z
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3 * 2, normalLines, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Mesh::drawNormals()
@@ -286,8 +348,6 @@ void Mesh::drawNormals()
 		glColor3f(1, 0, 0);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
-
-		
 
 		glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
 		glVertexPointer(3, GL_FLOAT, 0, NULL);

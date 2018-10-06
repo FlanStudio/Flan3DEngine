@@ -27,11 +27,15 @@ struct Mesh
 	uint colors_ID = 0;
 	float* colors = nullptr;
 
+	uint textureCoords_ID = 0;
+	float* textureCoords = nullptr;
+
 	~Mesh();
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
 	void genNormalLines();
+	void UpdateNormalsLenght();
 	void drawNormals();
 };
 	
@@ -60,12 +64,15 @@ public:
 	bool LoadFBX(char* path, bool useFS = true);
 	void deleteFBX(Mesh* mesh);
 	void clearMeshes();
+	void UpdateNormalsLenght();
+
+public:
+	bool drawNormals = true;
+	float normalsLenght = 30.0f;
 
 private:
 	aiLogStream stream;
 	std::vector<Mesh*> meshes;
-
-
 };
 void LogCallback(const char*, char*);
 

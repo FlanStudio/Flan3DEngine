@@ -287,6 +287,13 @@ void ModuleRenderer3D::guiRenderer()
 	{
 		setWireframe(wireframe);
 	}
+
+	ImGui::Checkbox("draw normals", &App->fbxLoader->drawNormals);
+	if(ImGui::DragFloat("normals lenght", &App->fbxLoader->normalsLenght, 1, 0, 30, "%.0f"))
+	{
+		App->fbxLoader->UpdateNormalsLenght();
+	}
+	
 }
 
 bool ModuleRenderer3D::Save(JSON_Object* obj) const
