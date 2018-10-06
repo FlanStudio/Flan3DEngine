@@ -24,6 +24,9 @@ struct Mesh
 	uint normalLines_ID = 0;
 	float* normalLines = nullptr;
 
+	uint colors_ID = 0;
+	float* colors = nullptr;
+
 	~Mesh();
 	void genBuffers();
 	void destroyBuffers();

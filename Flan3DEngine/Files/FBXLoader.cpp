@@ -131,6 +131,20 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 				memcpy(mymesh->normals, mesh->mNormals, sizeof(float) * mymesh->num_index * 3);
 			}
 			
+			int colorChannels = mesh->GetNumColorChannels();
+			if (colorChannels > 0)
+			{
+				for (int i = 0; i < colorChannels; ++i)
+				{
+					if (mesh->HasVertexColors(i))
+					{
+						mymesh->colors = new float[mymesh->num_index * 4];
+						memcpy(mymesh->colors, mesh->mColors[i], sizeof(float) * mymesh->num_index * 4);
+						break; //We only keep support of 1 set of colors, for now
+					}
+				}
+			}
+		
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
 			Debug.Log("New mesh loaded with %d vertices", mymesh->num_vertex);
@@ -176,7 +190,8 @@ Mesh::~Mesh()
 	delete[] vertex;
 	delete[] index;
 	delete[] normalLines;
-	normals = vertex = normalLines = nullptr;
+	delete[] colors;
+	normals = vertex = normalLines = colors = nullptr;
 	index = nullptr;
 }
 
@@ -205,6 +220,14 @@ void Mesh::genBuffers()
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3 * 2, normalLines, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);	
 	}
+
+	if (colors)
+	{
+		glGenBuffers(1, &colors_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, colors_ID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 4, colors, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 }
 
 void Mesh::destroyBuffers()
@@ -213,6 +236,8 @@ void Mesh::destroyBuffers()
 	glDeleteBuffers(1, &index_ID);
 	glDeleteBuffers(1, &normals_ID);
 	glDeleteBuffers(1, &normalLines_ID);
+	glDeleteBuffers(1, &colors_ID);
+	vertex_ID = index_ID = normals_ID = normalLines_ID = colors_ID = 0;
 }
 
 void Mesh::Draw()
@@ -224,6 +249,10 @@ void Mesh::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, normals_ID);
 	glNormalPointer(GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, colors_ID);
+	glColorPointer(4, GL_FLOAT, 0, NULL);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
