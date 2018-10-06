@@ -117,7 +117,20 @@ update_status ModuleInput::PreUpdate(float dt)
 			{
 				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
 					App->renderer3D->OnResize(e.window.data1, e.window.data2);
+				break;
 			}
+
+			case SDL_DROPFILE:
+			{
+				std::string filePath = e.drop.file;
+				if (filePath.find(".fbx") != std::string::npos || filePath.find(".FBX") != std::string::npos) //Checking if the file is a .fbx
+				{
+					App->fbxLoader->LoadFBX((char*)filePath.data(), false);
+				}
+				SDL_free(e.drop.file);
+				break;
+			}
+			
 		}
 	}
 

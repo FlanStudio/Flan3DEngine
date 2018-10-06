@@ -18,11 +18,18 @@ struct Mesh
 	uint num_vertex = 0;
 	float* vertex = nullptr;
 
+	uint normals_ID = 0;
+	float* normals = nullptr;
+
+	uint normalLines_ID = 0;
+	float* normalLines = nullptr;
+
 	~Mesh();
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
-
+	void genNormalLines();
+	void drawNormals();
 };
 	
 
@@ -47,7 +54,7 @@ public:
 
 public:
 
-	bool LoadFBX(char* path);
+	bool LoadFBX(char* path, bool useFS = true);
 	void deleteFBX(Mesh* mesh);
 	void clearMeshes();
 

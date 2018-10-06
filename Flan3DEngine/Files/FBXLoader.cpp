@@ -29,7 +29,7 @@ bool FBXLoader::Start()
 	stream.callback = LogCallback;
 	aiAttachLogStream(&stream);
 
-	LoadFBX("Assets/warrior.FBX");
+	//LoadFBX("Assets/warrior.FBX");
 
 
 	return true;
@@ -54,8 +54,10 @@ update_status FBXLoader::Update(float dt)
 update_status FBXLoader::PostUpdate(float dt)
 {
 	for (int i = 0; i < meshes.size(); ++i)
-	{
+	{		
 		meshes[i]->Draw();
+		meshes[i]->drawNormals();
+		
 	}
 	return update_status::UPDATE_CONTINUE;
 }
@@ -72,20 +74,33 @@ bool FBXLoader::Load(const JSON_Object* obj)
 	return true;
 }
 
-bool FBXLoader::LoadFBX(char* path)
+bool FBXLoader::LoadFBX(char* path, bool useFS)
 {
 	bool ret = false;
 	int size_buffer = 0;
 	char* buffer;
-	if(!App->fs->OpenRead(path, &buffer, size_buffer))
+	const aiScene* scene;
+	if (useFS)
 	{
-		Debug.LogError("Loading geometries failed, FileSystem reported an error");
-		return false;
+		if (!App->fs->OpenRead(path, &buffer, size_buffer))
+		{
+			Debug.LogError("Loading geometries failed, FileSystem reported an error");
+			return false;
+		}
+		else
+		{
+			scene = aiImportFileFromMemory(buffer, size_buffer, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+		}
+	}	
+	else
+	{
+		scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
 	}
 
-	const aiScene* scene = aiImportFileFromMemory(buffer, size_buffer, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+	 
 	if (scene != nullptr && scene->HasMeshes())
 	{
+		clearMeshes();
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; ++i)
 		{
@@ -105,9 +120,17 @@ bool FBXLoader::LoadFBX(char* path)
 					if (mesh->mFaces[j].mNumIndices != 3)
 						Debug.LogWarning("Charging a geometry face with != 3 vertices! Some errors might happen");
 					else // This face has 3 vertex
-						memcpy(&mymesh->index[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(uint)); //copy the 3 index into the right place in our index array
+					
+						memcpy(&mymesh->index[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(uint)); //copy the 3 index into the right place in our index array							
 				}
 			}
+
+			if (mesh->HasNormals())
+			{
+				mymesh->normals = new float[mymesh->num_index * 3];
+				memcpy(mymesh->normals, mesh->mNormals, sizeof(float) * mymesh->num_index * 3);
+			}
+			
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
 			Debug.Log("New mesh loaded with %d vertices", mymesh->num_vertex);
@@ -146,7 +169,16 @@ void FBXLoader::clearMeshes()
 
 //-----------------Mesh methods--------------------------
 
-Mesh::~Mesh() { destroyBuffers(); }
+Mesh::~Mesh()
+{ 
+	destroyBuffers(); 
+	delete[] normals;
+	delete[] vertex;
+	delete[] index;
+	delete[] normalLines;
+	normals = vertex = normalLines = nullptr;
+	index = nullptr;
+}
 
 void Mesh::genBuffers()
 {
@@ -159,6 +191,20 @@ void Mesh::genBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * num_index, index, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
+	if (normals)
+	{
+		glGenBuffers(1, &normals_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, normals_ID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3, normals, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);	
+	
+		genNormalLines();
+		glGenBuffers(1, &normalLines_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3 * 2, normalLines, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);	
+	}
 }
 
 void Mesh::destroyBuffers()
@@ -174,9 +220,52 @@ void Mesh::Draw()
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	glBindBuffer(GL_ARRAY_BUFFER, normals_ID);
+	glNormalPointer(GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
 	glDrawElements(GL_TRIANGLES, num_index, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void Mesh::genNormalLines()
+{	
+	normalLines = new float[num_index * 3 * 2];
+	for (int i = 0; i < num_index; i++)
+	{		
+		//origin coordinates
+		normalLines[i*6]		=	vertex[index[i]*3];									//x
+		normalLines[i*6+1]		=	vertex[index[i]*3 + 1 ];							//y
+		normalLines[i*6+2]		=	vertex[index[i]*3 + 2];								//z
+
+		//destination coordinates
+		normalLines[i * 6 + 3]	=	normals[i*3] * 30 + normalLines[i*6];				//x
+		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * 30 + normalLines[i*6 + 1];		//y
+		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * 30 + normalLines[i*6 + 2];		//z
+	}
+}
+
+void Mesh::drawNormals()
+{
+	if (normalLines)
+	{
+		glColor3f(1, 0, 0);
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+
+		
+
+		glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glDrawArrays(GL_LINES, 0, num_index * 2);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+
+		glColor3f(1, 1, 1);
+	}	
 }

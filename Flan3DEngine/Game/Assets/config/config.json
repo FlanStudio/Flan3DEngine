@@ -6,7 +6,7 @@
     },
     "ModuleWindow": {
         "FullscreenWindow": false,
-        "FullscreenDesktop": true,
+        "FullscreenDesktop": false,
         "Resizable": false,
         "Borderless": false,
         "ScreenWidth": 1920,
