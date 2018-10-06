@@ -211,6 +211,8 @@ void Mesh::destroyBuffers()
 {
 	glDeleteBuffers(1, &vertex_ID);
 	glDeleteBuffers(1, &index_ID);
+	glDeleteBuffers(1, &normals_ID);
+	glDeleteBuffers(1, &normalLines_ID);
 }
 
 void Mesh::Draw()
