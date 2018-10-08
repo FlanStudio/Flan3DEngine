@@ -7,6 +7,10 @@
 #include "Cube1.h"
 #include "Cube2.h"
 
+#include "EulerAngles.h"
+#include "GridPrim.h"
+
+
 struct PhysBody3D;
 struct PhysMotor3D;
 
@@ -29,4 +33,7 @@ public:
 	PhysBody3D* sensor;
 	Cube1 cube;
 	Cube2 cube2;
+
+	EulerAngles euler;
+	GridPrim grid;
 };

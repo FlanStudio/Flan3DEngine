@@ -561,6 +561,33 @@
     <ClInclude Include="assimp\include\config.h">
       <Filter>Sources\Tools\Assimp</Filter>
     </ClInclude>
+    <ClInclude Include="FrustumPrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="SpherePrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsulePrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="CilinderPrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanePrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="GridPrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="EulerAngles.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="RayPrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Arrow.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -745,6 +772,33 @@
     </ClCompile>
     <ClCompile Include="FBXLoader.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="FrustumPrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="SpherePrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsulePrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="CilinderPrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanePrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="GridPrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="EulerAngles.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="RayPrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Arrow.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
