@@ -129,7 +129,8 @@ bool ModuleRenderer3D::Init()
 		lighting = true;
 		glEnable(GL_COLOR_MATERIAL);
 		colorMaterial = true;
-
+		glEnable(GL_TEXTURE_2D);
+		texture2D = true;
 
 	}
 

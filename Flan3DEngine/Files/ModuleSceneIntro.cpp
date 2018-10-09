@@ -42,6 +42,30 @@ bool ModuleSceneIntro::Start()
 	cube2.Rotate(40, -1, -1, -1);
 	//cube2.setPos(-1, 0, 0);
 
+
+	/*GLubyte checkImage[10][10][4];
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkImage[i][j][0] = (GLubyte)c;
+			checkImage[i][j][1] = (GLubyte)c;
+			checkImage[i][j][2] = (GLubyte)c;
+			checkImage[i][j][3] = (GLubyte)255;
+		}
+	}
+
+	uint ImageName;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &ImageName);
+	glBindTexture(GL_TEXTURE_2D, ImageName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 10, 10,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);*/
+
 	return ret;
 }
 
@@ -74,52 +98,100 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 {	
 	//cube.Render();
 	//cube2.Render();
-	glBegin(GL_TRIANGLES);
-	glVertex3f(0, 0, 0);
-	glVertex3f(1, 0, 0);
-	glVertex3f(0, 1, 0);
-	glVertex3f(1, 0, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(0, 1, 0); //FRONT
 
-	glVertex3f(1, 0, 0);
-	glVertex3f(1, 0, 1);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, 0, 1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(1, 1, 0); //RIGHT
+	//TODO: FIX VERTEX TO SEE THE TEXTURE RIGHT
+	/*{
+		glBegin(GL_TRIANGLES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(1, 0, 0);
+		glVertex3f(0, 1, 0);
+		glVertex3f(1, 0, 0);
+		glVertex3f(1, 1, 0);
+		glVertex3f(0, 1, 0); //FRONT
 
-	glVertex3f(0, 1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(0, 1, 1);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, 1, 1);
-	glVertex3f(0, 1, 1); //TOP
+		glVertex3f(1, 0, 0);
+		glVertex3f(1, 0, 1);
+		glVertex3f(1, 1, 0);
+		glVertex3f(1, 0, 1);
+		glVertex3f(1, 1, 1);
+		glVertex3f(1, 1, 0); //RIGHT
 
-	glVertex3f(1, 0, 1);
-	glVertex3f(0, 0, 1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(0, 0, 1);
-	glVertex3f(0, 1, 1);
-	glVertex3f(1, 1, 1); //BACK
+		glVertex3f(0, 1, 0);
+		glVertex3f(1, 1, 0);
+		glVertex3f(0, 1, 1);
+		glVertex3f(1, 1, 0);
+		glVertex3f(1, 1, 1);
+		glVertex3f(0, 1, 1); //TOP
 
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, 1);
-	glVertex3f(1, 0, 1);
-	glVertex3f(0, 0, 0);
-	glVertex3f(1, 0, 1);
-	glVertex3f(1, 0, 0); //BOTTOM
+		glVertex3f(1, 0, 1);
+		glVertex3f(0, 0, 1);
+		glVertex3f(1, 1, 1);
+		glVertex3f(0, 0, 1);
+		glVertex3f(0, 1, 1);
+		glVertex3f(1, 1, 1); //BACK
 
-	glVertex3f(0, 0, 1);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 1, 1);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 1, 0);
-	glVertex3f(0, 1, 1); //LEFT
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, 1);
+		glVertex3f(1, 0, 1);
+		glVertex3f(0, 0, 0);
+		glVertex3f(1, 0, 1);
+		glVertex3f(1, 0, 0); //BOTTOM
+
+		glVertex3f(0, 0, 1);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 1, 1);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 1, 0);
+		glVertex3f(0, 1, 1); //LEFT
+
+		glTexCoord2f(0, 0);//Front v
+		glTexCoord2f(1, 0);
+		glTexCoord2f(0, 1);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
+
+		glTexCoord2f(0, 1); //Right x
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+
+		glTexCoord2f(0, 0);//top v
+		glTexCoord2f(1, 0);
+		glTexCoord2f(0, 1);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
+
+		glTexCoord2f(0, 1); //back x
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+
+		glTexCoord2f(0, 1); //bottom x
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+
+		glTexCoord2f(0, 0);//left v
+		glTexCoord2f(1, 0);
+		glTexCoord2f(0, 1);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
 
 
-	glEnd();
 
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, 0); glBindTexture(GL_TEXTURE_2D, 1);
+	}*/
 
 	return update_status::UPDATE_CONTINUE;
 }
