@@ -112,85 +112,86 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 		glBegin(GL_TRIANGLES);
 		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, 0); //FRONT
+		glVertex3f(1 , 1 , 0);
+		glVertex3f(0, 1 , 0);
+		glVertex3f(0, 0, 0);
+		glVertex3f(1 , 0, 0);
+		glVertex3f(1 , 1 , 0); //FRONT
 
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 1, 1);
-		glVertex3f(1, 1, 0); //RIGHT
+		glVertex3f(1 , 0, 0);
+		glVertex3f(1 , 0, -1 );
+		glVertex3f(1 , 1 , 0);
+		glVertex3f(1 , 0, -1 );
+		glVertex3f(1 , 1 , -1 );
+		glVertex3f(1 , 1 , 0); //RIGHT
 
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, 1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 1, 1);
-		glVertex3f(0, 1, 1); //TOP
+		glVertex3f(0, 1 , 0);
+		glVertex3f(1 , 1 , 0);
+		glVertex3f(0, 1 , -1 );
+		glVertex3f(1 , 1 , 0);
+		glVertex3f(1 , 1 , -1 );
+		glVertex3f(0, 1 , -1 ); //TOP
 
-		glVertex3f(1, 0, 1);
-		glVertex3f(0, 0, 1);
-		glVertex3f(1, 1, 1);
-		glVertex3f(0, 0, 1);
-		glVertex3f(0, 1, 1);
-		glVertex3f(1, 1, 1); //BACK
+		glVertex3f(1 , 0, -1 );
+		glVertex3f(0, 0, -1 );
+		glVertex3f(1 , 1 , -1 );
+		glVertex3f(0, 0, -1 );
+		glVertex3f(0, 1 , -1 );
+		glVertex3f(1 , 1 , -1 ); //BACK
 
 		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, 1);
-		glVertex3f(1, 0, 1);
+		glVertex3f(0, 0, -1 );
+		glVertex3f(1 , 0, -1 );
 		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 0, 0); //BOTTOM
+		glVertex3f(1 , 0, -1 );
+		glVertex3f(1 , 0, 0); //BOTTOM
 
-		glVertex3f(0, 0, 1);
+		glVertex3f(0, 0, -1 );
 		glVertex3f(0, 0, 0);
-		glVertex3f(0, 1, 1);
+		glVertex3f(0, 1 , -1 );
 		glVertex3f(0, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(0, 1, 1); //LEFT
+		glVertex3f(0, 1 , 0);
+		glVertex3f(0, 1 , -1 ); //LEFT
+
 
 		glTexCoord2f(0, 0);//Front v
-		glTexCoord2f(1, 0);
-		glTexCoord2f(0, 1);
-		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
 		glTexCoord2f(0, 1);
+		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 1);
 
-		glTexCoord2f(0, 1); //Right x
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 1);
+		glTexCoord2f(1, 0); //Right x
+		glTexCoord2f(0, 1);
 		glTexCoord2f(0, 0);
 		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
 
 		glTexCoord2f(0, 0);//top v
-		glTexCoord2f(1, 0);
-		glTexCoord2f(0, 1);
-		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
 		glTexCoord2f(0, 1);
-
-		glTexCoord2f(0, 1); //back x
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 1);
 		glTexCoord2f(0, 0);
 		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
 
-		glTexCoord2f(0, 1); //bottom x
+		glTexCoord2f(1, 0); //back x
+		glTexCoord2f(0, 1);
 		glTexCoord2f(0, 0);
+		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
+
+		glTexCoord2f(0, 0);//bottom v
+		glTexCoord2f(1, 1);
+		glTexCoord2f(0, 1);
 		glTexCoord2f(0, 0);
 		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
 
-		glTexCoord2f(0, 0);//left v
-		glTexCoord2f(1, 0);
+		glTexCoord2f(1, 0); //left x
 		glTexCoord2f(0, 1);
+		glTexCoord2f(0, 0);
 		glTexCoord2f(1, 0);
 		glTexCoord2f(1, 1);
 		glTexCoord2f(0, 1);
