@@ -6,6 +6,8 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleWindow.h"
 
+#define CHECKERS 8 * 8
+
 ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
 }
@@ -43,9 +45,9 @@ bool ModuleSceneIntro::Start()
 	//cube2.setPos(-1, 0, 0);
 
 
-	GLubyte checkImage[10][10][4];
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	GLubyte checkImage[CHECKERS][CHECKERS][4];
+	for (int i = 0; i < CHECKERS; i++) {
+		for (int j = 0; j < CHECKERS; j++) {
 			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
 			checkImage[i][j][0] = (GLubyte)c;
 			checkImage[i][j][1] = (GLubyte)c;
@@ -63,8 +65,9 @@ bool ModuleSceneIntro::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 10, 10,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS, CHECKERS,
 		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
+
 
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
@@ -111,91 +114,48 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 		glBindTexture(GL_TEXTURE_2D, 1);
 
 		glBegin(GL_TRIANGLES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, 0); //FRONT
 
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 0, -1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 0, -1);
-		glVertex3f(1, 1, -1);
-		glVertex3f(1, 1, 0); //RIGHT
+		glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
+		glTexCoord2f(1, 0);	glVertex3f(1 , 0, 0);
+		glTexCoord2f(0, 1);	glVertex3f(0, 1, 0);
+		glTexCoord2f(1, 0);	glVertex3f(1 , 0, 0);
+		glTexCoord2f(1, 1);	glVertex3f(1 , 1 , 0);
+		glTexCoord2f(0, 1);	glVertex3f(0, 1 , 0); //FRONT
 
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, -1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 1, -1);
-		glVertex3f(0, 1, -1); //TOP
+		glTexCoord2f(1, 0); glVertex3f(1, 0, 0);
+		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
+		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
+		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
+		glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
+		glTexCoord2f(0, 0); glVertex3f(1, 1, 0); //RIGHT
 
-		glVertex3f(1, 0, -1);
-		glVertex3f(0, 0, -1);
-		glVertex3f(1, 1, -1);
-		glVertex3f(0, 0, -1);
-		glVertex3f(0, 1, -1);
-		glVertex3f(1, 1, -1); //BACK
+		glTexCoord2f(0, 1); glVertex3f(0, 1, 0);
+		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
+		glTexCoord2f(1, 1); glVertex3f(0, 1, -1);
+		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
+		glTexCoord2f(1, 0); glVertex3f(1, 1, -1);
+		glTexCoord2f(1, 1); glVertex3f(0, 1, -1); //TOP
 
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, -1);
-		glVertex3f(1, 0, -1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, -1);
-		glVertex3f(1, 0, 0); //BOTTOM
+		glTexCoord2f(0, 0); glVertex3f(1, 0, -1);
+		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
+		glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
+		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
+		glTexCoord2f(1, 1); glVertex3f(0, 1, -1);
+		glTexCoord2f(0, 1); glVertex3f(1, 1, -1); //BACK
 
-		glVertex3f(0, 0, -1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 1, -1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(0, 1, -1); //LEFT
+		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
+		glTexCoord2f(1, 1); glVertex3f(0, 0, 0);
+		glTexCoord2f(0, 0); glVertex3f(0, 1, -1);
+		glTexCoord2f(1, 1); glVertex3f(0, 0, 0);
+		glTexCoord2f(0, 1); glVertex3f(0, 1, 0);
+		glTexCoord2f(0, 0); glVertex3f(0, 1, -1); //LEFT
 
-
-		glTexCoord2f(0, 0);//Front v
-		glTexCoord2f(1, 0);
-		glTexCoord2f(0, 1);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-
-		glTexCoord2f(1, 0); //Right x
-		glTexCoord2f(0, 1);
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-
-		glTexCoord2f(0, 0);//top v
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-
-		glTexCoord2f(1, 0); //back x
-		glTexCoord2f(0, 1);
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-
-		glTexCoord2f(0, 0);//bottom v
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-
-		glTexCoord2f(1, 0); //left x
-		glTexCoord2f(0, 1);
-		glTexCoord2f(0, 0);
-		glTexCoord2f(1, 0);
-		glTexCoord2f(1, 1);
-		glTexCoord2f(0, 1);
-
+		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
+		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
+		glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
+		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
+		glTexCoord2f(0, 1); glVertex3f(1, 0, 0);
+		glTexCoord2f(0, 0); glVertex3f(0, 0, 0); //BOTTOM
 
 
 		glEnd();
