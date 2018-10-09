@@ -64,6 +64,9 @@ void ModuleTextures::LoadTexture(char* file)
 	text->id = id;
 	textures.push_back(text);
 
+	
+
+
 	delete buffer;
 }
 

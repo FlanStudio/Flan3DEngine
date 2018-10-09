@@ -6,6 +6,14 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleWindow.h"
 
+#include "DevIL/include/il.h"
+#include "DevIL/include/ilu.h"
+#include "DevIL/include/ilut.h"
+
+#pragma comment (lib, "DevIL/libx86/DevIL.lib")
+#pragma comment (lib, "DevIL/libx86/ILU.lib")
+#pragma comment (lib, "DevIL/libx86/ILUT.lib")
+
 #define CHECKERS 8 
 
 ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
@@ -67,10 +75,11 @@ bool ModuleSceneIntro::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+	//	0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data); //UNSIGNED BYTE YES OR YES
 
-
+	ilBindImage(2);
+	ilutGLTexImage(5);
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
 	grid.setColor(255, 255, 255, 0);
