@@ -1,23 +1,22 @@
 #pragma once
 
 #include "Primitive.h"
-#include "Globals.h"
+#include "../Globals.h"
 #include <vector>
 
-class CapsulePrim : public Primitive
+class SpherePrim : public Primitive
 {
 public:
-	CapsulePrim() : Primitive() { }
-	CapsulePrim(float3 pos) : Primitive(pos) { }
-	~CapsulePrim();
+	SpherePrim() : Primitive() { }
+	SpherePrim(float3 pos) : Primitive(pos) { }
+	~SpherePrim();
 
 public:
 	void Init();
 	void pRender();
 
 public:
-	float radius = 3.0f;
-	float length = 5.0f;
+	float radius = 5.0f;
 	uint cuts = 20;
 
 private:
@@ -26,4 +25,7 @@ private:
 
 	uint vertex2ID = 0;
 	std::vector<float> vertex2;
+
+	//std::vector<float> vertex;
+	//std::vector<float> vertex2;
 };

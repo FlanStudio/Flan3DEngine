@@ -1,16 +1,16 @@
-#include "Application.h"
-#include "EulerAngles.h"
+#include "../Application.h"
+#include "EulerAxis.h"
 
 #define SIZE_ARRAY 3*2
 
-EulerAngles::~EulerAngles()
+EulerAxis::~EulerAxis()
 {
 	glDeleteBuffers(1, &vertexID);
 	glDeleteBuffers(1, &vertex2ID);
 	glDeleteBuffers(1, &vertex3ID);
 }
 
-void EulerAngles::Init()
+void EulerAxis::Init()
 {
 	vertex.resize(SIZE_ARRAY);
 	vertex2.resize(SIZE_ARRAY);
@@ -36,7 +36,7 @@ void EulerAngles::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void EulerAngles::pRender()
+void EulerAxis::pRender()
 {
 	float angle = rotation.Length();
 	float3 axis = rotation.Normalized();

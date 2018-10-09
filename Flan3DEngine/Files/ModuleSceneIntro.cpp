@@ -20,7 +20,7 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 
-	App->camera->Move(float3(0.0f, 0.0f, 5.0f));
+	App->camera->Move(float3(0.0f, 5.0f, 5.0f));
 	App->camera->LookAt(float3(0, 0, 0));
 
 	/*App->camera->Move(float3(6.55f, -322.21f, 219.16f));
@@ -199,7 +199,7 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 		glEnd();
 
-		glBindTexture(GL_TEXTURE_2D, 0); glBindTexture(GL_TEXTURE_2D, 1);
+		glBindTexture(GL_TEXTURE_2D, 0); glBindTexture(GL_TEXTURE_2D, 1);*/
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();

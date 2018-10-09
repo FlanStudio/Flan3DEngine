@@ -336,15 +336,6 @@
     <ClInclude Include="Brofiler\Brofiler.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="Primitive.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube1.h">
-      <Filter>Sources\Containers\Primitives</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube2.h">
-      <Filter>Sources\Containers\Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="FBXLoader.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
@@ -561,31 +552,40 @@
     <ClInclude Include="assimp\include\config.h">
       <Filter>Sources\Tools\Assimp</Filter>
     </ClInclude>
-    <ClInclude Include="FrustumPrim.h">
+    <ClInclude Include="Primitives\Arrow.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="SpherePrim.h">
+    <ClInclude Include="Primitives\CapsulePrim.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="CapsulePrim.h">
+    <ClInclude Include="Primitives\CilinderPrim.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="CilinderPrim.h">
+    <ClInclude Include="Primitives\Cube1.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="PlanePrim.h">
+    <ClInclude Include="Primitives\Cube2.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="GridPrim.h">
+    <ClInclude Include="Primitives\FrustumPrim.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="EulerAngles.h">
+    <ClInclude Include="Primitives\GridPrim.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="RayPrim.h">
+    <ClInclude Include="Primitives\PlanePrim.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Arrow.h">
+    <ClInclude Include="Primitives\RayPrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\SpherePrim.h">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\Primitive.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\EulerAxis.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
@@ -761,43 +761,43 @@
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Primitive.cpp">
-      <Filter>Sources\Containers</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube1.cpp">
-      <Filter>Sources\Containers\Primitives</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube2.cpp">
-      <Filter>Sources\Containers\Primitives</Filter>
-    </ClCompile>
     <ClCompile Include="FBXLoader.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="FrustumPrim.cpp">
+    <ClCompile Include="Primitives\Arrow.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="SpherePrim.cpp">
+    <ClCompile Include="Primitives\CapsulePrim.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="CapsulePrim.cpp">
+    <ClCompile Include="Primitives\CilinderPrim.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="CilinderPrim.cpp">
+    <ClCompile Include="Primitives\Cube1.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="PlanePrim.cpp">
+    <ClCompile Include="Primitives\Cube2.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="GridPrim.cpp">
+    <ClCompile Include="Primitives\FrustumPrim.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="EulerAngles.cpp">
+    <ClCompile Include="Primitives\GridPrim.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="RayPrim.cpp">
+    <ClCompile Include="Primitives\PlanePrim.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Arrow.cpp">
+    <ClCompile Include="Primitives\RayPrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitives\SpherePrim.cpp">
+      <Filter>Sources\Containers\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitives\Primitive.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitives\EulerAxis.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
   </ItemGroup>

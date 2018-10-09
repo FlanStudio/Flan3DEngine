@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "../Application.h"
 #include "CilinderPrim.h"
 
 #define VERTEX_NUM ((cuts+1) * 2)

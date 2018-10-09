@@ -1,0 +1,12 @@
+﻿
+Se cambió el nombre 'EulerAngles' a 'EulerAxis':
+------------------------------------------------
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\ModuleSceneIntro.h(37, 2)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.cpp(6, 1)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.cpp(6, 15)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.cpp(13, 6)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.cpp(39, 6)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.h(7, 7)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.h(10, 2)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.h(11, 2)
+C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Files\Primitives\EulerAngles.h(12, 3)

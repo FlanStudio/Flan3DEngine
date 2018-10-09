@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "../Application.h"
 #include "PlanePrim.h"
 
 #define VERTEX_NUM  lenCuts * higCuts

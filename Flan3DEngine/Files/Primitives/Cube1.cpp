@@ -1,7 +1,7 @@
-#include "Application.h"
+#include "../Application.h"
 #include "Cube1.h"
 
-#include "Glew/include/glew.h"
+#include "../Glew/include/glew.h"
 
 Cube1::~Cube1()
 {

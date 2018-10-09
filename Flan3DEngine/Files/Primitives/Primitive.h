@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MathGeoLib_1.5/MathGeoLib.h"
+#include "../MathGeoLib_1.5/MathGeoLib.h"
 
 class Primitive
 {

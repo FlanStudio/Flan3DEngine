@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "../Application.h"
 #include "RayPrim.h"
 
 #define SIZE_ARRAY 2*3

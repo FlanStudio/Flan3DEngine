@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Primitive.h"
-#include "Globals.h"
+#include "../Globals.h"
 #include <vector>
 
-class EulerAngles : public Primitive
+class EulerAxis : public Primitive
 {
 public:
-	EulerAngles() : Primitive() { }
-	EulerAngles(float3 pos) : Primitive(pos) { }
-	~EulerAngles();
+	EulerAxis() : Primitive() { }
+	EulerAxis(float3 pos) : Primitive(pos) { }
+	~EulerAxis();
 
 public:
 	void Init();

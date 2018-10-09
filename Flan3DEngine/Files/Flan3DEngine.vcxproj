@@ -76,7 +76,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
-    <ClInclude Include="Arrow.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
     <ClInclude Include="Assimp\include\anim.h" />
     <ClInclude Include="Assimp\include\BaseImporter.h" />
@@ -149,20 +148,13 @@
     <ClInclude Include="Assimp\include\Vertex.h" />
     <ClInclude Include="Assimp\include\XMLTools.h" />
     <ClInclude Include="Brofiler\Brofiler.h" />
-    <ClInclude Include="CapsulePrim.h" />
-    <ClInclude Include="CilinderPrim.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Cube1.h" />
-    <ClInclude Include="Cube2.h" />
-    <ClInclude Include="EulerAngles.h" />
     <ClInclude Include="FBXLoader.h" />
-    <ClInclude Include="FrustumPrim.h" />
     <ClInclude Include="Glew\include\eglew.h" />
     <ClInclude Include="Glew\include\glew.h" />
     <ClInclude Include="Glew\include\glxew.h" />
     <ClInclude Include="Glew\include\wglew.h" />
     <ClInclude Include="Globals.h" />
-    <ClInclude Include="GridPrim.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_opengl2.h" />
@@ -246,25 +238,25 @@
     <ClInclude Include="pcg-c-basic-0.9\pcg_basic.h" />
     <ClInclude Include="PhysBody3D.h" />
     <ClInclude Include="PhysFS\physfs.h" />
-    <ClInclude Include="PlanePrim.h" />
-    <ClInclude Include="Primitive.h" />
-    <ClInclude Include="RayPrim.h" />
-    <ClInclude Include="SpherePrim.h" />
+    <ClInclude Include="Primitives\Arrow.h" />
+    <ClInclude Include="Primitives\CapsulePrim.h" />
+    <ClInclude Include="Primitives\CilinderPrim.h" />
+    <ClInclude Include="Primitives\Cube1.h" />
+    <ClInclude Include="Primitives\Cube2.h" />
+    <ClInclude Include="Primitives\EulerAxis.h" />
+    <ClInclude Include="Primitives\FrustumPrim.h" />
+    <ClInclude Include="Primitives\GridPrim.h" />
+    <ClInclude Include="Primitives\PlanePrim.h" />
+    <ClInclude Include="Primitives\Primitive.h" />
+    <ClInclude Include="Primitives\RayPrim.h" />
+    <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Arrow.cpp" />
-    <ClCompile Include="CapsulePrim.cpp" />
-    <ClCompile Include="CilinderPrim.cpp" />
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Cube1.cpp" />
-    <ClCompile Include="Cube2.cpp" />
-    <ClCompile Include="EulerAngles.cpp" />
     <ClCompile Include="FBXLoader.cpp" />
-    <ClCompile Include="FrustumPrim.cpp" />
     <ClCompile Include="Globals.cpp" />
-    <ClCompile Include="GridPrim.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -318,10 +310,18 @@
     <ClCompile Include="Parson\parson.c" />
     <ClCompile Include="pcg-c-basic-0.9\pcg_basic.cpp" />
     <ClCompile Include="PhysBody3D.cpp" />
-    <ClCompile Include="PlanePrim.cpp" />
-    <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="RayPrim.cpp" />
-    <ClCompile Include="SpherePrim.cpp" />
+    <ClCompile Include="Primitives\Arrow.cpp" />
+    <ClCompile Include="Primitives\CapsulePrim.cpp" />
+    <ClCompile Include="Primitives\CilinderPrim.cpp" />
+    <ClCompile Include="Primitives\Cube1.cpp" />
+    <ClCompile Include="Primitives\Cube2.cpp" />
+    <ClCompile Include="Primitives\EulerAxis.cpp" />
+    <ClCompile Include="Primitives\FrustumPrim.cpp" />
+    <ClCompile Include="Primitives\GridPrim.cpp" />
+    <ClCompile Include="Primitives\PlanePrim.cpp" />
+    <ClCompile Include="Primitives\Primitive.cpp" />
+    <ClCompile Include="Primitives\RayPrim.cpp" />
+    <ClCompile Include="Primitives\SpherePrim.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,11 @@
 
 #include "Glew/include/glew.h"
 
-#include "Cube1.h"
-#include "Cube2.h"
+#include "Primitives/Cube1.h"
+#include "Primitives/Cube2.h"
 
-#include "EulerAngles.h"
-#include "GridPrim.h"
+#include "Primitives/EulerAxis.h"
+#include "Primitives/GridPrim.h"
 
 
 struct PhysBody3D;
@@ -34,6 +34,6 @@ public:
 	Cube1 cube;
 	Cube2 cube2;
 
-	EulerAngles euler;
+	EulerAxis euler;
 	GridPrim grid;
 };

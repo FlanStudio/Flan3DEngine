@@ -1,24 +1,17 @@
-#include "Application.h"
-#include "FrustumPrim.h"
+#include "../Application.h"
+#include "Cube2.h"
 
-FrustumPrim::~FrustumPrim()
+Cube2::~Cube2()
 {
 	glDeleteBuffers(1, &indexID);
 	glDeleteBuffers(1, &vertexID);
 }
 
-void FrustumPrim::Init()
+void Cube2::Init()
 {
-	float a = firstSquareHigh;//First square height
-	float b = firstSquareLength;//First square lenght
-	float c = secondSquareHigh;//Second square height
-	float d = secondSquareLength;//Second square lenght
-	float e = frustumDepth;//Frustum depth
-	float f = (c - a) / 2;
-	float g = (d - b) / 2;
-
 	index = { 0,1,3,1,2,3, 1,5,2,5,6,2, 4,0,7,0,3,7, 4,7,6,4,6,5, 3,2,7,2,6,7, 0,4,1,4,5,1 };
-	vertex = { 0,0,0, b,0,0, b,a,0, 0,a,0, 0-g,0-f,e, b+g,0-f,e, b+g,a+f,e, 0-g,a+f,e };
+	vertex = { 0,0,0, 1,0,0, 1,1,0, 0,1,0, 0,0,1, 1,0,1, 1,1,1, 0,1,1 };
+
 
 	glGenBuffers(1, &vertexID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexID);
@@ -31,7 +24,7 @@ void FrustumPrim::Init()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void FrustumPrim::pRender()
+void Cube2::pRender()
 {
 	float angle = rotation.Length();
 	float3 axis = rotation.Normalized();

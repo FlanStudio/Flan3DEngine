@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "../Application.h"
 #include "GridPrim.h"
 
 #define SIZE_ARRAY (cuts + 1) * 2 * 2 * 3

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Primitive.h"
-#include "Globals.h"
+#include "../Globals.h"
 #include <vector>
 
 class RayPrim : public Primitive
