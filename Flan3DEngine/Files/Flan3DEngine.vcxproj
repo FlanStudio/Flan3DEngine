@@ -149,6 +149,14 @@
     <ClInclude Include="Assimp\include\XMLTools.h" />
     <ClInclude Include="Brofiler\Brofiler.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp" />
+    <ClInclude Include="DevIL\include\devil_internal_exports.h" />
+    <ClInclude Include="DevIL\include\il.h" />
+    <ClInclude Include="DevIL\include\ilu.h" />
+    <ClInclude Include="DevIL\include\ilut.h" />
+    <ClInclude Include="DevIL\include\ilut_config.h" />
+    <ClInclude Include="DevIL\include\ilu_region.h" />
+    <ClInclude Include="DevIL\include\il_wrap.h" />
     <ClInclude Include="FBXLoader.h" />
     <ClInclude Include="Glew\include\eglew.h" />
     <ClInclude Include="Glew\include\glew.h" />
@@ -250,6 +258,7 @@
     <ClInclude Include="Primitives\Primitive.h" />
     <ClInclude Include="Primitives\RayPrim.h" />
     <ClInclude Include="Primitives\SpherePrim.h" />
+    <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -322,6 +331,7 @@
     <ClCompile Include="Primitives\Primitive.cpp" />
     <ClCompile Include="Primitives\RayPrim.cpp" />
     <ClCompile Include="Primitives\SpherePrim.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +345,10 @@
     <None Include="Assimp\include\SmoothingGroups.inl" />
     <None Include="Assimp\include\vector2.inl" />
     <None Include="Assimp\include\vector3.inl" />
+    <None Include="DevIL\include\build-lua" />
+    <None Include="DevIL\include\build-python" />
+    <None Include="DevIL\include\DevIL.i" />
+    <None Include="DevIL\include\stamp-h.in" />
     <None Include="MathGeoLib_1.5\Math\Matrix.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

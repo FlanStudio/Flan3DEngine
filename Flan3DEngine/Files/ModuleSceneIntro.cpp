@@ -19,13 +19,11 @@ bool ModuleSceneIntro::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-
 	App->camera->Move(float3(0.0f, 5.0f, 5.0f));
 	App->camera->LookAt(float3(0, 0, 0));
 
 	/*App->camera->Move(float3(6.55f, -322.21f, 219.16f));
 	App->camera->LookAt(float3(3.33f, -45.71f, 144.40f));*/
-
 
 
 	//sensor = App->physics->AddBody(s, 0.0f);

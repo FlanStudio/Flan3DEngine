@@ -1,9 +1,9 @@
 #ifndef WRAPPER_H
 #define WRAPPER_H
 
-/*#include <il/il.h>
-#include <il/ilu.h>*/
-#include <IL/ilut.h>  // Probably only have to #include this one
+#include "il.h"
+#include "ilu.h"
+#include "ilut.h"  // Probably only have to #include this one
 
 #ifdef _MSC_VER
 	#ifndef _IL_WRAP_BUILD_LIB
@@ -30,22 +30,22 @@ public:
 	ILboolean	ActiveLayer(ILuint);
 	ILboolean	ActiveMipmap(ILuint);
 	ILboolean	Clear(void);
-	ILvoid		ClearColour(ILclampf, ILclampf, ILclampf, ILclampf);
+	void		ClearColour(ILclampf, ILclampf, ILclampf, ILclampf);
 	ILboolean	Convert(ILenum);
 	ILboolean	Copy(ILuint);
 	ILboolean	Default(void);
 	ILboolean	Flip(void);
 	ILboolean	SwapColours(void);
 	ILboolean	Resize(ILuint, ILuint, ILuint);
-	ILboolean	TexImage(ILuint, ILuint, ILuint, ILubyte, ILenum, ILenum, ILvoid*);
+	ILboolean	TexImage(ILuint, ILuint, ILuint, ILubyte, ILenum, ILenum, void*);
 
 	
 	// Image handling
-	ILvoid		Bind(void) const;
-	ILvoid		Bind(ILuint);
-	ILvoid		Close(void) { this->Delete(); }
-	ILvoid		Delete(void);
-	ILvoid		iGenBind();
+	void		Bind(void) const;
+	void		Bind(ILuint);
+	void		Close(void) { this->Delete(); }
+	void		Delete(void);
+	void		iGenBind();
 	ILenum		PaletteAlphaIndex();
 
 	// Image characteristics
@@ -79,7 +79,7 @@ protected:
 	ILuint		Id;
 
 private:
-	ILvoid		iStartUp();
+	void		iStartUp();
 
 
 };
@@ -111,7 +111,7 @@ public:
 class ilOgl
 {
 public:
-	static ILvoid		Init(void);
+	static void		Init(void);
 	static GLuint		BindTex(ilImage &);
 	static ILboolean	Upload(ilImage &, ILuint);
 	static GLuint		Mipmap(ilImage &);
@@ -125,7 +125,7 @@ public:
 class ilAlleg
 {
 public:
-	static ILvoid	Init(void);
+	static void	Init(void);
 	static BITMAP	*Convert(ilImage &);
 };
 #endif//ILUT_USE_ALLEGRO
@@ -135,10 +135,10 @@ public:
 class ilWin32
 {
 public:
-	static ILvoid		Init(void);
+	static void		Init(void);
 	static HBITMAP		Convert(ilImage &);
 	static ILboolean	GetClipboard(ilImage &);
-	static ILvoid		GetInfo(ilImage &, BITMAPINFO *Info);
+	static void		GetInfo(ilImage &, BITMAPINFO *Info);
 	static ILubyte		*GetPadData(ilImage &);
 	static HPALETTE		GetPal(ilImage &);
 	static ILboolean	GetResource(ilImage &, HINSTANCE hInst, ILint ID, char *ResourceType);
@@ -153,7 +153,7 @@ class ilValidate
 public:
 	static ILboolean	Valid(ILenum, char *);
 	static ILboolean	Valid(ILenum, FILE *);
-	static ILboolean	Valid(ILenum, ILvoid *, ILuint);
+	static ILboolean	Valid(ILenum, void *, ILuint);
 
 protected:
 
@@ -167,16 +167,16 @@ class ilState
 public:
 	static ILboolean		Disable(ILenum);
 	static ILboolean		Enable(ILenum);
-	static ILvoid			Get(ILenum, ILboolean &);
-	static ILvoid			Get(ILenum, ILint &);
+	static void			Get(ILenum, ILboolean &);
+	static void			Get(ILenum, ILint &);
 	static ILboolean		GetBool(ILenum);
 	static ILint			GetInt(ILenum);
 	static const char		*GetString(ILenum);
 	static ILboolean		IsDisabled(ILenum);
 	static ILboolean		IsEnabled(ILenum);
 	static ILboolean		Origin(ILenum);
-	static ILvoid			Pop(void);
-	static ILvoid			Push(ILuint);
+	static void			Pop(void);
+	static void			Push(ILuint);
 
 
 protected:
@@ -189,8 +189,8 @@ private:
 class ilError
 {
 public:
-	static ILvoid		Check(ILvoid (*Callback)(const char*));
-	static ILvoid		Check(ILvoid (*Callback)(ILenum));
+	static void		Check(void (*Callback)(const char*));
+	static void		Check(void (*Callback)(ILenum));
 	static ILenum		Get(void);
 	static const char	*String(void);
 	static const char	*String(ILenum);

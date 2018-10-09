@@ -58,6 +58,9 @@
     <Filter Include="Sources\Tools\Assimp">
       <UniqueIdentifier>{2d104cdc-de40-42e9-b856-18b86b4904ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\DevIL">
+      <UniqueIdentifier>{474014d2-b75a-42fd-b9e6-748067336688}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -588,6 +591,33 @@
     <ClInclude Include="Primitives\EulerAxis.h">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClInclude>
+    <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\devil_internal_exports.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il_wrap.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu_region.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut_config.h">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -800,6 +830,9 @@
     <ClCompile Include="Primitives\EulerAxis.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib_1.5\Math\Matrix.inl">
@@ -834,6 +867,18 @@
     </None>
     <None Include="Assimp\include\vector3.inl">
       <Filter>Sources\Tools\Assimp</Filter>
+    </None>
+    <None Include="DevIL\include\build-lua">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </None>
+    <None Include="DevIL\include\build-python">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </None>
+    <None Include="DevIL\include\DevIL.i">
+      <Filter>Sources\Tools\DevIL</Filter>
+    </None>
+    <None Include="DevIL\include\stamp-h.in">
+      <Filter>Sources\Tools\DevIL</Filter>
     </None>
   </ItemGroup>
 </Project>
