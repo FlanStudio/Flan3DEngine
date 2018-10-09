@@ -44,7 +44,7 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::Start()
 {
-	LoadTexture("Assets/228948262-1024x1024-wallpapers.jpg");
+	LoadTexture("Assets/test.jpg");
 	return true;
 }
 
@@ -58,7 +58,7 @@ void ModuleTextures::LoadTexture(char* file)
 	ilGenImages(1, &id);
 	ilBindImage(id);
 	ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
-
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 	Texture* text = new Texture;
 	text->data = ilGetData();
 	text->id = id;
