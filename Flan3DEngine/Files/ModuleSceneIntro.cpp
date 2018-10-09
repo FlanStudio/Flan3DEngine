@@ -43,7 +43,7 @@ bool ModuleSceneIntro::Start()
 	//cube2.setPos(-1, 0, 0);
 
 
-	/*GLubyte checkImage[10][10][4];
+	GLubyte checkImage[10][10][4];
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
@@ -64,7 +64,7 @@ bool ModuleSceneIntro::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 10, 10,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);*/
+		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
 
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
@@ -107,7 +107,9 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 
 	//TODO: FIX VERTEX TO SEE THE TEXTURE RIGHT
-	/*{
+	{
+		glBindTexture(GL_TEXTURE_2D, 1);
+
 		glBegin(GL_TRIANGLES);
 		glVertex3f(0, 0, 0);
 		glVertex3f(1, 0, 0);
@@ -197,7 +199,8 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 		glEnd();
 
-		glBindTexture(GL_TEXTURE_2D, 0); glBindTexture(GL_TEXTURE_2D, 1);*/
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();

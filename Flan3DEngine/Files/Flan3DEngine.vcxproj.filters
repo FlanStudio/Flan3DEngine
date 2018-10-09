@@ -615,7 +615,7 @@
     <ClInclude Include="DevIL\include\ilut_config.h">
       <Filter>Sources\Tools\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="TextureLoader.h">
+    <ClInclude Include="ModuleTextures.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
@@ -830,7 +830,7 @@
     <ClCompile Include="Primitives\EulerAxis.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="TextureLoader.cpp">
+    <ClCompile Include="ModuleTextures.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

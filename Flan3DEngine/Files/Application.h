@@ -13,6 +13,7 @@
 #include "ModuleEditor.h"
 #include "ModuleFileSystem.h"
 #include "FBXLoader.h"
+#include "ModuleTextures.h"
 
 #include "Parson/parson.h"
 
@@ -99,6 +100,7 @@ public:
 	ModuleEditor* editor;
 	ModuleFileSystem* fs;
 	FBXLoader* fbxLoader;
+	ModuleTextures* textures;
 
 private:
 	Timer	ms_timer;

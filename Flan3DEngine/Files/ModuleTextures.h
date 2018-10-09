@@ -2,18 +2,15 @@
 
 #include "Module.h"
 
-class TextureLoader : public Module
+class ModuleTextures : public Module
 {
 public:
-	TextureLoader(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
-	virtual ~TextureLoader() {}
+	ModuleTextures(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
+	virtual ~ModuleTextures() {}
 
 	bool Init();
 
-	bool Start()
-	{
-		return true;
-	}
+	bool Start();
 
 	bool CleanUp()
 	{
