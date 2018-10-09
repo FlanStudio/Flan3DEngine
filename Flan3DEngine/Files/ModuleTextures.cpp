@@ -44,23 +44,40 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::Start()
 {
-	LoadTexture("Assets/test.png");
+	LoadTexture("Assets/test.jpg");
 	return true;
 }
 
 void ModuleTextures::LoadTexture(char* file)
 {
-	/*char* buffer;
+	char* buffer;
 	int size;
 	App->fs->OpenRead(file, &buffer, size);
 	
-	uint id = 0;
+	ILuint id = 0;
 	ilGenImages(1, &id);
-	ilBindImage(id),
+	ilBindImage(id);
 	ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
 
-	ILubyte* data = ilGetData();
+	Texture* text = new Texture;
+	text->data = ilGetData();
+	text->id = id;
+	textures.push_back(text);
 
+	delete buffer;
+}
 
-	delete buffer;*/
+void ModuleTextures::getTextureSize(uint id, uint& width, uint& height)
+{
+	if (id < textures.size())
+	{
+		ilBindImage(textures[id]->id);
+		width = ilGetInteger(IL_IMAGE_WIDTH);
+		height = ilGetInteger(IL_IMAGE_HEIGHT);
+		ilBindImage(0);
+	}
+	else
+	{
+		//TODO: ERROR HERE
+	}
 }

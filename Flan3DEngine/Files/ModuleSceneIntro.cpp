@@ -55,6 +55,8 @@ bool ModuleSceneIntro::Start()
 	}
 
 	uint ImageName;
+	uint width, height;
+	App->textures->getTextureSize(0, width, height);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &ImageName);
@@ -63,8 +65,8 @@ bool ModuleSceneIntro::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 10, 10,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data);
 
 	//----------------------INITIAL GRID------------------------
 	grid.Init();

@@ -1,6 +1,17 @@
 #pragma once
 
 #include "Module.h"
+#include "Globals.h"
+#include <vector>
+
+struct Texture
+{
+	unsigned char* data = nullptr;
+	uint id = 0;
+};
+
+
+
 
 class ModuleTextures : public Module
 {
@@ -38,5 +49,8 @@ public:
 
 	void LoadTexture(char* file);
 
+	void getTextureSize(uint id, uint& width, uint& size);
 
+public:
+	std::vector<Texture*> textures;
 };
