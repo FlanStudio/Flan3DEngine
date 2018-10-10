@@ -125,8 +125,6 @@ bool ModuleRenderer3D::Init()
 		glEnable(GL_CULL_FACE);
 		cullFace = true;
 		lights[0].Active(true);
-		glEnable(GL_LIGHTING);
-		lighting = true;
 		glEnable(GL_COLOR_MATERIAL);
 		colorMaterial = true;
 		glEnable(GL_TEXTURE_2D);

@@ -157,6 +157,11 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}*/
 
+
+	//-------------SPAWN HOUSE WITH THE TEXTURE-----------
+	App->fbxLoader->LoadFBX("Assets/meshes/BakerHouse.fbx");
+	App->textures->LoadTexture("Assets/textures/Baker_house.png");
+
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
 	grid.Render();

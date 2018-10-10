@@ -50,7 +50,7 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::Start()
 {
-	//LoadTexture("Assets/textures/test.jpg");
+	
 	return true;
 }
 
@@ -96,6 +96,12 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 		return 0;
 	}
 
+	if (!iluFlipImage())
+	{
+		Debug.LogError("Error flipping the image \"%s\". Error: %s", file, iluErrorString(ilGetError()));
+		return 0;
+	}
+
 	//Create an OpenGL texture and initialize it with the active Image data
 	uint ImageName = 0;
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -108,6 +114,8 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 		0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//Create our local storage of the texture
 	Texture* text = new Texture;

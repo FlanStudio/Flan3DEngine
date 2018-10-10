@@ -67,8 +67,8 @@ public:
 	void UpdateNormalsLenght();
 
 public:
-	bool drawNormals = true;
-	float normalsLenght = 30.0f;
+	bool drawNormals = false;
+	float normalsLenght = 0.5f;
 
 private:
 	aiLogStream stream;
