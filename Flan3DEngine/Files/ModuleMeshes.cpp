@@ -234,7 +234,7 @@ void ModuleMeshes::CalculateSceneBoundingBox()
 }
 
 
-void ModuleMeshes::guiMeshes()
+void ModuleMeshes::guiMeshesTransform()const
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
@@ -246,6 +246,18 @@ void ModuleMeshes::guiMeshes()
 		ImGui::NewLine();
 	}
 }
+
+void ModuleMeshes::guiMeshesGeometry()const
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
+		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
+		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
+		ImGui::NewLine();
+	}
+}
+
 
 //-----------------Mesh methods--------------------------
 

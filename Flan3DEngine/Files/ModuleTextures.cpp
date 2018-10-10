@@ -12,6 +12,15 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
+Texture::~Texture()
+{
+	if (name)
+	{
+		delete name;
+		name = nullptr;
+	}
+	glDeleteTextures(1, &id);
+}
 
 ModuleTextures::~ModuleTextures()
 {
@@ -124,6 +133,8 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 	text->id = ImageName; //THE OPENGL ID, NOT THE IMAGE ONE!
 	text->width = ilGetInteger(IL_IMAGE_WIDTH);
 	text->height = ilGetInteger(IL_IMAGE_HEIGHT);
+	text->name = new char[strlen(file)];
+	memcpy(text->name, file, strlen(file));
 	textures.push_back(text);
 
 	//delete the buffer obtained from fileSystem and the unnecessary Image
@@ -152,7 +163,19 @@ void ModuleTextures::deleteTextures()
 {
 	for (int i = 0; i < textures.size(); ++i)
 	{
-		glDeleteTextures(1, &textures[i]->id);
+		delete textures[i];
 	}
 	textures.clear();
+}
+
+void ModuleTextures::guiTextures() const
+{
+	for (int i = 0; i < textures.size(); ++i)
+	{
+		ImGui::Text("Texture %i", i); ImGui::NewLine();
+		ImGui::SetCursorPosX(36);
+		ImGui::Image((GLuint*)textures[i]->id, { 50,50 }, { 0,1 }, {1,0});
+		ImGui::TextWrapped("\tpath: %s", textures[i]->name);
+		ImGui::Text("\tsize: %dx%d", textures[i]->width, textures[i]->height);
+	}
 }

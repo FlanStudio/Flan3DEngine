@@ -73,7 +73,8 @@ public:
 	void clearMeshes();
 	void UpdateNormalsLenght();
 	AABB getSceneAABB() const { return sceneBoundingBox; }
-	void guiMeshes();
+	void guiMeshesTransform()const;
+	void guiMeshesGeometry()const;
 
 public:
 	bool drawNormals = false;

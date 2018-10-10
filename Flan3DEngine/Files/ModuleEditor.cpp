@@ -330,8 +330,18 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::CollapsingHeader("Transformation"))
 		{
-			ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the editor."); ImGui::Separator();
-			App->meshes->guiMeshes();
+			ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
+			App->meshes->guiMeshesTransform();
+		}
+
+		if (ImGui::CollapsingHeader("Geometry"))
+		{
+			App->meshes->guiMeshesGeometry();
+		}
+
+		if (ImGui::CollapsingHeader("Textures"))
+		{
+			App->textures->guiTextures();
 		}
 
 		ImGui::End();
