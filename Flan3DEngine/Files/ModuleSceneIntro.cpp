@@ -63,20 +63,6 @@ bool ModuleSceneIntro::Start()
 		}
 	}
 
-	uint ImageName;
-	uint width, height;
-	App->textures->getTextureSize(0, width, height);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &ImageName);
-	glBindTexture(GL_TEXTURE_2D, ImageName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data);
-
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
 	grid.setColor(255, 255, 255, 0);
@@ -119,7 +105,7 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 	//TODO: FIX VERTEX TO SEE THE TEXTURE RIGHT
 	{
-		glBindTexture(GL_TEXTURE_2D, 1);
+		glBindTexture(GL_TEXTURE_2D, App->textures->textures.empty() ? 0 : App->textures->textures[0]->id);
 
 		glBegin(GL_TRIANGLES);
 

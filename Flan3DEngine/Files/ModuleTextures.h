@@ -7,7 +7,12 @@
 struct Texture
 {
 	unsigned char* data = nullptr;
+
+	//OpenGL id
 	uint id = 0;
+
+	uint width = 0;
+	uint height = 0;
 };
 
 
@@ -17,7 +22,7 @@ class ModuleTextures : public Module
 {
 public:
 	ModuleTextures(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
-	virtual ~ModuleTextures() {}
+	virtual ~ModuleTextures();
 
 	bool Init();
 
@@ -47,9 +52,12 @@ public:
 	//Load changes the module, not the JSON
 	bool Load(const JSON_Object* obj) { return true; }
 
-	void LoadTexture(char* file);
+	//returns the index of the image loaded
+	uint LoadTexture(char* file, bool useFileSystem = true);
 
 	void getTextureSize(uint id, uint& width, uint& size) const;
+
+	void deleteTextures();
 
 public:
 	std::vector<Texture*> textures;

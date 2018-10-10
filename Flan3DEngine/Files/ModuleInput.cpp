@@ -127,6 +127,10 @@ update_status ModuleInput::PreUpdate(float dt)
 				{
 					App->fbxLoader->LoadFBX((char*)filePath.data(), false);
 				}
+				else
+				{
+					App->textures->LoadTexture((char*)filePath.data(), false);
+				}
 				SDL_free(e.drop.file);
 				break;
 			}
