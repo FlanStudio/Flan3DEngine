@@ -49,7 +49,7 @@ public:
 
 	void LoadTexture(char* file);
 
-	void getTextureSize(uint id, uint& width, uint& size);
+	void getTextureSize(uint id, uint& width, uint& size) const;
 
 public:
 	std::vector<Texture*> textures;

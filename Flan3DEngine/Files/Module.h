@@ -4,8 +4,6 @@
 #include "Parson/parson.h"
 
 class Application;
-struct PhysBody3D;
-
 
 class Module
 {
@@ -49,9 +47,6 @@ public:
 	{ 
 		return true; 
 	}
-
-	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-	{}
 
 	const char* getName() { return name; }
 

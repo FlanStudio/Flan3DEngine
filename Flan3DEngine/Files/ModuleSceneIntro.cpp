@@ -1,7 +1,6 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleSceneIntro.h"
-#include "PhysBody3D.h"
 
 #include "ModuleRenderer3D.h"
 #include "ModuleWindow.h"
@@ -14,7 +13,7 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
-#define CHECKERS 8 
+#define CHECKERS 8 * 8
 
 ModuleSceneIntro::ModuleSceneIntro(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
@@ -76,10 +75,8 @@ bool ModuleSceneIntro::Start()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data); //UNSIGNED BYTE YES OR YES
+		0, GL_RGBA, GL_UNSIGNED_BYTE, App->textures->textures[0]->data);
 
-	/*ilBindImage(2);
-	ilutGLTexImage(5);*/
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
 	grid.setColor(255, 255, 255, 0);
@@ -182,7 +179,3 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 	return update_status::UPDATE_CONTINUE;
 }
 
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-	Debug.Log("Hit!");
-}

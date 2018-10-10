@@ -12,7 +12,6 @@ Application::Application()
 	scene_intro = new ModuleSceneIntro();
 	renderer3D = new ModuleRenderer3D();
 	camera = new ModuleCamera3D();
-	physics = new ModulePhysics3D();
 	editor = new ModuleEditor();
 	fs = new ModuleFileSystem();
 	fbxLoader = new FBXLoader();
@@ -29,7 +28,6 @@ Application::Application()
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
-	AddModule(physics);
 	AddModule(fbxLoader);
 	// Scenes
 	AddModule(scene_intro);

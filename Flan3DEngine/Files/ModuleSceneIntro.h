@@ -11,7 +11,7 @@
 #include "Primitives/GridPrim.h"
 
 
-struct PhysBody3D;
+
 struct PhysMotor3D;
 
 class ModuleSceneIntro : public Module
@@ -26,11 +26,8 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-
 public:
-	/*Cube s;*/
-	PhysBody3D* sensor;
+
 	Cube1 cube;
 	Cube2 cube2;
 

@@ -52,25 +52,36 @@ void ModuleTextures::LoadTexture(char* file)
 {
 	char* buffer;
 	int size;
-	App->fs->OpenRead(file, &buffer, size);
+	if (!App->fs->OpenRead(file, &buffer, size))
+	{
+		return;
+	}
 	
 	ILuint id = 0;
 	ilGenImages(1, &id);
 	ilBindImage(id);
-	ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+	if (!ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
+	{
+		Debug.LogError("Error loading the image \"%s\". Error: %s", file, iluErrorString(ilGetError()));
+		return;
+	}
+
+	if (!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+	{
+		Debug.LogError("Error converting the image \"%s\" to RGBA. Error: %s", file, iluErrorString(ilGetError()));
+		return;
+	}
+
 	Texture* text = new Texture;
 	text->data = ilGetData();
 	text->id = id;
 	textures.push_back(text);
 
-	
-
-
 	delete buffer;
 }
 
-void ModuleTextures::getTextureSize(uint id, uint& width, uint& height)
+void ModuleTextures::getTextureSize(uint id, uint& width, uint& height) const
 {
 	if (id < textures.size())
 	{
@@ -81,6 +92,6 @@ void ModuleTextures::getTextureSize(uint id, uint& width, uint& height)
 	}
 	else
 	{
-		//TODO: ERROR HERE
+		Debug.LogError("Texture not contained in the textures vector!");
 	}
 }
