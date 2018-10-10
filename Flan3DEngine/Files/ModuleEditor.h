@@ -3,7 +3,6 @@
 #include "Module.h"
 #include "Globals.h"
 #include "imgui/imgui.h"
-#include <string>
 #include "Parson/parson.h"
 
 
@@ -26,6 +25,7 @@ public:
 	bool CleanUp();
 
 private:
+
 	bool showdemowindow = false;
 	bool showMGLwindow = false;
 	bool somethingiscolliding = false;
@@ -33,5 +33,4 @@ private:
 	bool showConfig = false;
 	bool showAbout = false;
 
-	std::string nameJSON;
 };

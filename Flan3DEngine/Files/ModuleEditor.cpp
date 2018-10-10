@@ -122,6 +122,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 			}		
 			ImGui::EndMenu();
 		}
+		
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
@@ -358,7 +359,29 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
+	if (!ImGui::IsMouseHoveringAnyWindow() && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemFocused()) //IMGUI BUG: After opening a menu and clicking outside over a window, any of those is true.
+	{
+		if (ImGui::IsMouseDown(0))
+		{
+			showdemowindow = false;
+			showMGLwindow = false;
+			somethingiscolliding = false;
+			logEnabled = false;
+			showConfig = false;
+			showAbout = false;
+		}
+		
+	}
 
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	{
+		showdemowindow = false;
+		showMGLwindow = false;
+		somethingiscolliding = false;
+		logEnabled = false;
+		showConfig = false;
+		showAbout = false;
+	}
 	return UPDATE_CONTINUE;
 }
 

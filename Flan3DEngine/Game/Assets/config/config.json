@@ -16,16 +16,17 @@
     "ModuleCamera3D": {},
     "ModuleInput": {},
     "ModuleFileSystem": {},
+    "TextureLoader": {},
     "ModuleAudio": {},
-    "ModulePhysics3D": {},
+    "FBXLoader": {},
     "ModuleSceneIntro": {},
     "ModuleEditor": {},
     "ModuleRenderer": {
         "depthTest": true,
         "cullFace": true,
-        "lighting": true,
+        "lighting": false,
         "colorMaterial": true,
-        "texture2D": false,
+        "texture2D": true,
         "wireframeMode": false
     }
 }
