@@ -1,9 +1,11 @@
-#include "FBXLoader.h"
+#include "ModuleMeshes.h"
 #include "Application.h"
 
 #include "assimp/include/scene.h"
 #include "assimp/include/postprocess.h"
 #include "assimp/include/cfileio.h"
+
+#include "MathGeoLib_1.5/MathGeoLib.h"
 
 #include <string>
 
@@ -21,7 +23,7 @@ void LogCallback(const char* message, char* user)
 	Debug.enter = true;
 }
 
-bool FBXLoader::Start()
+bool ModuleMeshes::Start()
 {
 	meshes.reserve(maxMeshes);
 
@@ -32,23 +34,23 @@ bool FBXLoader::Start()
 	return true;
 }
 
-bool FBXLoader::CleanUp()
+bool ModuleMeshes::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-update_status FBXLoader::PreUpdate(float dt)
+update_status ModuleMeshes::PreUpdate(float dt)
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status FBXLoader::Update(float dt)
+update_status ModuleMeshes::Update(float dt)
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status FBXLoader::PostUpdate(float dt)
+update_status ModuleMeshes::PostUpdate(float dt)
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{		
@@ -62,18 +64,18 @@ update_status FBXLoader::PostUpdate(float dt)
 }
 
 //Save changes the JSON, not the module
-bool FBXLoader::Save(JSON_Object* obj) const
+bool ModuleMeshes::Save(JSON_Object* obj) const
 {
 	return true;
 }
 
 //Load changes the module, not the JSON
-bool FBXLoader::Load(const JSON_Object* obj)
+bool ModuleMeshes::Load(const JSON_Object* obj)
 {
 	return true;
 }
 
-bool FBXLoader::LoadFBX(char* path, bool useFS)
+bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 {
 	bool ret = false;
 	int size_buffer = 0;
@@ -160,17 +162,18 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 			Debug.Log("New mesh loaded with %d vertex", mymesh->num_vertex);
 		}
 		aiReleaseImport(scene);
-
+		CalculateSceneBoundingBox();
 	}
 	else
 	{
 		Debug.LogError("Error loading the scene %s. Error: %s", path, aiGetErrorString());
 		ret = false;
 	}
+
 	return ret;
 }
 
-void FBXLoader::deleteFBX(Mesh* mesh)
+void ModuleMeshes::deleteFBX(Mesh* mesh)
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
@@ -182,7 +185,7 @@ void FBXLoader::deleteFBX(Mesh* mesh)
 	}
 }
 
-void FBXLoader::clearMeshes()
+void ModuleMeshes::clearMeshes()
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
@@ -191,12 +194,35 @@ void FBXLoader::clearMeshes()
 	std::vector<Mesh*>().swap(meshes); //Clear, but deleting the preallocated memory
 }
 
-void FBXLoader::UpdateNormalsLenght()
+void ModuleMeshes::UpdateNormalsLenght()
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
 		meshes[i]->UpdateNormalsLenght();
 	}
+}
+
+void ModuleMeshes::CalculateSceneBoundingBox()
+{
+	float3 minCorner = { 0,0,0 };
+	float3 maxCorner = { 0,0,0 };
+
+	for (int mesh = 0; mesh < meshes.size(); mesh++)
+	{
+		for (int vertex = 0; vertex < meshes[mesh]->num_vertex; ++vertex)
+		{
+			float3 actualVertex = { meshes[mesh]->vertex[vertex * 3], meshes[mesh]->vertex[vertex * 3 + 1], meshes[mesh]->vertex[vertex * 3 + 2] };
+			minCorner.x = MIN(minCorner.x, actualVertex.x);
+			minCorner.y = MIN(minCorner.y, actualVertex.y);
+			minCorner.z = MIN(minCorner.z, actualVertex.z);
+
+			maxCorner.x = MAX(maxCorner.x, actualVertex.x);
+			maxCorner.y = MAX(maxCorner.y, actualVertex.y);
+			maxCorner.z = MAX(maxCorner.z, actualVertex.z);
+		}
+	}
+
+	sceneBoundingBox = { minCorner, maxCorner };
 }
 
 //-----------------Mesh methods--------------------------
@@ -312,9 +338,9 @@ void Mesh::genNormalLines()
 		normalLines[i*6+2]		=	vertex[i*3+2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3]	=	normals[i*3] * App->fbxLoader->normalsLenght + normalLines[i*6];				//x
-		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * App->fbxLoader->normalsLenght + normalLines[i*6 + 1];		//y
-		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * App->fbxLoader->normalsLenght + normalLines[i*6 + 2];		//z
+		normalLines[i * 6 + 3]	=	normals[i*3] * App->meshes->normalsLenght + normalLines[i*6];				//x
+		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * App->meshes->normalsLenght + normalLines[i*6 + 1];		//y
+		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * App->meshes->normalsLenght + normalLines[i*6 + 2];		//z
 	}
 }
 
@@ -331,9 +357,9 @@ void Mesh::UpdateNormalsLenght()
 		normalLines[i * 6 + 2] = vertex[i * 3 + 2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3] = normals[i * 3] * App->fbxLoader->normalsLenght + normalLines[i * 6];				//x
-		normalLines[i * 6 + 4] = normals[i * 3 + 1] * App->fbxLoader->normalsLenght + normalLines[i * 6 + 1];		//y
-		normalLines[i * 6 + 5] = normals[i * 3 + 2] * App->fbxLoader->normalsLenght + normalLines[i * 6 + 2];		//z
+		normalLines[i * 6 + 3] = normals[i * 3] * App->meshes->normalsLenght + normalLines[i * 6];				//x
+		normalLines[i * 6 + 4] = normals[i * 3 + 1] * App->meshes->normalsLenght + normalLines[i * 6 + 1];		//y
+		normalLines[i * 6 + 5] = normals[i * 3 + 2] * App->meshes->normalsLenght + normalLines[i * 6 + 2];		//z
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);

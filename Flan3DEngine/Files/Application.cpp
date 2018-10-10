@@ -14,7 +14,7 @@ Application::Application()
 	camera = new ModuleCamera3D();
 	editor = new ModuleEditor();
 	fs = new ModuleFileSystem();
-	fbxLoader = new FBXLoader();
+	meshes = new ModuleMeshes();
 	textures = new ModuleTextures();
 
 	// The order of calls is very important!
@@ -28,7 +28,7 @@ Application::Application()
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
-	AddModule(fbxLoader);
+	AddModule(meshes);
 	// Scenes
 	AddModule(scene_intro);
 

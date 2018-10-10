@@ -125,7 +125,7 @@ update_status ModuleInput::PreUpdate(float dt)
 				std::string filePath = e.drop.file;
 				if (filePath.find(".fbx") != std::string::npos || filePath.find(".FBX") != std::string::npos) //Checking if the file is a .fbx
 				{
-					App->fbxLoader->LoadFBX((char*)filePath.data(), false);
+					App->meshes->LoadFBX((char*)filePath.data(), false);
 				}
 				else
 				{

@@ -3,6 +3,9 @@
 #include "Module.h"
 #include "Globals.h"
 
+#include "MathGeoLib_1.5/Geometry/AABB.h"
+#include "MathGeoLib_1.5/Math/float3.h"
+
 #include "assimp/include/cimport.h"
 #include <vector>
 
@@ -38,14 +41,12 @@ struct Mesh
 	void UpdateNormalsLenght();
 	void drawNormals();
 };
-	
 
-
-class FBXLoader : public Module
+class ModuleMeshes : public Module
 {
 public:
-	FBXLoader(bool start_enabled = true) : Module("FBXLoader", start_enabled) { }
-	~FBXLoader() {}
+	ModuleMeshes(bool start_enabled = true) : Module("FBXLoader", start_enabled) { }
+	~ModuleMeshes() {}
 
 	bool Start();
 	update_status PreUpdate(float dt);
@@ -65,10 +66,14 @@ public:
 	void deleteFBX(Mesh* mesh);
 	void clearMeshes();
 	void UpdateNormalsLenght();
-
+	AABB getSceneAABB() const { return sceneBoundingBox; }
+	
 public:
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;
+	AABB sceneBoundingBox;
+private:
+	void CalculateSceneBoundingBox();
 
 private:
 	aiLogStream stream;

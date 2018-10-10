@@ -333,9 +333,6 @@
     <ClInclude Include="Brofiler\Brofiler.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="FBXLoader.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Assimp\include\ai_assert.h">
       <Filter>Sources\Tools\Assimp</Filter>
     </ClInclude>
@@ -612,6 +609,9 @@
     <ClInclude Include="ModuleTextures.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleMeshes.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -779,9 +779,6 @@
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="FBXLoader.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="Primitives\Arrow.cpp">
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
@@ -819,6 +816,9 @@
       <Filter>Sources\Containers\Primitives</Filter>
     </ClCompile>
     <ClCompile Include="ModuleTextures.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleMeshes.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
