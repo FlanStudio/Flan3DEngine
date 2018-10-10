@@ -9,6 +9,9 @@
 #include "DevIL/include/ilu.h"
 #include "DevIL/include/ilut.h"
 
+#include "Brofiler\Brofiler.h"
+#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
+
 #pragma comment (lib, "DevIL/libx86/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
@@ -99,6 +102,9 @@ update_status ModuleSceneIntro::Update(float dt)
 
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {
+	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
+
+
 	//cube.Render();
 	//cube2.Render();
 

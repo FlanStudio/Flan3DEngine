@@ -358,7 +358,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
-	BROFILER_CATEGORY("ModuleEditor_Update", Profiler::Color::AntiqueWhite)
 
 	return UPDATE_CONTINUE;
 }
