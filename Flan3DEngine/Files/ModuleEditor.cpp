@@ -325,6 +325,29 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::End();
 	}
 
+	if (propWindow)
+	{
+		ImGui::Begin("Properties",&propWindow);
+
+		if (ImGui::CollapsingHeader("Transformation"))
+		{
+			ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
+			App->meshes->guiMeshesTransform();
+		}
+
+		if (ImGui::CollapsingHeader("Geometry"))
+		{
+			App->meshes->guiMeshesGeometry();
+		}
+
+		if (ImGui::CollapsingHeader("Textures"))
+		{
+			App->textures->guiTextures();
+		}
+
+		ImGui::End();
+	}
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))
@@ -345,6 +368,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::MenuItem("LOG", "", &logEnabled);
 
 			ImGui::MenuItem("Config", "", &showConfig);
+
+			ImGui::MenuItem("Properties", "", &propWindow);
 
 			ImGui::MenuItem("About", "", &showAbout);
 

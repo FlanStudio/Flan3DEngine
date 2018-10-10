@@ -6,6 +6,8 @@
 
 struct Texture
 {
+	char* name;
+
 	unsigned char* data = nullptr;
 
 	//OpenGL id
@@ -13,6 +15,8 @@ struct Texture
 
 	uint width = 0;
 	uint height = 0;
+
+	~Texture();
 };
 
 
@@ -58,6 +62,8 @@ public:
 	void getTextureSize(uint id, uint& width, uint& size) const;
 
 	void deleteTextures();
+
+	void guiTextures() const;
 
 public:
 	std::vector<Texture*> textures;
