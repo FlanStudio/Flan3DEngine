@@ -156,6 +156,14 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 				}											
 			}
 
+			aiVector3D scalling, position;
+			aiQuaternion rotation;
+			scene->mRootNode->mChildren[i]->mTransformation.Decompose(scalling, rotation, position);
+
+			mymesh->scale = { scalling.x,scalling.y,scalling.z };
+			mymesh->rotation = { rotation.x,rotation.y,rotation.z,rotation.w };
+			mymesh->position = { position.x,position.y,position.z };	
+			strcpy(mymesh->name, scene->mRootNode->mChildren[i]->mName.data);
 
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
@@ -223,6 +231,20 @@ void ModuleMeshes::CalculateSceneBoundingBox()
 	}
 
 	sceneBoundingBox = { minCorner, maxCorner };
+}
+
+
+void ModuleMeshes::guiMeshes()
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
+		ImGui::Text("Position: %.2f,%.2f,%.2f", meshes[i]->position.x, meshes[i]->position.y, meshes[i]->position.z);
+		float3 angles = meshes[i]->rotation.ToEulerXYX();
+		ImGui::Text("Rotation: %.2f,%.2f,%.2f", angles.x, angles.y, angles.z);
+		ImGui::Text("Scale: %.2f,%.2f,%.2f", meshes[i]->scale.x, meshes[i]->scale.y, meshes[i]->scale.z);
+		ImGui::NewLine();
+	}
 }
 
 //-----------------Mesh methods--------------------------

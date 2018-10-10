@@ -5,6 +5,7 @@
 
 #include "MathGeoLib_1.5/Geometry/AABB.h"
 #include "MathGeoLib_1.5/Math/float3.h"
+#include "MathGeoLib_1.5/Math/Quat.h"
 
 #include "assimp/include/cimport.h"
 #include <vector>
@@ -13,6 +14,8 @@ static const uint maxMeshes = 5;
 
 struct Mesh
 {
+	char name[1024];
+
 	uint index_ID = 0;			// index in VRAM
 	uint num_index = 0;
 	uint* index = nullptr;
@@ -32,6 +35,9 @@ struct Mesh
 
 	uint textureCoords_ID = 0;
 	float* textureCoords = nullptr;
+
+	float3 scale, position;
+	Quat rotation;
 
 	~Mesh();
 	void genBuffers();
@@ -67,7 +73,8 @@ public:
 	void clearMeshes();
 	void UpdateNormalsLenght();
 	AABB getSceneAABB() const { return sceneBoundingBox; }
-	
+	void guiMeshes();
+
 public:
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;

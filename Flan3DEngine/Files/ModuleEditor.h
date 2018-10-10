@@ -32,6 +32,7 @@ private:
 	bool logEnabled = false;
 	bool showConfig = false;
 	bool showAbout = false;
+	bool propWindow = false;
 
 	std::string nameJSON;
 };
