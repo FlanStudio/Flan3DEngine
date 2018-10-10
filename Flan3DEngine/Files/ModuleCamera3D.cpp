@@ -5,6 +5,7 @@
 #include "Brofiler\Brofiler.h"
 #pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
+#define SPEED 100.0f
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module("ModuleCamera3D", start_enabled)
 {
@@ -61,12 +62,14 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 
 	float3 newPos(0,0,0);
-	float speed = 500 * dt;
+	float speed = SPEED * dt;
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		speed = 8.0f * dt;
+		speed = SPEED * 5 * dt;
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
+		speed = SPEED * dt;
 
-	//if(App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
-	//if(App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
+	if(App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos.y += speed;
+	if(App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y -= speed;
 
 	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
@@ -74,6 +77,9 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
 	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+
+	if(App->input->GetMouseZ() == 1) newPos -= Z * speed;
+	if(App->input->GetMouseZ() == -1) newPos += Z * speed;
 
 	Position += newPos;
 	Reference += newPos;
