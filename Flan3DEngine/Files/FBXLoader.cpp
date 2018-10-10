@@ -144,6 +144,7 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 				}
 			}
 
+			//TODO: FIX TEXTURE COORDINATES
 			int uvChannels = mesh->GetNumUVChannels();
 			{
 				if (uvChannels > 0)
@@ -290,6 +291,8 @@ void Mesh::Draw()
 	glColorPointer(4, GL_FLOAT, 0, NULL);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	glBindTexture(GL_TEXTURE_2D, App->textures->textures[0]->id);
+
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
 	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -297,6 +300,8 @@ void Mesh::Draw()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
 	glDrawElements(GL_TRIANGLES, num_index, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }

@@ -104,7 +104,7 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 
 
 	//TODO: FIX VERTEX TO SEE THE TEXTURE RIGHT
-	{
+	/*{
 		glBindTexture(GL_TEXTURE_2D, App->textures->textures.empty() ? 0 : App->textures->textures[0]->id);
 
 		glBegin(GL_TRIANGLES);
@@ -155,7 +155,7 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 		glEnd();
 
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
+	}*/
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
