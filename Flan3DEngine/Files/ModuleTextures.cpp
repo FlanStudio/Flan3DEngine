@@ -50,7 +50,7 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::Start()
 {
-	LoadTexture("Assets/textures/test.jpg");
+	//LoadTexture("Assets/textures/test.jpg");
 	return true;
 }
 

@@ -126,47 +126,38 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 
 			if (mesh->HasNormals())
 			{
-				mymesh->normals = new float[mymesh->num_index * 3];
-				memcpy(mymesh->normals, mesh->mNormals, sizeof(float) * mymesh->num_index * 3);
+				mymesh->normals = new float[mymesh->num_vertex * 3];
+				memcpy(mymesh->normals, mesh->mNormals, sizeof(float) * mymesh->num_vertex * 3);
 			}
 			
 			int colorChannels = mesh->GetNumColorChannels();
 			if (colorChannels > 0)
 			{
-				for (int i = 0; i < colorChannels; ++i)
+				for (int j = 0; j < colorChannels; ++j)
 				{
-					if (mesh->HasVertexColors(i))
+					if (mesh->HasVertexColors(j))
 					{
-						mymesh->colors = new float[mymesh->num_index * 4];
-						memcpy(mymesh->colors, mesh->mColors[i], sizeof(float) * mymesh->num_index * 4);
+						mymesh->colors = new float[mymesh->num_vertex * 4];
+						memcpy(mymesh->colors, mesh->mColors[i], sizeof(float) * mymesh->num_vertex * 4);
 						break; //We only keep support of 1 set of colors, for now
 					}
 				}
 			}
 
-			//TODO: FIX TEXTURE COORDINATES
-			int uvChannels = mesh->GetNumUVChannels();
+			if (mesh->HasTextureCoords(0))
 			{
-				if (uvChannels > 0)
+				mymesh->textureCoords = new float[mymesh->num_vertex * 2];
+				for (int j = 0; j < mymesh->num_vertex; ++j)
 				{
-					for (int i = 0; i < uvChannels; ++i)
-					{
-						if (mesh->HasTextureCoords(i))
-						{
-							if (mesh->mNumUVComponents[i] == 2)	//We only support plain textures for now
-							{
-								mymesh->textureCoords = new float[mymesh->num_index * 3]; //The original array comes as x,y,z.
-								memcpy(mymesh->textureCoords, mesh->mTextureCoords[i], sizeof(mymesh->num_index * 3));
-								break; //Only 1 texture coord per vertex for now
-							}							
-						}
-					}
-				}
+					memcpy(&mymesh->textureCoords[j*2], &mesh->mTextureCoords[0][j].x, sizeof(float));
+					memcpy(&mymesh->textureCoords[(j * 2) + 1], &mesh->mTextureCoords[0][j].y, sizeof(float));
+				}											
 			}
+
 
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
-			Debug.Log("New mesh loaded with %d vertices", mymesh->num_vertex);
+			Debug.Log("New mesh loaded with %d vertex", mymesh->num_vertex);
 		}
 		aiReleaseImport(scene);
 
@@ -218,7 +209,8 @@ Mesh::~Mesh()
 	delete[] index;
 	delete[] normalLines;
 	delete[] colors;
-	normals = vertex = normalLines = colors = nullptr;
+	delete[] textureCoords;
+	normals = vertex = normalLines = colors = textureCoords = nullptr;
 	index = nullptr;
 }
 
@@ -238,13 +230,13 @@ void Mesh::genBuffers()
 	{
 		glGenBuffers(1, &normals_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, normals_ID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3, normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertex * 3, normals, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);	
 	
 		genNormalLines();
 		glGenBuffers(1, &normalLines_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3 * 2, normalLines, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertex * 3 * 2, normalLines, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);	
 	}
 
@@ -260,7 +252,7 @@ void Mesh::genBuffers()
 	{
 		glGenBuffers(1, &textureCoords_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3, textureCoords, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertex * 2, textureCoords, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 }
@@ -291,10 +283,11 @@ void Mesh::Draw()
 	glColorPointer(4, GL_FLOAT, 0, NULL);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindTexture(GL_TEXTURE_2D, App->textures->textures[0]->id);
+	glBindTexture(GL_TEXTURE_2D, App->textures->textures.empty() ? 0 : App->textures->textures[0]->id);
 
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
-	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
@@ -303,18 +296,20 @@ void Mesh::Draw()
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void Mesh::genNormalLines()
 {	
-	normalLines = new float[num_index * 3 * 2];
-	for (int i = 0; i < num_index; i++)
+	normalLines = new float[num_vertex * 3 * 2];
+	for (int i = 0; i < num_vertex; i++)
 	{		
 		//origin coordinates
-		normalLines[i*6]		=	vertex[index[i]*3];									//x
-		normalLines[i*6+1]		=	vertex[index[i]*3 + 1 ];							//y
-		normalLines[i*6+2]		=	vertex[index[i]*3 + 2];								//z
+		normalLines[i*6]		=	vertex[i*3];									//x
+		normalLines[i*6+1]		=	vertex[i*3+1];							//y
+		normalLines[i*6+2]		=	vertex[i*3+2];								//z
 
 		//destination coordinates
 		normalLines[i * 6 + 3]	=	normals[i*3] * App->fbxLoader->normalsLenght + normalLines[i*6];				//x
@@ -328,12 +323,12 @@ void Mesh::UpdateNormalsLenght()
 	if (!normalLines)
 		return;
 
-	for (int i = 0; i < num_index; i++)
+	for (int i = 0; i < num_vertex; i++)
 	{
 		//origin coordinates
-		normalLines[i * 6] = vertex[index[i] * 3];									//x
-		normalLines[i * 6 + 1] = vertex[index[i] * 3 + 1];							//y
-		normalLines[i * 6 + 2] = vertex[index[i] * 3 + 2];								//z
+		normalLines[i * 6] = vertex[i * 3];									//x
+		normalLines[i * 6 + 1] = vertex[i * 3 + 1];							//y
+		normalLines[i * 6 + 2] = vertex[i * 3 + 2];								//z
 
 		//destination coordinates
 		normalLines[i * 6 + 3] = normals[i * 3] * App->fbxLoader->normalsLenght + normalLines[i * 6];				//x
@@ -342,7 +337,7 @@ void Mesh::UpdateNormalsLenght()
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 3 * 2, normalLines, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertex * 3 * 2, normalLines, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -358,7 +353,7 @@ void Mesh::drawNormals()
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glDrawArrays(GL_LINES, 0, num_index * 2);
+		glDrawArrays(GL_LINES, 0, num_vertex * 2);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 
