@@ -287,10 +287,10 @@ void ModuleRenderer3D::guiRenderer()
 		setWireframe(wireframe);
 	}
 
-	ImGui::Checkbox("draw normals", &App->fbxLoader->drawNormals);
-	if(ImGui::DragFloat("normals lenght", &App->fbxLoader->normalsLenght, 0.2, 0.1, 30, "%.1f"))
+	ImGui::Checkbox("draw normals", &App->meshes->drawNormals);
+	if(ImGui::DragFloat("normals lenght", &App->meshes->normalsLenght, 0.2, 0.1, 30, "%.1f"))
 	{
-		App->fbxLoader->UpdateNormalsLenght();
+		App->meshes->UpdateNormalsLenght();
 	}
 	
 }

@@ -11,7 +11,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleEditor.h"
 #include "ModuleFileSystem.h"
-#include "FBXLoader.h"
+#include "ModuleMeshes.h"
 #include "ModuleTextures.h"
 
 #include "Parson/parson.h"
@@ -97,7 +97,7 @@ public:
 	ModuleCamera3D* camera;
 	ModuleEditor* editor;
 	ModuleFileSystem* fs;
-	FBXLoader* fbxLoader;
+	ModuleMeshes* meshes;
 	ModuleTextures* textures;
 
 private:
