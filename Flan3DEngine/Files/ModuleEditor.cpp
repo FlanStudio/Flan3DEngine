@@ -394,6 +394,7 @@ update_status ModuleEditor::Update(float dt)
 			logEnabled = false;
 			showConfig = false;
 			showAbout = false;
+			propWindow = false;
 		}
 		
 	}
@@ -406,6 +407,7 @@ update_status ModuleEditor::Update(float dt)
 		logEnabled = false;
 		showConfig = false;
 		showAbout = false;
+		propWindow = false;
 	}
 	return UPDATE_CONTINUE;
 }
