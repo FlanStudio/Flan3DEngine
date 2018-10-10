@@ -9,6 +9,7 @@ Link to [**Jonathan Molina** Github](https://github.com/Jony635)
 Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 ## Game Engine Instructions:
+
 ### Main Menu Bar
  **Application**
 
@@ -24,7 +25,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**Config**_
 
- _Application_: Shows Engie name, Organization, Max FPS and current FPS / ms
+ _Application_: Shows Engine name, Organization, Max FPS, current FPS and last ms.
 
  _Window_: Shows Refresh Rate and allows to change config values (Brightness, Width, Height, Fullscreen, Fullscreen Desktop, Borderless and Resizable).
 
@@ -33,3 +34,8 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
  _Hardware_: Shows some Engine hardware information.
 
 * _**About**_: Shows a window with a description of the engine and links to authors Githubs, Libraries used and License.
+
+## Innovation:
+
+- 
+
