@@ -45,13 +45,28 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		AABB bb = App->meshes->getSceneAABB();
+		center = bb.CenterPoint();
+
+		float3 dir = (Position - center).Normalized();
+
+		double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+		orbitalRadius = ((bb.Size().MaxElement()) / sin);
+		
+		Position = (center + dir * orbitalRadius);
+		
+		LookAt(center);
+	}
+
 	float3 newPos(0,0,0);
 	float speed = 500 * dt;
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 8.0f * dt;
 
-	if(App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
-	if(App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
+	//if(App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
+	//if(App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
 
 	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
@@ -67,44 +82,17 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
-
-		float Sensitivity = 0.01f;
-
-		Position -= Reference;
-
-		if(dx != 0)
-		{
-			float DeltaX = (float)dx * Sensitivity;
-
-			float3x3 rotMatrixY;			
-			rotMatrixY = rotMatrixY.RotateY(DeltaX);			
-
-			X = X * rotMatrixY;	
-			
-			Y = Y * rotMatrixY;
-			
-			Z = Z * rotMatrixY;
-		}
-
-		if(dy != 0)
-		{
-			float DeltaY = (float)dy * Sensitivity;
-			float3x3 rot;
-			rot = rot.RotateAxisAngle(X, DeltaY);
-			Y = Y * rot;
-			Z = Z * rot;
-
-			if (Y.y < 0.0f)
-			{
-				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = Z.Cross(X);
-			}
-		}
-
-		Position = Reference + Z * Position.Length();
+		rotateCamera();
 	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT &&
+		App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		rotateCamera();
+		LookAt(center);
+	}
+
+
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
@@ -166,4 +154,46 @@ void ModuleCamera3D::CalculateViewMatrix()
 	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f);
 	ViewMatrixInverse = ViewMatrix;
 	ViewMatrixInverse.Inverse();
+}
+
+void ModuleCamera3D::rotateCamera()
+{
+	int dx = -App->input->GetMouseXMotion();
+	int dy = -App->input->GetMouseYMotion();
+
+	float Sensitivity = 0.01f;
+
+	Position -= Reference;
+
+	if (dx != 0)
+	{
+		float DeltaX = (float)dx * Sensitivity;
+
+		float3x3 rotMatrixY;
+		rotMatrixY = rotMatrixY.RotateY(DeltaX);
+
+		X = X * rotMatrixY;
+
+		Y = Y * rotMatrixY;
+
+		Z = Z * rotMatrixY;
+	}
+
+	if (dy != 0)
+	{
+		float DeltaY = (float)dy * Sensitivity;
+		float3x3 rot;
+		rot = rot.RotateAxisAngle(X, DeltaY);
+		Y = Y * rot;
+		Z = Z * rot;
+
+		if (Y.y < 0.0f)
+		{
+			Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+			Y = Z.Cross(X);
+		}
+	}
+
+	Position = Reference + Z * Position.Length();
+	
 }

@@ -17,6 +17,7 @@ public:
 	void Look(const float3& Position, const float3& Reference, bool RotateAroundReference = false);
 	void LookAt(const float3& Spot);
 	void Move(const float3& Movement);
+	void rotateCamera();
 	float* GetViewMatrix();
 
 private:
@@ -31,4 +32,6 @@ public:
 private:
 
 	float4x4 ViewMatrix, ViewMatrixInverse;
+	float orbitalRadius = 0.0f;
+	float3 center = {0.f,0.0f,0.0f};
 };
