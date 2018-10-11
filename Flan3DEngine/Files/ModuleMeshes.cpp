@@ -240,8 +240,8 @@ void ModuleMeshes::guiMeshesTransform()const
 	{
 		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
 		ImGui::Text("Position: %.2f,%.2f,%.2f", meshes[i]->position.x, meshes[i]->position.y, meshes[i]->position.z);
-		float3 angles = meshes[i]->rotation.ToEulerXYX();
-		ImGui::Text("Rotation: %.2f,%.2f,%.2f", angles.x, angles.y, angles.z);
+		float3 angles = meshes[i]->rotation.ToEulerXYZ();
+		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
 		ImGui::Text("Scale: %.2f,%.2f,%.2f", meshes[i]->scale.x, meshes[i]->scale.y, meshes[i]->scale.z);
 		ImGui::NewLine();
 	}
