@@ -123,18 +123,25 @@ update_status ModuleInput::PreUpdate(float dt)
 			case SDL_DROPFILE:
 			{
 				std::string filePath = e.drop.file;
-				if (filePath.find(".fbx") != std::string::npos || filePath.find(".FBX") != std::string::npos) //Checking if the file is a .fbx
+				uint pos = filePath.find_last_of(".");
+				if (pos != std::string::npos)
 				{
-					App->meshes->LoadFBX((char*)filePath.data(), false);
-				}
-				else
-				{
-					App->textures->LoadTexture((char*)filePath.data(), false);
+					std::string ext = filePath.substr(pos);
+					if (ext == ".fbx" || ext == ".FBX")
+					{
+						App->meshes->LoadFBX((char*)filePath.data(), false);
+					}
+					else
+					{
+						if (App->textures->LoadTexture((char*)filePath.data(), false) == 0)
+						{
+							Debug.LogError("Unsupported extension: %s. We only support .fbx format files for meshes and formats DevIL supports for textures.", ext.data());
+						}
+					}
 				}
 				SDL_free(e.drop.file);
 				break;
-			}
-			
+			}			
 		}
 	}
 

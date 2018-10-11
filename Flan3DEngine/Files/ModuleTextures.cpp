@@ -66,9 +66,6 @@ bool ModuleTextures::Start()
 
 uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 {
-	//TODO: MORE TEXTURES SUPPORT?
-	deleteTextures();
-
 	char* buffer = nullptr;
 	int size;
 
@@ -89,6 +86,11 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 			Debug.LogError("Error loading the image \"%s\". Error: %s", file, iluErrorString(ilGetError()));
 			return 0;
 		}
+		else
+		{
+			//TODO: MORE TEXTURES SUPPORT?
+			deleteTextures();
+		}
 	}
 	else
 	{
@@ -96,6 +98,11 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 		{
 			Debug.LogError("Error loading the image \"%s\". Error: %s", file, iluErrorString(ilGetError()));
 			return 0;
+		}
+		else
+		{
+			//TODO: MORE TEXTURES SUPPORT?
+			deleteTextures();
 		}
 	}
 	
