@@ -17,6 +17,7 @@
 #pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 #include "assimp/include/version.h"
+#include "DevIL/include/il.h"
 
 
 //TEMP
@@ -266,28 +267,31 @@ update_status ModuleEditor::PreUpdate(float dt)
 		}
 		if (ImGui::CollapsingHeader("Libraries"))
 		{
-			//ImGui::Text("Bullet  \t\t");
-			//ImGui::SameLine();
-			//if (ImGui::Button("Link to Library"))
-			//{
-			//	ShellExecuteA(NULL, "Open", "https://pybullet.org/wordpress/", NULL, NULL, SW_SHOWNORMAL);
-			//}
-
-			ImGui::Text("Imgui  %s \t", IMGUI_VERSION);
+			ImGui::Text("ImGui  "); ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 },"%s \t", IMGUI_VERSION);
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b2"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/ocornut/imgui", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			ImGui::Text("MathGeoLib 1.5  \t");
+			ImGui::Text("\tMod: ImGui_Tabs  ");
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b21"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/scottmudge/imgui_tabs", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("MathGeoLib"); ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 }," 1.5  \t");
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b3"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			ImGui::Text("pcg c basic 0.9 \t");
+			ImGui::Text("pcg c basic"); ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 }, " 0.9 \t");
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b4"))
 			{
@@ -296,18 +300,28 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 			SDL_version version;
 			SDL_GetVersion(&version);
-			ImGui::Text("SDL  %d.%d.%d  \t\t", version.major, version.minor, version.patch);
+			ImGui::Text("SDL  "); ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 }, "%d.%d.%d  \t\t", version.major, version.minor, version.patch);
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b5"))
 			{
 				ShellExecuteA(NULL, "Open", "https://www.libsdl.org/download-2.0.php", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			ImGui::Text("assimp %i.%i.%i\t\t", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
+			ImGui::Text("Assimp "); ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 }, "%i.%i.%i\t\t", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
 			ImGui::SameLine();
 			if (ImGui::Button("Link to Library##b6"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/assimp/assimp", NULL, NULL, SW_SHOWNORMAL);
+			}
+
+			ImGui::Text("DevIL");ImGui::SameLine();
+			ImGui::TextColored({ 1,1,0,1 }, "  %i.%i.%i\t\t", IL_VERSION/100, IL_VERSION / 10 - ((IL_VERSION / 100) * 10), IL_VERSION % 10);
+			ImGui::SameLine();
+			if (ImGui::Button("Link to Library##b7"))
+			{
+				ShellExecuteA(NULL, "Open", "https://github.com/DentonW/DevIL", NULL, NULL, SW_SHOWNORMAL);
 			}
 
 		}

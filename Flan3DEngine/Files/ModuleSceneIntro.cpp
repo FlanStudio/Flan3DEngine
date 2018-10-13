@@ -44,7 +44,7 @@ bool ModuleSceneIntro::Start()
 
 	//-------------SPAWN HOUSE WITH THE TEXTURE-----------
 	App->meshes->LoadFBX("Assets/meshes/BakerHouse.fbx");
-	App->textures->LoadTexture("Assets/textures/Baker_house.png");
+	App->textures->LoadTexture("Assets/textures/Baker_house.dds");
 
 	//---------------------------------------------------
 
