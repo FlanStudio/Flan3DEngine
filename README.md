@@ -25,15 +25,15 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**Config**_
 
- _Application_: Shows Engine name, Organization, Max FPS, current FPS and last ms.
+     _Application_: Shows Engine **name, Organization, Max FPS, current FPS** and **last ms**.
 
- _Window_: Shows Refresh Rate and allows to change config values (Brightness, Width, Height, Fullscreen, Fullscreen Desktop, Borderless and Resizable).
+     _Window_: Shows Refresh Rate and allows to change config values (**Brightness, Width, Height, Fullscreen, Fullscreen Desktop, Borderless and Resizable**).
 
- _Renderer*_: Shows some renderer modes.
+     _Renderer_: Shows renderer modes (**Depht Test, Lightning, Texture2D, Normals, Cull Face, Color Material, Wireframe Mode**).
 
- _Hardware_: Shows some Engine hardware information.
+     _Hardware_: Shows Engine hardware information (**SDL Version, CPUs, System Ram, Caps, Brand, GPU, OpenGL version supported, GLSL** and **VRAM usage**).
  
- * _**Properties**_: Opens a window that shows information of the object **transformations**, **Geometry** (triangles and vertices) and **Textures**.
+ * _**Properties**_: Opens a window that shows information of the object **Transformations**, **Geometry** (triangles and vertices) and **Textures**.
 
 * _**About**_: Shows a window with a description of the engine and links to authors Githubs, Libraries used and License.
 
@@ -45,7 +45,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
   * _**Mouse Scroll**_: Makes a **zoom-in**/**zoom-out**.
   
   * _**Alt + Left Click + Mouse Movement**_: Rotate around the loaded geometry.
-  
+   
   * _**Right Click + Mouse Movement**_: Camera rotates around itself.
   
   * _**F**_: Centers the view to the object.
