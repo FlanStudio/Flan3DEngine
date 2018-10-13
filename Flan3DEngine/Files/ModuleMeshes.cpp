@@ -158,12 +158,14 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 
 			aiVector3D scalling, position;
 			aiQuaternion rotation;
-			scene->mRootNode->mChildren[i]->mTransformation.Decompose(scalling, rotation, position);
+
+			//Temporal solution: We don't support trees yet
+			scene->mRootNode->mChildren[i < scene->mRootNode->mNumChildren ? i : scene->mRootNode->mNumChildren - 1]->mTransformation.Decompose(scalling, rotation, position);
 
 			mymesh->scale = { scalling.x,scalling.y,scalling.z };
 			mymesh->rotation = { rotation.x,rotation.y,rotation.z,rotation.w };
 			mymesh->position = { position.x,position.y,position.z };	
-			strcpy(mymesh->name, scene->mRootNode->mChildren[i]->mName.data);
+			strcpy(mymesh->name, scene->mRootNode->mChildren[i < scene->mRootNode->mNumChildren ? i : scene->mRootNode->mNumChildren - 1]->mName.data);
 
 			mymesh->genBuffers();			
 			meshes.push_back(mymesh);
