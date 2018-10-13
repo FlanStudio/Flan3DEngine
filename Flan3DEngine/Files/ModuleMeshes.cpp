@@ -141,7 +141,7 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 					{
 						mymesh->colors = new float[mymesh->num_vertex * 4];
 						memcpy(mymesh->colors, mesh->mColors[i], sizeof(float) * mymesh->num_vertex * 4);
-						break; //We only keep support of 1 set of colors, for now
+						break; //We only keep support of 1 set of colors, for now//
 					}
 				}
 			}
@@ -306,7 +306,7 @@ void Mesh::genBuffers()
 	{
 		glGenBuffers(1, &colors_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, colors_ID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_index * 4, colors, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertex * 4, colors, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 

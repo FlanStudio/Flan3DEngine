@@ -7,7 +7,7 @@ float SCREEN_SIZE = 1;
 bool WIN_FULLSCREEN = false;
 bool WIN_RESIZABLE = false;
 bool WIN_BORDERLESS = false;
-bool WIN_FULLSCREEN_DESKTOP = false;
+bool WIN_FULLSCREEN_DESKTOP = true;
 bool VSYNC = false;
 float BRIGHTNESS = 1.0f;
 

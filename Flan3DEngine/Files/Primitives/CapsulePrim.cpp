@@ -61,11 +61,6 @@ void CapsulePrim::pRender()
 	float3 axis = rotation.Normalized();
 
 	//----------------CIRCLE1-----------------------
-	//glTranslatef(position.x, position.y, position.z);
-	//glRotatef(angle, axis.x, axis.y, axis.z);
-	//glScalef(scale.x, scale.y, scale.z);
-	//glColor4f(color.x, color.y, color.z, color.w);
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexID);
@@ -74,12 +69,8 @@ void CapsulePrim::pRender()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	//-------------------CIRCLE2-----------------------
-	//glTranslatef(position.x, position.y, position.z);
-	//glRotatef(angle, axis.x, axis.y, axis.z);
-	//glScalef(scale.x, scale.y, scale.z);
-	//glColor4f(color.x, color.y, color.z, color.w);
 
+	//-------------------CIRCLE2-----------------------
 	glRotatef(90, 0, 1, 0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -88,22 +79,6 @@ void CapsulePrim::pRender()
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glDrawArrays(GL_LINES, 0, (cuts * 2 + 4));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//glDisableClientState(GL_VERTEX_ARRAY);
-	//glRotatef(angle, axis.x, axis.y, axis.z);
-	//glLineWidth(2.0f);
-	////glRotatef(40, 0, 1, .3);
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glVertexPointer(3, GL_FLOAT, 0, &vertex[0]);
-	//glDrawArrays(GL_LINES, 0, cuts*2 +4);
-	//glDisableClientState(GL_VERTEX_ARRAY);
-
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glVertexPointer(3, GL_FLOAT, 0, &vertex2[0]);
-	//glDrawArrays(GL_LINES, 0, cuts*2 +4);
-	//glDisableClientState(GL_VERTEX_ARRAY);
 
 	glRotatef(-90, 0, 1, 0);
 

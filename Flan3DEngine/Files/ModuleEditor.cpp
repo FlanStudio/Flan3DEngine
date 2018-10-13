@@ -233,12 +233,12 @@ update_status ModuleEditor::PreUpdate(float dt)
 				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/releases", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			if (ImGui::Button("Report a Bug##b2"))
+			if (ImGui::Button("Report a Bug   ##b2"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine/issues", NULL, NULL, SW_SHOWNORMAL);
 			}
 
-			if (ImGui::Button("Documentation##b3"))
+			if (ImGui::Button("Documentation  ##b3"))
 			{
 				ShellExecuteA(NULL, "Open", "https://github.com/FlanStudio/Flan3DEngine", NULL, NULL, SW_SHOWNORMAL);
 			}
