@@ -15,9 +15,9 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**Quit**_: Quit the engine.
 
- **View** (All windows quit pressing **ESC**).
+ **View** (All windows can be closed pressing **ESC**).
 
-* _**Demo Window**_: Opens a UI demo window.
+* _**Demo Window**_: Opens the ImGui demo window.
 
 * _**MGL Window**_: For spawning spheres and knowing if they are colliding.
 
