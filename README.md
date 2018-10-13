@@ -21,7 +21,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**MGL Window**_: For spawning spheres and knowing if they are colliding.
 
-* _**LOG**_: Opens a window that shows LOGs, WARNINGs and ERRORs.
+* _**LOG**_: Opens the console that shows LOGs, WARNINGs and ERRORs.
 
 * _**Config**_
 
@@ -44,14 +44,14 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
     
   * _**Mouse Scroll**_: Makes a **zoom-in**/**zoom-out**.
   
-  * _**Alt + Left Click + Mouse Movement**_: Centers the object and moves around it.
+  * _**Alt + Left Click + Mouse Movement**_: Rotate around the loaded geometry.
   
-  * _**Right Click + Mouse Movement**_: Camera rotates.
+  * _**Right Click + Mouse Movement**_: Camera rotates around itself.
   
   * _**F**_: Centers the view to the object.
   
  **Other functionalities**
-  * _**Drag and Drop**_: an FBX will be rendered if it's dropped into the engine.Also a texture can be dropped to (PNG, DDF).
+  * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
  
 ## Innovation:
 
