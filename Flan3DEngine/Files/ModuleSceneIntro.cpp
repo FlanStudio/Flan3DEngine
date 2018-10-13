@@ -34,13 +34,6 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(float3(0.0f, 5.0f, 5.0f));
 	App->camera->LookAt(float3(0, 0, 0));
 
-	/*App->camera->Move(float3(6.55f, -322.21f, 219.16f));
-	App->camera->LookAt(float3(3.33f, -45.71f, 144.40f));*/
-
-
-	//sensor = App->physics->AddBody(s, 0.0f);
-	/*sensor->SetAsSensor(true);
-	sensor->collision_listeners.push_back(this);*/
 
 	//-------------SPAWN HOUSE WITH THE TEXTURE-----------
 	App->meshes->LoadFBX("Assets/meshes/BakerHouse.fbx");
@@ -92,84 +85,18 @@ bool ModuleSceneIntro::CleanUp()
 
 update_status ModuleSceneIntro::PreUpdate(float dt)
 {
-
-
 	return update_status::UPDATE_CONTINUE;
 }
 
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-
-
-
-
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {
 	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
-
-
-	//cube.Render();
-	//cube2.Render();
-
-
-	//TODO: FIX VERTEX TO SEE THE TEXTURE RIGHT
-	/*{
-		glBindTexture(GL_TEXTURE_2D, App->textures->textures.empty() ? 0 : App->textures->textures[0]->id);
-
-		glBegin(GL_TRIANGLES);
-
-		glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
-		glTexCoord2f(1, 0);	glVertex3f(1 , 0, 0);
-		glTexCoord2f(0, 1);	glVertex3f(0, 1, 0);
-		glTexCoord2f(1, 0);	glVertex3f(1 , 0, 0);
-		glTexCoord2f(1, 1);	glVertex3f(1 , 1 , 0);
-		glTexCoord2f(0, 1);	glVertex3f(0, 1 , 0); //FRONT
-
-		glTexCoord2f(1, 0); glVertex3f(1, 0, 0);
-		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
-		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
-		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
-		glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
-		glTexCoord2f(0, 0); glVertex3f(1, 1, 0); //RIGHT
-
-		glTexCoord2f(0, 1); glVertex3f(0, 1, 0);
-		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
-		glTexCoord2f(1, 1); glVertex3f(0, 1, -1);
-		glTexCoord2f(0, 0); glVertex3f(1, 1, 0);
-		glTexCoord2f(1, 0); glVertex3f(1, 1, -1);
-		glTexCoord2f(1, 1); glVertex3f(0, 1, -1); //TOP
-
-		glTexCoord2f(0, 0); glVertex3f(1, 0, -1);
-		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
-		glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
-		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
-		glTexCoord2f(1, 1); glVertex3f(0, 1, -1);
-		glTexCoord2f(0, 1); glVertex3f(1, 1, -1); //BACK
-
-		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
-		glTexCoord2f(1, 1); glVertex3f(0, 0, 0);
-		glTexCoord2f(0, 0); glVertex3f(0, 1, -1);
-		glTexCoord2f(1, 1); glVertex3f(0, 0, 0);
-		glTexCoord2f(0, 1); glVertex3f(0, 1, 0);
-		glTexCoord2f(0, 0); glVertex3f(0, 1, -1); //LEFT
-
-		glTexCoord2f(1, 0); glVertex3f(0, 0, -1);
-		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
-		glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-		glTexCoord2f(1, 1); glVertex3f(1, 0, -1);
-		glTexCoord2f(0, 1); glVertex3f(1, 0, 0);
-		glTexCoord2f(0, 0); glVertex3f(0, 0, 0); //BOTTOM
-
-
-		glEnd();
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}*/
-
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();

@@ -12,9 +12,6 @@ PlanePrim::~PlanePrim()
 
 void PlanePrim::Init()
 {
-	//index = { 0,1,3,1,2,3, 1,5,2,5,6,2, 4,0,7,0,3,7, 4,7,6,4,6,5, 3,2,7,2,6,7, 0,4,1,4,5,1 };
-	//vertex = { 0,0,0, b,0,0, b,a,0, 0,a,0, 0 - g,0 - f,e, b + g,0 - f,e, b + g,a + f,e, 0 - g,a + f,e };
-
 	index.resize(INDEX_NUM);
 	vertex.resize(VERTEX_NUM *3);
 
@@ -24,8 +21,6 @@ void PlanePrim::Init()
 
 	for (uint i = 0, j = 0; i < (higCuts - 1) * 2 * (lenCuts - 1); i++)
 	{
-		//j = (i + (k*(lenCuts-1) * 2))*3;
-
 		j = i * 3;
 
 		if (!(i % 2 == 0))
@@ -51,26 +46,23 @@ void PlanePrim::Init()
 		index[j ] = z;
 	}
 	
-	
-	//for (uint l = 0; l < higCuts; l++)
-	{
-		uint l = 0;
-		float k = 0.0f;
-		for (uint i = 0, j = 0; i < lenCuts *higCuts; i++)
-		{
-			j = i * 3;
-			if (i % lenCuts == 0 && i != 0)
-			{
-				k = 0.0f;
-				l++;
-			}
-			vertex[j] = -length / 2 + k;
-			vertex[j + 1] = 0;
-			vertex[j + 2] = higth / 2 - (higth*l /(higCuts-1));
-			k += (length / (lenCuts-1));
-		}
 
+	uint l = 0;
+	float k = 0.0f;
+	for (uint i = 0, j = 0; i < lenCuts *higCuts; i++)
+	{
+		j = i * 3;
+		if (i % lenCuts == 0 && i != 0)
+		{
+			k = 0.0f;
+			l++;
+		}
+		vertex[j] = -length / 2 + k;
+		vertex[j + 1] = 0;
+		vertex[j + 2] = higth / 2 - (higth*l /(higCuts-1));
+		k += (length / (lenCuts-1));
 	}
+
 	
 	glGenBuffers(1, &vertexID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexID);

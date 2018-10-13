@@ -213,10 +213,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::Text("VRAM Available: ");
 			ImGui::Text("VRAM Reserved: ");
 
-
 		}
-
-
 
 		ImGui::End();
 	}
@@ -398,21 +395,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 update_status ModuleEditor::Update(float dt)
 {
-	//if (!ImGui::IsMouseHoveringAnyWindow() && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemFocused()) //IMGUI BUG: After opening a menu and clicking outside over a window, any of those is true.
-	//{
-	//	if (ImGui::IsMouseDown(0))
-	//	{
-	//		showdemowindow = false;
-	//		showMGLwindow = false;
-	//		somethingiscolliding = false;
-	//		logEnabled = false;
-	//		showConfig = false;
-	//		showAbout = false;
-	//		propWindow = false;
-	//	}
-	//	
-	//}
-
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
 		showdemowindow = false;
@@ -432,7 +414,6 @@ update_status ModuleEditor::PostUpdate(float dt)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	/*SDL_GL_SwapWindow(App->window->window);*/
 	ImGui::EndFrame();
 	return UPDATE_CONTINUE;
 }
@@ -446,25 +427,6 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
 	ImGui::Begin(title, p_opened);
-
-	/*if (ImGui::Button("Log", ImVec2(80, 25)))
-	{
-		Log("Hay un caballo volador");
-	}
-
-	ImGui::SameLine();
-	if (ImGui::Button("LogWarning", ImVec2(80, 25)))
-	{
-		LogWarning("Al caballo volador no le des drogas");
-	}
-
-	ImGui::SameLine();
-	if (ImGui::Button("LogError", ImVec2(80, 25)))
-	{
-		LogError("Al caballo volador le has dado muchas drogas");
-	}
-
-	ImGui::SameLine();*/
 
 	if (ImGui::Button("Clear", ImVec2(80,25)))
 	{

@@ -43,9 +43,6 @@ update_status ModuleCamera3D::Update(float dt)
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
 
-	// Implement a debug camera with keys and mouse
-	// Now we can make this movememnt frame rate independant!
-
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		AABB bb = App->meshes->getSceneAABB();
@@ -98,8 +95,6 @@ update_status ModuleCamera3D::Update(float dt)
 		rotateCamera();
 		LookAt(center);
 	}
-
-
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();

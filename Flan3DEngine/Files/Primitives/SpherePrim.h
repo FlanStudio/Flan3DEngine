@@ -25,7 +25,4 @@ private:
 
 	uint vertex2ID = 0;
 	std::vector<float> vertex2;
-
-	//std::vector<float> vertex;
-	//std::vector<float> vertex2;
 };
