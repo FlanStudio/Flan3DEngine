@@ -43,31 +43,31 @@ update_status ModuleCamera3D::Update(float dt)
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-	{
-		AABB bb = App->meshes->getSceneAABB();
-		center = bb.CenterPoint();
+		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+		{
+			AABB bb = App->meshes->getSceneAABB();
+			center = bb.CenterPoint();
 
-		float3 dir = (Position - center).Normalized();
+			float3 dir = (Position - center).Normalized();
 
-		double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
-		orbitalRadius = ((bb.Size().MaxElement()) / sin);
-		
-		Position = (center + dir * orbitalRadius);
-		
-		LookAt(center);
-	}
+			double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+			orbitalRadius = ((bb.Size().MaxElement()) / sin);
 
-	float3 newPos(0,0,0);
+			Position = (center + dir * orbitalRadius);
+
+			LookAt(center);
+		}
+
+	float3 newPos(0, 0, 0);
 	float speed = SPEED * dt;
 
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = SPEED * 5 * dt;
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
+	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
 		speed = SPEED * dt;
 
-	if(App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos.y += speed;
-	if(App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y -= speed;
+	if(App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos += Y * speed;
+	if(App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos -= Y * speed;
 
 	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
