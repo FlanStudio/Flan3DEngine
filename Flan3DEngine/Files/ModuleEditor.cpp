@@ -372,6 +372,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 		if (ImGui::BeginMenu("View"))
 		{
 			
+			
+
 			ImGui::MenuItem("Demo Window", "", &showdemowindow);
 				
 			ImGui::MenuItem("MGL window", "", &showMGLwindow);
@@ -385,6 +387,13 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::MenuItem("About", "", &showAbout);
 
 			ImGui::EndMenu();
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::TextColored({ 1,1,1,1 }, "Press ESC to close all windows opened");
+			ImGui::EndTooltip();
 		}
 		
 		ImGui::EndMainMenuBar();
