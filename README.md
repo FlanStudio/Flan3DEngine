@@ -59,6 +59,11 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 - **FileSystem** using [PHYSFS](https://icculus.org/physfs/) and implemented in all textures and meshes loading.
 - **LogWindow** using and modifying [this](https://github.com/ocornut/imgui/issues/300) example the creator of ImGui posted in an issue.
 
+## Assets
+
+- **Trex** from [HERE](https://www.turbosquid.com/3d-models/3d-model-pbr-flare-gun-1303070) by [soidev](https://www.turbosquid.com/Search/Artists/soidev).
+- **Gun** from [HERE](https://www.turbosquid.com/3d-models/t-rex-fbx-free/933905) by [joel3d](https://www.turbosquid.com/Search/Artists/soidev).
+
 ## License
 MIT License
 
