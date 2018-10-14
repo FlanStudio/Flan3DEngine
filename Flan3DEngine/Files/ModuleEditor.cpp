@@ -206,7 +206,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 															SDL_HasAVX2() ? "AVX2" : "", SDL_HasAltiVec() ? "AltiVec" : "", SDL_Has3DNow() ? "3DNOW" : "");
 
 			ImGui::Separator();
-			//TODO: GPU INFO
+
 			App->renderer3D->guiGPU();
 			ImGui::Text("VRAM Budget: ");
 			ImGui::Text("VRAM Usage: ");

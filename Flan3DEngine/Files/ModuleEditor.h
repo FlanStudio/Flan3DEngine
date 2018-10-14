@@ -29,9 +29,8 @@ private:
 	bool showdemowindow = false;
 	bool showMGLwindow = false;
 	bool somethingiscolliding = false;
-	bool logEnabled = false;
-	bool showConfig = false;
+	bool logEnabled = true;
+	bool showConfig = true;
 	bool showAbout = false;
-	bool propWindow = false;
-
+	bool propWindow = true;
 };
