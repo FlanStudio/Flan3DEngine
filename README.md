@@ -61,8 +61,8 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 ## Assets
 
-- **Trex** from [HERE](https://www.turbosquid.com/3d-models/3d-model-pbr-flare-gun-1303070) by [soidev](https://www.turbosquid.com/Search/Artists/soidev).
-- **Gun** from [HERE](https://www.turbosquid.com/3d-models/t-rex-fbx-free/933905) by [joel3d](https://www.turbosquid.com/Search/Artists/soidev).
+- **Trex** from [HERE](https://www.turbosquid.com/3d-models/3d-model-pbr-flare-gun-1303070) by [joel3d](https://www.turbosquid.com/Search/Artists/joel3d).
+- **Gun** from [HERE](https://www.turbosquid.com/3d-models/t-rex-fbx-free/933905) by [soidev](https://www.turbosquid.com/Search/Artists/soidev).
 
 ## License
 MIT License
