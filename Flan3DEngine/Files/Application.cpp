@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "Brofiler\Brofiler.h"
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 LogWindow Debug;
 
@@ -9,12 +8,12 @@ Application::Application()
 	window = new ModuleWindow();
 	input = new ModuleInput();
 	audio = new ModuleAudio();
-	scene_intro = new ModuleSceneIntro();
+	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
 	camera = new ModuleCamera3D();
 	editor = new ModuleEditor();
 	fs = new ModuleFileSystem();
-	meshes = new ModuleMeshes();
+	fbxLoader = new FBXLoader();
 	textures = new ModuleTextures();
 
 	// The order of calls is very important!
@@ -28,9 +27,9 @@ Application::Application()
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
-	AddModule(meshes);
+	AddModule(fbxLoader);
 	// Scenes
-	AddModule(scene_intro);
+	AddModule(scene);
 
 	//Debug geometry here
 	//AddModule(debug);

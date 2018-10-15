@@ -6,11 +6,11 @@
     },
     "ModuleWindow": {
         "FullscreenWindow": false,
-        "FullscreenDesktop": true,
+        "FullscreenDesktop": false,
         "Resizable": false,
         "Borderless": false,
-        "ScreenWidth": 1920,
-        "ScreenHeight": 1080,
+        "ScreenWidth": 1400,
+        "ScreenHeight": 700,
         "Brightness": 1
     },
     "ModuleCamera3D": {},

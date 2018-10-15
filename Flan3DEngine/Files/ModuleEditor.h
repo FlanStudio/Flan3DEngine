@@ -24,6 +24,8 @@ public:
 
 	bool CleanUp();
 
+	void Draw() const;
+
 private:
 
 	bool showdemowindow = false;

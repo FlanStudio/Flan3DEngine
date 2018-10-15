@@ -1,9 +1,12 @@
-#include "ModuleMeshes.h"
+#include "FBXLoader.h"
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "assimp/include/scene.h"
 #include "assimp/include/postprocess.h"
 #include "assimp/include/cfileio.h"
+
+#include "Glew/include/glew.h"
 
 #include "MathGeoLib_1.5/MathGeoLib.h"
 
@@ -23,10 +26,8 @@ void LogCallback(const char* message, char* user)
 	Debug.enter = true;
 }
 
-bool ModuleMeshes::Start()
+bool FBXLoader::Start()
 {
-	meshes.reserve(maxMeshes);
-
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
 	stream.callback = LogCallback;
 	aiAttachLogStream(&stream);
@@ -34,50 +35,44 @@ bool ModuleMeshes::Start()
 	return true;
 }
 
-bool ModuleMeshes::CleanUp()
+bool FBXLoader::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-update_status ModuleMeshes::PreUpdate(float dt)
+update_status FBXLoader::PreUpdate(float dt)
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status ModuleMeshes::Update(float dt)
+update_status FBXLoader::Update(float dt)
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status ModuleMeshes::PostUpdate(float dt)
+update_status FBXLoader::PostUpdate(float dt)
 {
-	for (int i = 0; i < meshes.size(); ++i)
-	{		
-		meshes[i]->Draw();
-
-		if(drawNormals)
-			meshes[i]->drawNormals();
-		
-	}
+	
 	return update_status::UPDATE_CONTINUE;
 }
 
 //Save changes the JSON, not the module
-bool ModuleMeshes::Save(JSON_Object* obj) const
+bool FBXLoader::Save(JSON_Object* obj) const
 {
 	return true;
 }
 
 //Load changes the module, not the JSON
-bool ModuleMeshes::Load(const JSON_Object* obj)
+bool FBXLoader::Load(const JSON_Object* obj)
 {
 	return true;
 }
 
-bool ModuleMeshes::LoadFBX(char* path, bool useFS)
+bool FBXLoader::LoadFBX(char* path, bool useFS)
 {
-	bool ret = false;
+	bool ret = true;
+	std::vector<Mesh*> meshes;
 	int size_buffer = 0;
 	char* buffer;
 	const aiScene* scene;
@@ -97,11 +92,11 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 	{
 		scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
 	}
-
 	 
 	if (scene != nullptr && scene->HasMeshes())
 	{
-		clearMeshes();
+		App->renderer3D->ClearMeshes();
+		meshes.reserve(scene->mNumMeshes); //Only allocate memory once
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; ++i)
 		{
@@ -172,7 +167,8 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 			Debug.Log("New mesh loaded with %d vertex", mymesh->num_vertex);
 		}
 		aiReleaseImport(scene);
-		CalculateSceneBoundingBox();
+		App->renderer3D->AddMeshes(meshes);
+		App->renderer3D->CalculateSceneBoundingBox();
 	}
 	else
 	{
@@ -182,84 +178,6 @@ bool ModuleMeshes::LoadFBX(char* path, bool useFS)
 
 	return ret;
 }
-
-void ModuleMeshes::deleteFBX(Mesh* mesh)
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		if (meshes[i] == mesh)
-		{
-			delete mesh;
-			meshes.erase(meshes.begin() + i);
-		}
-	}
-}
-
-void ModuleMeshes::clearMeshes()
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		delete meshes[i];
-	}
-	std::vector<Mesh*>().swap(meshes); //Clear, but deleting the preallocated memory
-}
-
-void ModuleMeshes::UpdateNormalsLenght()
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		meshes[i]->UpdateNormalsLenght();
-	}
-}
-
-void ModuleMeshes::CalculateSceneBoundingBox()
-{
-	float3 minCorner = { 0,0,0 };
-	float3 maxCorner = { 0,0,0 };
-
-	for (int mesh = 0; mesh < meshes.size(); mesh++)
-	{
-		for (int vertex = 0; vertex < meshes[mesh]->num_vertex; ++vertex)
-		{
-			float3 actualVertex = { meshes[mesh]->vertex[vertex * 3], meshes[mesh]->vertex[vertex * 3 + 1], meshes[mesh]->vertex[vertex * 3 + 2] };
-			minCorner.x = MIN(minCorner.x, actualVertex.x);
-			minCorner.y = MIN(minCorner.y, actualVertex.y);
-			minCorner.z = MIN(minCorner.z, actualVertex.z);
-
-			maxCorner.x = MAX(maxCorner.x, actualVertex.x);
-			maxCorner.y = MAX(maxCorner.y, actualVertex.y);
-			maxCorner.z = MAX(maxCorner.z, actualVertex.z);
-		}
-	}
-
-	sceneBoundingBox = { minCorner, maxCorner };
-}
-
-
-void ModuleMeshes::guiMeshesTransform()const
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
-		ImGui::Text("Position: %.2f,%.2f,%.2f", meshes[i]->position.x, meshes[i]->position.y, meshes[i]->position.z);
-		float3 angles = meshes[i]->rotation.ToEulerXYZ();
-		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
-		ImGui::Text("Scale: %.2f,%.2f,%.2f", meshes[i]->scale.x, meshes[i]->scale.y, meshes[i]->scale.z);
-		ImGui::NewLine();
-	}
-}
-
-void ModuleMeshes::guiMeshesGeometry()const
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
-		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
-		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
-		ImGui::NewLine();
-	}
-}
-
 
 //-----------------Mesh methods--------------------------
 
@@ -374,9 +292,9 @@ void Mesh::genNormalLines()
 		normalLines[i*6+2]		=	vertex[i*3+2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3]	=	normals[i*3] * App->meshes->normalsLenght + normalLines[i*6];				//x
-		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * App->meshes->normalsLenght + normalLines[i*6 + 1];		//y
-		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * App->meshes->normalsLenght + normalLines[i*6 + 2];		//z
+		normalLines[i * 6 + 3]	=	normals[i*3] * App->renderer3D->normalsLenght + normalLines[i*6];				//x
+		normalLines[i * 6 + 4]	=	normals[i * 3 + 1] * App->renderer3D->normalsLenght + normalLines[i*6 + 1];		//y
+		normalLines[i * 6 + 5]	=	normals[i * 3 + 2] * App->renderer3D->normalsLenght + normalLines[i*6 + 2];		//z
 	}
 }
 
@@ -393,9 +311,9 @@ void Mesh::UpdateNormalsLenght()
 		normalLines[i * 6 + 2] = vertex[i * 3 + 2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3] = normals[i * 3] * App->meshes->normalsLenght + normalLines[i * 6];				//x
-		normalLines[i * 6 + 4] = normals[i * 3 + 1] * App->meshes->normalsLenght + normalLines[i * 6 + 1];		//y
-		normalLines[i * 6 + 5] = normals[i * 3 + 2] * App->meshes->normalsLenght + normalLines[i * 6 + 2];		//z
+		normalLines[i * 6 + 3] = normals[i * 3] * App->renderer3D->normalsLenght + normalLines[i * 6];				//x
+		normalLines[i * 6 + 4] = normals[i * 3 + 1] * App->renderer3D->normalsLenght + normalLines[i * 6 + 1];		//y
+		normalLines[i * 6 + 5] = normals[i * 3 + 2] * App->renderer3D->normalsLenght + normalLines[i * 6 + 2];		//z
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);

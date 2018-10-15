@@ -3,7 +3,6 @@
 #include "ModuleInput.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "Brofiler\Brofiler.h"
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 
 #define MAX_KEYS 300
@@ -129,7 +128,7 @@ update_status ModuleInput::PreUpdate(float dt)
 					std::string ext = filePath.substr(pos);
 					if (ext == ".fbx" || ext == ".FBX")
 					{
-						App->meshes->LoadFBX((char*)filePath.data(), false);
+						App->fbxLoader->LoadFBX((char*)filePath.data(), false);
 					}
 					else
 					{

@@ -3,7 +3,6 @@
 #include "ModuleCamera3D.h"
 #include "MathGeoLib_1.5/Math/float3x3.h"
 #include "Brofiler\Brofiler.h"
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 #define SPEED 100.0f
 
@@ -45,7 +44,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		{
-			AABB bb = App->meshes->getSceneAABB();
+			AABB bb = App->renderer3D->getSceneAABB();
 			center = bb.CenterPoint();
 
 			float3 dir = (Position - center).Normalized();

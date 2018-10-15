@@ -3,8 +3,6 @@
 #include "ModuleWindow.h"
 #include "Brofiler\Brofiler.h"
 
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
-
 
 ModuleWindow::ModuleWindow(bool start_enabled) : Module("ModuleWindow", start_enabled)
 {

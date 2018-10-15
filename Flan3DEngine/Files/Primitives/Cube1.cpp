@@ -1,8 +1,6 @@
 #include "../Application.h"
 #include "Cube1.h"
 
-#include "../Glew/include/glew.h"
-
 Cube1::~Cube1()
 {
 	glDeleteBuffers(1, &bufferId);

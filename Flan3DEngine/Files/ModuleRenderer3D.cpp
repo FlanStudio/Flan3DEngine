@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "FBXLoader.h"
 
 #include "Glew/include/glew.h"
 #include "SDL/include/SDL_opengl.h"
@@ -10,8 +11,6 @@
 #include "MathGeoLib_1.5/Math/MathConstants.h"
 
 #include "Brofiler\Brofiler.h"
-
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -170,6 +169,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 
+	DrawMeshes();
+	App->editor->Draw();
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
@@ -287,12 +288,35 @@ void ModuleRenderer3D::guiRenderer()
 		setWireframe(wireframe);
 	}
 
-	ImGui::Checkbox("draw normals", &App->meshes->drawNormals);
-	if(ImGui::DragFloat("normals lenght", &App->meshes->normalsLenght, 0.2, 0.1, 30, "%.1f"))
+	ImGui::Checkbox("draw normals", &drawNormals);
+	if(ImGui::DragFloat("normals lenght", &normalsLenght, 0.2, 0.1, 30, "%.1f"))
 	{
-		App->meshes->UpdateNormalsLenght();
+		UpdateNormalsLenght();
 	}
-	
+}
+
+void ModuleRenderer3D::guiMeshesTransform()const
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
+		ImGui::Text("Position: %.2f,%.2f,%.2f", meshes[i]->position.x, meshes[i]->position.y, meshes[i]->position.z);
+		float3 angles = meshes[i]->rotation.ToEulerXYZ();
+		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
+		ImGui::Text("Scale: %.2f,%.2f,%.2f", meshes[i]->scale.x, meshes[i]->scale.y, meshes[i]->scale.z);
+		ImGui::NewLine();
+	}
+}
+
+void ModuleRenderer3D::guiMeshesGeometry()const
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
+		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
+		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
+		ImGui::NewLine();
+	}
 }
 
 bool ModuleRenderer3D::Save(JSON_Object* obj) const
@@ -356,4 +380,63 @@ float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float znear, fl
 	Perspective[3][3] = 0.0f;
 
 	return Perspective;
+}
+
+void ModuleRenderer3D::AddMeshes(std::vector<Mesh*>newMeshes)
+{
+	meshes.reserve(meshes.size() + newMeshes.size()); //Only expand the memory once
+	for (int i = 0; i < newMeshes.size(); ++i)
+	{
+		meshes.push_back(newMeshes[i]);
+	}
+}
+
+void ModuleRenderer3D::ClearMeshes()
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		delete meshes[i];
+	}
+	std::vector<Mesh*>().swap(meshes); //Clear, but deleting the preallocated memory
+}
+
+void ModuleRenderer3D::UpdateNormalsLenght()
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->UpdateNormalsLenght();
+	}
+}
+
+void ModuleRenderer3D::CalculateSceneBoundingBox()
+{
+	float3 minCorner = { 0,0,0 };
+	float3 maxCorner = { 0,0,0 };
+
+	for (int mesh = 0; mesh < meshes.size(); mesh++)
+	{
+		for (int vertex = 0; vertex < meshes[mesh]->num_vertex; ++vertex)
+		{
+			float3 actualVertex = { meshes[mesh]->vertex[vertex * 3], meshes[mesh]->vertex[vertex * 3 + 1], meshes[mesh]->vertex[vertex * 3 + 2] };
+			minCorner.x = MIN(minCorner.x, actualVertex.x);
+			minCorner.y = MIN(minCorner.y, actualVertex.y);
+			minCorner.z = MIN(minCorner.z, actualVertex.z);
+
+			maxCorner.x = MAX(maxCorner.x, actualVertex.x);
+			maxCorner.y = MAX(maxCorner.y, actualVertex.y);
+			maxCorner.z = MAX(maxCorner.z, actualVertex.z);
+		}
+	}
+	sceneBoundingBox = { minCorner, maxCorner };
+}
+
+void ModuleRenderer3D::DrawMeshes() const
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->Draw();
+
+		if (drawNormals)
+			meshes[i]->drawNormals();
+	}
 }

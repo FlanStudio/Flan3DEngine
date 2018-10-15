@@ -14,7 +14,6 @@
 #include "ModuleFileSystem.h"
 
 #include "Brofiler\Brofiler.h"
-#pragma comment( lib, "Brofiler/ProfilerCore32.lib")
 
 #include "assimp/include/version.h"
 #include "DevIL/include/il.h"
@@ -100,11 +99,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::Text(somethingiscolliding ? "true" : "false");
 		
 		ImGui::End();
-	}
-
-	if (logEnabled)
-	{
-		Debug.Draw("LogWindow", &logEnabled);
 	}
 
 	if (showConfig)
@@ -216,6 +210,11 @@ update_status ModuleEditor::PreUpdate(float dt)
 		}
 
 		ImGui::End();
+	}
+	
+	if (logEnabled)
+	{
+		Debug.Draw("LogWindow", &logEnabled);
 	}
 
 	if (showAbout)
@@ -343,12 +342,12 @@ update_status ModuleEditor::PreUpdate(float dt)
 		if (ImGui::CollapsingHeader("Transformation"))
 		{
 			ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
-			App->meshes->guiMeshesTransform();
+			App->renderer3D->guiMeshesTransform();
 		}
 
 		if (ImGui::CollapsingHeader("Geometry"))
 		{
-			App->meshes->guiMeshesGeometry();
+			App->renderer3D->guiMeshesGeometry();
 		}
 
 		if (ImGui::CollapsingHeader("Textures"))
@@ -371,9 +370,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::BeginMenu("View"))
 		{
-			
-			
-
 			ImGui::MenuItem("Demo Window", "", &showdemowindow);
 				
 			ImGui::MenuItem("MGL window", "", &showMGLwindow);
@@ -419,11 +415,6 @@ update_status ModuleEditor::Update(float dt)
 
 update_status ModuleEditor::PostUpdate(float dt)
 {
-	BROFILER_CATEGORY("ModuleEditor_Postupdate", Profiler::Color::AntiqueWhite)
-
-	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	ImGui::EndFrame();
 	return UPDATE_CONTINUE;
 }
 
@@ -473,4 +464,14 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	ScrollToBottom = false;
 
 	ImGui::End();
+}
+
+void ModuleEditor::Draw() const
+{
+	BROFILER_CATEGORY("ModuleEditor_Postupdate", Profiler::Color::AntiqueWhite)
+
+	ImGui::Render();
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	ImGui::EndFrame();
+
 }

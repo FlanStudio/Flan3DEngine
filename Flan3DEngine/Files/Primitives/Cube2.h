@@ -1,6 +1,6 @@
 #pragma once
 #include "Primitive.h"
-#include "Globals.h"
+#include "../Globals.h"
 #include <vector>
 
 class Cube2 : public Primitive
