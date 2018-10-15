@@ -9,43 +9,11 @@
 #include "assimp/include/cimport.h"
 #include <vector>
 
-static const uint maxMeshes = 5;
-
-struct Mesh
-{
-	char name[1024];
-
-	uint index_ID = 0;			// index in VRAM
-	uint num_index = 0;
-	uint* index = nullptr;
-
-	uint vertex_ID = 0;		// unique vertex in VRAM
-	uint num_vertex = 0;
-	float* vertex = nullptr;
-
-	uint normals_ID = 0;
-	float* normals = nullptr;
-
-	uint normalLines_ID = 0;
-	float* normalLines = nullptr;
-
-	uint colors_ID = 0;
-	float* colors = nullptr;
-
-	uint textureCoords_ID = 0;
-	float* textureCoords = nullptr;
-
-	float3 scale, position;
-	Quat rotation;
-
-	~Mesh();
-	void genBuffers();
-	void destroyBuffers();
-	void Draw();
-	void genNormalLines();
-	void UpdateNormalsLenght();
-	void drawNormals();
-};
+class aiNode;
+class aiMesh;
+class MeshComponent;
+class GameObject;
+class aiScene;
 
 class FBXLoader : public Module
 {
@@ -66,8 +34,11 @@ public:
 	bool Load(const JSON_Object* obj);
 
 public:
-
 	bool LoadFBX(char* path, bool useFS = true);
+
+private:
+	bool RecursivelyHierarchy(const aiNode* parent, const GameObject* parentGO, const aiScene* scene);
+	bool FillMeshData(MeshComponent* mymesh, aiMesh* mesh);
 
 private:
 	aiLogStream stream;

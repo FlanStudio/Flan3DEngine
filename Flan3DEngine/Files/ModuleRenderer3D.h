@@ -8,11 +8,12 @@
 
 #define MAX_LIGHTS 8
 
-struct Mesh;
+class MeshComponent;
+class GameObject;
 
 class ModuleRenderer3D : public Module
 {
-	friend class Mesh;
+	friend class MeshComponent;
 public:
 	ModuleRenderer3D(bool start_enabled = true);
 	~ModuleRenderer3D();
@@ -32,18 +33,24 @@ public:
 
 	void guiGPU()const;
 	void guiRenderer();
-	void guiMeshesTransform() const;
 	void guiMeshesGeometry() const;
 
 	void setWireframe(bool boolean);
 
-	void AddMeshes(std::vector<Mesh*> newMeshes);
+	void AddMesh(MeshComponent* newMesh) { meshes.push_back(newMesh); }
 	void ClearMeshes();
+	void ClearMesh(MeshComponent* mesh);
 	void UpdateNormalsLenght();
 	void DrawMeshes() const;
 
 	void CalculateSceneBoundingBox();
 	AABB getSceneAABB() const { return sceneBoundingBox; }
+
+
+	MeshComponent* CreateMeshComponent(GameObject* parent);
+
+public:
+	void ReserveMeshes(uint size) { meshes.reserve(size); }
 
 private:
 	float4x4 Perspective(float fovy, float aspect, float znear, float zfar);
@@ -60,7 +67,8 @@ private:
 	float4x4 ProjectionMatrix;
 	//TODO: TWO OTHERS
 
-	std::vector<Mesh*> meshes;
+	std::vector<MeshComponent*> meshes; //Only contain meshes for now
+
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;
 	

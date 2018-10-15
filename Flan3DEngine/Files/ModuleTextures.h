@@ -3,10 +3,11 @@
 #include "Module.h"
 #include "Globals.h"
 #include <vector>
+#include <string>
 
 struct Texture
 {
-	char* name;
+	std::string name;
 
 	unsigned char* data = nullptr;
 

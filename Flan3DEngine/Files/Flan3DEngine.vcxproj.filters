@@ -621,6 +621,9 @@
     <ClInclude Include="ComponentTransform.h">
       <Filter>Sources\Containers\Engine Structure</Filter>
     </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Sources\Containers\Engine Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -832,6 +835,9 @@
     </ClCompile>
     <ClCompile Include="FBXLoader.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Sources\Containers\Engine Structure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

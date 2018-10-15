@@ -28,6 +28,11 @@ private:
 	std::vector<GameObject*> gameObjects;
 
 public:
-	GameObject* CreateGameObject();
+	GameObject* CreateGameObject(GameObject* parent);
+	void guiMeshesTransform()const;
+	void ClearGameObjects();
+
+private:
+	void PrintHierarchy(GameObject* go) const;
 
 };

@@ -14,11 +14,6 @@
 
 Texture::~Texture()
 {
-	if (name)
-	{
-		delete name;
-		name = nullptr;
-	}
 	glDeleteTextures(1, &id);
 }
 
@@ -140,8 +135,12 @@ uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
 	text->id = ImageName; //THE OPENGL ID, NOT THE IMAGE ONE!
 	text->width = ilGetInteger(IL_IMAGE_WIDTH);
 	text->height = ilGetInteger(IL_IMAGE_HEIGHT);
-	text->name = new char[strlen(file)];
-	memcpy(text->name, file, strlen(file));
+	std::string path(file);
+	size_t pos = path.find_last_of("/");
+	if(pos == std::string::npos)
+		pos = path.find_last_of("\\");
+	text->name = path.substr(pos + 1);
+	
 	textures.push_back(text);
 
 	//delete the buffer obtained from fileSystem and the unnecessary Image
@@ -182,7 +181,7 @@ void ModuleTextures::guiTextures() const
 		ImGui::Text("Texture %i", i); ImGui::NewLine();
 		ImGui::SetCursorPosX(36);
 		ImGui::Image((GLuint*)textures[i]->id, { 50,50 }, { 0,1 }, {1,0});
-		ImGui::TextWrapped("\tpath: %s", textures[i]->name);
+		ImGui::TextWrapped("\tFile: %s", textures[i]->name.data());
 		ImGui::Text("\tsize: %dx%d", textures[i]->width, textures[i]->height);
 	}
 }

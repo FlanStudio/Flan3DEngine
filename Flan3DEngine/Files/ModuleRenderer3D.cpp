@@ -16,6 +16,9 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "Glew/glew32.lib")
 
+#include "MeshComponent.h"
+#include "GameObject.h"
+
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module("ModuleRenderer", start_enabled)
 {
 }
@@ -295,30 +298,6 @@ void ModuleRenderer3D::guiRenderer()
 	}
 }
 
-void ModuleRenderer3D::guiMeshesTransform()const
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
-		ImGui::Text("Position: %.2f,%.2f,%.2f", meshes[i]->position.x, meshes[i]->position.y, meshes[i]->position.z);
-		float3 angles = meshes[i]->rotation.ToEulerXYZ();
-		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
-		ImGui::Text("Scale: %.2f,%.2f,%.2f", meshes[i]->scale.x, meshes[i]->scale.y, meshes[i]->scale.z);
-		ImGui::NewLine();
-	}
-}
-
-void ModuleRenderer3D::guiMeshesGeometry()const
-{
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, meshes[i]->name);
-		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
-		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
-		ImGui::NewLine();
-	}
-}
-
 bool ModuleRenderer3D::Save(JSON_Object* obj) const
 {
 	json_object_set_boolean(obj, "depthTest", depthTest);
@@ -382,22 +361,27 @@ float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float znear, fl
 	return Perspective;
 }
 
-void ModuleRenderer3D::AddMeshes(std::vector<Mesh*>newMeshes)
-{
-	meshes.reserve(meshes.size() + newMeshes.size()); //Only expand the memory once
-	for (int i = 0; i < newMeshes.size(); ++i)
-	{
-		meshes.push_back(newMeshes[i]);
-	}
-}
-
 void ModuleRenderer3D::ClearMeshes()
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
+		meshes[i]->gameObject->ClearComponent(meshes[i]);
 		delete meshes[i];
 	}
-	std::vector<Mesh*>().swap(meshes); //Clear, but deleting the preallocated memory
+	std::vector<MeshComponent*>().swap(meshes); //Clear, but deleting the preallocated memory
+}
+
+void ModuleRenderer3D::ClearMesh(MeshComponent* mesh)
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		if (mesh == meshes[i])
+		{
+			delete meshes[i];
+			meshes.erase(meshes.begin() + i);
+			break;
+		}
+	}
 }
 
 void ModuleRenderer3D::UpdateNormalsLenght()
@@ -438,5 +422,23 @@ void ModuleRenderer3D::DrawMeshes() const
 
 		if (drawNormals)
 			meshes[i]->drawNormals();
+	}
+}
+
+MeshComponent* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
+{
+	MeshComponent* meshComp = new MeshComponent(parent);
+	meshes.push_back(meshComp);
+	return meshComp;
+}
+
+void ModuleRenderer3D::guiMeshesGeometry() const
+{
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, meshes[i]->gameObject->name.data());
+		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
+		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
+		ImGui::NewLine();
 	}
 }

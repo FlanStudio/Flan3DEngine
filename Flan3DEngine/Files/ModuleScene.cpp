@@ -8,6 +8,7 @@
 #include "Brofiler\Brofiler.h"
 
 #include "GameObject.h"
+#include "ComponentTransform.h"
 
 #define CHECKERS 8 * 8
 
@@ -73,10 +74,57 @@ update_status ModuleScene::PostUpdate(float dt)
 	return update_status::UPDATE_CONTINUE;
 }
 
-GameObject* ModuleScene::CreateGameObject()
+GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 {
-	GameObject* ret = new GameObject();
-	gameObjects.push_back(ret);
+	GameObject* ret = new GameObject(parent);
+
+	if(parent)
+		parent->AddChild(ret);
+	else
+		gameObjects.push_back(ret);
+
+	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
+
 	return ret;
 }
 
+void ModuleScene::guiMeshesTransform()const
+{
+	/*for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		ImGui::Text("Mesh %i: %s", i, gameObjects[i]->name.data());
+		ImGui::Text("Position: %.2f,%.2f,%.2f", gameObjects[i]->transform->position.x, gameObjects[i]->transform->position.y, gameObjects[i]->transform->position.z);
+		float3 angles = gameObjects[i]->transform->rotation.ToEulerXYZ();
+		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
+		ImGui::Text("Scale: %.2f,%.2f,%.2f", gameObjects[i]->transform->scale.x, gameObjects[i]->transform->scale.y, gameObjects[i]->transform->scale.z);
+		ImGui::NewLine();
+	}*/
+	PrintHierarchy(gameObjects[0]);
+}
+
+void ModuleScene::PrintHierarchy(GameObject* go)const
+{
+	for (int i = 0; i < go->childs.size(); ++i)
+	{
+		PrintHierarchy(go->childs[i]);
+	}
+
+	if (go == gameObjects[0]) //Dont print the rootNode
+		return;
+
+	ImGui::Text("GameObject: %s", go->name.data());
+	ImGui::Text("Position: %.2f,%.2f,%.2f", go->transform->position.x, go->transform->position.y, go->transform->position.z);
+	float3 angles = go->transform->rotation.ToEulerXYZ();
+	ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
+	ImGui::Text("Scale: %.2f,%.2f,%.2f", go->transform->scale.x, go->transform->scale.y, go->transform->scale.z);
+	ImGui::NewLine();
+}
+
+void ModuleScene::ClearGameObjects()
+{
+	for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		delete gameObjects[i];
+	}
+	gameObjects.clear();
+}
