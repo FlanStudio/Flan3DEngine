@@ -260,7 +260,7 @@
     <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="Transform.h" />
+    <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />

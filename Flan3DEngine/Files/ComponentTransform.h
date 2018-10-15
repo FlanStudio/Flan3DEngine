@@ -3,7 +3,9 @@
 #include "MathGeoLib_1.5/Math/float3.h"
 #include "MathGeoLib_1.5/Math/Quat.h"
 
-class Transform
+#include "Component.h"
+
+class ComponentTransform : public Component
 {
 	float3 position;
 	Quat rotation;

@@ -1,15 +1,21 @@
 #pragma once
 
 #include <vector>
+#include <string>
+
 #include "Component.h"
 
-class Transform;
+
 class GameObject
 {
 public:
 	Component* CreateComponent(ComponentType type);
 
 private:
-	Transform* transform;
+	bool active = true;
+	std::string name;
 	std::vector<Component*> components;
+
+	bool hasTransform = false;
+	bool hasMaterial = false;
 };
