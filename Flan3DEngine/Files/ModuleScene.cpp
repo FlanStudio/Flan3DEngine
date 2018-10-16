@@ -10,6 +10,8 @@
 #include "GameObject.h"
 #include "ComponentTransform.h"
 
+#include <bitset>
+
 #define CHECKERS 8 * 8
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
@@ -38,7 +40,6 @@ bool ModuleScene::Start()
 	grid.Init();
 	grid.setColor(255, 255, 255, 0);
 	euler.Init();
-
 
 	return ret;
 }

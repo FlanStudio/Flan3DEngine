@@ -15,9 +15,14 @@ public:
 	bool AddPath(char* path, char* mount = "");
 	bool setWriteDir(char* path);
 
-	//TIP: Dont forget to delete the buffer
+	//WARNING: Don't forget to delete the buffer
 	bool OpenRead(char* file, char** buffer, int& size) const;
 
 	bool OpenWrite(char* file, char* buffer);
+	
+	//WARNING: Don't forget to delete the buffer
+	char* ASCII_TO_BINARY(char* ascii_string);
 
+	//WARNING: Don't forget to delete the buffer
+	char* BINARY_TO_ASCII(char* binary_string);
 };

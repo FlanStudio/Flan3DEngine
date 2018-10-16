@@ -3,6 +3,8 @@
 #include "PhysFS/physfs.h"
 #pragma comment (lib, "PhysFS/physfs.lib")
 
+#include <bitset>
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
@@ -150,5 +152,35 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 	if(ret)
 		Debug.Log("FILESYSTEM: \"%s\" succesfully written", file);
 
+	return ret;
+}
+
+char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
+{
+	std::string ascii(ascii_string);
+	std::string output;
+	for (std::size_t i = 0; i < ascii.size(); ++i)
+	{
+		output += std::bitset<8>(ascii.c_str()[i]).to_string();
+	}
+	
+	char* ret = new char[output.size()];
+	strcpy(ret, output.c_str());
+	return ret;
+}
+
+char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
+{
+	std::stringstream ostring(binary_string);
+	std::string output;
+	while (ostring.good())
+	{
+		std::bitset<8> bits;
+		ostring >> bits;
+		char c = char(bits.to_ulong());
+		output += c;
+	}
+	char* ret = new char[output.size()];
+	strcpy(ret, output.c_str());
 	return ret;
 }
