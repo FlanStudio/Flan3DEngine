@@ -117,7 +117,6 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 			root->AddComponent(meshComp); //Add this component to the gameObject components vector
 		}
 		
-		//TODO: Recursively here
 		RecursivelyHierarchy(scene->mRootNode, root, scene);
 
 		aiReleaseImport(scene);

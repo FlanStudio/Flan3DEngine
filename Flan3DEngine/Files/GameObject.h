@@ -25,11 +25,15 @@ public:
 
 public:
 	void ClearChilds();
+	void ClearChild(GameObject* child);
 	void ClearComponents();
 	void ClearComponent(Component* component);
 	bool HasChilds() const;
 	GameObject* getSelectedGO();
+	void OnInspector();
 
+private:
+	
 public:
 	bool selected = false;
 
@@ -41,3 +45,4 @@ private:
 	bool hasTransform = false;
 	bool hasMaterial = false;
 };
+int OnInputCallback(ImGuiInputTextCallbackData* callback);

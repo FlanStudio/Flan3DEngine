@@ -1,6 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "imgui/imgui_stl.h"
 
 GameObject::~GameObject()
 {
@@ -129,4 +130,51 @@ GameObject* GameObject::getSelectedGO()
 	}
 
 	return ret;
+}
+
+void GameObject::ClearChild(GameObject* child)
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		if (childs[i] == child)
+		{
+			childs.erase(childs.begin() + i);
+			break;
+		}
+	}
+}
+
+void GameObject::OnInspector()
+{	
+	ImGuiInputTextFlags flags = 0;
+	flags |= ImGuiInputTextFlags_AutoSelectAll;
+	flags |= ImGuiInputTextFlags_AllowTabInput;
+	flags |= ImGuiInputTextFlags_CallbackAlways;
+	flags |= ImGuiInputTextFlags_CallbackCharFilter;
+	flags |= ImGuiInputTextFlags_EnterReturnsTrue;
+	flags |= ImGuiInputTextFlags_AlwaysInsertMode;
+
+	float posY = ImGui::GetCursorPosY();
+	ImGui::SetCursorPosY(posY + 3);
+	ImGui::Text("Name: "); ImGui::SameLine();
+	ImGui::SetCursorPosY(posY);
+	
+	bool ret = ImGui::InputText("", &name, flags, OnInputCallback, &ret);
+
+	ImGui::NewLine();
+	for (int i = 0; i < components.size(); ++i)
+	{
+		ImGui::Separator();
+		components[i]->OnInspector();
+	}
+
+}
+
+int OnInputCallback(ImGuiInputTextCallbackData* callback)
+{
+	if (callback->BufTextLen == 0 && (bool)callback->UserData == true && ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))
+	{
+		callback->InsertChars(0, "default");	
+	}
+	return 0;
 }

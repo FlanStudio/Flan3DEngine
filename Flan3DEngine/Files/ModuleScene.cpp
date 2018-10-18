@@ -89,12 +89,12 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	return ret;
 }
 
-void ModuleScene::guiHierarchy()const
+void ModuleScene::guiHierarchy()
 {
 	PrintHierarchy(gameObjects[0]);
 }
 
-void ModuleScene::PrintHierarchy(GameObject* go)const
+void ModuleScene::PrintHierarchy(GameObject* go)
 {
 	bool print = true;
 
@@ -104,6 +104,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)const
 	if (print)
 	{
 		int flags = 0;
+
 		if (go->selected)
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
 
@@ -117,8 +118,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)const
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
 
-			//TODO: Drag and drop support here
-
+			DragDrop(go);
 
 			if(opened)
 			{				
@@ -133,12 +133,17 @@ void ModuleScene::PrintHierarchy(GameObject* go)const
 		else
 		{
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
-			if (ImGui::TreeNodeEx(go->name.data(),  flags))
+			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
+			
+			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
+				App->scene->selectGO(go);
+			
+			DragDrop(go);
+
+			if(opened)
 			{
 				ImGui::TreePop();
 			}
-			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
-				App->scene->selectGO(go);
 		}
 	}
 	else
@@ -166,10 +171,12 @@ void ModuleScene::ClearGameObjects()
 void ModuleScene::guiInspector()
 {
 	GameObject* selected = getSelectedGO();
-	if (selected)
-		ImGui::Text("Name: %s", selected->name.data());
-	else
+	if (!selected)
+	{
 		ImGui::Text("No GameObjects selected");
+		return;
+	}	
+	selected->OnInspector();
 }
 
 GameObject* ModuleScene::getSelectedGO()
@@ -190,4 +197,62 @@ void ModuleScene::selectGO(GameObject* toSelect)
 		selected->selected = false;
 	}
 	toSelect->selected = true;
+}
+
+void ModuleScene::DragDrop(GameObject* go)
+{
+	//Drag and drop
+
+	bool abortDrop = false;
+
+	ImGuiDragDropFlags src_flags = 0;
+	//src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
+	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+
+	if (ImGui::BeginDragDropSource(src_flags))
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text(go->name.data());
+		ImGui::EndTooltip();
+		ImGui::SetDragDropPayload("DraggingGOs", &go, sizeof(GameObject));
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs");
+		if (payload)
+		{
+			GameObject* other = *(GameObject**)payload->Data;
+			Debug.Log("HEY! YOU DRAGGED ME %s!", other->name.data());
+
+			if (other->parent == go)
+				abortDrop = true;
+
+			if (!abortDrop)
+			{
+				//Delete this object from the parent childs
+				other->parent->ClearChild(other);
+
+				if (go->parent == other)
+				{
+					//When swapping familiars we have to alert the grandpa
+					other->parent->AddChild(go);
+					go->parent = other->parent;
+					other->ClearChild(go);
+				}
+				
+
+				//Change the transform to correspond with the new parent
+				other->transform->setLocal(go); //TODO: FIX THAT
+
+				//Set the new parent
+				other->parent = go;
+
+				//Add the new child to the childs array of the new parent
+				go->AddChild(other);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
 }

@@ -29,10 +29,11 @@ private:
 public:
 	GameObject* CreateGameObject(GameObject* parent);
 	void ClearGameObjects();
-	void guiHierarchy() const;
+	void guiHierarchy();
 	void guiInspector();
 	void selectGO(GameObject* toSelect);
 private:
-	void PrintHierarchy(GameObject* go) const;
+	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO();
+	void DragDrop(GameObject* go);
 };
