@@ -99,3 +99,34 @@ void GameObject::ClearComponent(Component* component)
 		}
 	}
 }
+
+bool GameObject::HasChilds() const
+{
+	return childs.size() > 0;
+}
+
+GameObject* GameObject::getSelectedGO()
+{
+	GameObject* ret = nullptr;
+
+	if (selected)
+	{
+		ret = this;
+	}
+	else
+	{
+		for (int i = 0; i < childs.size() && !ret; ++i)
+		{
+			if (childs[i]->selected)
+			{
+				ret = childs[i];
+			}
+			else
+			{
+				ret = childs[i]->getSelectedGO();			
+			}	
+		}
+	}
+
+	return ret;
+}

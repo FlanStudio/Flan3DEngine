@@ -32,7 +32,9 @@ private:
 	bool showMGLwindow = false;
 	bool somethingiscolliding = false;
 	bool logEnabled = true;
-	bool showConfig = true;
+	bool showConfig = false;
 	bool showAbout = false;
-	bool propWindow = true;
+	bool propWindow = false;
+	bool hierarchy = true;
+	bool inspector = true;
 };

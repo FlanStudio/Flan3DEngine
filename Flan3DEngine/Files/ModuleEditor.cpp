@@ -53,7 +53,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
-
+	ImGui::GetIO().DeltaTime = dt;
 	//Editor setup down here
 
 	if(showdemowindow)
@@ -341,8 +341,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 		if (ImGui::CollapsingHeader("Transformation"))
 		{
-			ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
-			App->scene->guiMeshesTransform();
+			//ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
+			ImGui::TextColored({ .5,0,0,1 }, "This info has been moved. Check View->Hierarchy");
 		}
 
 		if (ImGui::CollapsingHeader("Geometry"))
@@ -355,6 +355,24 @@ update_status ModuleEditor::PreUpdate(float dt)
 			App->textures->guiTextures();
 		}
 
+		ImGui::End();
+	}
+
+	if (hierarchy) 
+	{
+		if(ImGui::Begin("Hierarchy", &hierarchy))
+		{
+			App->scene->guiHierarchy();
+		}
+		ImGui::End();
+	}
+
+	if (inspector)
+	{
+		if (ImGui::Begin("Inspector", &inspector))
+		{
+			App->scene->guiInspector();
+		}
 		ImGui::End();
 	}
 
@@ -372,7 +390,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 		{
 			ImGui::MenuItem("Demo Window", "", &showdemowindow);
 				
-			ImGui::MenuItem("MGL window", "", &showMGLwindow);
+			ImGui::MenuItem("Inspector", "", &inspector);
 
 			ImGui::MenuItem("LOG", "", &logEnabled);
 

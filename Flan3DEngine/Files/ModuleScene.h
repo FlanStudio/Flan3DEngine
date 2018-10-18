@@ -26,13 +26,13 @@ private:
 	GridPrim grid;
 
 	std::vector<GameObject*> gameObjects;
-
 public:
 	GameObject* CreateGameObject(GameObject* parent);
-	void guiMeshesTransform()const;
 	void ClearGameObjects();
-
+	void guiHierarchy() const;
+	void guiInspector();
+	void selectGO(GameObject* toSelect);
 private:
 	void PrintHierarchy(GameObject* go) const;
-
+	GameObject* getSelectedGO();
 };

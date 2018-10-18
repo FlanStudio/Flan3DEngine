@@ -22,9 +22,17 @@ public:
 	ComponentTransform* transform = nullptr;
 	std::string name = "default";
 	std::vector<GameObject*> childs;
+
+public:
 	void ClearChilds();
 	void ClearComponents();
 	void ClearComponent(Component* component);
+	bool HasChilds() const;
+	GameObject* getSelectedGO();
+
+public:
+	bool selected = false;
+
 private:
 	bool active = true;
 

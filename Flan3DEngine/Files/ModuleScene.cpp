@@ -89,36 +89,69 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	return ret;
 }
 
-void ModuleScene::guiMeshesTransform()const
+void ModuleScene::guiHierarchy()const
 {
-	/*for (int i = 0; i < gameObjects.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, gameObjects[i]->name.data());
-		ImGui::Text("Position: %.2f,%.2f,%.2f", gameObjects[i]->transform->position.x, gameObjects[i]->transform->position.y, gameObjects[i]->transform->position.z);
-		float3 angles = gameObjects[i]->transform->rotation.ToEulerXYZ();
-		ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
-		ImGui::Text("Scale: %.2f,%.2f,%.2f", gameObjects[i]->transform->scale.x, gameObjects[i]->transform->scale.y, gameObjects[i]->transform->scale.z);
-		ImGui::NewLine();
-	}*/
 	PrintHierarchy(gameObjects[0]);
 }
 
 void ModuleScene::PrintHierarchy(GameObject* go)const
 {
-	for (int i = 0; i < go->childs.size(); ++i)
-	{
-		PrintHierarchy(go->childs[i]);
-	}
+	bool print = true;
 
 	if (go == gameObjects[0]) //Dont print the rootNode
-		return;
+		print = false;
+	
+	if (print)
+	{
+		int flags = 0;
+		if (go->selected)
+			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
 
-	ImGui::Text("GameObject: %s", go->name.data());
-	ImGui::Text("Position: %.2f,%.2f,%.2f", go->transform->position.x, go->transform->position.y, go->transform->position.z);
-	float3 angles = go->transform->rotation.ToEulerXYZ();
-	ImGui::Text("Rotation: %.2f,%.2f,%.2f", RadToDeg(angles.x), RadToDeg(angles.y), RadToDeg(angles.z));
-	ImGui::Text("Scale: %.2f,%.2f,%.2f", go->transform->scale.x, go->transform->scale.y, go->transform->scale.z);
-	ImGui::NewLine();
+		if (go->HasChilds())
+		{								
+			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnDoubleClick;
+			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
+
+			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
+			
+			if (ImGui::IsItemClicked(0) && !go->selected)
+				App->scene->selectGO(go);
+
+			//TODO: Drag and drop support here
+
+
+			if(opened)
+			{				
+				for (int i = 0; i < go->childs.size(); ++i)
+				{
+					PrintHierarchy(go->childs[i]);					
+				}			
+				ImGui::TreePop();
+			}
+			
+		}
+		else
+		{
+			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
+			if (ImGui::TreeNodeEx(go->name.data(),  flags))
+			{
+				ImGui::TreePop();
+			}
+			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
+				App->scene->selectGO(go);
+		}
+	}
+	else
+	{
+		//RootNode only
+		if (go->HasChilds())
+		{
+			for (int i = 0; i < go->childs.size(); ++i)
+			{
+				PrintHierarchy(go->childs[i]);		
+			}					
+		}
+	}
 }
 
 void ModuleScene::ClearGameObjects()
@@ -128,4 +161,33 @@ void ModuleScene::ClearGameObjects()
 		delete gameObjects[i];
 	}
 	gameObjects.clear();
+}
+
+void ModuleScene::guiInspector()
+{
+	GameObject* selected = getSelectedGO();
+	if (selected)
+		ImGui::Text("Name: %s", selected->name.data());
+	else
+		ImGui::Text("No GameObjects selected");
+}
+
+GameObject* ModuleScene::getSelectedGO()
+{
+	GameObject* ret = nullptr;
+	for (int i = 0; i < gameObjects.size() && !ret; ++i)
+	{
+		ret = gameObjects[i]->getSelectedGO();
+	}
+	return ret;
+}
+
+void ModuleScene::selectGO(GameObject* toSelect)
+{
+	GameObject* selected = getSelectedGO();
+	if (selected)
+	{
+		selected->selected = false;
+	}
+	toSelect->selected = true;
 }
