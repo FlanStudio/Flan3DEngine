@@ -393,6 +393,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 				
 			ImGui::MenuItem("Inspector", "", &inspector);
 
+			ImGui::MenuItem("Hierarchy", "", &hierarchy);
+
 			ImGui::MenuItem("LOG", "", &logEnabled);
 
 			ImGui::MenuItem("Config", "", &showConfig);
