@@ -12,6 +12,8 @@
 
 #include <bitset>
 
+#include "imgui/imgui_internal.h"
+
 #define CHECKERS 8 * 8
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
@@ -143,12 +145,16 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			if (go->treeOpened)
 				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen;
 
+			_ReorderGameObject_Pre(go);
+
 			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
 
 			DragDrop(go);
+
+			_ReorderGameObject_Post(go);
 
 			if(opened)
 			{			
@@ -168,12 +174,17 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 		else
 		{
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
+
+			_ReorderGameObject_Pre(go);
+
 			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
 				App->scene->selectGO(go);
 			
 			DragDrop(go);
+
+			_ReorderGameObject_Post(go);
 
 			if(opened)
 			{
@@ -263,6 +274,8 @@ void ModuleScene::DragDrop(GameObject* go)
 			if (other->parent == go)
 				abortDrop = true;
 
+			
+
 			if (!abortDrop)
 			{
 				//Delete this object from the parent childs
@@ -291,6 +304,96 @@ void ModuleScene::DragDrop(GameObject* go)
 
 				//Start the parent TreeNode opened
 				go->treeOpened = true;
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void ModuleScene::_ReorderGameObject_Pre(GameObject* go)
+{
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+	ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+	ImGui::SetCursorScreenPos(cursorPos);
+	if (ImGui::BeginDragDropTarget())
+	{		
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", flags);
+		
+		if (payload)
+		{
+			GameObject* other = *(GameObject**)payload->Data;
+
+			//For now we only support the reordering between childs. TODO:
+			if (other->parent == go->parent && other != go)
+			{
+				bool draw = false;
+				int pos = go->parent->getChildPos(go);
+				if ((pos != 0 && go->parent->childs[pos - 1] != other) || pos == 0)
+					draw = true;
+				
+				if (draw)
+				{
+					//Draw a line
+					ImGuiWindow* window = ImGui::GetCurrentWindow();
+					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
+					float x1 = window->Pos.x;
+					float x2 = window->Pos.x + window->Size.x;
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 5), ImVec2(x2, window->DC.CursorPos.y - 5) };
+					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
+
+					if (ImGui::IsMouseReleased(0))
+					{
+						other->parent->ClearChild(other);
+						other->parent->InsertChild(other, other->parent->getChildPos(go));
+					}
+				}
+				
+				
+							
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void ModuleScene::_ReorderGameObject_Post(GameObject* go)
+{
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+	ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+	ImGui::SetCursorScreenPos(cursorPos);
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", flags);
+
+		if (payload)
+		{
+			GameObject* other = *(GameObject**)payload->Data;
+			//For now we only support the reordering between childs. TODO:
+			if (other->parent == go->parent && other != go)
+			{		
+				int pos = go->parent->getChildPos(go);
+				if (pos == go->parent->childs.size() - 1)
+				{
+					//Draw a line
+					ImGuiWindow* window = ImGui::GetCurrentWindow();
+					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
+					float x1 = window->Pos.x;
+					float x2 = window->Pos.x + window->Size.x;
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 5), ImVec2(x2, window->DC.CursorPos.y - 5) };
+					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
+				
+					if (ImGui::IsMouseReleased(0))
+					{
+						other->parent->ClearChild(other);
+						other->parent->InsertChild(other, other->parent->getChildPos(go) + 1);
+					}
+				}				
 			}
 		}
 		ImGui::EndDragDropTarget();

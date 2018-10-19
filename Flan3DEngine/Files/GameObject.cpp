@@ -178,3 +178,17 @@ int OnInputCallback(ImGuiInputTextCallbackData* callback)
 	}
 	return 0;
 }
+
+void GameObject::InsertChild(GameObject* child, int pos)
+{
+	childs.insert(childs.begin() + pos, child);
+}
+
+int GameObject::getChildPos(GameObject* child) const
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		if (childs[i] == child)
+			return i;
+	}
+}

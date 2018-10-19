@@ -36,4 +36,8 @@ private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO();
 	void DragDrop(GameObject* go);
+
+	//Internal methods to reorder GameObjects in the hierarchy
+	void _ReorderGameObject_Pre(GameObject* go);
+	void _ReorderGameObject_Post(GameObject* go);
 };
