@@ -17,7 +17,9 @@ public:
 
 public:
 	ComponentTransform getGlobal() const;
-	ComponentTransform getLocal(ComponentTransform parent) const;
-	void setLocal(ComponentTransform parent);
+	ComponentTransform getLocal(ComponentTransform* newParent) const;
+	void setLocalWithParent(ComponentTransform* newParent);
+	void setLocal(ComponentTransform* newTransform);
+	void setLocalWithParentGlobal(ComponentTransform parentGlobal);
 	void OnInspector();
 };

@@ -233,19 +233,22 @@ void ModuleScene::DragDrop(GameObject* go)
 			{
 				//Delete this object from the parent childs
 				other->parent->ClearChild(other);
-
+						
 				if (go->parent == other)
 				{
 					//When swapping familiars we have to alert the grandpa
 					other->parent->AddChild(go);
+
+					//Update the parent of the newParent:
+					go->transform->setLocalWithParent(other->parent->transform);
 					go->parent = other->parent;
+
 					other->ClearChild(go);
 				}
 				
-
 				//Change the transform to correspond with the new parent
-				other->transform->setLocal(go); //TODO: FIX THAT
-
+				other->transform->setLocalWithParent(go->transform); 
+			
 				//Set the new parent
 				other->parent = go;
 

@@ -12,32 +12,52 @@ ComponentTransform ComponentTransform::getGlobal() const
 	while (parent)
 	{
 		global.position += parent->transform->position;
-		global.rotation.Mul(parent->transform->rotation);
-		global.scale.Mul(parent->transform->scale);
+		global.rotation = global.rotation.Mul(parent->transform->rotation);
+		global.scale = global.scale.Mul(parent->transform->scale);
 		parent = parent->parent;
 	}
 
 	return global;
 }
 
-ComponentTransform ComponentTransform::getLocal(ComponentTransform parent) const
+ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) const
 {
 	ComponentTransform local;
 
-	ComponentTransform global = getGlobal();
-	local.position = global.position - position;
-	local.rotation = global.rotation / rotation;
-	local.scale = global.scale.Div(scale);
+	ComponentTransform childGlobal = getGlobal();
+
+	ComponentTransform parentGlobal = newParent->getGlobal();
+	
+
+	local.position = childGlobal.position - parentGlobal.position;
+	local.rotation = childGlobal.rotation / parentGlobal.rotation;
+	local.scale = childGlobal.scale.Div(parentGlobal.scale);
 
 	return local;
 }
 
-void ComponentTransform::setLocal(ComponentTransform parent)
+void ComponentTransform::setLocalWithParent(ComponentTransform* newParent)
 {
-	ComponentTransform local = getLocal(parent);
+	ComponentTransform local = getLocal(newParent);
 	position = local.position;
 	rotation = local.rotation;
 	scale = local.scale;
+}
+
+void ComponentTransform::setLocal(ComponentTransform* newTransform)
+{
+	position = newTransform->position;
+	rotation = newTransform->rotation;
+	scale = newTransform->scale;
+}
+
+void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGlobal)
+{
+	ComponentTransform childGlobal = getGlobal();
+
+	position = childGlobal.position - parentGlobal.position;
+	rotation = childGlobal.rotation / parentGlobal.rotation;
+	scale = childGlobal.scale.Div(parentGlobal.scale);
 }
 
 void ComponentTransform::OnInspector()
@@ -71,3 +91,4 @@ void ComponentTransform::OnInspector()
 	ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
 	ImGui::SetCursorPosX(posX);
 }
+
