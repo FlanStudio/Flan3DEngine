@@ -331,7 +331,7 @@ void ModuleScene::_ReorderGameObject_Pre(GameObject* go)
 			{
 				bool draw = false;
 				int pos = go->parent->getChildPos(go);
-				if ((pos != 0 && go->parent->childs[pos - 1] != other) || pos == 0)
+				if ((pos != 0 && go->parent->childs[pos - 1] != other) || pos == 0) //Check if the one you want to place above you it's already there
 					draw = true;
 				
 				if (draw)
@@ -349,10 +349,7 @@ void ModuleScene::_ReorderGameObject_Pre(GameObject* go)
 						other->parent->ClearChild(other);
 						other->parent->InsertChild(other, other->parent->getChildPos(go));
 					}
-				}
-				
-				
-							
+				}			
 			}
 		}
 		ImGui::EndDragDropTarget();
