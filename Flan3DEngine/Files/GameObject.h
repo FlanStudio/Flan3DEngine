@@ -36,7 +36,7 @@ private:
 	
 public:
 	bool selected = false;
-
+	bool treeOpened = false;
 private:
 	bool active = true;
 

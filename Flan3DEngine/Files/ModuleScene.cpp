@@ -92,6 +92,33 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 void ModuleScene::guiHierarchy()
 {
 	PrintHierarchy(gameObjects[0]);
+
+	ImVec2 pos = ImGui::GetCursorPos();
+	ImGui::Dummy({ ImGui::GetWindowSize().x - pos.x,  ImGui::GetWindowSize().y - pos.y});
+	if (ImGui::IsItemClicked())
+	{
+		GameObject* selected = getSelectedGO();
+		if (selected)
+			selected->selected = false;
+	}
+
+	//Drop on window to unparent a GameObject
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", flags);
+		if (payload)
+		{
+			GameObject* other = *(GameObject**)payload->Data;
+
+			other->transform->setLocal(&other->transform->getGlobal());
+			other->parent->ClearChild(other);
+			other->parent = gameObjects[0];
+			other->parent->AddChild(other);
+		}
+		ImGui::EndDragDropTarget();
+	}
 }
 
 void ModuleScene::PrintHierarchy(GameObject* go)
@@ -113,6 +140,9 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnDoubleClick;
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
 
+			if (go->treeOpened)
+				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen;
+
 			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && !go->selected)
@@ -121,12 +151,17 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			DragDrop(go);
 
 			if(opened)
-			{				
+			{			
+				go->treeOpened = true;
 				for (int i = 0; i < go->childs.size(); ++i)
 				{
 					PrintHierarchy(go->childs[i]);					
 				}			
 				ImGui::TreePop();
+			}
+			else
+			{
+				go->treeOpened = false;
 			}
 			
 		}
@@ -224,7 +259,6 @@ void ModuleScene::DragDrop(GameObject* go)
 		if (payload)
 		{
 			GameObject* other = *(GameObject**)payload->Data;
-			Debug.Log("HEY! YOU DRAGGED ME %s!", other->name.data());
 
 			if (other->parent == go)
 				abortDrop = true;
@@ -254,6 +288,9 @@ void ModuleScene::DragDrop(GameObject* go)
 
 				//Add the new child to the childs array of the new parent
 				go->AddChild(other);
+
+				//Start the parent TreeNode opened
+				go->treeOpened = true;
 			}
 		}
 		ImGui::EndDragDropTarget();

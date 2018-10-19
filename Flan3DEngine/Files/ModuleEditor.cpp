@@ -362,6 +362,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{
 		if(ImGui::Begin("Hierarchy", &hierarchy))
 		{
+
 			App->scene->guiHierarchy();
 		}
 		ImGui::End();
