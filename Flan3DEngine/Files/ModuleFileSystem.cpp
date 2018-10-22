@@ -13,17 +13,18 @@ bool ModuleFileSystem::Init()
 	//Initialize PhysFS library
 	PHYSFS_init(nullptr);
 
-	//Add root directory (Read-Only)
+	//Add directories to the path
 	AddPath(".");
-
-	//Read/Write directory
 	AddPath("./Assets/", "Assets");
-	setWriteDir("./Assets");
-	AddPath("./Assets/config/", "config");
-
+	AddPath("./Library/", "Library");
+	AddPath("Assets/config", "config");
+	//Write dir on "Game" folder in order to be able of exporting files to both "Assets" and "Library" folders.
+	setWriteDir(".");
+	
+	getDirFiles("Assets");
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
-
+	
 	return true;
 }
 
@@ -189,5 +190,49 @@ char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
 	}
 	char* ret = new char[output.size()];
 	strcpy(ret, output.c_str());
+	return ret;
+}
+
+Directory ModuleFileSystem::getDirFiles(char* dir)
+{
+	Directory ret;
+	std::string dirstr(dir);
+	std::string name;
+	int pos = dirstr.find_last_of("/");
+	if (pos != std::string::npos)
+	{
+		name = dirstr.substr(pos + 1, dirstr.size() - pos);
+	}
+	else
+	{
+		name = dirstr;
+	}
+	char* nameAlloc = new char[name.size()];
+	strcpy(nameAlloc, name.data());
+	ret.name = nameAlloc;
+
+	char** files = PHYSFS_enumerateFiles(dir);
+	for (int i = 0; files[i] != nullptr; ++i)
+	{
+		std::string file(files[i]);
+		if(file.find(".") == std::string::npos) //Is a directory
+		{
+			std::string temp2(files[i]);
+			std::string fulldir(dir + std::string("/") + temp2);
+			char* tot = (char*)fulldir.data();
+			Directory child = getDirFiles(tot);
+			ret.directories.push_back(child);
+			Debug.LogWarning("Directory found in %s: %s", dir, files[i]);
+		}
+		else
+		{
+			char* fileName = new char[strlen(files[i])];
+			strcpy(fileName, files[i]);
+			ret.files.push_back(fileName);
+			Debug.LogWarning("File found in %s: %s", dir, files[i]);
+		}
+	}
+	PHYSFS_freeList(files);
+
 	return ret;
 }
