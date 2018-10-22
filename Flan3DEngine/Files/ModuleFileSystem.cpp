@@ -21,8 +21,8 @@ bool ModuleFileSystem::Init()
 	//Write dir on "Game" folder in order to be able of exporting files to both "Assets" and "Library" folders.
 	setWriteDir(".");
 	
-	getDirFiles("Assets");
-
+	Directory* directory = getDirFiles("Assets");
+	delete directory;
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
 	return true;
@@ -193,43 +193,39 @@ char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
 	return ret;
 }
 
-Directory ModuleFileSystem::getDirFiles(char* dir)
+Directory* ModuleFileSystem::getDirFiles(char* dir)
 {
-	Directory ret;
+	Directory* ret = new Directory;
 	std::string dirstr(dir);
 	std::string name;
 	int pos = dirstr.find_last_of("/");
 	if (pos != std::string::npos)
 	{
-		name = dirstr.substr(pos + 1, dirstr.size() - pos);
+		name = dirstr.substr(pos + 1, std::string::npos);
 	}
 	else
 	{
 		name = dirstr;
 	}
-	char* nameAlloc = new char[name.size()];
-	strcpy(nameAlloc, name.data());
-	ret.name = nameAlloc;
+	char* nameAlloc = new char[name.size()+1]; //Null character at the end
+	strcpy(nameAlloc, name.c_str());
+	ret->name = nameAlloc;
 
 	char** files = PHYSFS_enumerateFiles(dir);
 	for (int i = 0; files[i] != nullptr; ++i)
 	{
 		std::string file(files[i]);
 		if(file.find(".") == std::string::npos) //Is a directory
-		{
-			std::string temp2(files[i]);
-			std::string fulldir(dir + std::string("/") + temp2);
-			char* tot = (char*)fulldir.data();
-			Directory child = getDirFiles(tot);
-			ret.directories.push_back(child);
-			Debug.LogWarning("Directory found in %s: %s", dir, files[i]);
+		{			
+			std::string fulldir(dir + std::string("/") + std::string(files[i]));			
+			Directory* child = getDirFiles((char*)fulldir.data());
+			ret->directories.push_back(child);
 		}
 		else
 		{
-			char* fileName = new char[strlen(files[i])];
+			char* fileName = new char[strlen(files[i])+1]; //Null character at the end
 			strcpy(fileName, files[i]);
-			ret.files.push_back(fileName);
-			Debug.LogWarning("File found in %s: %s", dir, files[i]);
+			ret->files.push_back(fileName);
 		}
 	}
 	PHYSFS_freeList(files);

@@ -9,24 +9,24 @@
 
 struct Directory
 {
-	char* name;
+	char* name = nullptr;
 	std::vector<char*> files;
-	std::vector<Directory> directories;
+	std::vector<Directory*> directories;
 	~Directory()
 	{
-		delete[] name;
+		delete name;
 		name = nullptr;
 
 		for (int i = 0; i < files.size(); ++i)
 		{
-			delete[] files[i];
+			delete files[i];
 			files[i] = nullptr;
 		}
 		files.clear();
 
 		for (int i = 0; i < directories.size(); ++i)
 		{
-			directories[i].~Directory();
+			delete directories[i];
 		}
 		directories.clear();
 	}
@@ -56,5 +56,5 @@ public:
 	//WARNING: Don't forget to delete the buffer
 	char* BINARY_TO_ASCII(char* binary_string);
 
-	Directory getDirFiles(char* dir);
+	Directory* getDirFiles(char* dir);
 };
