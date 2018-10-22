@@ -34,7 +34,14 @@ bool ModuleFileSystem::Start()
 
 bool ModuleFileSystem::CleanUp()
 {
-	return true;
+	bool ret = PHYSFS_deinit() != 0;
+
+	if (ret == false)
+	{
+		Debug.LogError("FILESYSTEM: Could not close PhysFS. Error: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+	}
+
+	return ret;
 }
 
 bool ModuleFileSystem::AddPath(char* path, char* mount)
@@ -49,7 +56,7 @@ bool ModuleFileSystem::AddPath(char* path, char* mount)
 	else
 	{
 		ret = false;
-		Debug.LogError("FILESYSTEM: Failed adding \"%s\" to the search path. Error: \"%s\"", path, PHYSFS_getLastError());
+		Debug.LogError("FILESYSTEM: Failed adding \"%s\" to the search path. Error: \"%s\"", path, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	}
 	return ret;
 }
@@ -64,7 +71,7 @@ bool ModuleFileSystem::setWriteDir(char* path)
 	}
 	else
 	{
-		Debug.LogError("FILESYSTEM: Write dir couln't be set to \"%s\". Error: \"%s\"", path, PHYSFS_getLastError());
+		Debug.LogError("FILESYSTEM: Write dir couln't be set to \"%s\". Error: \"%s\"", path, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		ret = false;
 	}
 
@@ -77,7 +84,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 	PHYSFS_File* FSfile = PHYSFS_openRead(file);
 	if (!FSfile)
 	{
-		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getLastError());
+		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		ret = false;
 	}
 	else
@@ -85,7 +92,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 		size = PHYSFS_fileLength(FSfile);
 		if (size == -1)
 		{
-			Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getLastError());
+			Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			ret = false;
 		}
 		
@@ -95,7 +102,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 			int readed = PHYSFS_readBytes(FSfile, *buffer, size);
 			if (readed == -1)
 			{
-				Debug.LogError("FILESYSTEM: File \"%s\" couln't be read. Error: \"%s\"", file, PHYSFS_getLastError());
+				Debug.LogError("FILESYSTEM: File \"%s\" couln't be read. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 				*buffer = nullptr;
 				size = 0;
 				ret = false;
@@ -105,7 +112,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 		//Close the PHYSFS_File* opened
 		if (PHYSFS_close(FSfile) == 0)
 		{
-			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getLastError());
+			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		}
 	}
 	
@@ -121,7 +128,7 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 	PHYSFS_File* FSFile = PHYSFS_openWrite(file);
 	if (!FSFile)
 	{
-		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getLastError());
+		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		ret = false;
 	}
 	else
@@ -137,7 +144,7 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 			int written = PHYSFS_writeBytes(FSFile, buffer, size);
 			if (written == -1)
 			{
-				Debug.LogError("FILESYSTEM: File \"%s\" couln't be written. Error: \"%s\"", file, PHYSFS_getLastError());
+				Debug.LogError("FILESYSTEM: File \"%s\" couln't be written. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 				return false;
 			}
 		}
@@ -145,7 +152,7 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 		//Close the PHYSFS_File* opened
 		if (PHYSFS_close(FSFile) == 0)
 		{
-			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getLastError());
+			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		}
 	}
 	
