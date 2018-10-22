@@ -2,8 +2,9 @@
 
 #pragma once
 
-#define ASSETS_FOLDER "Assets"
-#define LIBRARY_FOLDER "Library"
+#define ASSETS_FOLDER "Assets/"
+#define LIBRARY_FOLDER "Library/"
+#define CONFIG_FOLDER "Library/config/"
 
 #include <vector>
 
@@ -46,9 +47,9 @@ public:
 	bool setWriteDir(char* path);
 
 	//WARNING: Don't forget to delete the buffer
-	bool OpenRead(char* file, char** buffer, int& size) const;
+	bool OpenRead(std::string file, char** buffer, int& size) const;
 	
-	bool OpenWrite(char* file, char* buffer);
+	bool OpenWrite(std::string file, char* buffer);
 	
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);

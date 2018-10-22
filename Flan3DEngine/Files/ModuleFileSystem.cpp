@@ -13,16 +13,15 @@ bool ModuleFileSystem::Init()
 	//Initialize PhysFS library
 	PHYSFS_init(nullptr);
 
+	//Write dir on "Game" folder in order to be able of exporting files to both "Assets" and "Library" folders.
+	setWriteDir(".");
+
 	//Add directories to the path
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
 	AddPath("./Library/", "Library");
-	AddPath("Assets/config", "config");
-	//Write dir on "Game" folder in order to be able of exporting files to both "Assets" and "Library" folders.
-	setWriteDir(".");
-	
-	Directory* directory = getDirFiles("Assets");
-	delete directory;
+	AddPath("./Library/config", "config");
+
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
 	return true;
@@ -48,6 +47,7 @@ bool ModuleFileSystem::CleanUp()
 bool ModuleFileSystem::AddPath(char* path, char* mount)
 {
 	bool ret = true;
+
 	if (PHYSFS_mount(path, mount, 1) != 0)
 	{
 		Debug.Log("FILESYSTEM: Added \"%s\" to the search path", path);
@@ -55,7 +55,20 @@ bool ModuleFileSystem::AddPath(char* path, char* mount)
 			Debug.Log("FILESYSTEM: Mounted \"%s\" into \"%s\"", path, mount);
 	}
 	else
-	{
+	{		
+		if (PHYSFS_getLastErrorCode() == PHYSFS_ErrorCode::PHYSFS_ERR_NOT_FOUND) //If the directory is not found, create it and try to add it to the path again
+		{
+			std::string pathStr(path);
+			std::string pathWithoutPoint = pathStr.substr(1, std::string::npos);
+
+			bool error = PHYSFS_mkdir(pathWithoutPoint.c_str()) == 0;
+			if (error)
+			{
+				Debug.LogError("FILESYSTEM: Could not create the directory %s. Error: %s", pathWithoutPoint.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				return false;
+			}				
+			return AddPath(path, mount);
+		}
 		ret = false;
 		Debug.LogError("FILESYSTEM: Failed adding \"%s\" to the search path. Error: \"%s\"", path, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 	}
@@ -79,13 +92,13 @@ bool ModuleFileSystem::setWriteDir(char* path)
 	return ret;
 }
 
-bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
+bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) const
 {
 	bool ret = true;
-	PHYSFS_File* FSfile = PHYSFS_openRead(file);
+	PHYSFS_File* FSfile = PHYSFS_openRead(file.c_str());
 	if (!FSfile)
 	{
-		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		ret = false;
 	}
 	else
@@ -93,7 +106,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 		size = PHYSFS_fileLength(FSfile);
 		if (size == -1)
 		{
-			Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			ret = false;
 		}
 		
@@ -103,7 +116,7 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 			int readed = PHYSFS_readBytes(FSfile, *buffer, size);
 			if (readed == -1)
 			{
-				Debug.LogError("FILESYSTEM: File \"%s\" couln't be read. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				Debug.LogError("FILESYSTEM: File \"%s\" couln't be read. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 				*buffer = nullptr;
 				size = 0;
 				ret = false;
@@ -118,18 +131,18 @@ bool ModuleFileSystem::OpenRead(char* file, char** buffer, int& size) const
 	}
 	
 	if(ret)
-		Debug.Log("FILESYSTEM: \"%s\" succesfully read", file);
+		Debug.Log("FILESYSTEM: \"%s\" succesfully read", file.c_str());
 
 	return ret;
 }
 
-bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
+bool ModuleFileSystem::OpenWrite(std::string file, char* buffer)
 {
 	bool ret = true;
-	PHYSFS_File* FSFile = PHYSFS_openWrite(file);
+	PHYSFS_File* FSFile = PHYSFS_openWrite(file.c_str());
 	if (!FSFile)
 	{
-		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		ret = false;
 	}
 	else
@@ -145,7 +158,7 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 			int written = PHYSFS_writeBytes(FSFile, buffer, size);
 			if (written == -1)
 			{
-				Debug.LogError("FILESYSTEM: File \"%s\" couln't be written. Error: \"%s\"", file, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				Debug.LogError("FILESYSTEM: File \"%s\" couln't be written. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 				return false;
 			}
 		}
@@ -158,7 +171,7 @@ bool ModuleFileSystem::OpenWrite(char* file, char* buffer)
 	}
 	
 	if(ret)
-		Debug.Log("FILESYSTEM: \"%s\" succesfully written", file);
+		Debug.Log("FILESYSTEM: \"%s\" succesfully written", file.c_str());
 
 	return ret;
 }
@@ -172,7 +185,7 @@ char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
 		output += std::bitset<8>(ascii.c_str()[i]).to_string();
 	}
 	
-	char* ret = new char[output.size()];
+	char* ret = new char[output.size()+1];
 	strcpy(ret, output.c_str());
 	return ret;
 }

@@ -209,5 +209,110 @@ bool FBXLoader::FillMeshData(MeshComponent* mymesh, aiMesh* mesh)
 			memcpy(&mymesh->textureCoords[(j * 2) + 1], &mesh->mTextureCoords[0][j].y, sizeof(float));
 		}
 	}	
+
+	mymesh->name = mesh->mName.C_Str();
+
+	//Save an own-formatted mesh file
+	SaveMesh(mymesh);
+
+	return true;
+}
+
+bool FBXLoader::SaveMesh(MeshComponent* mesh)
+{
+	uint ranges[5] =
+	{
+		mesh->num_index,
+		mesh->num_vertex,
+		mesh->colors ? mesh->num_vertex : 0,
+		mesh->normals ? mesh->num_vertex : 0,
+		mesh->textureCoords ? mesh->num_vertex : 0
+	};
+
+	uint fileSize = sizeof(ranges);
+	fileSize += mesh->num_index * sizeof(uint);
+	fileSize += mesh->num_vertex * 3 * sizeof(float);
+	if (mesh->colors)
+	{
+		fileSize += mesh->num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
+	}
+	if (mesh->normals)
+	{
+		fileSize += mesh->num_vertex * 3 * sizeof(float); //for each vertex 3 floats (xyz)
+	}
+	if (mesh->textureCoords)
+	{
+		fileSize += mesh->num_vertex * 2 * sizeof(float); //for each vertex 2 floats (xy)
+	}
+
+	char* buffer = new char[fileSize];
+	char* cursor = buffer; //Point to the beginning of the buffer
+
+	//write ranges
+	uint bytes = sizeof(ranges);
+	memcpy(cursor, ranges, bytes);
+	cursor += bytes; //displace the writting point by bytes
+
+	//write vertex
+	bytes = mesh->num_vertex * 3 * sizeof(float);
+	memcpy(cursor, mesh->vertex, bytes);
+	cursor += bytes;
+
+	//write index
+	bytes = mesh->num_index * sizeof(uint);
+	memcpy(cursor, mesh->index, bytes);
+	cursor += bytes;
+
+	//write colors
+	if (mesh->colors)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 4;
+		memcpy(cursor, mesh->colors, bytes);
+		cursor += bytes;
+	}
+
+	//write normals
+	if (mesh->normals)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 3;
+		memcpy(cursor, mesh->normals, bytes);
+		cursor += bytes;
+	}
+
+	//write textureCoords
+	if (mesh->textureCoords)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 2;
+		memcpy(cursor, mesh->textureCoords, bytes);
+		cursor += bytes;
+	}
+
+	//TODO:ANOTHERMETHOD IN FS RECEIVING A VOID* WITH THE SIZE
+	//Convert the buffer to binary
+	App->fs->OpenWrite("Library/" + mesh->name + ".jeje", buffer);
+	
+	delete buffer;
+
+	MeshComponent* othermesh = new MeshComponent(nullptr);
+	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");
+
+	return true;
+}
+
+bool FBXLoader::LoadMesh(MeshComponent* mesh, std::string path)
+{
+	int fileSize = 0;
+	char* buffer;
+	App->fs->OpenRead(path, &buffer, fileSize);
+
+	uint ranges[5];
+
+	char* cursor = buffer;
+	uint bytes = sizeof(ranges);
+	memcpy(ranges, cursor, bytes);
+	
+
+
+
 	return true;
 }

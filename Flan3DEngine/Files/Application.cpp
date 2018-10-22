@@ -259,7 +259,7 @@ bool Application::SaveNow()const
 		int size = json_serialization_size_pretty(root);
 		char* jsonFile = new char[size];
 		json_serialize_to_buffer_pretty(root, jsonFile, size);
-		ret = App->fs->OpenWrite("config/config.json", jsonFile);
+		ret = App->fs->OpenWrite("./Library/config/config.json", jsonFile);
 		delete[] jsonFile;
 
 		if (ret)

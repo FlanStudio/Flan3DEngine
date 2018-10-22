@@ -5,6 +5,8 @@
 #include "MathGeoLib_1.5/Math/float3.h"
 #include "MathGeoLib_1.5/Math/Quat.h"
 
+#include <string>
+
 class MeshComponent : public Component
 {
 public:
@@ -28,6 +30,8 @@ public:
 
 	uint textureCoords_ID = 0;
 	float* textureCoords = nullptr;
+
+	std::string name;
 
 	MeshComponent(GameObject* parent, bool active = true) : Component(ComponentType::MESH, parent, active){}
 	~MeshComponent();
