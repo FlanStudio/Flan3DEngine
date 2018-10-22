@@ -47,7 +47,7 @@ public:
 
 	//WARNING: Don't forget to delete the buffer
 	bool OpenRead(char* file, char** buffer, int& size) const;
-
+	
 	bool OpenWrite(char* file, char* buffer);
 	
 	//WARNING: Don't forget to delete the buffer
@@ -56,5 +56,6 @@ public:
 	//WARNING: Don't forget to delete the buffer
 	char* BINARY_TO_ASCII(char* binary_string);
 
+	//WARNING: Don't forget to delete the Directory file after use
 	Directory* getDirFiles(char* dir);
 };

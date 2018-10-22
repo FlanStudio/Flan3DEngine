@@ -386,7 +386,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 			ImGui::EndMenu();
 		}
-
 		if (ImGui::BeginMenu("View"))
 		{
 			ImGui::MenuItem("Demo Window", "", &showdemowindow);
