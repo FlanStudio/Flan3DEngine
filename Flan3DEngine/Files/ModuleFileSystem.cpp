@@ -89,7 +89,7 @@ bool ModuleFileSystem::setWriteDir(char* path)
 		ret = false;
 	}
 
-	return ret;
+return ret;
 }
 
 bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) const
@@ -109,7 +109,7 @@ bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) cons
 			Debug.LogError("FILESYSTEM: File \"%s\" couln't be found. Error: \"%s\"", file.c_str(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			ret = false;
 		}
-		
+
 		else
 		{
 			*buffer = new char[size];
@@ -122,15 +122,15 @@ bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) cons
 				ret = false;
 			}
 		}
-		
+
 		//Close the PHYSFS_File* opened
 		if (PHYSFS_close(FSfile) == 0)
 		{
 			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		}
 	}
-	
-	if(ret)
+
+	if (ret)
 		Debug.Log("FILESYSTEM: \"%s\" succesfully read", file.c_str());
 
 	return ret;
@@ -162,18 +162,45 @@ bool ModuleFileSystem::OpenWrite(std::string file, char* buffer)
 				return false;
 			}
 		}
-		
+
 		//Close the PHYSFS_File* opened
 		if (PHYSFS_close(FSFile) == 0)
 		{
 			Debug.LogError("FILESYSTEM: Couldn't close the PHYSFS_File opened. Error: \"%s\"", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		}
 	}
-	
-	if(ret)
+
+	if (ret)
 		Debug.Log("FILESYSTEM: \"%s\" succesfully written", file.c_str());
 
 	return ret;
+}
+
+bool ModuleFileSystem::OpenWriteBuffer(std::string file, void* buffer, uint size)
+{
+	PHYSFS_File* PhysFile = PHYSFS_openWrite(file.data());
+	if (!PhysFile)
+	{
+		Debug.LogError("FILESYSTEM: PhysFS could not load the file %s. Error: %s", file.data(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		return false;
+	}
+
+	int readed = PHYSFS_writeBytes(PhysFile, buffer, size);
+	if (readed != size)
+	{
+		if (readed != -1)
+		{
+			Debug.LogWarning("FILESYSTEM: Not al bytes requestes could be readed. Size was %d and PhysFS readed only %d bytes", size, readed);
+		}
+		else
+		{
+			Debug.LogError("FILESYSTEM: Error writting on %s. Error: %s", file.data(), PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return false;
+		}
+	}
+
+	PHYSFS_close(PhysFile);
+	return true;
 }
 
 char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)

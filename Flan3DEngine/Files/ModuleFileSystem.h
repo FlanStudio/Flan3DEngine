@@ -50,6 +50,7 @@ public:
 	bool OpenRead(std::string file, char** buffer, int& size) const;
 	
 	bool OpenWrite(std::string file, char* buffer);
+	bool OpenWriteBuffer(std::string file, void* buffer, uint size);
 	
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);

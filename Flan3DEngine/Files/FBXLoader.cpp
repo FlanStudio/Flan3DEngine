@@ -287,9 +287,7 @@ bool FBXLoader::SaveMesh(MeshComponent* mesh)
 		cursor += bytes;
 	}
 
-	//TODO:ANOTHERMETHOD IN FS RECEIVING A VOID* WITH THE SIZE
-	//Convert the buffer to binary
-	App->fs->OpenWrite("Library/" + mesh->name + ".jeje", buffer);
+	App->fs->OpenWriteBuffer("Library/" + mesh->name + ".jeje", buffer, fileSize);
 	
 	delete buffer;
 
