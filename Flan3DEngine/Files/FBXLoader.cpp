@@ -222,16 +222,16 @@ bool FBXLoader::SaveMesh(MeshComponent* mesh)
 {
 	uint ranges[5] =
 	{
-		mesh->num_index,
 		mesh->num_vertex,
+		mesh->num_index,
 		mesh->colors ? mesh->num_vertex : 0,
 		mesh->normals ? mesh->num_vertex : 0,
 		mesh->textureCoords ? mesh->num_vertex : 0
 	};
 
 	uint fileSize = sizeof(ranges);
-	fileSize += mesh->num_index * sizeof(uint);
 	fileSize += mesh->num_vertex * 3 * sizeof(float);
+	fileSize += mesh->num_index * sizeof(uint);	
 	if (mesh->colors)
 	{
 		fileSize += mesh->num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
@@ -308,9 +308,49 @@ bool FBXLoader::LoadMesh(MeshComponent* mesh, std::string path)
 	char* cursor = buffer;
 	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
+	cursor += bytes;
 	
+	mesh->num_vertex = ranges[0];
+	mesh->num_index = ranges[1];
 
+	bytes = mesh->num_vertex * sizeof(float) * 3;
+	mesh->vertex = new float[mesh->num_vertex * 3];
+	memcpy(mesh->vertex, cursor, bytes);
+	cursor += bytes;
 
+	bytes = mesh->num_index * sizeof(uint);
+	mesh->index = new uint[mesh->num_index];
+	memcpy(mesh->index, cursor, bytes);
+	cursor += bytes;
+
+	 //vertex index colors normals textures
+	if (ranges[2] > 0)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 4;
+		mesh->colors = new float[mesh->num_vertex * 4];
+		memcpy(mesh->colors, cursor, bytes);
+		cursor += bytes;
+	}
+
+	if (ranges[3] > 0)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 3;
+		mesh->normals = new float[mesh->num_vertex * 3];
+		memcpy(mesh->normals, cursor, bytes);
+		cursor += bytes;
+	}
+
+	if (ranges[4] > 0)
+	{
+		bytes = mesh->num_vertex * sizeof(float) * 2;
+		mesh->textureCoords = new float[mesh->num_vertex * 2];
+		memcpy(mesh->textureCoords, cursor, bytes);
+		cursor += bytes;
+	}
+
+	mesh->genBuffers();
+
+	delete buffer;
 
 	return true;
 }

@@ -38,7 +38,9 @@ public:
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
-	void genNormalLines();
 	void UpdateNormalsLenght();
 	void drawNormals();
+
+private:
+	void genNormalLines();
 };
