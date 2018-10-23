@@ -42,6 +42,8 @@ bool ModuleEditor::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	ImGui::StyleColorsDark();
+	ImGuiStyle* style = &ImGui::GetStyle();
+	//style->Colors[ImGuiCol_Text] = { 1,0,0,1 };
 
 	return true;	
 }
