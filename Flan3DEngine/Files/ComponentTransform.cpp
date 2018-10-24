@@ -78,8 +78,31 @@ void ComponentTransform::OnInspector()
 	ImGui::SetCursorPosY(posY);
 
 	float3 rotationEuler = RadToDeg(rotation.ToEulerXYZ());
-	ImGui::DragFloat3("##2", rotationEuler.ptr(), .1f, -10000, 10000, "%.2f");
-	rotationEuler = { DegToRad(rotationEuler.x), DegToRad(rotationEuler.y), DegToRad(rotationEuler.z) };
+	if (Equal(rotationEuler.x, 0))
+		rotationEuler.x = 0;
+
+	if (Equal(rotationEuler.y, 0))
+		rotationEuler.y = 0;
+
+	if (Equal(rotationEuler.z, 0))
+		rotationEuler.z = 0;
+
+	ImGui::DragFloat3("##2test", rotationEuler.ptr(), .1f, -181, 181, "%.2f");
+	
+	if (rotationEuler.x > 0.1)
+		int a = 1;
+
+	if (Equal(rotationEuler.x, 0))
+		rotationEuler.x = 0;
+
+	if (Equal(rotationEuler.y, 0))
+		rotationEuler.y = 0;
+
+	if (Equal(rotationEuler.z, 0))
+		rotationEuler.z = 0;
+
+	rotationEuler = DegToRad(rotationEuler);
+
 	rotation = rotation.FromEulerXYZ(rotationEuler.x, rotationEuler.y, rotationEuler.z);
 
 	posY = ImGui::GetCursorPosY();
@@ -90,5 +113,17 @@ void ComponentTransform::OnInspector()
 	ImGui::SetCursorPosX(posX + 21);
 	ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
 	ImGui::SetCursorPosX(posX);
+
+	getMatrix();
+}
+
+float4x4 ComponentTransform::getMatrix()const
+{
+	float4x4 ret;
+
+	ComponentTransform global = getGlobal();
+	ret = float4x4::FromTRS(global.position, global.rotation, global.scale);
+
+	return ret.Transposed();
 }
 

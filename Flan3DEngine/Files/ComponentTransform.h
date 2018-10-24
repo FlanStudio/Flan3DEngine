@@ -1,8 +1,6 @@
 #pragma once
 
-#include "MathGeoLib_1.5/Math/float3.h"
-#include "MathGeoLib_1.5/Math/Quat.h"
-
+#include "MathGeoLib_1.5/MathGeoLib.h"
 #include "Component.h"
 
 class ComponentTransform : public Component
@@ -22,4 +20,5 @@ public:
 	void setLocal(ComponentTransform* newTransform);
 	void setLocalWithParentGlobal(ComponentTransform parentGlobal);
 	void OnInspector();
+	float4x4 getMatrix()const;
 };

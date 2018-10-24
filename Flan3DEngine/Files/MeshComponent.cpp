@@ -1,5 +1,6 @@
 #include "MeshComponent.h"
 #include "Glew/include/glew.h"
+#include "GameObject.h"
 
 MeshComponent::~MeshComponent()
 {
@@ -70,6 +71,12 @@ void MeshComponent::destroyBuffers()
 
 void MeshComponent::Draw()
 {
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	float4x4 myMatrix = gameObject->transform->getMatrix();
+
+	glMultMatrixf(myMatrix.ptr());
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_ID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -96,9 +103,10 @@ void MeshComponent::Draw()
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	glPopMatrix();
 }
 
 void MeshComponent::genNormalLines()

@@ -429,6 +429,7 @@ MeshComponent* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 {
 	MeshComponent* meshComp = new MeshComponent(parent);
 	meshes.push_back(meshComp);
+	//parent->AddComponent(meshComp);
 	return meshComp;
 }
 
