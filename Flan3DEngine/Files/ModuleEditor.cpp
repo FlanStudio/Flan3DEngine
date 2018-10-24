@@ -18,12 +18,6 @@
 #include "assimp/include/version.h"
 #include "DevIL/include/il.h"
 
-
-//TEMP
-#include "MathGeoLib_1.5/Geometry/Sphere.h"
-#include "MathGeoLib_1.5/Geometry/AABB.h"
-//ENDTEMP
-
 ModuleEditor::ModuleEditor(bool start_enabled) : Module("ModuleEditor", start_enabled) {}
 ModuleEditor::~ModuleEditor() {}
 

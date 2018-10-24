@@ -24,6 +24,8 @@ bool ModuleFileSystem::Init()
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
+	AssetsDirSystem = getDirFiles("Assets");
+
 	return true;
 }
 
@@ -42,6 +44,23 @@ bool ModuleFileSystem::CleanUp()
 	}
 
 	return ret;
+}
+
+update_status ModuleFileSystem::PreUpdate(float dt)
+{
+	updateAssetsCounter += dt;
+	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
+	{
+		updateAssetsCounter = 0.0f;
+		Directory newAssetsDir = getDirFiles("Assets");
+		
+		if (newAssetsDir != AssetsDirSystem)
+		{
+			//TODO: SEND EVENTS, ASSETS CHANGED.
+			AssetsDirSystem = newAssetsDir;
+		}		
+	}
+	return update_status::UPDATE_CONTINUE;
 }
 
 bool ModuleFileSystem::AddPath(char* path, char* mount)
@@ -89,7 +108,7 @@ bool ModuleFileSystem::setWriteDir(char* path)
 		ret = false;
 	}
 
-return ret;
+	return ret;
 }
 
 bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) const
@@ -233,9 +252,9 @@ char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
 	return ret;
 }
 
-Directory* ModuleFileSystem::getDirFiles(char* dir)
+Directory ModuleFileSystem::getDirFiles(char* dir)
 {
-	Directory* ret = new Directory;
+	Directory ret;
 	std::string dirstr(dir);
 	std::string name;
 	int pos = dirstr.find_last_of("/");
@@ -247,25 +266,22 @@ Directory* ModuleFileSystem::getDirFiles(char* dir)
 	{
 		name = dirstr;
 	}
-	char* nameAlloc = new char[name.size()+1]; //Null character at the end
-	strcpy(nameAlloc, name.c_str());
-	ret->name = nameAlloc;
+
+	ret.name = name;
 
 	char** files = PHYSFS_enumerateFiles(dir);
 	for (int i = 0; files[i] != nullptr; ++i)
 	{
 		std::string file(files[i]);
-		if(file.find(".") == std::string::npos) //Is a directory
+		if(file.find(".") == std::string::npos) //Is a directory, have not extension
 		{			
 			std::string fulldir(dir + std::string("/") + std::string(files[i]));			
-			Directory* child = getDirFiles((char*)fulldir.data());
-			ret->directories.push_back(child);
+			Directory child = getDirFiles((char*)fulldir.data());
+			ret.directories.push_back(child);
 		}
 		else
 		{
-			char* fileName = new char[strlen(files[i])+1]; //Null character at the end
-			strcpy(fileName, files[i]);
-			ret->files.push_back(fileName);
+			ret.files.push_back(files[i]);
 		}
 	}
 	PHYSFS_freeList(files);

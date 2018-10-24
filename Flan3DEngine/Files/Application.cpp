@@ -72,15 +72,12 @@ bool Application::Init()
 			ret = (*it)->Start();
 	}
 	
-	ms_timer.Start();
 	return ret;
 }
 
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	ms_timer.Start();
-
 }
 
 // ---------------------------------------------
@@ -88,12 +85,13 @@ void Application::FinishUpdate()
 {
 	//dt calculations
 
-	dt = (float)ms_timer.Read() / 1000.0f;
+	dt = ms_timer.Read() / 1000.0f;
+	ms_timer.Start();
+
 	float timeFrame = 1.0f / maxFPS;
 	
 	if (dt < timeFrame)
-	{
-		
+	{		
 		SDL_Delay((timeFrame - dt) * 1000.0f);
 	}
 
@@ -107,7 +105,6 @@ void Application::FinishUpdate()
 
 
 	//Save and Load config
-
 	if (save)
 	{
 		save = false;
@@ -119,7 +116,6 @@ void Application::FinishUpdate()
 		load = false;
 		LoadNow();
 	}
-
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules

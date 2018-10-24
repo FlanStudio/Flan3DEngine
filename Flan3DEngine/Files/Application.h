@@ -102,7 +102,7 @@ public:
 
 private:
 	Timer	ms_timer;
-	float	dt;
+	float	dt = 0.0f;
 	std::list<Module*> list_modules;
 	bool load = true;
 	bool save = false;

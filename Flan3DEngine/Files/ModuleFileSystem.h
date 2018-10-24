@@ -7,30 +7,55 @@
 #define CONFIG_FOLDER "Library/config/"
 
 #include <vector>
+#include <string>
+
+#include "Timer.h"
 
 struct Directory
 {
-	char* name = nullptr;
-	std::vector<char*> files;
-	std::vector<Directory*> directories;
+	std::string name;
+	std::vector<std::string> files;
+	std::vector<Directory> directories;
+
 	~Directory()
 	{
-		delete name;
-		name = nullptr;
-
-		for (int i = 0; i < files.size(); ++i)
-		{
-			delete files[i];
-			files[i] = nullptr;
-		}
+		name.clear();
 		files.clear();
-
-		for (int i = 0; i < directories.size(); ++i)
-		{
-			delete directories[i];
-		}
 		directories.clear();
 	}
+
+	bool operator == (Directory other)
+	{
+		bool ret = true;
+
+		if (name != other.name || files.size() != other.files.size() || directories.size() != other.directories.size())
+			ret = false;
+
+		if (ret)
+		{
+			for (int i = 0; i < files.size() && ret; ++i)
+			{
+				if (files[i] != other.files[i])
+					ret = false;
+			}
+
+			if (ret)
+			{
+				for (int i = 0; i < directories.size() && ret; ++i)
+				{
+					if (directories[i] != other.directories[i])
+						ret = false;
+				}
+			}
+		}
+		return ret;
+	}
+
+	bool operator != (Directory other)
+	{
+		return !(*this== other);
+	}
+
 };
 
 class ModuleFileSystem : public Module
@@ -41,6 +66,7 @@ public:
 
 	bool Init();
 	bool Start();
+	update_status PreUpdate(float dt);
 	bool CleanUp();
 
 	bool AddPath(char* path, char* mount = "");
@@ -59,5 +85,12 @@ public:
 	char* BINARY_TO_ASCII(char* binary_string);
 
 	//WARNING: Don't forget to delete the Directory file after use
-	Directory* getDirFiles(char* dir);
+	Directory getDirFiles(char* dir);
+
+public:
+	Directory AssetsDirSystem;
+
+private:
+	float updateAssetsCounter = 0.0f;
+	float updateAssetsRate = 1/5.0f;
 };
