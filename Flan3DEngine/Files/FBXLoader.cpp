@@ -213,7 +213,7 @@ bool FBXLoader::FillMeshData(MeshComponent* mymesh, aiMesh* mesh)
 	mymesh->name = mesh->mName.C_Str();
 
 	//Save an own-formatted mesh file
-	SaveMesh(mymesh);
+	//SaveMesh(mymesh);
 
 	return true;
 }

@@ -62,8 +62,7 @@ void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGloba
 
 void ComponentTransform::OnInspector()
 {
-	ImGui::TextColored({ 1,1,0,1 },"Transform:");
-	
+	ImGui::TextColored({ 1,1,0,1 },"Transform:");	
 	ImGui::NewLine();
 
 	float posY = ImGui::GetCursorPosY();
@@ -71,27 +70,23 @@ void ComponentTransform::OnInspector()
 	ImGui::Text("Position: "); ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
 	ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f");
-
+	
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);
 	ImGui::Text("Rotation: "); ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
-
 	float3 axis;
 	float angleRadians;
 	rotation.ToAxisAngle(axis, angleRadians);
-
 	float angleDegrees = RadToDeg(angleRadians);
-	
 	float3 axisbyAngle = angleDegrees * axis;
-
-	ImGui::DragFloat3("##2test", axisbyAngle.ptr(), .1f, -180, 180, "%.2f"); 
-
-	angleDegrees = axisbyAngle.Length();
-	angleRadians = DegToRad(angleDegrees);
-	axis = axisbyAngle.Normalized();
-
-	rotation.SetFromAxisAngle(axis, angleRadians);
+	if (ImGui::DragFloat3("##2test", axisbyAngle.ptr(), .1f, -180, 180, "%.2f"))
+	{
+		angleDegrees = axisbyAngle.Length();
+		angleRadians = DegToRad(angleDegrees);
+		axis = axisbyAngle.Normalized();
+		rotation.SetFromAxisAngle(axis, angleRadians);
+	}
 
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);	

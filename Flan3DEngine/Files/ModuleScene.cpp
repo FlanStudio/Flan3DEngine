@@ -97,7 +97,7 @@ void ModuleScene::guiHierarchy()
 
 	ImVec2 pos = ImGui::GetCursorPos();
 	ImGui::Dummy({ ImGui::GetWindowSize().x - pos.x,  ImGui::GetWindowSize().y - pos.y});
-	if (ImGui::IsItemClicked())
+	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 	{
 		GameObject* selected = getSelectedGO();
 		if (selected)
