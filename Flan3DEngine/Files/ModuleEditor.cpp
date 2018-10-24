@@ -439,6 +439,7 @@ update_status ModuleEditor::Update(float dt)
 		propWindow = false;
 		hierarchy = false;
 		inspector = false;
+		fileSystem = false;
 	}
 	return UPDATE_CONTINUE;
 }

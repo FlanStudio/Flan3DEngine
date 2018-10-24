@@ -77,30 +77,21 @@ void ComponentTransform::OnInspector()
 	ImGui::Text("Rotation: "); ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
 
-	float3 rotationEuler = RadToDeg(rotation.ToEulerXYZ());
-	if (Equal(rotationEuler.x, 0))
-		rotationEuler.x = 0;
+	float3 axis;
+	float angleRadians;
+	rotation.ToAxisAngle(axis, angleRadians);
 
-	if (Equal(rotationEuler.y, 0))
-		rotationEuler.y = 0;
+	float angleDegrees = RadToDeg(angleRadians);
+	
+	float3 axisbyAngle = angleDegrees * axis;
 
-	if (Equal(rotationEuler.z, 0))
-		rotationEuler.z = 0;
+	ImGui::DragFloat3("##2test", axisbyAngle.ptr(), .1f, -180, 180, "%.2f"); 
 
-	ImGui::DragFloat3("##2test", rotationEuler.ptr(), .1f, -180, 180, "%.2f"); //TODO: FIX THE Y BUG
+	angleDegrees = axisbyAngle.Length();
+	angleRadians = DegToRad(angleDegrees);
+	axis = axisbyAngle.Normalized();
 
-	if (Equal(rotationEuler.x, 0))
-		rotationEuler.x = 0;
-
-	if (Equal(rotationEuler.y, 0))
-		rotationEuler.y = 0;
-
-	if (Equal(rotationEuler.z, 0))
-		rotationEuler.z = 0;
-
-	rotationEuler = DegToRad(rotationEuler);
-
-	rotation = rotation.FromEulerXYZ(rotationEuler.x, rotationEuler.y, rotationEuler.z);
+	rotation.SetFromAxisAngle(axis, angleRadians);
 
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);	
