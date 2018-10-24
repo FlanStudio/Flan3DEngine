@@ -106,13 +106,13 @@ bool GameObject::HasChilds() const
 	return childs.size() > 0;
 }
 
-GameObject* GameObject::getSelectedGO()
+GameObject* GameObject::getSelectedGO() const
 {
 	GameObject* ret = nullptr;
 
 	if (selected)
 	{
-		ret = this;
+		ret = (GameObject*)this;
 	}
 	else
 	{
@@ -170,25 +170,37 @@ void GameObject::OnInspector()
 
 }
 
-int OnInputCallback(ImGuiInputTextCallbackData* callback)
-{
-	if (callback->BufTextLen == 0 && (bool)callback->UserData == true && ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))
-	{
-		callback->InsertChars(0, "default");	
-	}
-	return 0;
-}
-
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
 }
 
-int GameObject::getChildPos(GameObject* child) const
+int GameObject::getChildPos(const GameObject* child) const
 {
 	for (int i = 0; i < childs.size(); ++i)
 	{
 		if (childs[i] == child)
 			return i;
 	}
+}
+
+Component* GameObject::getComponentByType(ComponentType type) const
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->type == type)
+		{
+			return components[i];
+		}
+	}
+	return nullptr;
+}
+
+int OnInputCallback(ImGuiInputTextCallbackData* callback)
+{
+	if (callback->BufTextLen == 0 && (bool)callback->UserData == true && ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))
+	{
+		callback->InsertChars(0, "default");
+	}
+	return 0;
 }

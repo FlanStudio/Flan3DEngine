@@ -23,15 +23,16 @@ public:
 	Component* CreateComponent(ComponentType type);
 	void AddComponent(Component* component);
 	void AddChild(GameObject* child);
+	Component* getComponentByType(ComponentType type) const;
 	void InsertChild(GameObject* child, int pos);
 	void ClearChilds();
 	void ClearChild(GameObject* child);
 	void ClearComponents();
 	void ClearComponent(Component* component);
 	bool HasChilds() const;
-	GameObject* getSelectedGO();
+	GameObject* getSelectedGO() const;
 	void OnInspector();
-	int getChildPos(GameObject* child) const;
+	int getChildPos(const GameObject* child) const;
 private:
 	
 public:
