@@ -87,10 +87,15 @@ public:
 	//WARNING: Don't forget to delete the Directory file after use
 	Directory getDirFiles(char* dir);
 
+	void fileSystemGUI();
+
+private:
+	void recursiveDirectory(Directory& directory);
+
 public:
 	Directory AssetsDirSystem;
 
 private:
 	float updateAssetsCounter = 0.0f;
-	float updateAssetsRate = 1/5.0f;
+	float updateAssetsRate = 1.0f;
 };

@@ -5,6 +5,8 @@
 
 #include <bitset>
 
+#include "imgui/imgui.h"
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
@@ -287,4 +289,35 @@ Directory ModuleFileSystem::getDirFiles(char* dir)
 	PHYSFS_freeList(files);
 
 	return ret;
+}
+
+void ModuleFileSystem::fileSystemGUI()
+{
+	recursiveDirectory(AssetsDirSystem);
+}
+
+void ModuleFileSystem::recursiveDirectory(Directory& directory)
+{
+	ImGuiTreeNodeFlags flags = 0;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnDoubleClick;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
+
+	if (ImGui::TreeNodeEx(directory.name.data(), flags))
+	{
+		for (int i = 0; i < directory.directories.size(); ++i)
+		{
+			recursiveDirectory(directory.directories[i]);
+		}
+
+		for (int i = 0; i < directory.files.size(); ++i)
+		{
+			ImGuiTreeNodeFlags cflags = 0;
+			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
+			if (ImGui::TreeNodeEx(directory.files[i].data(), cflags))
+				ImGui::TreePop();
+
+		}
+
+		ImGui::TreePop();
+	}
 }

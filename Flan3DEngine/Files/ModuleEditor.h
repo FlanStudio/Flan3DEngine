@@ -37,4 +37,5 @@ private:
 	bool propWindow = false;
 	bool hierarchy = true;
 	bool inspector = true;
+	bool fileSystem = true;
 };

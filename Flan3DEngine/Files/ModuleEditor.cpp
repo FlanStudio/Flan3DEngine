@@ -50,6 +50,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 	ImGui::GetIO().DeltaTime = dt;
+	
 	//Editor setup down here
 
 	if(showdemowindow)
@@ -373,6 +374,15 @@ update_status ModuleEditor::PreUpdate(float dt)
 		ImGui::End();
 	}
 
+	if(fileSystem)
+	{
+		ImGui::Begin("FileSystem", &fileSystem);
+
+		App->fs->fileSystemGUI();
+
+		ImGui::End();
+	}
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Application"))
@@ -389,6 +399,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::MenuItem("Inspector", "", &inspector);
 
 			ImGui::MenuItem("Hierarchy", "", &hierarchy);
+
+			ImGui::MenuItem("FileSystem", "", &fileSystem);
 
 			ImGui::MenuItem("LOG", "", &logEnabled);
 
@@ -425,6 +437,8 @@ update_status ModuleEditor::Update(float dt)
 		showConfig = false;
 		showAbout = false;
 		propWindow = false;
+		hierarchy = false;
+		inspector = false;
 	}
 	return UPDATE_CONTINUE;
 }
