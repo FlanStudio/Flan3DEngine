@@ -87,10 +87,7 @@ void ComponentTransform::OnInspector()
 	if (Equal(rotationEuler.z, 0))
 		rotationEuler.z = 0;
 
-	ImGui::DragFloat3("##2test", rotationEuler.ptr(), .1f, -181, 181, "%.2f");
-	
-	if (rotationEuler.x > 0.1)
-		int a = 1;
+	ImGui::DragFloat3("##2test", rotationEuler.ptr(), .1f, -180, 180, "%.2f"); //TODO: FIX THE Y BUG
 
 	if (Equal(rotationEuler.x, 0))
 		rotationEuler.x = 0;
