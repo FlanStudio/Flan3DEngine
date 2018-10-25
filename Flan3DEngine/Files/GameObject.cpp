@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "imgui/imgui_stl.h"
+#include "imgui/imgui_internal.h"
 
 GameObject::~GameObject()
 {
@@ -164,23 +165,90 @@ void GameObject::OnInspector()
 	ImGui::NewLine();
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
-	if(components.size() > 0)
-		ImGui::Separator();
-	for (int i = 0; i < components.size(); ++i)
-	{		
-		components[i]->OnInspector();
+			
+	if (components.size() > 0)
+	{
 		ImGui::Separator();
 		if (ImGui::BeginDragDropTarget())
 		{
-			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingComponents", 0); //Set flags
+			ImGuiDragDropFlags flags = 0;
+			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingComponents", flags);
 			if (payload)
 			{
 				compToReorder = *(Component**)payload->Data;
-				postoreorder = i;
+				if (compToReorder != components.front())
+				{
+					//Draw a line
+					ImGuiWindow* window = ImGui::GetCurrentWindow();
+					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
+					float x1 = window->Pos.x;
+					float x2 = window->Pos.x + window->Size.x;
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 6), ImVec2(x2, window->DC.CursorPos.y - 6) };
+					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
+
+					if (ImGui::IsMouseReleased(0))
+					{
+						postoreorder = 0;
+					}
+					else
+					{
+						compToReorder = nullptr;
+
+					}
+				}
+				else
+				{
+					compToReorder = nullptr;
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
 	}
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnInspector();
+		ImGui::Separator();
+		if (ImGui::BeginDragDropTarget())
+		{
+			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingComponents", flags);
+			if (payload)
+			{
+				compToReorder = *(Component**)payload->Data;
+				if ( components[i] != compToReorder && (i < components.size()-1 ? (components[i+1] != compToReorder) : 1))
+				{
+					//Draw a line
+					ImGuiWindow* window = ImGui::GetCurrentWindow();
+					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
+					float x1 = window->Pos.x;
+					float x2 = window->Pos.x + window->Size.x;
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 6), ImVec2(x2, window->DC.CursorPos.y - 6) };
+					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
+					
+					if(ImGui::IsMouseReleased(0))
+					{
+						postoreorder = i;
+					}
+					else
+					{
+						compToReorder = nullptr;
+						
+					}
+				}
+				else
+				{
+					compToReorder = nullptr;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	
 
 	if (postoreorder >= 0 && compToReorder)
 	{

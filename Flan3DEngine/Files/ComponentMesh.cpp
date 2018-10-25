@@ -175,7 +175,17 @@ void ComponentMesh::OnInspector()
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5 });
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
 
-	//TODO: BEGIN DRAG SOURCE
+	ImGuiDragDropFlags flags = 0;
+	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+	if (ImGui::BeginDragDropSource(flags)) 
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("Mesh");
+		ImGui::EndTooltip();
+		ComponentMesh* thisOne = (ComponentMesh*)this;
+		ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentMesh));
+		ImGui::EndDragDropSource();
+	}
 
 	ImGui::PopStyleColor();
 	ImGui::SetCursorPosX(PosX + 20);

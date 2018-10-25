@@ -66,8 +66,13 @@ void ComponentTransform::OnInspector()
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5});
 	bool opened = ImGui::CollapsingHeader("##Transform"); ImGui::SameLine();
 
-	if(ImGui::BeginDragDropSource())
+	ImGuiDragDropFlags flags = 0;
+	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+	if(ImGui::BeginDragDropSource(flags))
 	{
+		ImGui::BeginTooltip();
+		ImGui::Text("Transform");
+		ImGui::EndTooltip();
 		ComponentTransform* thisOne = (ComponentTransform*)this;
 		ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentTransform));
 		ImGui::EndDragDropSource();
