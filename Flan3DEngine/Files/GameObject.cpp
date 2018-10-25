@@ -168,7 +168,9 @@ void GameObject::OnInspector()
 			
 	if (components.size() > 0)
 	{
-		ImGui::Separator();
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
 			ImGuiDragDropFlags flags = 0;
@@ -185,7 +187,7 @@ void GameObject::OnInspector()
 					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
 					float x1 = window->Pos.x;
 					float x2 = window->Pos.x + window->Size.x;
-					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 6), ImVec2(x2, window->DC.CursorPos.y - 6) };
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y-2), ImVec2(x2, window->DC.CursorPos.y-2)};
 					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
 
 					if (ImGui::IsMouseReleased(0))
@@ -205,12 +207,15 @@ void GameObject::OnInspector()
 			}
 			ImGui::EndDragDropTarget();
 		}
+		ImGui::Separator();
 	}
 
 	for (int i = 0; i < components.size(); ++i)
 	{
 		components[i]->OnInspector();
-		ImGui::Separator();
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
 			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
@@ -226,7 +231,7 @@ void GameObject::OnInspector()
 					ImGui::ItemSize(ImVec2(0.0f, 0.0f));
 					float x1 = window->Pos.x;
 					float x2 = window->Pos.x + window->Size.x;
-					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 6), ImVec2(x2, window->DC.CursorPos.y - 6) };
+					ImRect rec{ ImVec2(x1, window->DC.CursorPos.y - 2), ImVec2(x2, window->DC.CursorPos.y - 2) };
 					window->DrawList->AddLine(rec.Min, ImVec2(rec.Max.x, rec.Min.y), ImGui::GetColorU32(ImGuiCol_::ImGuiCol_DragDropTarget), 2);
 					
 					if(ImGui::IsMouseReleased(0))
@@ -246,6 +251,8 @@ void GameObject::OnInspector()
 			}
 			ImGui::EndDragDropTarget();
 		}
+		ImGui::Separator();
+
 	}
 
 	
