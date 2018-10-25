@@ -74,7 +74,7 @@ void GameObject::ClearComponents()
 		{
 			case ComponentType::MESH:
 			{
-				App->renderer3D->ClearMesh((MeshComponent*)components[0]);
+				App->renderer3D->ClearMesh((ComponentMesh*)components[0]);
 				ClearComponent(components[0]);
 				break;
 			}
@@ -162,10 +162,30 @@ void GameObject::OnInspector()
 	bool ret = ImGui::InputText("", &name, flags, OnInputCallback, &ret);
 
 	ImGui::NewLine();
-	for (int i = 0; i < components.size(); ++i)
-	{
+	int postoreorder = -1;
+	Component* compToReorder = nullptr;
+	if(components.size() > 0)
 		ImGui::Separator();
+	for (int i = 0; i < components.size(); ++i)
+	{		
 		components[i]->OnInspector();
+		ImGui::Separator();
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingComponents", 0); //Set flags
+			if (payload)
+			{
+				compToReorder = *(Component**)payload->Data;
+				postoreorder = i;
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	if (postoreorder >= 0 && compToReorder)
+	{
+		ClearComponent(compToReorder);
+		InsertComponent(compToReorder, postoreorder);
 	}
 
 }
@@ -203,4 +223,9 @@ int OnInputCallback(ImGuiInputTextCallbackData* callback)
 		callback->InsertChars(0, "default");
 	}
 	return 0;
+}
+
+void GameObject::InsertComponent(Component* component, int pos)
+{
+	components.insert(components.begin() + pos, component);
 }

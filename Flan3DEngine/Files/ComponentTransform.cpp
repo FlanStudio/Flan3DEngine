@@ -62,42 +62,56 @@ void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGloba
 
 void ComponentTransform::OnInspector()
 {
-	ImGui::TextColored({ 1,1,0,1 },"Transform:");	
-	ImGui::NewLine();
+	float PosX = ImGui::GetCursorPosX();
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5});
+	bool opened = ImGui::CollapsingHeader("##Transform"); ImGui::SameLine();
 
-	float posY = ImGui::GetCursorPosY();
-	ImGui::SetCursorPosY(posY + 3);
-	ImGui::Text("Position: "); ImGui::SameLine();
-	ImGui::SetCursorPosY(posY);
-	ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f");
-	
-	posY = ImGui::GetCursorPosY();
-	ImGui::SetCursorPosY(posY + 3);
-	ImGui::Text("Rotation: "); ImGui::SameLine();
-	ImGui::SetCursorPosY(posY);
-	float3 axis;
-	float angleRadians;
-	rotation.ToAxisAngle(axis, angleRadians);
-	float angleDegrees = RadToDeg(angleRadians);
-	float3 axisbyAngle = angleDegrees * axis;
-	if (ImGui::DragFloat3("##2test", axisbyAngle.ptr(), .1f, -180, 180, "%.2f"))
+	if(ImGui::BeginDragDropSource())
 	{
-		angleDegrees = axisbyAngle.Length();
-		angleRadians = DegToRad(angleDegrees);
-		axis = axisbyAngle.Normalized();
-		rotation.SetFromAxisAngle(axis, angleRadians);
+		ComponentTransform* thisOne = (ComponentTransform*)this;
+		ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentTransform));
+		ImGui::EndDragDropSource();
 	}
 
-	posY = ImGui::GetCursorPosY();
-	ImGui::SetCursorPosY(posY + 3);	
-	ImGui::Text("Scale: "); ImGui::SameLine();
-	ImGui::SetCursorPosY(posY);
-	float posX = ImGui::GetCursorPosX();
-	ImGui::SetCursorPosX(posX + 21);
-	ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
-	ImGui::SetCursorPosX(posX);
+	ImGui::PopStyleColor();
+	ImGui::SetCursorPosX(PosX + 20);
+	ImGui::TextColored({ 1,1,0,1 }, "Transform:");	
+	if(opened)
+	{
+		ImGui::NewLine();
 
-	getMatrix();
+		float posY = ImGui::GetCursorPosY();
+		ImGui::SetCursorPosY(posY + 3);
+		ImGui::Text("Position: "); ImGui::SameLine();
+		ImGui::SetCursorPosY(posY);
+		ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f");
+
+		posY = ImGui::GetCursorPosY();
+		ImGui::SetCursorPosY(posY + 3);
+		ImGui::Text("Rotation: "); ImGui::SameLine();
+		ImGui::SetCursorPosY(posY);
+		float3 axis;
+		float angleRadians;
+		rotation.ToAxisAngle(axis, angleRadians);
+		float angleDegrees = RadToDeg(angleRadians);
+		float3 axisbyAngle = angleDegrees * axis;
+		if (ImGui::DragFloat3("##2", axisbyAngle.ptr(), .1f, -180, 180, "%.2f"))
+		{
+			angleDegrees = axisbyAngle.Length();
+			angleRadians = DegToRad(angleDegrees);
+			axis = axisbyAngle.Normalized();
+			rotation.SetFromAxisAngle(axis, angleRadians);
+		}
+
+		posY = ImGui::GetCursorPosY();
+		ImGui::SetCursorPosY(posY + 3);
+		ImGui::Text("Scale: "); ImGui::SameLine();
+		ImGui::SetCursorPosY(posY);
+		float posX = ImGui::GetCursorPosX();
+		ImGui::SetCursorPosX(posX + 21);
+		ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
+		ImGui::SetCursorPosX(posX);
+	}
 }
 
 float4x4 ComponentTransform::getMatrix()const

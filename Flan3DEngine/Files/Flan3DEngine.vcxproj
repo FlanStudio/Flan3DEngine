@@ -234,7 +234,7 @@
     <ClInclude Include="MathGeoLib_1.5\Math\sse_mathfun.h" />
     <ClInclude Include="MathGeoLib_1.5\Math\TransformOps.h" />
     <ClInclude Include="MathGeoLib_1.5\Time\Clock.h" />
-    <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="ComponentMesh.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleEditor.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -311,7 +311,7 @@
     <ClCompile Include="MathGeoLib_1.5\Math\SSEMath.cpp" />
     <ClCompile Include="MathGeoLib_1.5\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib_1.5\Time\Clock.cpp" />
-    <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="ComponentMesh.cpp" />
     <ClCompile Include="ModuleAudio.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleEditor.cpp" />

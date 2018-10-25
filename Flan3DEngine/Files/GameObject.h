@@ -33,6 +33,7 @@ public:
 	GameObject* getSelectedGO() const;
 	void OnInspector();
 	int getChildPos(const GameObject* child) const;
+	void InsertComponent(Component* component, int pos);
 private:
 	
 public:

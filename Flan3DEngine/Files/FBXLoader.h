@@ -11,7 +11,7 @@
 
 class aiNode;
 class aiMesh;
-class MeshComponent;
+class ComponentMesh;
 class GameObject;
 class aiScene;
 
@@ -35,12 +35,12 @@ public:
 
 public:
 	bool LoadFBX(char* path, bool useFS = true);
-	bool SaveMesh(MeshComponent* mesh);
-	bool LoadMesh(MeshComponent* mesh, std::string path);
+	bool SaveMesh(ComponentMesh* mesh);
+	bool LoadMesh(ComponentMesh* mesh, std::string path);
 
 private:
 	bool RecursivelyHierarchy(const aiNode* parent, const GameObject* parentGO, const aiScene* scene);
-	bool FillMeshData(MeshComponent* mymesh, aiMesh* mesh);
+	bool FillMeshData(ComponentMesh* mymesh, aiMesh* mesh);
 
 private:
 	aiLogStream stream;

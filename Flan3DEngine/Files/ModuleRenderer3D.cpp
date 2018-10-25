@@ -16,7 +16,7 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "Glew/glew32.lib")
 
-#include "MeshComponent.h"
+#include "ComponentMesh.h"
 #include "GameObject.h"
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module("ModuleRenderer", start_enabled)
@@ -368,10 +368,10 @@ void ModuleRenderer3D::ClearMeshes()
 		meshes[i]->gameObject->ClearComponent(meshes[i]);
 		delete meshes[i];
 	}
-	std::vector<MeshComponent*>().swap(meshes); //Clear, but deleting the preallocated memory
+	std::vector<ComponentMesh*>().swap(meshes); //Clear, but deleting the preallocated memory
 }
 
-void ModuleRenderer3D::ClearMesh(MeshComponent* mesh)
+void ModuleRenderer3D::ClearMesh(ComponentMesh* mesh)
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
@@ -425,9 +425,9 @@ void ModuleRenderer3D::DrawMeshes() const
 	}
 }
 
-MeshComponent* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
+ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 {
-	MeshComponent* meshComp = new MeshComponent(parent);
+	ComponentMesh* meshComp = new ComponentMesh(parent);
 	meshes.push_back(meshComp);
 	//parent->AddComponent(meshComp);
 	return meshComp;
@@ -435,11 +435,4 @@ MeshComponent* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 
 void ModuleRenderer3D::guiMeshesGeometry() const
 {
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		ImGui::Text("Mesh %i: %s", i, meshes[i]->gameObject->name.data());
-		ImGui::Text("Vertices: %i", meshes[i]->num_vertex);
-		ImGui::Text("Triangles: %i", meshes[i]->num_vertex / 3);
-		ImGui::NewLine();
-	}
 }

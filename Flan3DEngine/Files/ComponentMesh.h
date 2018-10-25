@@ -7,7 +7,7 @@
 
 #include <string>
 
-class MeshComponent : public Component
+class ComponentMesh : public Component
 {
 public:
 
@@ -33,13 +33,15 @@ public:
 
 	std::string name;
 
-	MeshComponent(GameObject* parent, bool active = true) : Component(ComponentType::MESH, parent, active){}
-	~MeshComponent();
+	ComponentMesh(GameObject* parent, bool active = true) : Component(ComponentType::MESH, parent, active){}
+	~ComponentMesh();
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
 	void UpdateNormalsLenght();
 	void drawNormals();
+
+	void OnInspector() override;
 
 private:
 	void genNormalLines();

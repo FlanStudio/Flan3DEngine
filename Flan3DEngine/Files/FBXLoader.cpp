@@ -14,7 +14,7 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
-#include "MeshComponent.h"
+#include "ComponentMesh.h"
 #include "GameObject.h"
 
 void LogCallback(const char* message, char* user)
@@ -110,7 +110,7 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 		
 		for (int i = 0; i < scene->mRootNode->mNumMeshes; ++i) //for each mesh in the root node
 		{
-			MeshComponent* meshComp = App->renderer3D->CreateMeshComponent(root); //create a new MeshComponent
+			ComponentMesh* meshComp = App->renderer3D->CreateMeshComponent(root); //create a new MeshComponent
 			FillMeshData(meshComp, scene->mMeshes[scene->mRootNode->mMeshes[i]]); //Initialize that MeshComponent with the corresponding aiMesh
 			meshComp->genBuffers();
 			Debug.Log("New mesh loaded with %d vertex", meshComp->num_vertex);
@@ -149,7 +149,7 @@ bool FBXLoader::RecursivelyHierarchy(const aiNode* parent, const GameObject* par
 
 		for (int j = 0; j < node->mNumMeshes; ++j) //Generate a new MeshComponent for each mesh in child
 		{
-			MeshComponent* meshComp = App->renderer3D->CreateMeshComponent(newGO);
+			ComponentMesh* meshComp = App->renderer3D->CreateMeshComponent(newGO);
 			FillMeshData(meshComp, scene->mMeshes[node->mMeshes[j]]);
 			meshComp->genBuffers();
 			Debug.Log("New mesh loaded with %d vertex", meshComp->num_vertex);
@@ -160,7 +160,7 @@ bool FBXLoader::RecursivelyHierarchy(const aiNode* parent, const GameObject* par
 	return true;
 }
 
-bool FBXLoader::FillMeshData(MeshComponent* mymesh, aiMesh* mesh)
+bool FBXLoader::FillMeshData(ComponentMesh* mymesh, aiMesh* mesh)
 {
 	mymesh->num_vertex = mesh->mNumVertices;
 	mymesh->vertex = new float[mesh->mNumVertices * 3];
@@ -218,7 +218,7 @@ bool FBXLoader::FillMeshData(MeshComponent* mymesh, aiMesh* mesh)
 	return true;
 }
 
-bool FBXLoader::SaveMesh(MeshComponent* mesh)
+bool FBXLoader::SaveMesh(ComponentMesh* mesh)
 {
 	uint ranges[5] =
 	{
@@ -291,13 +291,13 @@ bool FBXLoader::SaveMesh(MeshComponent* mesh)
 	
 	delete buffer;
 
-	MeshComponent* othermesh = new MeshComponent(nullptr);
+	ComponentMesh* othermesh = new ComponentMesh(nullptr);
 	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");
 
 	return true;
 }
 
-bool FBXLoader::LoadMesh(MeshComponent* mesh, std::string path)
+bool FBXLoader::LoadMesh(ComponentMesh* mesh, std::string path)
 {
 	int fileSize = 0;
 	char* buffer;

@@ -1,8 +1,8 @@
-#include "MeshComponent.h"
+#include "ComponentMesh.h"
 #include "Glew/include/glew.h"
 #include "GameObject.h"
 
-MeshComponent::~MeshComponent()
+ComponentMesh::~ComponentMesh()
 {
 	destroyBuffers();
 	delete[] normals;
@@ -15,7 +15,7 @@ MeshComponent::~MeshComponent()
 	index = nullptr;
 }
 
-void MeshComponent::genBuffers()
+void ComponentMesh::genBuffers()
 {
 	glGenBuffers(1, &vertex_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_ID);
@@ -58,7 +58,7 @@ void MeshComponent::genBuffers()
 	}
 }
 
-void MeshComponent::destroyBuffers()
+void ComponentMesh::destroyBuffers()
 {
 	glDeleteBuffers(1, &vertex_ID);
 	glDeleteBuffers(1, &index_ID);
@@ -69,7 +69,7 @@ void MeshComponent::destroyBuffers()
 	vertex_ID = index_ID = normals_ID = normalLines_ID = colors_ID = textureCoords_ID = 0;
 }
 
-void MeshComponent::Draw()
+void ComponentMesh::Draw()
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -109,7 +109,7 @@ void MeshComponent::Draw()
 	glPopMatrix();
 }
 
-void MeshComponent::genNormalLines()
+void ComponentMesh::genNormalLines()
 {
 	normalLines = new float[num_vertex * 3 * 2];
 	for (int i = 0; i < num_vertex; i++)
@@ -126,7 +126,7 @@ void MeshComponent::genNormalLines()
 	}
 }
 
-void MeshComponent::UpdateNormalsLenght()
+void ComponentMesh::UpdateNormalsLenght()
 {
 	if (!normalLines)
 		return;
@@ -149,7 +149,7 @@ void MeshComponent::UpdateNormalsLenght()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MeshComponent::drawNormals()
+void ComponentMesh::drawNormals()
 {
 	if (normalLines)
 	{
@@ -166,5 +166,24 @@ void MeshComponent::drawNormals()
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 		glColor3f(1, 1, 1);
+	}
+}
+
+void ComponentMesh::OnInspector()
+{
+	float PosX = ImGui::GetCursorPosX();
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5 });
+	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
+
+	//TODO: BEGIN DRAG SOURCE
+
+	ImGui::PopStyleColor();
+	ImGui::SetCursorPosX(PosX + 20);
+	ImGui::TextColored({ 1,1,0,1 }, "Mesh:");
+	if (opened)
+	{
+		ImGui::Text("Mesh: %s", gameObject->name.data()); //TODO: SAVE THE REAL MESH NAME
+		ImGui::Text("Vertices: %i", num_vertex);
+		ImGui::Text("Triangles: %i",num_vertex / 3);
 	}
 }

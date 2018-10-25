@@ -621,7 +621,7 @@
     <ClInclude Include="ComponentTransform.h">
       <Filter>Sources\Containers\Engine Structure</Filter>
     </ClInclude>
-    <ClInclude Include="MeshComponent.h">
+    <ClInclude Include="ComponentMesh.h">
       <Filter>Sources\Containers\Engine Structure</Filter>
     </ClInclude>
   </ItemGroup>
@@ -836,10 +836,10 @@
     <ClCompile Include="FBXLoader.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="MeshComponent.cpp">
+    <ClCompile Include="ComponentTransform.cpp">
       <Filter>Sources\Containers\Engine Structure</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentTransform.cpp">
+    <ClCompile Include="ComponentMesh.cpp">
       <Filter>Sources\Containers\Engine Structure</Filter>
     </ClCompile>
   </ItemGroup>
