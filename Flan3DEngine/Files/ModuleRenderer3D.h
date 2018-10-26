@@ -6,10 +6,12 @@
 #include "MathGeoLib_1.5/Geometry/AABB.h"
 #include <vector>
 
+
 #define MAX_LIGHTS 8
 
 class ComponentMesh;
 class GameObject;
+class ComponentCamera;
 
 class ModuleRenderer3D : public Module
 {
@@ -51,9 +53,6 @@ public:
 
 public:
 	void ReserveMeshes(uint size) { meshes.reserve(size); }
-
-private:
-	float4x4 Perspective(float fovy, float aspect, float znear, float zfar);
 	
 public:
 	Light lights[MAX_LIGHTS];

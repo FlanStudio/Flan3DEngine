@@ -29,8 +29,8 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	App->camera->Move(float3(0.0f, 5.0f, 5.0f));
-	App->camera->LookAt(float3(0, 0, 0));
+	/*App->camera->Move(float3(0.0f, 5.0f, 5.0f));
+	App->camera->LookAt(float3(0, 0, 0));*/
 
 
 	//-------------SPAWN HOUSE WITH THE TEXTURE-----------

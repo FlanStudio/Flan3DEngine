@@ -103,7 +103,6 @@ update_status ModuleInput::PreUpdate(float dt)
 			case SDL_MOUSEMOTION:
 			mouse_x = e.motion.x / SCREEN_SIZE;
 			mouse_y = e.motion.y / SCREEN_SIZE;
-
 			mouse_x_motion = e.motion.xrel / SCREEN_SIZE;
 			mouse_y_motion = e.motion.yrel / SCREEN_SIZE;
 			break;
