@@ -3,6 +3,7 @@
 #include "ModuleCamera3D.h"
 #include "MathGeoLib_1.5/Math/float3x3.h"
 #include "Brofiler\Brofiler.h"
+#include "imgui/imgui.h"
 
 #define SPEED 100.0f
 
@@ -41,39 +42,47 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
+	
+	if(!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
+		CameraInputs(dt);
 
-		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		{
-			AABB bb = App->renderer3D->getSceneAABB();
-			center = bb.CenterPoint();
+	return UPDATE_CONTINUE;
+}
 
-			float3 dir = (Position - center).Normalized();
+void ModuleCamera3D::CameraInputs(float dt)
+{
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		AABB bb = App->renderer3D->getSceneAABB();
+		center = bb.CenterPoint();
 
-			double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
-			orbitalRadius = ((bb.Size().MaxElement()) / sin);
+		float3 dir = (Position - center).Normalized();
 
-			Position = (center + dir * orbitalRadius);
+		double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+		orbitalRadius = ((bb.Size().MaxElement()) / sin);
 
-			LookAt(center);
-		}
+		Position = (center + dir * orbitalRadius);
+
+		LookAt(center);
+	}
 
 	float3 newPos(0, 0, 0);
 	float speed = SPEED * dt;
 
-	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = SPEED * 5 * dt;
-	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
 		speed = SPEED * dt;
 
-	if(App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos += Y * speed;
-	if(App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos -= Y * speed;
+	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos += Y * speed;
+	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos -= Y * speed;
 
-	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
-	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
 
 
-	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
-	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
 
 	if (App->input->GetMouseZ() != 0)
 	{
@@ -85,8 +94,7 @@ update_status ModuleCamera3D::Update(float dt)
 	Reference += newPos;
 
 	// Mouse motion ----------------
-
-	if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		rotateCamera();
 	}
@@ -100,8 +108,6 @@ update_status ModuleCamera3D::Update(float dt)
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
-
-	return UPDATE_CONTINUE;
 }
 
 // -----------------------------------------------------------------

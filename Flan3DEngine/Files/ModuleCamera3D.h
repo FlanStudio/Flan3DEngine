@@ -21,7 +21,7 @@ public:
 	float* GetViewMatrix();
 
 private:
-
+	void CameraInputs(float dt);
 	void CalculateViewMatrix();
 
 public:
