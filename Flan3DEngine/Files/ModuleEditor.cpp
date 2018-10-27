@@ -39,6 +39,7 @@ bool ModuleEditor::Start()
 	ImGuiStyle* style = &ImGui::GetStyle();
 	//style->Colors[ImGuiCol_Text] = { 1,0,0,1 };
 
+
 	return true;	
 }
 
@@ -58,8 +59,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 	
 	if (showMGLwindow)
 	{
+		//ImGui::SetNextWindowPos({ 0,0 }, ImGuiCond_::ImGuiCond_FirstUseEver);
 		ImGui::Begin("MathGeoLib Info", &showMGLwindow);
-
 		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
 		{
 			Debug.Log("Sphere spawned %d", 1111);
