@@ -116,7 +116,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT &&
 		App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
-		rotateAround(dt);
+		rotateAroundCenter(dt);
 	}
 }
 
@@ -167,29 +167,25 @@ float* ModuleCamera3D::GetViewMatrix()
 
 // -----------------------------------------------------------------
 
-void ModuleCamera3D::rotateCamera(float dt)
+void ModuleCamera3D::rotateCamera(float dt) //Rotating the camera around the World-X, World-Y axis
 {
 	int dx = -App->input->GetMouseXMotion();
 	int dy = App->input->GetMouseYMotion();
 
-	float Sensitivity = 1;
-
 	if (dy != 0)
 	{
-		float3 rotateValue = float3(dy * dt, 0, 0);
-		Quat rotation = Quat::FromEulerXYZ(rotateValue.x, rotateValue.y, rotateValue.z);		
+		Quat rotation = Quat::RotateAxisAngle(float3(1, 0, 0), dy * dt);	
 		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
 	}
 	if (dx != 0)
 	{
-		float3 rotateValue = float3(0, dx * dt, 0);
-		Quat rotation = Quat::FromEulerXYZ(rotateValue.x, rotateValue.y, rotateValue.z);		
+		Quat rotation = Quat::RotateAxisAngle(float3(0, 1, 0), dx * dt);
 		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
 	}
 
 }
 
-void ModuleCamera3D::rotateAround(float dt)
+void ModuleCamera3D::rotateAroundCenter(float dt)
 {
 	int dx = -App->input->GetMouseXMotion();
 	int dy = -App->input->GetMouseYMotion();

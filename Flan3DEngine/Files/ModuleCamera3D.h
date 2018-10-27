@@ -21,7 +21,7 @@ public:
 	void LookAt(const float3& target);
 	void Move(const float3& Movement);
 	void rotateCamera(float dt);
-	void rotateAround(float dt);
+	void rotateAroundCenter(float dt);
 	float* GetViewMatrix();
 	void OnResize(int w, int h);
 private:
