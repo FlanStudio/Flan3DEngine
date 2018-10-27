@@ -118,6 +118,8 @@ public:
 	std::string engineName = "Flan3DEngine";
 	std::string organization = "FlanStudio";
 
+	bool debugDraw = true;
+
 public:
 
 	Application();

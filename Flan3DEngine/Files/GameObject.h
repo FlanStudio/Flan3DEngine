@@ -41,8 +41,15 @@ public:
 	void OnInspector();
 	int getChildPos(const GameObject* child) const;
 	void InsertComponent(Component* component, int pos);
+
+	//AABB drawing data-----------------
+	void drawAABB()const;
+	void createAABBbuffers();	
+	void destroyAABBbuffers();
+	void recursiveDebugDraw(GameObject* gameObject)const;
+
 private:
-	
+	void debugDraw()const;
 public:
 	bool selected = false;
 	bool treeOpened = false;
@@ -53,5 +60,10 @@ private:
 
 	bool hasTransform = false;
 	bool hasMaterial = false;
+	
+	//AABB drawing data-----------------
+	float* AABBvertex = nullptr;
+	uint numAABBvertex = 0u;
+	uint bufferIndex = 0u;
 };
 int OnInputCallback(ImGuiInputTextCallbackData* callback);
