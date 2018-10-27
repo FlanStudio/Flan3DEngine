@@ -6,11 +6,17 @@
 #include "Component.h"
 #include "ComponentTransform.h"
 
+#include "MathGeoLib_1.5/Math/float3x3.h"
+
 class GameObject
 {
 public:
 
-	GameObject(GameObject* parent) : parent(parent) {}
+	GameObject(GameObject* parent) : parent(parent) 
+	{
+		boundingBox.SetNegativeInfinity();
+	}
+
 	~GameObject();
 
 public:
@@ -18,6 +24,7 @@ public:
 	ComponentTransform* transform = nullptr;
 	std::string name = "default";
 	std::vector<GameObject*> childs;
+	AABB boundingBox;
 
 public:
 	Component* CreateComponent(ComponentType type);
