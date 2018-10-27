@@ -387,11 +387,10 @@ void ModuleRenderer3D::DrawMeshes() const
 	}
 }
 
-ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
+ComponentMesh* ModuleRenderer3D::CreateComponentMesh(GameObject* parent)
 {
 	ComponentMesh* meshComp = new ComponentMesh(parent);
 	meshes.push_back(meshComp);
-	//parent->AddComponent(meshComp);
 	return meshComp;
 }
 

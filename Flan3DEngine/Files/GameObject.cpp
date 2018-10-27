@@ -18,7 +18,8 @@ Component* GameObject::CreateComponent(ComponentType type)
 	{
 		case ComponentType::MESH:
 		{
-			//TODO: App renderer create component mesh, and save the pointer returned into our vector
+			ret = (Component*)App->renderer3D->CreateComponentMesh(this);
+			AddComponent(ret);
 			break;
 		}
 		case ComponentType::TRANSFORM:
