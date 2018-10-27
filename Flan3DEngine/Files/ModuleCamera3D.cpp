@@ -142,12 +142,16 @@ void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool 
 // -----------------------------------------------------------------
 void ModuleCamera3D::LookAt(const float3 &target)
 {
-	float3 zDir = (target - editorCamera->transform->position).Normalized();					//front (Z) has to look this point
+	//Orient the localY axis to the World-Y axis
+	float3 localY = editorCamera->transform->rotation * float3(0, 1, 0);
+	Quat rotationY = Quat::RotateFromTo(localY, float3(0, 1, 0));
+	editorCamera->transform->rotation = rotationY * editorCamera->transform->rotation;
 
-	float angleDiff = float3(0,0,1).AngleBetweenNorm(zDir);										//Difference between the World-Z axis and the new One
-	float3 axis = float3(0, 0, 1).Cross(zDir);													//Axis of rotation (Perpendicular to both Z's)
-
-	editorCamera->transform->rotation = Quat::RotateAxisAngle(axis, angleDiff);					//Calculate the quaternion
+	//Calculate the desired direction for z and get the quaternion that makes the rotation z -> desiredDirection
+	float3 zDir = (target - editorCamera->transform->position).Normalized();
+	float3 localZ = editorCamera->transform->rotation * float3(0, 0, 1);
+	Quat rotation = Quat::RotateFromTo(localZ, zDir);
+	editorCamera->transform->rotation = rotation * editorCamera->transform->rotation;
 }
 // -----------------------------------------------------------------
 void ModuleCamera3D::Move(const float3 &movement)
@@ -172,31 +176,56 @@ void ModuleCamera3D::rotateCamera(float dt)
 
 	if (dy != 0)
 	{
-		Quat actualRotation = editorCamera->transform->rotation;
-		float3 localX = actualRotation * float3(1, 0, 0);
-
-		float angleToRotate = 2 * dy * Sensitivity * dt;
-
-		Quat rotation = Quat::RotateAxisAngle(localX, angleToRotate);
-		editorCamera->transform->rotation = rotation * editorCamera->transform->rotation;
+		float3 rotateValue = float3(dy * dt, 0, 0);
+		Quat rotation = Quat::FromEulerXYZ(rotateValue.x, rotateValue.y, rotateValue.z);		
+		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
 	}
 	if (dx != 0)
 	{
-		Quat actualRotation = editorCamera->transform->rotation;
-		float3 localY = actualRotation * float3(0, 1, 0);
-
-		float angleToRotate = 2 * dx * Sensitivity * dt;
-
-		Quat rotation = Quat::RotateAxisAngle(localY, angleToRotate);
-		editorCamera->transform->rotation = rotation * editorCamera->transform->rotation;
+		float3 rotateValue = float3(0, dx * dt, 0);
+		Quat rotation = Quat::FromEulerXYZ(rotateValue.x, rotateValue.y, rotateValue.z);		
+		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
 	}
 
 }
 
 void ModuleCamera3D::rotateAround(float dt)
 {
+	int dx = -App->input->GetMouseXMotion();
+	int dy = -App->input->GetMouseYMotion();
 
+	float Sensitivity = 1;
 
+	if (dy != 0)
+	{
+		float angle = dy * dt;
+		Quat rotation = Quat::RotateAxisAngle(float3(1, 0, 0), angle);
+
+		float3 dir = editorCamera->transform->position - center;
+		float distance = dir.Length();
+		dir.Normalize();
+
+		dir = rotation * dir;
+
+		editorCamera->transform->position = center + (dir * distance);
+		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
+	}
+	if (dx != 0)
+	{
+		float3 rotateValue = float3(0, dx * dt, 0);
+		Quat rotation = Quat::FromEulerXYZ(rotateValue.x, rotateValue.y, rotateValue.z);
+
+		float3 dir = editorCamera->transform->position - center;
+		float distance = dir.Length();
+		dir.Normalize();
+
+		dir = rotation * dir;
+
+		editorCamera->transform->position = center + (dir * distance);
+		editorCamera->transform->rotation = editorCamera->transform->rotation * rotation;
+	}
+
+	LookAt(center); //Because of that the camera can never have his local-Y axis looking towards the floor. I like the result, but could not be the desirable one.
 }
 
 void ModuleCamera3D::OnResize(int w, int h)
