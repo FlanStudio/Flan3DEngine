@@ -49,26 +49,26 @@ public:
 	AABB getSceneAABB() const { return sceneBoundingBox; }
 
 
-	ComponentMesh* CreateMeshComponent(GameObject* parent);
+	ComponentMesh* CreateComponentMesh(GameObject* parent);
 
 public:
-	void ReserveMeshes(uint size) { meshes.reserve(size); }
+	void ReserveMeshes(uint size) 
+	{ 
+		meshes.reserve(size); 
+	}
 	
 public:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 
-	AABB sceneBoundingBox; //A bounding box containing all the geometries
+	AABB sceneBoundingBox; //A bounding box containing all the geometries //TODO: change that system
 
 private:
 	bool depthTest = false, cullFace = false, lighting = false, colorMaterial = false, texture2D = false;
 	bool wireframe = false;
-	float4x4 ProjectionMatrix;
-	//TODO: TWO OTHERS
 
 	std::vector<ComponentMesh*> meshes; //Only contain meshes for now
 
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;
-	
 };

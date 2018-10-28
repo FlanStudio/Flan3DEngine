@@ -87,7 +87,10 @@ update_status ModuleScene::PostUpdate(float dt)
 	euler.Render();
 	grid.Render();
 
-
+	if (App->debugDraw)
+	{
+		debugDraw();
+	}
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -257,6 +260,14 @@ void ModuleScene::selectGO(GameObject* toSelect)
 		selected->selected = false;
 	}
 	toSelect->selected = true;
+}
+
+void ModuleScene::debugDraw() const
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+	{
+		gameObjects[i]->recursiveDebugDraw(gameObjects[i]);
+	}
 }
 
 void ModuleScene::DragDrop(GameObject* go)

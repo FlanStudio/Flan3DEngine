@@ -6,11 +6,17 @@
 #include "Component.h"
 #include "ComponentTransform.h"
 
+#include "MathGeoLib_1.5/Math/float3x3.h"
+
 class GameObject
 {
 public:
 
-	GameObject(GameObject* parent) : parent(parent) {}
+	GameObject(GameObject* parent) : parent(parent) 
+	{
+		boundingBox.SetNegativeInfinity();
+	}
+
 	~GameObject();
 
 public:
@@ -18,6 +24,7 @@ public:
 	ComponentTransform* transform = nullptr;
 	std::string name = "default";
 	std::vector<GameObject*> childs;
+	AABB boundingBox;
 
 public:
 	Component* CreateComponent(ComponentType type);
@@ -34,8 +41,15 @@ public:
 	void OnInspector();
 	int getChildPos(const GameObject* child) const;
 	void InsertComponent(Component* component, int pos);
+
+	//AABB drawing data-----------------
+	void drawAABB(GameObject* gameObject)const;
+	void createAABBbuffers();	
+	void destroyAABBbuffers();
+	void recursiveDebugDraw(GameObject* gameObject)const;
+
 private:
-	
+	void debugDraw(GameObject* gameObject)const;
 public:
 	bool selected = false;
 	bool treeOpened = false;
@@ -46,5 +60,10 @@ private:
 
 	bool hasTransform = false;
 	bool hasMaterial = false;
+	
+	//AABB drawing data-----------------
+	float* AABBvertex = nullptr;
+	uint numAABBvertex = 0u;
+	uint bufferIndex = 0u;
 };
 int OnInputCallback(ImGuiInputTextCallbackData* callback);

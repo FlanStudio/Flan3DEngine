@@ -110,11 +110,10 @@ bool FBXLoader::LoadFBX(char* path, bool useFS)
 		
 		for (int i = 0; i < scene->mRootNode->mNumMeshes; ++i) //for each mesh in the root node
 		{
-			ComponentMesh* meshComp = App->renderer3D->CreateMeshComponent(root); //create a new MeshComponent
+			ComponentMesh* meshComp = (ComponentMesh*)root->CreateComponent(ComponentType::MESH); //create a new ComponentMesh and add it to the root node
 			FillMeshData(meshComp, scene->mMeshes[scene->mRootNode->mMeshes[i]]); //Initialize that MeshComponent with the corresponding aiMesh
 			meshComp->genBuffers();
 			Debug.Log("New mesh loaded with %d vertex", meshComp->num_vertex);
-			root->AddComponent(meshComp); //Add this component to the gameObject components vector
 		}
 		
 		RecursivelyHierarchy(scene->mRootNode, root, scene);
@@ -149,11 +148,12 @@ bool FBXLoader::RecursivelyHierarchy(const aiNode* parent, const GameObject* par
 
 		for (int j = 0; j < node->mNumMeshes; ++j) //Generate a new MeshComponent for each mesh in child
 		{
-			ComponentMesh* meshComp = App->renderer3D->CreateMeshComponent(newGO);
+			ComponentMesh* meshComp = (ComponentMesh*)newGO->CreateComponent(ComponentType::MESH);
 			FillMeshData(meshComp, scene->mMeshes[node->mMeshes[j]]);
 			meshComp->genBuffers();
+			newGO->boundingBox.Enclose((float3*)meshComp->vertex, meshComp->num_vertex);
+			newGO->createAABBbuffers();
 			Debug.Log("New mesh loaded with %d vertex", meshComp->num_vertex);
-			newGO->AddComponent(meshComp);
 		}
 		RecursivelyHierarchy(node, newGO, scene); //Repeat it for each child
 	}
@@ -291,8 +291,8 @@ bool FBXLoader::SaveMesh(ComponentMesh* mesh)
 	
 	delete buffer;
 
-	ComponentMesh* othermesh = new ComponentMesh(nullptr);
-	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");
+	/*ComponentMesh* othermesh = new ComponentMesh(nullptr);
+	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");*/
 
 	return true;
 }

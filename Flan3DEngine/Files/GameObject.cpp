@@ -7,6 +7,7 @@
 
 GameObject::~GameObject()
 {
+	destroyAABBbuffers();
 	ClearChilds();
 	ClearComponents();
 }
@@ -19,7 +20,8 @@ Component* GameObject::CreateComponent(ComponentType type)
 	{
 		case ComponentType::MESH:
 		{
-			//TODO: App renderer create component mesh, and save the pointer returned into our vector
+			ret = (Component*)App->renderer3D->CreateComponentMesh(this);
+			AddComponent(ret);
 			break;
 		}
 		case ComponentType::CAMERA:
@@ -312,4 +314,64 @@ int OnInputCallback(ImGuiInputTextCallbackData* callback)
 void GameObject::InsertComponent(Component* component, int pos)
 {
 	components.insert(components.begin() + pos, component);
+}
+
+void GameObject::drawAABB(GameObject* gameObject) const
+{
+	if (gameObject->AABBvertex == nullptr || gameObject->bufferIndex == 0)
+		return;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, gameObject->bufferIndex);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawArrays(GL_LINES, 0, gameObject->numAABBvertex);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void GameObject::createAABBbuffers()
+{
+	if (!boundingBox.IsFinite())
+		return;
+
+	numAABBvertex = boundingBox.NumVerticesInTriangulation(1,1,1);
+
+	AABBvertex = new float[numAABBvertex * 3];
+
+	boundingBox.Triangulate(1, 1, 1, (float3*)AABBvertex, nullptr, nullptr, true);
+
+	glGenBuffers(1, &bufferIndex);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*numAABBvertex * 3, AABBvertex, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+void GameObject::destroyAABBbuffers()
+{
+	if (AABBvertex == nullptr || bufferIndex == 0)
+		return;
+
+	delete AABBvertex;
+	AABBvertex = nullptr;
+
+	boundingBox.SetNegativeInfinity();
+
+	glDeleteBuffers(1, &bufferIndex);
+}
+
+void GameObject::recursiveDebugDraw(GameObject* gameObject) const
+{
+	debugDraw(gameObject);
+	for (uint i = 0; i < gameObject->childs.size(); ++i)
+	{
+		recursiveDebugDraw(childs[i]);
+	}
+}
+
+void GameObject::debugDraw(GameObject* gameObject) const
+{
+	drawAABB(gameObject);
 }

@@ -32,6 +32,7 @@ public:
 	void guiHierarchy();
 	void guiInspector();
 	void selectGO(GameObject* toSelect);
+	void debugDraw()const;
 private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO();
