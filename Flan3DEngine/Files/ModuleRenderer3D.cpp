@@ -187,6 +187,8 @@ bool ModuleRenderer3D::CleanUp()
 
 void ModuleRenderer3D::OnResize(int width, int height)
 {
+	SCREEN_WIDTH = width;
+	SCREEN_HEIGHT = height;
 	App->camera->OnResize(width, height);
 }
 

@@ -14,6 +14,8 @@
 
 #include "imgui/imgui_internal.h"
 
+#include "ComponentCamera.h"
+
 #define CHECKERS 8 * 8
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
@@ -37,6 +39,12 @@ bool ModuleScene::Start()
 	App->fbxLoader->LoadFBX("Assets/meshes/BakerHouse.fbx");
 	App->textures->LoadTexture("Assets/textures/Baker_house.dds");
 
+	//Temp
+	GameObject* camera = new GameObject(gameObjects[0]);
+	camera->CreateComponent(ComponentType::TRANSFORM);
+	camera->CreateComponent(ComponentType::CAMERA);
+	camera->name = "MainCamera";
+	gameObjects[0]->InsertChild(camera, 0);
 
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
@@ -62,6 +70,12 @@ update_status ModuleScene::PreUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
+	for (int i = 0; i < gameObjects[0]->childs.size(); ++i)
+	{
+		ComponentCamera* camcomp = (ComponentCamera*)gameObjects[0]->childs[i]->getComponentByType(ComponentType::CAMERA);
+		if(camcomp)
+			camcomp->getViewMatrix();		
+	}
 	return UPDATE_CONTINUE;
 }
 

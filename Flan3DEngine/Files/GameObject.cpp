@@ -1,6 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
 
@@ -21,6 +22,13 @@ Component* GameObject::CreateComponent(ComponentType type)
 			//TODO: App renderer create component mesh, and save the pointer returned into our vector
 			break;
 		}
+		case ComponentType::CAMERA:
+		{
+			ComponentCamera* cameraComp = new ComponentCamera(this);
+			AddComponent(cameraComp);
+			ret = cameraComp;
+			break;
+		}
 		case ComponentType::TRANSFORM:
 		{
 			if (!hasTransform)
@@ -29,6 +37,7 @@ Component* GameObject::CreateComponent(ComponentType type)
 				AddComponent(transform);
 				hasTransform = true;
 				this->transform = transform;
+				ret = transform;
 			}
 			else
 			{

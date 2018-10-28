@@ -7,20 +7,37 @@ class ComponentCamera : public Component
 {
 public:
 	ComponentCamera(GameObject* parent, bool active = true);
+	~ComponentCamera();
 	void OnInspector();
 	void RecalculateProjectionMatrix(int w, int h);
 	float4x4 getViewMatrix();
-private:	 
-	Frustum frustum;
+	void updateFrustum();
+	void calculateHorizontalFOV();
+private:
+	void debugDraw();
 
-	ImColor backgroundColor = {1,1,1,1};
+public:
+	ImVec4 backgroundColor = { 1,1,1,1 };
 	float nearDistance = 0.0f;
 	float farDistance = 0.0f;
-
-	float aspectRatio = 0.0f;		// w:h
-	float verticalFOV = 0.0f;		//fixed
-	float horizontalFOV = 0.0f;		//we adjust that: 60-90
-
+	float aspectRatio = 0.0f;			
+	float width = 0.0f, height = 0.0f;
+	float verticalFOV = 0.0f;			
 	bool isMainCamera = true;
+private:	 
+	float horizontalFOV = 0.0f;
+	Frustum frustum;
+
+	//Drawing the frustum
+	uint indexID = 0u;
+	uint index[24] = 
+	{
+		0,2,2,6,6,4,4,0,
+		0,1,2,3,6,7,4,5,
+		1,3,3,7,7,5,5,1
+	};
+
+	float* vertex = nullptr;
+	uint vertexID = 0u;
 
 };

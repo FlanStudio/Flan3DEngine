@@ -25,8 +25,15 @@ bool ModuleCamera3D::Init()
 
 	editorCamera = new GameObject(nullptr);
 	editorCamera->CreateComponent(ComponentType::TRANSFORM);
-	editorCamComponent = new ComponentCamera(editorCamera);
-	editorCamera->AddComponent(editorCamComponent);
+	editorCamComponent = (ComponentCamera*)editorCamera->CreateComponent(ComponentType::CAMERA);
+	editorCamComponent->aspectRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
+	editorCamComponent->farDistance = 1000.0f;
+	editorCamComponent->width = SCREEN_WIDTH;
+	editorCamComponent->height = SCREEN_HEIGHT;
+	editorCamComponent->verticalFOV = 60;
+	editorCamComponent->calculateHorizontalFOV();
+	editorCamComponent->updateFrustum();
+
 
 	editorCamera->transform->position = { 0,2,0 };
 	return true;

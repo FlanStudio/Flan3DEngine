@@ -28,10 +28,10 @@ private:
 	void CameraInputs(float dt);
 
 public:
-
+	ComponentCamera* editorCamComponent = nullptr;
 private:
 	GameObject* editorCamera = nullptr;
-	ComponentCamera* editorCamComponent = nullptr;
+	
 
 	float orbitalRadius = 0.0f;
 	float3 center = {0.f,0.0f,0.0f};
