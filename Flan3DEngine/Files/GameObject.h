@@ -43,13 +43,13 @@ public:
 	void InsertComponent(Component* component, int pos);
 
 	//AABB drawing data-----------------
-	void drawAABB()const;
+	void drawAABB(GameObject* gameObject)const;
 	void createAABBbuffers();	
 	void destroyAABBbuffers();
 	void recursiveDebugDraw(GameObject* gameObject)const;
 
 private:
-	void debugDraw()const;
+	void debugDraw(GameObject* gameObject)const;
 public:
 	bool selected = false;
 	bool treeOpened = false;

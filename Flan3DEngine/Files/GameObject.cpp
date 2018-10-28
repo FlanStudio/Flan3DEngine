@@ -307,16 +307,16 @@ void GameObject::InsertComponent(Component* component, int pos)
 	components.insert(components.begin() + pos, component);
 }
 
-void GameObject::drawAABB() const
+void GameObject::drawAABB(GameObject* gameObject) const
 {
-	if (AABBvertex == nullptr || bufferIndex == 0)
+	if (gameObject->AABBvertex == nullptr || gameObject->bufferIndex == 0)
 		return;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
+	glBindBuffer(GL_ARRAY_BUFFER, gameObject->bufferIndex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, numAABBvertex);
+	glDrawArrays(GL_LINES, 0, gameObject->numAABBvertex);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -355,14 +355,14 @@ void GameObject::destroyAABBbuffers()
 
 void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 {
-	debugDraw();
+	debugDraw(gameObject);
 	for (uint i = 0; i < gameObject->childs.size(); ++i)
 	{
 		recursiveDebugDraw(childs[i]);
 	}
 }
 
-void GameObject::debugDraw() const
+void GameObject::debugDraw(GameObject* gameObject) const
 {
-	drawAABB();
+	drawAABB(gameObject);
 }
