@@ -110,7 +110,7 @@ void GameObject::ClearComponents()
 				transform = nullptr;
 				break;
 			}
-			case ComponentType::CAMERA:
+			default:
 			{
 				delete components[0];
 				ClearComponent(components[0]);				
