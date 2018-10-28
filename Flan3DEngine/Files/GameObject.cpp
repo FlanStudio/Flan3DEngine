@@ -367,7 +367,7 @@ void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 	debugDraw(gameObject);
 	for (uint i = 0; i < gameObject->childs.size(); ++i)
 	{
-		recursiveDebugDraw(childs[i]);
+		recursiveDebugDraw(gameObject->childs[i]);
 	}
 }
 
