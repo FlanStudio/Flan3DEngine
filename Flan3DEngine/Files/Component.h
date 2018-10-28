@@ -18,6 +18,8 @@ class Component
 public:
 	Component(ComponentType type, GameObject* parent, bool active = true) : type(type), gameObject(parent), active(active){}
 	Component(){}
+	virtual ~Component() {}
+	virtual bool Update(float dt) { return true; }
 public:
 	ComponentType type = ComponentType::NO_TYPE;
 
@@ -26,5 +28,6 @@ public:
 	GameObject* gameObject = nullptr;
 
 public:
-	virtual void OnInspector() {};
+	virtual void OnInspector() {}
+	virtual void debugDraw() {}
 };

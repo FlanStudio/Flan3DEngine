@@ -40,6 +40,35 @@ ComponentCamera::~ComponentCamera()
 	}
 }
 
+bool ComponentCamera::Update(float dt)
+{
+	if (!vertex || !index)
+	{
+		glGenBuffers(1, (GLuint*)&vertexID);
+		vertex = new float[8 * 3];
+
+		glGenBuffers(1, &indexID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 24, index, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	frustum.front = gameObject->transform->rotation * float3(0, 0, 1);
+	frustum.up = gameObject->transform->rotation * float3(0, 1, 0);
+	frustum.pos = gameObject->transform->position;
+
+	float3 cornerPoints[8];
+	frustum.GetCornerPoints(cornerPoints);
+
+	memcpy(vertex, cornerPoints, sizeof(float) * 8 * 3);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, vertex, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return true;
+}
+
 void ComponentCamera::RecalculateProjectionMatrix(int w, int h)
 {
 	glViewport(0, 0, w, h);
@@ -84,33 +113,6 @@ void ComponentCamera::RecalculateProjectionMatrix(int w, int h)
 
 float4x4 ComponentCamera::getViewMatrix()
 {
-	if (!vertex || !index)
-	{
-		glGenBuffers(1, (GLuint*)&vertexID);
-		vertex = new float[8 * 3];
-
-		glGenBuffers(1, &indexID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 24, index, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
-	//there is no update at the moment so we have to update the frustum transform here
-	frustum.front = gameObject->transform->rotation * float3(0,0,1);
-	frustum.up = gameObject->transform->rotation * float3(0, 1, 0);	
-	frustum.pos = gameObject->transform->position;
-
-	float3 cornerPoints[8];
-	frustum.GetCornerPoints(cornerPoints);
-	
-	memcpy(vertex, cornerPoints, sizeof(float) * 8 * 3);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vertexID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, vertex, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	debugDraw();
-
 	float4x4 mathGeoViewMatrix = frustum.ViewMatrix();
 	float4x4 fixedOpenGLViewMatrix = float4x4::identity;
 	

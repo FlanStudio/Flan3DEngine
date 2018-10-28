@@ -8,13 +8,15 @@ class ComponentCamera : public Component
 public:
 	ComponentCamera(GameObject* parent, bool active = true);
 	~ComponentCamera();
+	bool Update(float dt);
+
 	void OnInspector();
 	void RecalculateProjectionMatrix(int w, int h);
 	float4x4 getViewMatrix();
 	void updateFrustum();
 	void calculateHorizontalFOV();
 private:
-	void debugDraw();
+	void debugDraw() override;
 
 public:
 	ImVec4 backgroundColor = { 1,1,1,1 };

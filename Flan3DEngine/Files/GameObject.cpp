@@ -12,6 +12,19 @@ GameObject::~GameObject()
 	ClearComponents();
 }
 
+bool GameObject::Update(float dt)
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->Update(dt);
+	}
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->Update(dt);
+	}
+	return true;
+}
+
 Component* GameObject::CreateComponent(ComponentType type)
 {
 	Component* ret = nullptr;
@@ -95,6 +108,12 @@ void GameObject::ClearComponents()
 				ClearComponent(components[0]);
 				delete transform;
 				transform = nullptr;
+				break;
+			}
+			case ComponentType::CAMERA:
+			{
+				delete components[0];
+				ClearComponent(components[0]);				
 				break;
 			}
 		}
@@ -374,4 +393,9 @@ void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 void GameObject::debugDraw(GameObject* gameObject) const
 {
 	drawAABB(gameObject);
+
+	for (int i = 0; i < gameObject->components.size(); ++i)
+	{
+		gameObject->components[i]->debugDraw();
+	}
 }

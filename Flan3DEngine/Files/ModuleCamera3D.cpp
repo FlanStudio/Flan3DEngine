@@ -58,7 +58,9 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
-	
+
+	editorCamera->Update(dt);
+
 	if(!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
 		CameraInputs(dt);
 

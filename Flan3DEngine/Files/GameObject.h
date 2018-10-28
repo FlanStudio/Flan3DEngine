@@ -16,8 +16,8 @@ public:
 	{
 		boundingBox.SetNegativeInfinity();
 	}
-
-	~GameObject();
+	virtual ~GameObject();
+	virtual bool Update(float dt);
 
 public:
 	GameObject* parent = nullptr;
