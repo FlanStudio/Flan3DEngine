@@ -392,7 +392,7 @@ void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 
 void GameObject::debugDraw(GameObject* gameObject) const
 {
-	drawAABB(gameObject);
+	//drawAABB(gameObject);
 
 	for (int i = 0; i < gameObject->components.size(); ++i)
 	{
