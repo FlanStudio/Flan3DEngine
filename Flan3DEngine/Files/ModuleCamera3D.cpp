@@ -30,8 +30,8 @@ bool ModuleCamera3D::Init()
 	editorCamComponent->farDistance = 1000.0f;
 	editorCamComponent->width = SCREEN_WIDTH;
 	editorCamComponent->height = SCREEN_HEIGHT;
-	editorCamComponent->verticalFOV = 60;
-	editorCamComponent->calculateHorizontalFOV();
+	editorCamComponent->horizontalFOV = DegToRad(60);
+	editorCamComponent->calculateVerticalFOV();
 	editorCamComponent->updateFrustum();
 
 

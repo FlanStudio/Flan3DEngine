@@ -10,8 +10,8 @@ ComponentCamera::ComponentCamera(GameObject* parent, bool active) : Component(Co
 
 	width = height = 50.0f;
 	aspectRatio = width / height;
-	verticalFOV = 100;
-	horizontalFOV = RadToDeg(2 * Atan(tan(DegToRad(verticalFOV / 2)) * (width / height)));
+	horizontalFOV = DegToRad(60);
+	verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 
 	nearDistance = 0.125f;
 	farDistance = 10.0f;//1000.0f;
@@ -19,8 +19,8 @@ ComponentCamera::ComponentCamera(GameObject* parent, bool active) : Component(Co
 	frustum.type = PerspectiveFrustum;
 	frustum.nearPlaneDistance = nearDistance;
 	frustum.farPlaneDistance = farDistance;
-	frustum.horizontalFov = DegToRad(horizontalFOV);
-	frustum.verticalFov = DegToRad(verticalFOV);
+	frustum.horizontalFov = horizontalFOV;
+	frustum.verticalFov = verticalFOV;
 }
 
 ComponentCamera::~ComponentCamera()
@@ -75,38 +75,25 @@ void ComponentCamera::RecalculateProjectionMatrix(int w, int h)
 	this->aspectRatio = w / h;
 	width = w; 
 	height = h;
-	horizontalFOV = RadToDeg(2 * Atan(tan(DegToRad(verticalFOV / 2)) * (width / height)));
+	verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 
 	//Update frustum
-	frustum.horizontalFov = DegToRad(horizontalFOV);
+	frustum.verticalFov = verticalFOV;
 	frustum.farPlaneDistance = farDistance;
 	frustum.nearPlaneDistance = nearDistance;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	float4x4 projMatrix;
+	float4x4 mathGeoProjMatrix = frustum.ProjectionMatrix();
+	float4x4 fixedOpenGLProjMatrix = float4x4::identity;
 
-	float coty = 1.0f / tan(verticalFOV * (float)pi / 360.0f);
-	projMatrix[0][0] = coty / aspectRatio;
-	projMatrix[0][1] = 0.0f;
-	projMatrix[0][2] = 0.0f;
-	projMatrix[0][3] = 0.0f;
-	projMatrix[1][0] = 0.0f;
-	projMatrix[1][1] = coty;
-	projMatrix[1][2] = 0.0f;
-	projMatrix[1][3] = 0.0f;
-	projMatrix[2][0] = 0.0f;
-	projMatrix[2][1] = 0.0f;
-	projMatrix[2][2] = (nearDistance + farDistance) / (nearDistance - farDistance);
-	projMatrix[2][3] = -1.0f;
-	projMatrix[3][0] = 0.0f;
-	projMatrix[3][1] = 0.0f;
-	projMatrix[3][2] = 2.0f * nearDistance * farDistance / (nearDistance - farDistance);
-	projMatrix[3][3] = 0.0f;
+	fixedOpenGLProjMatrix.SetCol(0, mathGeoProjMatrix.Row(0));
+	fixedOpenGLProjMatrix.SetCol(1, mathGeoProjMatrix.Row(1));
+	fixedOpenGLProjMatrix.SetCol(2, mathGeoProjMatrix.Row(2));
+	fixedOpenGLProjMatrix.SetCol(3, mathGeoProjMatrix.Row(3));
 
-	glLoadMatrixf(projMatrix.ptr());
-
+	glLoadMatrixf(mathGeoProjMatrix.Transposed().ptr());
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -121,7 +108,7 @@ float4x4 ComponentCamera::getViewMatrix()
 	fixedOpenGLViewMatrix.SetCol(2, mathGeoViewMatrix.Row(2));
 	fixedOpenGLViewMatrix.SetCol(3, mathGeoViewMatrix.Row(3));
 
-	return fixedOpenGLViewMatrix;
+	return mathGeoViewMatrix.Transposed();
 }
 
 void ComponentCamera::updateFrustum()
@@ -129,13 +116,13 @@ void ComponentCamera::updateFrustum()
 	frustum.type = PerspectiveFrustum;
 	frustum.nearPlaneDistance = nearDistance;
 	frustum.farPlaneDistance = farDistance;
-	frustum.horizontalFov = DegToRad(horizontalFOV);
-	frustum.verticalFov = DegToRad(verticalFOV);
+	frustum.horizontalFov = horizontalFOV;
+	frustum.verticalFov = verticalFOV;
 }
 
-void ComponentCamera::calculateHorizontalFOV()
+void ComponentCamera::calculateVerticalFOV()
 {
-	horizontalFOV = RadToDeg(2 * Atan(tan(DegToRad(verticalFOV / 2)) * (width / height)));
+	verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 }
 
 void ComponentCamera::debugDraw()
@@ -184,14 +171,16 @@ void ComponentCamera::OnInspector()
 		{		
 			width = wh[0];
 			height = wh[1];
-			horizontalFOV = RadToDeg(2 * Atan(tan(DegToRad(verticalFOV / 2)) * (width / height)));
+			verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 			aspectRatio = width / height;
 			updateFrustum();
 		}
 		
-		if (ImGui::DragFloat("FOV", &verticalFOV, .1, 10, 90, "%.1f"))
+		float hFOVDegrees = RadToDeg(horizontalFOV);
+		if (ImGui::DragFloat("FOV", &hFOVDegrees, .1, 10, 90, "%.1f"))
 		{
-			horizontalFOV = RadToDeg(2 * Atan(tan(DegToRad(verticalFOV / 2)) * (width / height)));
+			horizontalFOV = DegToRad(hFOVDegrees);
+			verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 			updateFrustum();
 		}
 
