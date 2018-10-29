@@ -4,7 +4,6 @@
 #include "ComponentCamera.h"
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
-#include "ComponentMesh.h"
 
 GameObject::~GameObject()
 {
@@ -15,24 +14,6 @@ GameObject::~GameObject()
 
 bool GameObject::Update(float dt)
 {
-	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
-
-	if(Mesh)
-	{
-		boundingBox.SetNegativeInfinity();
-		Mesh->updateGameObjectAABB();
-
-		boundingBox.Translate(transform->position);
-
-		OBB obb(boundingBox);
-
-		obb.axis[0] = transform->rotation * float3(1, 0, 0);
-		obb.axis[1] = transform->rotation * float3(0, 1, 0);
-		obb.axis[2] = transform->rotation * float3(0, 0, 1);
-
-		boundingBox.Enclose(obb);
-		updateAABBbuffers();
-	}
 	for (int i = 0; i < childs.size(); ++i)
 	{
 		childs[i]->Update(dt);
@@ -369,29 +350,18 @@ void GameObject::drawAABB(GameObject* gameObject) const
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void GameObject::updateAABBbuffers()
+void GameObject::createAABBbuffers()
 {
 	if (!boundingBox.IsFinite())
 		return;
 
-	if (AABBvertex == nullptr)
-	{
-		numAABBvertex = boundingBox.NumVerticesInTriangulation(1, 1, 1);
-
-		AABBvertex = new float[numAABBvertex * 3];
-
-		boundingBox.Triangulate(1, 1, 1, (float3*)AABBvertex, nullptr, nullptr, true);
-
-		glGenBuffers(1, &bufferIndex);
-		glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*numAABBvertex * 3, AABBvertex, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
 	numAABBvertex = boundingBox.NumVerticesInTriangulation(1,1,1);
+
+	AABBvertex = new float[numAABBvertex * 3];
 
 	boundingBox.Triangulate(1, 1, 1, (float3*)AABBvertex, nullptr, nullptr, true);
 
+	glGenBuffers(1, &bufferIndex);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*numAABBvertex * 3, AABBvertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -422,7 +392,7 @@ void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 
 void GameObject::debugDraw(GameObject* gameObject) const
 {
-	//drawAABB(gameObject);
+	drawAABB(gameObject);
 
 	for (int i = 0; i < gameObject->components.size(); ++i)
 	{

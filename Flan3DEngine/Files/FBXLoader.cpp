@@ -152,7 +152,7 @@ bool FBXLoader::RecursivelyHierarchy(const aiNode* parent, const GameObject* par
 			FillMeshData(meshComp, scene->mMeshes[node->mMeshes[j]]);
 			meshComp->genBuffers();
 			newGO->boundingBox.Enclose((float3*)meshComp->vertex, meshComp->num_vertex);
-			newGO->updateAABBbuffers();
+			newGO->createAABBbuffers();
 			Debug.Log("New mesh loaded with %d vertex", meshComp->num_vertex);
 		}
 		RecursivelyHierarchy(node, newGO, scene); //Repeat it for each child

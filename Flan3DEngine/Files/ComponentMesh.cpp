@@ -210,8 +210,3 @@ void ComponentMesh::OnInspector()
 		}
 	}
 }
-
-void ComponentMesh::updateGameObjectAABB()
-{
-	gameObject->boundingBox.Enclose((float3*)vertex, num_vertex);
-}

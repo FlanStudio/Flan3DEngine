@@ -44,7 +44,7 @@ public:
 
 	//AABB drawing data-----------------
 	void drawAABB(GameObject* gameObject)const;
-	void updateAABBbuffers();	
+	void createAABBbuffers();	
 	void destroyAABBbuffers();
 	void recursiveDebugDraw(GameObject* gameObject)const;
 

@@ -14,7 +14,7 @@ public:
 	void RecalculateProjectionMatrix(int w, int h);
 	float4x4 getViewMatrix();
 	void updateFrustum();
-	void calculateVerticalFOV();
+	void calculateHorizontalFOV();
 private:
 	void debugDraw() override;
 
@@ -24,10 +24,10 @@ public:
 	float farDistance = 0.0f;
 	float aspectRatio = 0.0f;			
 	float width = 0.0f, height = 0.0f;
-	float horizontalFOV = 0.0f;
+	float verticalFOV = 0.0f;			
 	bool isMainCamera = true;
 private:	 
-	float verticalFOV = 0.0f;
+	float horizontalFOV = 0.0f;
 	Frustum frustum;
 
 	//Drawing the frustum

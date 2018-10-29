@@ -42,7 +42,6 @@ public:
 	void drawNormals();
 
 	void OnInspector() override;
-	void updateGameObjectAABB();
 
 private:
 	void genNormalLines();
