@@ -30,6 +30,8 @@ bool GameObject::Update(float dt)
 		obb.axis[1] = transform->rotation * float3(0, 1, 0);
 		obb.axis[2] = transform->rotation * float3(0, 0, 1);
 
+		obb.Transform(this->transform->getMatrix());
+
 		boundingBox.Enclose(obb);
 		updateAABBbuffers();
 	}
@@ -422,7 +424,7 @@ void GameObject::recursiveDebugDraw(GameObject* gameObject) const
 
 void GameObject::debugDraw(GameObject* gameObject) const
 {
-	//drawAABB(gameObject);
+	drawAABB(gameObject);
 
 	for (int i = 0; i < gameObject->components.size(); ++i)
 	{
