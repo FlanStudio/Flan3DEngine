@@ -63,7 +63,7 @@ void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGloba
 void ComponentTransform::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5});
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2f,.2f,.9f,.5f});
 	bool opened = ImGui::CollapsingHeader("##Transform"); ImGui::SameLine();
 
 	ImGuiDragDropFlags flags = 0;
