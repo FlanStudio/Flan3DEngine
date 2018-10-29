@@ -172,7 +172,7 @@ void ComponentMesh::drawNormals()
 void ComponentMesh::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2,.2,.9,.5 });
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2f,.2f,.9f,.5f });
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
 
 	ImGuiDragDropFlags flags = 0;
@@ -199,7 +199,7 @@ void ComponentMesh::OnInspector()
 		ImGui::NewLine();
 		ImGui::Separator();
 		ImGui::NewLine();
-		ImGui::TextColored({ .8, 0, 0, 1 }, "TODO: Move this into ComponentMaterial when we can have Resources vs Components");
+		ImGui::TextColored({ .8f, 0.0f, 0.0f, 1.0f }, "TODO: Move this into ComponentMaterial when we can have Resources vs Components");
 		for (int i = 0; i < App->textures->textures.size(); ++i)
 		{
 			ImGui::Text("Texture %i", i); ImGui::NewLine();
