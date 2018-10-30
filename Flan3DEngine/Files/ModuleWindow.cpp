@@ -246,4 +246,3 @@ bool ModuleWindow::Load(const JSON_Object* obj)
 	SDL_SetWindowPosition(App->window->window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	return true;
 }
-
