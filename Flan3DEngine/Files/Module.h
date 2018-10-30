@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_H__
+#define __MODULE_H__
 
 #include "Globals.h"
 #include "Parson/parson.h"
@@ -71,7 +72,6 @@ public:
 
 	//Load changes the module, not the JSON
 	virtual bool Load(const JSON_Object* obj) { return true; }
-
-
-
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMPONENTMESH_H__
+#define __COMPONENTMESH_H__
 
 #include "Globals.h"
 #include "Component.h"
@@ -47,3 +48,5 @@ public:
 private:
 	void genNormalLines();
 };
+
+#endif

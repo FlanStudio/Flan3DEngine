@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __MODULECAMERA3D_H__
+#define __MODULECAMERA3D_H__
+
 #include "Module.h"
 #include "Globals.h"
 #include "MathGeoLib_1.5/MathGeoLib.h"
@@ -36,3 +38,5 @@ private:
 	float orbitalRadius = 0.0f;
 	float3 center = {0.f,0.0f,0.0f};
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __FBXLOADER_H__
+#define __FBXLOADER_H__
 
 #include "Module.h"
 #include "Globals.h"
@@ -47,3 +48,4 @@ private:
 };
 void LogCallback(const char*, char*);
 
+#endif

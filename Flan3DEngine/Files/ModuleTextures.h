@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULETEXTURES_H__
+#define __MODULETEXTURES_H__
 
 #include "Module.h"
 #include "Globals.h"
@@ -58,7 +59,7 @@ public:
 	bool Load(const JSON_Object* obj) { return true; }
 
 	//returns the index of the image loaded
-	uint LoadTexture(char* file, bool useFileSystem = true);
+	uint LoadTexture(const char* file, bool useFileSystem = true);
 
 	void getTextureSize(uint id, uint& width, uint& size) const;
 
@@ -69,3 +70,5 @@ public:
 public:
 	std::vector<Texture*> textures;
 };
+
+#endif

@@ -59,7 +59,7 @@ bool ModuleTextures::Start()
 	return true;
 }
 
-uint ModuleTextures::LoadTexture(char* file, bool useFileSystem)
+uint ModuleTextures::LoadTexture(const char* file, bool useFileSystem)
 {
 	char* buffer = nullptr;
 	int size;

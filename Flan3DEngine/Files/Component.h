@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMPONENT_H__
+#define __COMPONENT_H__
 
 #include "Application.h"
 
@@ -31,3 +32,5 @@ public:
 	virtual void OnInspector() {}
 	virtual void debugDraw() {}
 };
+
+#endif

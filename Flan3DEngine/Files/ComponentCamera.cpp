@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ComponentCamera.h"
 #include "GameObject.h"
 

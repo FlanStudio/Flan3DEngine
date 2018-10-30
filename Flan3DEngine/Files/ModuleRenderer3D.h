@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __MODULERENDERER3D_H__
+#define __MODULERENDERER3D_H__
+
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
@@ -72,3 +74,4 @@ private:
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;
 };
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMPONENTCAMERA_H__
+#define __COMPONENTCAMERA_H__
 
 #include "Component.h"
 #include "MathGeoLib_1.5/MathGeoLib.h"
@@ -43,3 +44,5 @@ private:
 	uint vertexID = 0u;
 
 };
+
+#endif

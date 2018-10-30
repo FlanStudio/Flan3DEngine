@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMPONENTTRANSFORM_H__
+#define __COMPONENTTRANSFORM_H__
 
 #include "MathGeoLib_1.5/MathGeoLib.h"
 #include "Component.h"
@@ -22,3 +23,5 @@ public:
 	void OnInspector();
 	float4x4 getMatrix()const;
 };
+
+#endif

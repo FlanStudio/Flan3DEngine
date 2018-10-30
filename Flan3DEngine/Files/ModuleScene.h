@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __MODULESCENE_H__
+#define __MODULESCENE_H__
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -42,3 +44,4 @@ private:
 	void _ReorderGameObject_Pre(GameObject* go);
 	void _ReorderGameObject_Post(GameObject* go);
 };
+#endif

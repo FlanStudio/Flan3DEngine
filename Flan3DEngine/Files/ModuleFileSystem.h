@@ -1,6 +1,5 @@
-#include "Module.h"
-
-#pragma once
+#ifndef __MODULEFILESYSTEM_H__
+#define __MODULEFILESYSTEM_H__
 
 #define ASSETS_FOLDER "Assets/"
 #define LIBRARY_FOLDER "Library/"
@@ -8,7 +7,7 @@
 
 #include <vector>
 #include <string>
-
+#include "Module.h"
 #include "Timer.h"
 
 struct Directory
@@ -99,3 +98,4 @@ private:
 	float updateAssetsCounter = 0.0f;
 	float updateAssetsRate = 1.0f;
 };
+#endif

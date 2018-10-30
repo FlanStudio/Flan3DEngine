@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __GAMEOBJECT_H__
+#define __GAMEOBJECT_H__
 
 #include <vector>
 #include <string>
@@ -68,3 +69,5 @@ private:
 	uint bufferIndex = 0u;
 };
 int OnInputCallback(ImGuiInputTextCallbackData* callback);
+
+#endif
