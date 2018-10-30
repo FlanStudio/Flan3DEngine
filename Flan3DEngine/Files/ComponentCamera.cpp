@@ -164,7 +164,7 @@ void ComponentCamera::OnInspector()
 	if (opened)
 	{
 		//TODO: Move tags to the left of the values, order all the widgets
-		static float wh[2] = { 50,50 };
+		static float wh[2] = { width,height };
 		if (ImGui::DragFloat2("Size", wh, 1, 10, 1000, "%.0f"))
 		{		
 			width = wh[0];
