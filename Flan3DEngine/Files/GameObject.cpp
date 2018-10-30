@@ -182,6 +182,29 @@ GameObject* GameObject::getSelectedGO() const
 	return ret;
 }
 
+void GameObject::deleteSelected()
+{
+	if (selected)
+	{
+		//Rootnode can never be selected
+	}
+	else
+	{
+		for (int i = 0; i < childs.size() && !selected; ++i)
+		{
+			if (childs[i]->selected)
+			{
+				delete childs[i];
+				childs.erase(childs.begin() + i);
+			}
+			else
+			{
+				childs[i]->deleteSelected();
+			}
+		}
+	}
+}
+
 void GameObject::ClearChild(GameObject* child)
 {
 	for (int i = 0; i < childs.size(); ++i)

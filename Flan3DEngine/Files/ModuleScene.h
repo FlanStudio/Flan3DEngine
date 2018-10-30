@@ -35,7 +35,7 @@ public:
 	void debugDraw()const;
 private:
 	void PrintHierarchy(GameObject* go);
-	GameObject* getSelectedGO();
+	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
 
 	//Internal methods to reorder GameObjects in the hierarchy

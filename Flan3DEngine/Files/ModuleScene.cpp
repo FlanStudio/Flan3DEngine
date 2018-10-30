@@ -64,6 +64,10 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::PreUpdate(float dt)
 {
+	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+	{
+		gameObjects[0]->deleteSelected();
+	}
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -240,13 +244,15 @@ void ModuleScene::guiInspector()
 	selected->OnInspector();
 }
 
-GameObject* ModuleScene::getSelectedGO()
+GameObject* ModuleScene::getSelectedGO() const
 {
 	GameObject* ret = nullptr;
+	
 	for (int i = 0; i < gameObjects.size() && !ret; ++i)
 	{
 		ret = gameObjects[i]->getSelectedGO();
 	}
+
 	return ret;
 }
 

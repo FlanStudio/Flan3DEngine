@@ -38,6 +38,7 @@ public:
 	void ClearComponent(Component* component);
 	bool HasChilds() const;
 	GameObject* getSelectedGO() const;
+	void deleteSelected();
 	void OnInspector();
 	int getChildPos(const GameObject* child) const;
 	void InsertComponent(Component* component, int pos);
