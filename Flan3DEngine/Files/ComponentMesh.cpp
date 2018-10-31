@@ -199,7 +199,9 @@ void ComponentMesh::OnInspector()
 		ImGui::NewLine();
 		ImGui::Separator();
 		ImGui::NewLine();
+
 		ImGui::TextColored({ .8f, 0.0f, 0.0f, 1.0f }, "TODO: Move this into ComponentMaterial when we can have Resources vs Components");
+
 		for (int i = 0; i < App->textures->textures.size(); ++i)
 		{
 			ImGui::Text("Texture %i", i); ImGui::NewLine();
