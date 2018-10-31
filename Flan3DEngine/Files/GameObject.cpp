@@ -15,30 +15,8 @@ GameObject::~GameObject()
 
 bool GameObject::Update(float dt)
 {
-	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+	transformAABB();
 
-	if(Mesh)
-	{
-		boundingBox.SetNegativeInfinity();
-		Mesh->updateGameObjectAABB();
-
-		//boundingBox.Translate(transform->position);
-
-		OBB obb(boundingBox);
-
-		/*obb.axis[0] = transform->rotation * float3(1, 0, 0);
-		obb.axis[1] = transform->rotation * float3(0, 1, 0);
-		obb.axis[2] = transform->rotation * float3(0, 0, 1);*/
-
-		obb.Transform(this->transform->getMatrix().Transposed());
-
-		//boundingBox.Translate(transform->position);
-
-		boundingBox = obb.MinimalEnclosingAABB();
-
-
-		updateAABBbuffers();
-	}
 	for (int i = 0; i < childs.size(); ++i)
 	{
 		childs[i]->Update(dt);
@@ -47,6 +25,8 @@ bool GameObject::Update(float dt)
 	{
 		components[i]->Update(dt);
 	}
+
+	//TODO: ENCLOSE CHILDS IN PARENT...
 	return true;
 }
 
@@ -456,5 +436,23 @@ void GameObject::debugDraw(GameObject* gameObject) const
 	for (int i = 0; i < gameObject->components.size(); ++i)
 	{
 		gameObject->components[i]->debugDraw();
+	}
+}
+
+void GameObject::transformAABB()
+{
+	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+
+	if (Mesh)
+	{
+		Mesh->updateGameObjectAABB();
+
+		OBB obb(boundingBox);
+
+		obb.Transform(this->transform->getMatrix().Transposed());
+
+		boundingBox = obb.MinimalEnclosingAABB();
+
+		updateAABBbuffers();
 	}
 }

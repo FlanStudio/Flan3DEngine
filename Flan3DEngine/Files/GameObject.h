@@ -52,6 +52,7 @@ public:
 
 private:
 	void debugDraw(GameObject* gameObject)const;
+	void transformAABB();
 public:
 	bool selected = false;
 	bool treeOpened = false;
