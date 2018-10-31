@@ -22,17 +22,21 @@ bool GameObject::Update(float dt)
 		boundingBox.SetNegativeInfinity();
 		Mesh->updateGameObjectAABB();
 
-		boundingBox.Translate(transform->position);
+		//boundingBox.Translate(transform->position);
 
 		OBB obb(boundingBox);
 
-		obb.axis[0] = transform->rotation * float3(1, 0, 0);
+		/*obb.axis[0] = transform->rotation * float3(1, 0, 0);
 		obb.axis[1] = transform->rotation * float3(0, 1, 0);
-		obb.axis[2] = transform->rotation * float3(0, 0, 1);
+		obb.axis[2] = transform->rotation * float3(0, 0, 1);*/
 
-		obb.Transform(this->transform->getMatrix());
+		obb.Transform(this->transform->getMatrix().Transposed());
 
-		boundingBox.Enclose(obb);
+		//boundingBox.Translate(transform->position);
+
+		boundingBox = obb.MinimalEnclosingAABB();
+
+
 		updateAABBbuffers();
 	}
 	for (int i = 0; i < childs.size(); ++i)
