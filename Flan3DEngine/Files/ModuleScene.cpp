@@ -289,6 +289,13 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 
 	decomposeScene(gameObject_s, transforms, meshes, cameras);
 
+	uint quantities[4] = { gameObject_s.size(), transforms.size(), meshes.size(), cameras.size() };
+
+	//uint size = GameObject::bytesToSerialize() * quantities[0] + ComponentTransform::bytesToSerialize() * quantities[1] + ;
+
+
+
+
 
 }
 

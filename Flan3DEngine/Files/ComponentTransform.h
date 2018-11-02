@@ -7,7 +7,9 @@
 class ComponentTransform : public Component
 {
 public:
-	ComponentTransform(GameObject* gameObject) : Component(ComponentType::TRANSFORM, gameObject), position(float3::zero), rotation(Quat::identity), scale(float3::one) {}
+	ComponentTransform(GameObject* gameObject) : Component(ComponentType::TRANSFORM, gameObject), position(float3::zero), rotation(Quat::identity), scale(float3::one) {
+		genUUID();
+	}
 	ComponentTransform() {}
 public:
 	float3 position;

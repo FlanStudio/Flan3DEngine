@@ -12,7 +12,6 @@
 class GameObject
 {
 public:
-
 	GameObject(GameObject* parent) : parent(parent) 
 	{
 		boundingBox.SetNegativeInfinity();
@@ -37,7 +36,6 @@ public:
 	GameObject* getSelectedGO() const;
 	void deleteSelected();
 	int getChildPos(const GameObject* child) const;
-	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
 
 	//Component-related methods
 	Component* CreateComponent(ComponentType type);
@@ -55,6 +53,10 @@ public:
 	void updateAABBbuffers();	
 	void destroyAABBbuffers();
 	void recursiveDebugDraw()const;
+
+	//Serializing methods
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+	static uint bytesToSerialize() { return sizeof(char) * 100 + sizeof(uint32_t) * 2; } //Name (Up to 100 characters) + your ID + your parent ID.
 
 private:
 	void debugDraw()const;

@@ -16,7 +16,6 @@ ComponentTransform ComponentTransform::getGlobal() const
 		global.scale = global.scale.Mul(parent->transform->scale);
 		parent = parent->parent;
 	}
-
 	return global;
 }
 

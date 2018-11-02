@@ -126,10 +126,10 @@ uint32_t pcg32_boundedrand(uint32_t bound)
 
 //-----------------------------------------CUSTOM-----------------------------
 
-float Random_float_Between_0_and_1(pcg32_random_t* seed)
+float FLAN::Random_float_Between_0_and_1(pcg32_random_t* seed)
 {
 	float res;
-	res = (float)pcg32_random_r(seed ? seed : &pcg32_global)/ UINT32_MAX;
+	res = (float)pcg32_random_r(seed ? seed : &pcg32_global) / UINT32_MAX;
 
 	std::stringstream stream;
 	stream << std::fixed << std::setprecision(5) << res;
@@ -138,11 +138,8 @@ float Random_float_Between_0_and_1(pcg32_random_t* seed)
 	return std::stod(s);
 }
 
-int Random_int_Between_Max_and_Min(int Minimum, int Maximum, pcg32_random_t* seed)
+int FLAN::randomUINT32_Range(uint32_t minN, uint32_t maxN, pcg32_random_t* seed)
 {
-
-	SDL_assert(Maximum > Minimum);
-	return (pcg32_boundedrand_r(seed ? seed : &pcg32_global, Maximum - Minimum + 1) + Minimum);
+	SDL_assert(maxN >= minN && minN >= 0 && maxN >= 0);
+	return (pcg32_boundedrand_r(seed ? seed : &pcg32_global, maxN - minN) + minN);
 }
-
-

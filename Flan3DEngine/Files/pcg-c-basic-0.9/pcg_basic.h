@@ -28,6 +28,8 @@
  * your project.
  */
 
+#define UINT32_MAX_DECIMAL 4294967295
+
 #ifndef PCG_BASIC_H_INCLUDED
 #define PCG_BASIC_H_INCLUDED 1
 
@@ -71,13 +73,17 @@ uint32_t pcg32_random_r(pcg32_random_t* rng);
 uint32_t pcg32_boundedrand(uint32_t bound);
 uint32_t pcg32_boundedrand_r(pcg32_random_t* rng, uint32_t bound);
 
-//---------------------------------CUSTOM-------------------------------------
-float Random_float_Between_0_and_1(pcg32_random_t* seed = NULL);
-/*
-	*CAUTION Minimum must be > 0!!!!!!!
-*/
-int Random_int_Between_Max_and_Min(int Minimum, int Maximum, pcg32_random_t* seed = NULL);
 
+//---------------------------------CUSTOM-------------------------------------
+namespace FLAN
+{
+	float Random_float_Between_0_and_1(pcg32_random_t* seed = NULL);
+
+	/*
+		* Gen a number between min (INCLUSIVE) and max (EXCLUSIVE), both > 0
+	*/
+	int randomUINT32_Range(uint32_t min = 0, uint32_t max = UINT32_MAX_DECIMAL, pcg32_random_t* seed = NULL);
+}
 
 #if __cplusplus
 }
