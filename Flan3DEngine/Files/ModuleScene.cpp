@@ -270,7 +270,7 @@ void ModuleScene::debugDraw() const
 {
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
-		gameObjects[i]->recursiveDebugDraw(gameObjects[i]);
+		gameObjects[i]->recursiveDebugDraw();
 	}
 }
 

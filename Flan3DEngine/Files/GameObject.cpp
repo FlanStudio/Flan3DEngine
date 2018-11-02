@@ -77,9 +77,7 @@ void GameObject::AddComponent(Component* component)
 		components.push_back(component);
 		if (component->type == ComponentType::TRANSFORM)
 			this->transform = transform;
-	}
-		
-	
+	}	
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -164,7 +162,6 @@ GameObject* GameObject::getSelectedGO() const
 			}	
 		}
 	}
-
 	return ret;
 }
 
@@ -211,15 +208,21 @@ void GameObject::OnInspector()
 	flags |= ImGuiInputTextFlags_CallbackAlways;
 	flags |= ImGuiInputTextFlags_CallbackCharFilter;
 	flags |= ImGuiInputTextFlags_EnterReturnsTrue;
-	flags |= ImGuiInputTextFlags_AlwaysInsertMode;
 
 	float posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);
 	ImGui::Text("Name: "); ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
 	
-	bool ret = ImGui::InputText("", &name, flags, OnInputCallback, &ret);
-
+	std::string tempStr = name;
+	GameObject* tempPtr = (GameObject*)this;
+	bool ret = ImGui::InputText("", &tempStr, flags, OnInputCallback, &tempPtr);
+	if (ImGui::IsItemHovered() && !ImGui::IsItemEdited())
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("Press enter to apply changes");
+		ImGui::EndTooltip();
+	}
 	ImGui::NewLine();
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
@@ -313,14 +316,11 @@ void GameObject::OnInspector()
 
 	}
 
-	
-
 	if (postoreorder >= 0 && compToReorder)
 	{
 		ClearComponent(compToReorder);
 		InsertComponent(compToReorder, postoreorder);
 	}
-
 }
 
 void GameObject::InsertChild(GameObject* child, int pos)
@@ -351,10 +351,16 @@ Component* GameObject::getComponentByType(ComponentType type) const
 
 int OnInputCallback(ImGuiInputTextCallbackData* callback)
 {
-	if (callback->BufTextLen == 0 && (bool)callback->UserData == true && ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))
+	if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Enter)))
 	{
-		callback->InsertChars(0, "default");
+		if (callback->BufTextLen == 0)
+		{
+			callback->InsertChars(0, "default");
+		}
+		GameObject* go = *(GameObject**)callback->UserData;
+		go->name = callback->Buf;
 	}
+	
 	return 0;
 }
 
@@ -363,16 +369,16 @@ void GameObject::InsertComponent(Component* component, int pos)
 	components.insert(components.begin() + pos, component);
 }
 
-void GameObject::drawAABB(GameObject* gameObject) const
+void GameObject::drawAABB() const
 {
-	if (gameObject->AABBvertex == nullptr || gameObject->bufferIndex == 0)
+	if (AABBvertex == nullptr || bufferIndex == 0 || !boundingBox.IsFinite())
 		return;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glBindBuffer(GL_ARRAY_BUFFER, gameObject->bufferIndex);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, gameObject->numAABBvertex);
+	glDrawArrays(GL_LINES, 0, numAABBvertex);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -420,22 +426,22 @@ void GameObject::destroyAABBbuffers()
 	glDeleteBuffers(1, &bufferIndex);
 }
 
-void GameObject::recursiveDebugDraw(GameObject* gameObject) const
+void GameObject::recursiveDebugDraw() const
 {
-	debugDraw(gameObject);
-	for (uint i = 0; i < gameObject->childs.size(); ++i)
+	debugDraw();
+	for (uint i = 0; i < childs.size(); ++i)
 	{
-		recursiveDebugDraw(gameObject->childs[i]);
+		childs[i]->recursiveDebugDraw();
 	}
 }
 
-void GameObject::debugDraw(GameObject* gameObject) const
+void GameObject::debugDraw() const
 {
-	drawAABB(gameObject);
+	drawAABB();
 
-	for (int i = 0; i < gameObject->components.size(); ++i)
+	for (int i = 0; i < components.size(); ++i)
 	{
-		gameObject->components[i]->debugDraw();
+		components[i]->debugDraw();
 	}
 }
 
@@ -445,6 +451,8 @@ void GameObject::transformAABB()
 
 	if (Mesh)
 	{
+		boundingBox.SetNegativeInfinity();
+
 		Mesh->updateGameObjectAABB();
 
 		OBB obb(boundingBox);

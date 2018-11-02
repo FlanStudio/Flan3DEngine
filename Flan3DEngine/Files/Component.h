@@ -21,16 +21,20 @@ public:
 	Component(){}
 	virtual ~Component() {}
 	virtual bool Update(float dt) { return true; }
-public:
-	ComponentType type = ComponentType::NO_TYPE;
-
-public:
-	bool active = true;
-	GameObject* gameObject = nullptr;
 
 public:
 	virtual void OnInspector() {}
 	virtual void debugDraw() {}
+	virtual void Enable() {}
+	virtual void Disable() {}
+	virtual bool isActive() { return true; }
+
+public:
+	ComponentType type = ComponentType::NO_TYPE;
+	GameObject* gameObject = nullptr;
+
+protected:
+	bool active = true;
 };
 
 #endif
