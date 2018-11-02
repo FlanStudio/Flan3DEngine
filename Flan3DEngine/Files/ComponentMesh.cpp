@@ -219,7 +219,7 @@ void ComponentMesh::updateGameObjectAABB()
 	gameObject->boundingBox.Enclose((float3*)vertex, num_vertex);
 }
 
-void ComponentMesh::Serialize() const
+void ComponentMesh::Serialize(char* cursor) const
 {
 	uint ranges[5] =
 	{
@@ -230,24 +230,24 @@ void ComponentMesh::Serialize() const
 		textureCoords ? num_vertex : 0
 	};
 
-	uint fileSize = sizeof(ranges);
-	fileSize += num_vertex * 3 * sizeof(float);
-	fileSize += num_index * sizeof(uint);
-	if (colors)
-	{
-		fileSize += num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
-	}
-	if (normals)
-	{
-		fileSize += num_vertex * 3 * sizeof(float); //for each vertex 3 floats (xyz)
-	}
-	if (textureCoords)
-	{
-		fileSize += num_vertex * 2 * sizeof(float); //for each vertex 2 floats (xy)
-	}
+	//uint size = sizeof(ranges);
+	//size += num_vertex * 3 * sizeof(float);
+	//size += num_index * sizeof(uint);
+	//if (colors)
+	//{
+	//	size += num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
+	//}
+	//if (normals)
+	//{
+	//	size += num_vertex * 3 * sizeof(float); //for each vertex 3 floats (xyz)
+	//}
+	//if (textureCoords)
+	//{
+	//	size += num_vertex * 2 * sizeof(float); //for each vertex 2 floats (xy)
+	//}
 
-	char* buffer = new char[fileSize];
-	char* cursor = buffer; //Point to the beginning of the buffer
+	//char* buffer = new char[size];
+	//char* cursor = buffer; //Point to the beginning of the buffer
 
 	//write ranges
 	uint bytes = sizeof(ranges);
@@ -287,15 +287,44 @@ void ComponentMesh::Serialize() const
 		memcpy(cursor, textureCoords, bytes);
 		cursor += bytes;
 	}
-
-	App->fs->OpenWriteBuffer("Library/Meshes/" + std::to_string(UUID) + std::string(".flanMesh"), buffer, fileSize);
-
-	delete buffer;
-
+	
+	//App->fs->OpenWriteBuffer("Library/Meshes/" + std::to_string(UUID) + std::string(".flanMesh"), buffer, size);
+	//delete buffer;
 	/*ComponentMesh* othermesh = new ComponentMesh(nullptr);
 	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");*/
 }
 
 void ComponentMesh::deSerialize(uint32_t UUID)
 {
+
+}
+
+uint ComponentMesh::bytesToSerialize() const
+{
+	uint ranges[5] =
+	{
+		num_vertex,
+		num_index,
+		colors ? num_vertex : 0,
+		normals ? num_vertex : 0,
+		textureCoords ? num_vertex : 0
+	};
+
+	uint size = sizeof(ranges);
+	size += num_vertex * 3 * sizeof(float);
+	size += num_index * sizeof(uint);
+	if (colors)
+	{
+		size += num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
+	}
+	if (normals)
+	{
+		size += num_vertex * 3 * sizeof(float); //for each vertex 3 floats (xyz)
+	}
+	if (textureCoords)
+	{
+		size += num_vertex * 2 * sizeof(float); //for each vertex 2 floats (xy)
+	}
+	
+	return size;
 }

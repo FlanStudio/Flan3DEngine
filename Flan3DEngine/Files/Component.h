@@ -13,7 +13,8 @@ enum class ComponentType
 	TRANSFORM,
 	MESH,
 	MATERIAL,
-	CAMERA
+	CAMERA,
+	MAX_TYPE
 };
 
 class Component
@@ -35,6 +36,8 @@ public:
 	virtual void Enable() {}
 	virtual void Disable() {}
 	virtual bool isActive() { return true; }
+	virtual uint bytesToSerialize()const { return 0u; }
+	virtual void Serialize(char* cursor) const {}
 
 public:
 	ComponentType type = ComponentType::NO_TYPE;

@@ -291,59 +291,39 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 
 	decomposeScene(gameObject_s, transforms, meshes, cameras);
 
-	//num components each type (Only cameras / meshes), each component UUID, transform size
-	uint gameObject_size = ComponentTransform::bytesToSerialize() + sizeof(uint[2]) + sizeof(uint32_t[2]); //TODO: COMPLETE THAT TO ANY NUMBER OF COMPONENTS
-
-	//Num gameobjects + num gameobjects * each gameobject size
-	uint size = sizeof(uint) + gameObject_s.size() * gameObject_size;
+	uint size = sizeof(uint);
+	for (int i = 0; i < gameObject_s.size(); ++i)
+	{
+		size += gameObject_s[i]->bytesToSerialize();
+	}
 
 	char* buffer = new char[size];
 	char* cursor = buffer;
 	uint bytes = 0u;
-	   	  
+	
+	uint numGOs = gameObject_s.size();
+	memcpy(cursor, &numGOs, sizeof(numGOs));
+	cursor += sizeof(numGOs);
+
 	for(int i = 0; i < gameObject_s.size(); ++i)
 	{
-		//For each gameobject
-		gameObject_s[i]->transform->Serialize(cursor);
-
-		uint numComponentByType[2];
-		uint32_t UUIDs[2];
-
-		//For each component
-		for (uint component = 0; component < gameObject_s[i]->components.size(); ++component) 
-		{
-			switch (gameObject_s[i]->components[component]->type)
-			{
-			case ComponentType::MESH:
-				numComponentByType[0]++;
-				UUIDs[0] = gameObject_s[i]->components[component]->UUID;
-				break;
-			case ComponentType::CAMERA:
-				numComponentByType[1]++;
-				UUIDs[1] = gameObject_s[i]->components[component]->UUID;
-				break;
-			}
-		}
-
-		memcpy(cursor, numComponentByType, sizeof(numComponentByType));
-		cursor += sizeof(numComponentByType);
-		memcpy(cursor, UUIDs, sizeof(UUIDs));
-		cursor += sizeof(UUIDs);
+		gameObject_s[i]->Serialize(cursor);
 	}
-
+	
 	//TODO: SAVE THE FILE
+	App->fs->OpenWriteBuffer("Assets/scenes/firstScene.flanScene", buffer, size);
 
-	//Serialize the meshes
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		meshes[i]->Serialize();
-	}
+	////Serialize the meshes
+	//for (int i = 0; i < meshes.size(); ++i)
+	//{
+	//	meshes[i]->Serialize();
+	//}
 
-	//TODO: Serialize the cameras
-	for (int i = 0; i < cameras.size(); ++i)
-	{
-		//cameras[i]->Serialize();
-	}
+	////TODO: Serialize the cameras
+	//for (int i = 0; i < cameras.size(); ++i)
+	//{
+	//	//cameras[i]->Serialize();
+	//}
 }
 
 void ModuleScene::DragDrop(GameObject* go)

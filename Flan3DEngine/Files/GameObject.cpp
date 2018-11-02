@@ -356,6 +356,66 @@ void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<Co
 	}
 }
 
+uint GameObject::bytesToSerialize() const
+{
+	uint componentBytes = 0u;
+	uint numCompType[(int)ComponentType::MAX_TYPE];
+	for (int i = 0; i < components.size(); ++i)
+	{
+		componentBytes += components[i]->bytesToSerialize();
+		numCompType[(int)components[i]->type]++;
+	}
+
+	return sizeof(UUID) * 2 + sizeof(uint) + sizeof(numCompType) + componentBytes;
+}
+
+void GameObject::Serialize(char* cursor)
+{
+	uint bytes = sizeof(uint32_t);
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+	
+	uint32_t parentUUID = parent ? parent->UUID : 0;
+	memcpy(cursor, &parentUUID, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint numComponents = components.size();
+	memcpy(cursor, &numComponents, bytes);
+	cursor += bytes;
+
+	//Components have to be in the same order always in order to load properly later
+	ReorderComponents();
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->Serialize(cursor);
+	}
+}
+
+void GameObject::ReorderComponents()
+{
+	uint numIterations = 0;
+	do
+	{
+		numIterations = 0;
+		for (int i = 0; i < components.size(); ++i)
+		{
+			Component* nextComponent = i + 1 < components.size() ? components[i + 1] : nullptr;
+			Component* currentComponent = components[i];
+
+			if(nextComponent && (int)currentComponent->type > (int)nextComponent->type)
+			{
+				numIterations++;
+				ClearComponent(currentComponent);
+				InsertComponent(currentComponent, i + 1);
+			}
+		}
+	} while (numIterations > 0);
+
+	int a = 9;
+}
+
 Component* GameObject::getComponentByType(ComponentType type) const
 {
 	for (int i = 0; i < components.size(); ++i)

@@ -46,8 +46,9 @@ public:
 	void updateGameObjectAABB();
 
 public:
-	void Serialize() const;
+	void Serialize(char* cursor) const override;
 	void deSerialize(uint32_t UUID);
+	uint bytesToSerialize()const;
 
 private:
 	void genNormalLines();

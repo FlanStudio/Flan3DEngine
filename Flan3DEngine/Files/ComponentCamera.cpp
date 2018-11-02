@@ -123,6 +123,39 @@ void ComponentCamera::calculateVerticalFOV()
 	verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 }
 
+void ComponentCamera::Serialize(char * cursor) const
+{
+	uint bytes = sizeof(ImVec4);
+	memcpy(cursor, &backgroundColor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &nearDistance, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &farDistance, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &aspectRatio, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &width, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &height, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &horizontalFOV, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &verticalFOV, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &isMainCamera, bytes);
+	cursor += bytes;
+}
+
 void ComponentCamera::debugDraw()
 {
 	if (this == App->camera->editorCamComponent)

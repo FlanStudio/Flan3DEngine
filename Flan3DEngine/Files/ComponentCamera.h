@@ -16,6 +16,9 @@ public:
 	float4x4 getViewMatrix();
 	void updateFrustum();
 	void calculateVerticalFOV();
+	uint bytesToSerialize() const { return sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
+	void Serialize(char* cursor) const;
+
 private:
 	void debugDraw() override;
 
@@ -42,7 +45,6 @@ private:
 
 	float* vertex = nullptr;
 	uint vertexID = 0u;
-
 };
 
 #endif

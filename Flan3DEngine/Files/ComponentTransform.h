@@ -24,7 +24,7 @@ public:
 	float4x4 getMatrix()const;
 
 	//Position scale rotation 
-	static uint bytesToSerialize() { return sizeof(float) * 3 * 2 + sizeof(float) * 4; }
+	uint bytesToSerialize() const { return sizeof(float) * 3 * 2 + sizeof(float) * 4; }
 	void Serialize(char* cursor)const;
 };
 

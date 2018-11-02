@@ -57,7 +57,11 @@ public:
 
 	//Serializing methods
 	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
-	static uint bytesToSerialize() { return sizeof(char) * 100 + sizeof(uint32_t) * 2; } //Name (Up to 100 characters) + your ID + your parent ID.
+	
+	//UUID, parent UUID, num Components, each component size
+	uint bytesToSerialize() const;
+	void Serialize(char* cursor);
+	void ReorderComponents();
 
 private:
 	void debugDraw()const;
