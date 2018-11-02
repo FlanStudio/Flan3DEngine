@@ -10,6 +10,7 @@
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentMesh.h"
 
 #include <bitset>
 
@@ -291,11 +292,16 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 
 	uint quantities[4] = { gameObject_s.size(), transforms.size(), meshes.size(), cameras.size() };
 
+	
+
 	//uint size = GameObject::bytesToSerialize() * quantities[0] + ComponentTransform::bytesToSerialize() * quantities[1] + ;
 
 
 
-
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->Serialize();
+	}
 
 }
 

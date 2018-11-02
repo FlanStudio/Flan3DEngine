@@ -12,9 +12,10 @@
 class GameObject
 {
 public:
-	GameObject(GameObject* parent) : parent(parent) 
+	GameObject(GameObject* parent) : parent(parent)
 	{
 		boundingBox.SetNegativeInfinity();
+		genUUID();
 	}
 	virtual ~GameObject();
 	virtual bool Update(float dt);
@@ -64,10 +65,18 @@ private:
 	//Makes his AABB enclose its ComponentMesh vertex, transformed
 	void transformAABB();
 
+	void genUUID()
+	{
+		if (UUID == 0)
+			UUID = FLAN::randomUINT32_Range();
+	}
+
 public:
 	//Hierarchy's tree utilities
 	bool selected = false;
 	bool treeOpened = false;
+
+	uint32_t UUID = 0u;
 
 private:
 	bool active = true;

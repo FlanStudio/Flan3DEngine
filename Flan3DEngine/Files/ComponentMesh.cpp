@@ -1,6 +1,7 @@
 #include "ComponentMesh.h"
 #include "Glew/include/glew.h"
 #include "GameObject.h"
+#include "ModuleFileSystem.h"
 
 ComponentMesh::~ComponentMesh()
 {
@@ -216,4 +217,85 @@ void ComponentMesh::OnInspector()
 void ComponentMesh::updateGameObjectAABB()
 {
 	gameObject->boundingBox.Enclose((float3*)vertex, num_vertex);
+}
+
+void ComponentMesh::Serialize() const
+{
+	uint ranges[5] =
+	{
+		num_vertex,
+		num_index,
+		colors ? num_vertex : 0,
+		normals ? num_vertex : 0,
+		textureCoords ? num_vertex : 0
+	};
+
+	uint fileSize = sizeof(ranges);
+	fileSize += num_vertex * 3 * sizeof(float);
+	fileSize += num_index * sizeof(uint);
+	if (colors)
+	{
+		fileSize += num_vertex * 4 * sizeof(float); //for each vertex 4 floats (rgba)
+	}
+	if (normals)
+	{
+		fileSize += num_vertex * 3 * sizeof(float); //for each vertex 3 floats (xyz)
+	}
+	if (textureCoords)
+	{
+		fileSize += num_vertex * 2 * sizeof(float); //for each vertex 2 floats (xy)
+	}
+
+	char* buffer = new char[fileSize];
+	char* cursor = buffer; //Point to the beginning of the buffer
+
+	//write ranges
+	uint bytes = sizeof(ranges);
+	memcpy(cursor, ranges, bytes);
+	cursor += bytes; //displace the writting point by bytes
+
+	//write vertex
+	bytes = num_vertex * 3 * sizeof(float);
+	memcpy(cursor, vertex, bytes);
+	cursor += bytes;
+
+	//write index
+	bytes = num_index * sizeof(uint);
+	memcpy(cursor, index, bytes);
+	cursor += bytes;
+
+	//write colors
+	if (colors)
+	{
+		bytes = num_vertex * sizeof(float) * 4;
+		memcpy(cursor, colors, bytes);
+		cursor += bytes;
+	}
+
+	//write normals
+	if (normals)
+	{
+		bytes = num_vertex * sizeof(float) * 3;
+		memcpy(cursor, normals, bytes);
+		cursor += bytes;
+	}
+
+	//write textureCoords
+	if (textureCoords)
+	{
+		bytes = num_vertex * sizeof(float) * 2;
+		memcpy(cursor, textureCoords, bytes);
+		cursor += bytes;
+	}
+
+	App->fs->OpenWriteBuffer("Library/Meshes/" + std::to_string(UUID) + std::string(".flanMesh"), buffer, fileSize);
+
+	delete buffer;
+
+	/*ComponentMesh* othermesh = new ComponentMesh(nullptr);
+	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");*/
+}
+
+void ComponentMesh::deSerialize(uint32_t UUID)
+{
 }

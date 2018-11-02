@@ -45,6 +45,10 @@ public:
 	void OnInspector() override;
 	void updateGameObjectAABB();
 
+public:
+	void Serialize() const;
+	void deSerialize(uint32_t UUID);
+
 private:
 	void genNormalLines();
 };

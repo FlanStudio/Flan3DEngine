@@ -39,7 +39,7 @@ public:
 public:
 	ComponentType type = ComponentType::NO_TYPE;
 	GameObject* gameObject = nullptr;
-	uint UUID = 0u;
+	uint32_t UUID = 0u;
 
 protected:
 	bool active = true;

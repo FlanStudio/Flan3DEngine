@@ -199,6 +199,14 @@ bool ModuleFileSystem::OpenWrite(std::string file, char* buffer)
 
 bool ModuleFileSystem::OpenWriteBuffer(std::string file, void* buffer, uint size)
 {
+	//Ensure the directory exists, this is not created automatically
+	int pos = file.find_last_of("/");
+	if (pos == std::string::npos)
+		pos = file.find_last_of("\\");
+	std::string directory = file.substr(0, pos + 1);
+	PHYSFS_mkdir(directory.data());
+
+	//Open/Create the file
 	PHYSFS_File* PhysFile = PHYSFS_openWrite(file.data());
 	if (!PhysFile)
 	{
