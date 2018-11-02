@@ -7,9 +7,7 @@
 class ComponentTransform : public Component
 {
 public:
-	ComponentTransform(GameObject* gameObject) : Component(ComponentType::TRANSFORM, gameObject), position(float3::zero), rotation(Quat::identity), scale(float3::one) {
-		genUUID();
-	}
+	ComponentTransform(GameObject* gameObject) : Component(ComponentType::TRANSFORM, gameObject), position(float3::zero), rotation(Quat::identity), scale(float3::one) {}
 	ComponentTransform() {}
 public:
 	float3 position;
@@ -24,6 +22,10 @@ public:
 	void setLocalWithParentGlobal(ComponentTransform parentGlobal);
 	void OnInspector();
 	float4x4 getMatrix()const;
+
+	//Position scale rotation 
+	static uint bytesToSerialize() { return sizeof(float) * 3 * 2 + sizeof(float) * 4; }
+	void Serialize(char* cursor)const;
 };
 
 #endif

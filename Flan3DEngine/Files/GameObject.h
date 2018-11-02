@@ -77,11 +77,10 @@ public:
 	bool treeOpened = false;
 
 	uint32_t UUID = 0u;
+	std::vector<Component*> components;
 
 private:
 	bool active = true;
-
-	std::vector<Component*> components;
 
 	bool hasTransform = false;
 	bool hasMaterial = false;

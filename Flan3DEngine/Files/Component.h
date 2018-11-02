@@ -20,7 +20,7 @@ class Component
 {
 public:
 	Component(ComponentType type, GameObject* parent, bool active = true) : type(type), gameObject(parent), active(active) { genUUID(); }
-	Component(){}
+	Component() { genUUID(); }
 	virtual ~Component() {}
 	virtual bool Update(float dt) { return true; }
 	void genUUID()

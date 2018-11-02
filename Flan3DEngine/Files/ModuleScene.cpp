@@ -11,6 +11,7 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
+#include "Component.h"
 
 #include <bitset>
 
@@ -290,19 +291,59 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 
 	decomposeScene(gameObject_s, transforms, meshes, cameras);
 
-	uint quantities[4] = { gameObject_s.size(), transforms.size(), meshes.size(), cameras.size() };
+	//num components each type (Only cameras / meshes), each component UUID, transform size
+	uint gameObject_size = ComponentTransform::bytesToSerialize() + sizeof(uint[2]) + sizeof(uint32_t[2]); //TODO: COMPLETE THAT TO ANY NUMBER OF COMPONENTS
 
-	
+	//Num gameobjects + num gameobjects * each gameobject size
+	uint size = sizeof(uint) + gameObject_s.size() * gameObject_size;
 
-	//uint size = GameObject::bytesToSerialize() * quantities[0] + ComponentTransform::bytesToSerialize() * quantities[1] + ;
+	char* buffer = new char[size];
+	char* cursor = buffer;
+	uint bytes = 0u;
+	   	  
+	for(int i = 0; i < gameObject_s.size(); ++i)
+	{
+		//For each gameobject
+		gameObject_s[i]->transform->Serialize(cursor);
 
+		uint numComponentByType[2];
+		uint32_t UUIDs[2];
 
+		//For each component
+		for (uint component = 0; component < gameObject_s[i]->components.size(); ++component) 
+		{
+			switch (gameObject_s[i]->components[component]->type)
+			{
+			case ComponentType::MESH:
+				numComponentByType[0]++;
+				UUIDs[0] = gameObject_s[i]->components[component]->UUID;
+				break;
+			case ComponentType::CAMERA:
+				numComponentByType[1]++;
+				UUIDs[1] = gameObject_s[i]->components[component]->UUID;
+				break;
+			}
+		}
 
+		memcpy(cursor, numComponentByType, sizeof(numComponentByType));
+		cursor += sizeof(numComponentByType);
+		memcpy(cursor, UUIDs, sizeof(UUIDs));
+		cursor += sizeof(UUIDs);
+	}
+
+	//TODO: SAVE THE FILE
+
+	//Serialize the meshes
 	for (int i = 0; i < meshes.size(); ++i)
 	{
 		meshes[i]->Serialize();
 	}
 
+	//TODO: Serialize the cameras
+	for (int i = 0; i < cameras.size(); ++i)
+	{
+		//cameras[i]->Serialize();
+	}
 }
 
 void ModuleScene::DragDrop(GameObject* go)

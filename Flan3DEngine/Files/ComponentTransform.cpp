@@ -128,3 +128,16 @@ float4x4 ComponentTransform::getMatrix()const
 	return ret.Transposed();
 }
 
+void ComponentTransform::Serialize(char* cursor) const
+{
+	uint bytes = sizeof(float3);
+	memcpy(cursor, position.ptr(), bytes);
+	cursor += bytes;
+	bytes = sizeof(Quat);
+	memcpy(cursor, rotation.ptr(), bytes);
+	cursor += bytes;
+	bytes = sizeof(float3);
+	memcpy(cursor, scale.ptr(), bytes);
+	cursor += bytes;
+}
+
