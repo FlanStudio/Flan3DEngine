@@ -337,6 +337,25 @@ int GameObject::getChildPos(const GameObject* child) const
 	}
 }
 
+void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
+{
+	gameObjects.push_back(this);
+	transforms.push_back(transform);
+
+	ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+	if (mesh)
+		meshes.push_back(mesh);
+
+	ComponentCamera* camera = (ComponentCamera*)getComponentByType(ComponentType::CAMERA);
+	if (camera)
+		cameras.push_back(camera);
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->Decompose(gameObjects, transforms, meshes, cameras);
+	}
+}
+
 Component* GameObject::getComponentByType(ComponentType type) const
 {
 	for (int i = 0; i < components.size(); ++i)

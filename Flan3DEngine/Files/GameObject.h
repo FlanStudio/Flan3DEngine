@@ -37,6 +37,7 @@ public:
 	GameObject* getSelectedGO() const;
 	void deleteSelected();
 	int getChildPos(const GameObject* child) const;
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
 
 	//Component-related methods
 	Component* CreateComponent(ComponentType type);

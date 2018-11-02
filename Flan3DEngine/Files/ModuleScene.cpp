@@ -9,12 +9,13 @@
 
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 
 #include <bitset>
 
 #include "imgui/imgui_internal.h"
 
-#include "ComponentCamera.h"
+
 
 #define CHECKERS 8 * 8
 
@@ -67,6 +68,11 @@ update_status ModuleScene::PreUpdate(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
 		gameObjects[0]->deleteSelected();
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		Serialize("Assets/Scenes/exampleScene", ".flanScene");
 	}
 	return update_status::UPDATE_CONTINUE;
 }
@@ -274,6 +280,18 @@ void ModuleScene::debugDraw() const
 	}
 }
 
+void ModuleScene::Serialize(std::string path, std::string extension)
+{
+	std::vector<GameObject*> gameObject_s;
+	std::vector<ComponentTransform*> transforms;
+	std::vector<ComponentMesh*> meshes;
+	std::vector <ComponentCamera*> cameras;
+
+	decomposeScene(gameObject_s, transforms, meshes, cameras);
+
+
+}
+
 void ModuleScene::DragDrop(GameObject* go)
 {
 	//Drag and drop
@@ -337,6 +355,11 @@ void ModuleScene::DragDrop(GameObject* go)
 		}
 		ImGui::EndDragDropTarget();
 	}
+}
+
+void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
+{
+	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras);
 }
 
 void ModuleScene::_ReorderGameObject_Pre(GameObject* go)

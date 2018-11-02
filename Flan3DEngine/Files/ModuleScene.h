@@ -10,6 +10,9 @@
 #include <vector>
 
 class GameObject;
+class ComponentTransform;
+class ComponentMesh;
+class ComponentCamera;
 
 class ModuleScene : public Module
 {
@@ -35,10 +38,13 @@ public:
 	void guiInspector();
 	void selectGO(GameObject* toSelect);
 	void debugDraw()const;
+
+	void Serialize(std::string path, std::string extension);
 private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
+	void decomposeScene(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);
