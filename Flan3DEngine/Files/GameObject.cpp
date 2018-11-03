@@ -547,3 +547,16 @@ void GameObject::transformAABB()
 		updateAABBbuffers();
 	}
 }
+
+void GameObject::encloseParentAABB()
+{
+	for (uint i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->encloseParentAABB();
+	}
+
+	if (parent != nullptr)
+	{
+		parent->boundingBox.Enclose(boundingBox);
+	}
+}
