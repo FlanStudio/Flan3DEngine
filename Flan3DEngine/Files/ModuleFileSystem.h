@@ -92,6 +92,8 @@ public:
 
 	void fileSystemGUI();
 
+	bool Exists(std::string file) const;
+
 private:
 	void recursiveDirectory(Directory& directory);
 

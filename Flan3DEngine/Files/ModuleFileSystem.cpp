@@ -305,6 +305,11 @@ void ModuleFileSystem::fileSystemGUI()
 	recursiveDirectory(AssetsDirSystem);
 }
 
+bool ModuleFileSystem::Exists(std::string file) const
+{
+	return PHYSFS_exists(file.data());
+}
+
 void ModuleFileSystem::recursiveDirectory(Directory& directory)
 {
 	ImGuiTreeNodeFlags flags = 0;
