@@ -54,50 +54,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 	if(showdemowindow)
 		ImGui::ShowDemoWindow(&showdemowindow);
 	
-	if (showMGLwindow)
-	{
-		//ImGui::SetNextWindowPos({ 0,0 }, ImGuiCond_::ImGuiCond_FirstUseEver);
-		ImGui::Begin("MathGeoLib Info", &showMGLwindow);
-		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
-		{
-			Debug.Log("Sphere spawned %d", 1111);
-			Sphere sp;
-			sp.pos = { 0,1,0 };
-			sp.r = 1;
-
-			AABB spBB = AABB(sp);
-			somethingiscolliding = false;
-			
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Spawn 2 Spheres at 0,0", ImVec2(170, 50)))
-		{
-			Sphere sp;
-			sp.pos = { 0,1,0 };
-			sp.r = 1;
-
-			AABB spBB = AABB(sp);
-			
-			Sphere sp2;
-			sp2.pos = { 0,1,0 };
-			sp2.r = 1;
-
-			AABB sp2BB = AABB(sp2);		
-			
-			somethingiscolliding = spBB.Intersects(sp2BB);
-		}
-
-		ImGui::NewLine();
-		ImGui::Text("Something is colliding?:");
-		ImGui::SameLine();
-
-		ImGui::Text(somethingiscolliding ? "true" : "false");
-		
-		ImGui::End();
-	}
-
 	if (showConfig)
 	{	
+		ImGui::SetNextWindowSize(ImVec2(400,400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("Configuration", &showConfig);
 
 		if(ImGui::BeginMenu("options", true, true))
@@ -209,11 +169,17 @@ update_status ModuleEditor::PreUpdate(float dt)
 	
 	if (logEnabled)
 	{
-		Debug.Draw("LogWindow", &logEnabled);
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ), ImGuiCond_FirstUseEver);
+		ImGui::Begin("LogWindow", &logEnabled);
+		Debug.Draw();
+		ImGui::End();
 	}
 
 	if (showAbout)
 	{
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("About", &showAbout);
 		
 		if (ImGui::CollapsingHeader("About Us"))
@@ -332,6 +298,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (propWindow)
 	{
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("Properties",&propWindow);
 
 		if (ImGui::CollapsingHeader("Transformation"))
@@ -355,9 +323,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (hierarchy) 
 	{
+		ImGui::SetNextWindowPos(ImVec2(0, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23), ImGuiCond_FirstUseEver);
 		if(ImGui::Begin("Hierarchy", &hierarchy))
 		{
-
 			App->scene->guiHierarchy();
 		}
 		ImGui::End();
@@ -365,6 +334,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (inspector)
 	{
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin("Inspector", &inspector))
 		{
 			App->scene->guiInspector();
@@ -374,6 +345,9 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if(fileSystem)
 	{
+		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("FileSystem", &fileSystem);
 
 		App->fs->fileSystemGUI();
@@ -429,10 +403,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{
 		App->scene->Serialize();
 	}
-		
-
-
-
+	
 	return UPDATE_CONTINUE;
 }
 
@@ -464,11 +435,8 @@ bool ModuleEditor::CleanUp()
 	return true;
 }
 
-void LogWindow::Draw(const char* title, bool* p_opened)
+void LogWindow::Draw()
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
-	ImGui::Begin(title, p_opened);
-
 	if (ImGui::Button("Clear", ImVec2(80,25)))
 	{
 		Clear();
@@ -503,8 +471,6 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	if (ScrollToBottom)
 		ImGui::SetScrollHere(1.0f);
 	ScrollToBottom = false;
-
-	ImGui::End();
 }
 
 void ModuleEditor::Draw() const
