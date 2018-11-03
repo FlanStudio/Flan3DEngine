@@ -39,6 +39,7 @@ public:
 	void guiInspector();
 	void selectGO(GameObject* toSelect);
 	void debugDraw()const;
+	GameObject* getRootNode()const { return gameObjects[0]; }
 
 	void Serialize();
 	void DeSerialize(std::string path, std::string extension);

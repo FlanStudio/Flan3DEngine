@@ -220,7 +220,17 @@ void GameObject::OnInspector()
 		ImGui::Text("Press enter to apply changes");
 		ImGui::EndTooltip();
 	}
+
+	ImGui::SameLine(); ImGui::Text("active"); ImGui::SameLine(); ImGui::Checkbox("##ACTIVE", &active);
+
 	ImGui::NewLine();
+
+	posY = ImGui::GetCursorPosY();
+	ImGui::SetCursorPosY(posY + 3);
+	ImGui::Text("DrawAABBs"); ImGui::SameLine();
+	ImGui::SetCursorPosY(posY);
+	ImGui::Checkbox("##DrawAABBs", &drawAABBs);
+
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
 			
@@ -516,13 +526,22 @@ void GameObject::recursiveDebugDraw() const
 	debugDraw();
 	for (uint i = 0; i < childs.size(); ++i)
 	{
+		if (this != App->scene->getRootNode())
+		{
+			if (!drawAABBs)
+				childs[i]->drawAABBs = false;
+			else
+				childs[i]->drawAABBs = true;
+		}
+	
 		childs[i]->recursiveDebugDraw();
 	}
 }
 
 void GameObject::debugDraw() const
 {
-	drawAABB();
+	if(drawAABBs && this != App->scene->getRootNode())
+		drawAABB();
 
 	for (int i = 0; i < components.size(); ++i)
 	{

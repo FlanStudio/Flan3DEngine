@@ -116,7 +116,6 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 		
-
 		if (ImGui::CollapsingHeader("Application"))
 		{
 			ImGuiInputTextFlags flags = 0;

@@ -84,6 +84,8 @@ public:
 	bool selected = false;
 	bool treeOpened = false;
 
+	bool drawAABBs = true;
+
 	uint32_t UUID = 0u;
 	std::vector<Component*> components;
 
