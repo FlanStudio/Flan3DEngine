@@ -569,7 +569,7 @@ void GameObject::encloseParentAABB()
 		childs[i]->encloseParentAABB();
 	}
 
-	if (parent && parent->parent != nullptr)
+	if (parent)
 	{		
 		parent->boundingBox.Enclose(boundingBox);
 		parent->updateAABBbuffers();
