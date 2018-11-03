@@ -126,6 +126,11 @@ float4x4 ComponentTransform::getMatrix()const
 	return ret.Transposed();
 }
 
+float4x4 ComponentTransform::composeMatrix(float3& position, Quat& rotation, float3& scale)
+{
+	return float4x4::FromTRS(position, rotation, scale).Transposed();
+}
+
 void ComponentTransform::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(uint32_t);
