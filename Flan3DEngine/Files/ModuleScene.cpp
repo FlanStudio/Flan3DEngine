@@ -103,10 +103,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	euler.Render();
 	grid.Render();
 
-	if (App->debugDraw)
-	{
-		debugDraw();
-	}
 	return update_status::UPDATE_CONTINUE;
 }
 

@@ -25,8 +25,6 @@ bool GameObject::Update(float dt)
 	{
 		components[i]->Update(dt);
 	}
-
-	//TODO: ENCLOSE CHILDS IN PARENT...
 	return true;
 }
 
@@ -470,7 +468,11 @@ void GameObject::drawAABB() const
 void GameObject::updateAABBbuffers()
 {
 	if (!boundingBox.IsFinite())
+	{
+		destroyAABBbuffers();
 		return;
+	}
+		
 
 	if (AABBvertex == nullptr)
 	{
@@ -532,20 +534,17 @@ void GameObject::transformAABB()
 {
 	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
 
+	boundingBox.SetNegativeInfinity();
+
 	if (Mesh)
 	{
-		boundingBox.SetNegativeInfinity();
-
-		Mesh->updateGameObjectAABB();
-
-		OBB obb(boundingBox);
-
-		obb.Transform(this->transform->getMatrix().Transposed());
-
-		boundingBox = obb.MinimalEnclosingAABB();
-
-		updateAABBbuffers();
+		Mesh->updateGameObjectAABB();			
 	}
+
+	OBB obb(boundingBox);
+	obb.Transform(this->transform->getMatrix().Transposed());
+	boundingBox = obb.MinimalEnclosingAABB();
+	updateAABBbuffers();
 }
 
 void GameObject::encloseParentAABB()
@@ -555,8 +554,9 @@ void GameObject::encloseParentAABB()
 		childs[i]->encloseParentAABB();
 	}
 
-	if (parent != nullptr)
-	{
+	if (parent && parent->parent != nullptr)
+	{		
 		parent->boundingBox.Enclose(boundingBox);
+		parent->updateAABBbuffers();
 	}
 }
