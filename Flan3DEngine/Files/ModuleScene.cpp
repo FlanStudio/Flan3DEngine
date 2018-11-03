@@ -299,6 +299,7 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 	uint meshesSize = 0u;
 	for (int i = 0; i < meshes.size(); ++i)
 	{
+		meshesSize += sizeof(uint32_t); //GameObject's UUID
 		meshesSize += sizeof(uint); //Each mesh size
 		meshesSize += meshes[i]->bytesToSerialize();
 	}
@@ -313,7 +314,6 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 				sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 				sizeof(uint) + meshesSize; + //Each mesh has a different size
 				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size();
-
 
 	char* buffer = new char[size];
 	char* cursor = buffer;
@@ -413,7 +413,34 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 		}
 	}
 
+	uint numTransforms = 0u;
+	bytes = sizeof(uint);
+	memcpy(&numTransforms, cursor, bytes);
+	cursor += bytes;
 
+	std::vector<uint32_t> goUUIDs;
+
+	for (int i = 0; i < numTransforms; ++i)
+	{
+		ComponentTransform* newTransform = new ComponentTransform();
+		uint32_t goUUID;
+		newTransform->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		transforms.push_back(newTransform);
+	}
+
+	for (int i = 0; i < transforms.size(); ++i) //For each transform
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->UUID) //Look for a gameobject whose UUID is the same as your one
+			{
+				transforms[i]->gameObject = gameObject_s[j]; //Create this gameobject-component relationship
+				gameObject_s[j]->AddComponent(transforms[i]);
+				gameObject_s[j]->transform = transforms[i];
+			}
+		}
+	}
 
 
 

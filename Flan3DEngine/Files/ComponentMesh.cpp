@@ -219,8 +219,12 @@ void ComponentMesh::updateGameObjectAABB()
 	gameObject->boundingBox.Enclose((float3*)vertex, num_vertex);
 }
 
-void ComponentMesh::Serialize(char* cursor) const
+void ComponentMesh::Serialize(char*& cursor) const
 {
+	uint bytes = sizeof(uint32_t);
+	memcpy(cursor, &gameObject->UUID, bytes);
+	cursor += bytes;
+
 	uint ranges[5] =
 	{
 		num_vertex,
@@ -250,7 +254,7 @@ void ComponentMesh::Serialize(char* cursor) const
 	//char* cursor = buffer; //Point to the beginning of the buffer
 
 	//write ranges
-	uint bytes = sizeof(ranges);
+	bytes = sizeof(ranges);
 	memcpy(cursor, ranges, bytes);
 	cursor += bytes; //displace the writting point by bytes
 

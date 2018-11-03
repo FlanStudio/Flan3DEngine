@@ -88,8 +88,6 @@ public:
 
 private:
 	bool active = true;
-
-	bool hasTransform = false;
 	bool hasMaterial = false;
 	
 	//AABB drawing data-----------------

@@ -36,7 +36,7 @@ public:
 	virtual void Enable() {}
 	virtual void Disable() {}
 	virtual bool isActive() { return true; }
-	virtual void Serialize(char* cursor) const {}
+	virtual void Serialize(char*& cursor) const {}
 
 public:
 	ComponentType type = ComponentType::NO_TYPE;

@@ -51,11 +51,10 @@ Component* GameObject::CreateComponent(ComponentType type)
 		}
 		case ComponentType::TRANSFORM:
 		{
-			if (!hasTransform)
+			if (!transform)
 			{
 				ComponentTransform* transform = new ComponentTransform(this);
 				AddComponent(transform);
-				hasTransform = true;
 				this->transform = transform;
 				ret = transform;
 			}
@@ -72,7 +71,7 @@ Component* GameObject::CreateComponent(ComponentType type)
 
 void GameObject::AddComponent(Component* component)
 {
-	if (component->type != ComponentType::TRANSFORM || !hasTransform) //Max 1 ComponentTransform
+	if (component->type != ComponentType::TRANSFORM || !transform) //Max 1 ComponentTransform
 	{
 		components.push_back(component);
 		if (component->type == ComponentType::TRANSFORM)

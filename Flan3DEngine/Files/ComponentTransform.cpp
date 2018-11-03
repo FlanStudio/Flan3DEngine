@@ -128,9 +128,13 @@ float4x4 ComponentTransform::getMatrix()const
 	return ret.Transposed();
 }
 
-void ComponentTransform::Serialize(char* cursor) const
+void ComponentTransform::Serialize(char*& cursor) const
 {
-	uint bytes = sizeof(float3);
+	uint bytes = sizeof(uint32_t);
+	memcpy(cursor, &gameObject->UUID, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float3);
 	memcpy(cursor, position.ptr(), bytes);
 	cursor += bytes;
 	bytes = sizeof(Quat);
@@ -138,6 +142,25 @@ void ComponentTransform::Serialize(char* cursor) const
 	cursor += bytes;
 	bytes = sizeof(float3);
 	memcpy(cursor, scale.ptr(), bytes);
+	cursor += bytes;
+}
+
+void ComponentTransform::DeSerialize(char *& cursor, uint32_t & goUUID)
+{
+	uint bytes = sizeof(uint32_t);
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float3);
+	memcpy(position.ptr(), cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(Quat);
+	memcpy(rotation.ptr(), cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float3);
+	memcpy(scale.ptr(), cursor, bytes);
 	cursor += bytes;
 }
 
