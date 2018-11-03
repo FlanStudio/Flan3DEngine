@@ -118,6 +118,11 @@ void Application::FinishUpdate()
 	}
 }
 
+void Application::DebugDraw() const
+{
+	App->scene->debugDraw();
+}
+
 // Call PreUpdate, Update and PostUpdate on all modules
 update_status Application::Update()
 {

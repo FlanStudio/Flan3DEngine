@@ -169,6 +169,10 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 
 	DrawMeshes();
+
+	if (App->debugDraw)
+		App->DebugDraw();
+
 	App->editor->Draw();
 
 	SDL_GL_SwapWindow(App->window->window);

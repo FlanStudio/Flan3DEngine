@@ -82,6 +82,7 @@ update_status ModuleScene::Update(float dt)
 	{
 		gameObjects[i]->Update(dt);
 	}
+	parentAABBs();
 	return UPDATE_CONTINUE;
 }
 
@@ -93,10 +94,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	euler.Render();
 	grid.Render();
 
-	if (App->debugDraw)
-	{
-		debugDraw();
-	}
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -585,6 +582,11 @@ void ModuleScene::DragDrop(GameObject* go)
 void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
 {
 	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras);
+}
+
+void ModuleScene::parentAABBs()
+{
+	gameObjects[0]->encloseParentAABB();
 }
 
 void ModuleScene::_ReorderGameObject_Pre(GameObject* go)

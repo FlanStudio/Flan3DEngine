@@ -48,6 +48,7 @@ private:
 	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
 	void decomposeScene(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+	void parentAABBs();
 
 
 	//Internal methods to reorder GameObjects in the hierarchy

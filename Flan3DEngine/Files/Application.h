@@ -131,9 +131,9 @@ public:
 	bool CleanUp();
 	void Load();
 	void Save();
+	void DebugDraw() const;
 
 private:
-
 	bool LoadNow();
 	bool SaveNow() const;
 	void AddModule(Module* mod);

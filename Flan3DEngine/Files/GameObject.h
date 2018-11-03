@@ -52,6 +52,7 @@ public:
 	//AABB drawing data-----------------
 	void drawAABB()const;
 	void updateAABBbuffers();	
+	void encloseParentAABB();
 	void destroyAABBbuffers();
 	void recursiveDebugDraw()const;
 
