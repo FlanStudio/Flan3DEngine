@@ -58,6 +58,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 - **ImGui_Tabs** module from [HERE](https://github.com/scottmudge/imgui_tabs), implemented in the Log Window and updated to the actual version of ImGui.
 - **FileSystem** using [PHYSFS](https://icculus.org/physfs/) and implemented in all textures and meshes loading.
 - **LogWindow** using and modifying [this](https://github.com/ocornut/imgui/issues/300) example the creator of ImGui posted in an issue.
+- **Serializing in Binary Files**
 
 ## Assets
 
