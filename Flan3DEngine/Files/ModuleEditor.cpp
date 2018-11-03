@@ -35,10 +35,7 @@ bool ModuleEditor::Start()
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
 	ImGui_ImplOpenGL2_Init();
 
-	ImGui::StyleColorsDark();
-	ImGuiStyle* style = &ImGui::GetStyle();
-	//style->Colors[ImGuiCol_Text] = { 1,0,0,1 };
-
+	customStyle();
 
 	return true;	
 }
@@ -57,50 +54,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 	if(showdemowindow)
 		ImGui::ShowDemoWindow(&showdemowindow);
 	
-	if (showMGLwindow)
-	{
-		//ImGui::SetNextWindowPos({ 0,0 }, ImGuiCond_::ImGuiCond_FirstUseEver);
-		ImGui::Begin("MathGeoLib Info", &showMGLwindow);
-		if (ImGui::Button("Spawn 1 Sphere at 0,0", ImVec2(170, 50)))
-		{
-			Debug.Log("Sphere spawned %d", 1111);
-			Sphere sp;
-			sp.pos = { 0,1,0 };
-			sp.r = 1;
-
-			AABB spBB = AABB(sp);
-			somethingiscolliding = false;
-			
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Spawn 2 Spheres at 0,0", ImVec2(170, 50)))
-		{
-			Sphere sp;
-			sp.pos = { 0,1,0 };
-			sp.r = 1;
-
-			AABB spBB = AABB(sp);
-			
-			Sphere sp2;
-			sp2.pos = { 0,1,0 };
-			sp2.r = 1;
-
-			AABB sp2BB = AABB(sp2);		
-			
-			somethingiscolliding = spBB.Intersects(sp2BB);
-		}
-
-		ImGui::NewLine();
-		ImGui::Text("Something is colliding?:");
-		ImGui::SameLine();
-
-		ImGui::Text(somethingiscolliding ? "true" : "false");
-		
-		ImGui::End();
-	}
-
 	if (showConfig)
 	{	
+		ImGui::SetNextWindowSize(ImVec2(400,400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("Configuration", &showConfig);
 
 		if(ImGui::BeginMenu("options", true, true))
@@ -211,11 +168,17 @@ update_status ModuleEditor::PreUpdate(float dt)
 	
 	if (logEnabled)
 	{
-		Debug.Draw("LogWindow", &logEnabled);
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ), ImGuiCond_FirstUseEver);
+		ImGui::Begin("LogWindow", &logEnabled);
+		Debug.Draw();
+		ImGui::End();
 	}
 
 	if (showAbout)
 	{
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("About", &showAbout);
 		
 		if (ImGui::CollapsingHeader("About Us"))
@@ -334,6 +297,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (propWindow)
 	{
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("Properties",&propWindow);
 
 		if (ImGui::CollapsingHeader("Transformation"))
@@ -357,9 +322,10 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (hierarchy) 
 	{
+		ImGui::SetNextWindowPos(ImVec2(0, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23), ImGuiCond_FirstUseEver);
 		if(ImGui::Begin("Hierarchy", &hierarchy))
 		{
-
 			App->scene->guiHierarchy();
 		}
 		ImGui::End();
@@ -367,6 +333,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (inspector)
 	{
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin("Inspector", &inspector))
 		{
 			App->scene->guiInspector();
@@ -376,6 +344,9 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if(fileSystem)
 	{
+		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
+
 		ImGui::Begin("FileSystem", &fileSystem);
 
 		App->fs->fileSystemGUI();
@@ -431,10 +402,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	{
 		App->scene->Serialize();
 	}
-		
-
-
-
+	
 	return UPDATE_CONTINUE;
 }
 
@@ -466,11 +434,8 @@ bool ModuleEditor::CleanUp()
 	return true;
 }
 
-void LogWindow::Draw(const char* title, bool* p_opened)
+void LogWindow::Draw()
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
-	ImGui::Begin(title, p_opened);
-
 	if (ImGui::Button("Clear", ImVec2(80,25)))
 	{
 		Clear();
@@ -505,8 +470,6 @@ void LogWindow::Draw(const char* title, bool* p_opened)
 	if (ScrollToBottom)
 		ImGui::SetScrollHere(1.0f);
 	ScrollToBottom = false;
-
-	ImGui::End();
 }
 
 void ModuleEditor::Draw() const
@@ -517,4 +480,69 @@ void ModuleEditor::Draw() const
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	ImGui::EndFrame();
 
+}
+
+void ModuleEditor::customStyle()
+{
+	ImGuiStyle* style = &ImGui::GetStyle();
+
+	style->WindowPadding = ImVec2(15, 15);
+	style->WindowRounding = 5.0f;
+	style->FramePadding = ImVec2(5, 5);
+	style->FrameRounding = 4.0f;
+	style->ItemSpacing = ImVec2(12, 8);
+	style->ItemInnerSpacing = ImVec2(8, 6);
+	style->IndentSpacing = 25.0f;
+	style->ScrollbarSize = 15.0f;
+	style->ScrollbarRounding = 9.0f;
+	style->GrabMinSize = 5.0f;
+	style->GrabRounding = 3.0f;
+
+	style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
+	style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+	style->Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+	style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+	style->Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+	style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+	style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
+	style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+	style->Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+	style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+	style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+	style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+	style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+	style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+	style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+	style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+	style->Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+	style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+	style->Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_ColumnHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+	style->Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_Separator] = style->Colors[ImGuiCol_Border];
+	style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+	style->Colors[ImGuiCol_SeparatorActive] = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+	style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+	style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+	style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+	style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+	style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+	style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+	style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+	style->Colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+	style->Colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+	style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 }

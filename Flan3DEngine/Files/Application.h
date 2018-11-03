@@ -81,7 +81,7 @@ public:
 		va_end(args);
 		ScrollToBottom = true;
 	}
-	void Draw(const char* title, bool* p_opened = NULL);
+	void Draw();
 };
 
 extern LogWindow Debug;

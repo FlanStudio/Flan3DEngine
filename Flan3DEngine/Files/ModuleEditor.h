@@ -28,6 +28,9 @@ public:
 	void Draw() const;
 
 private:
+	void customStyle();
+
+private:
 
 	bool showdemowindow = false;
 	bool showMGLwindow = false;
