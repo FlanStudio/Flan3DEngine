@@ -36,7 +36,6 @@ public:
 	virtual void Enable() {}
 	virtual void Disable() {}
 	virtual bool isActive() { return true; }
-	virtual uint bytesToSerialize()const { return 0u; }
 	virtual void Serialize(char* cursor) const {}
 
 public:

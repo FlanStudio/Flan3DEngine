@@ -16,7 +16,7 @@ public:
 	float4x4 getViewMatrix();
 	void updateFrustum();
 	void calculateVerticalFOV();
-	uint bytesToSerialize() const { return sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
+	static uint bytesToSerialize() { return sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
 	void Serialize(char* cursor) const;
 
 private:

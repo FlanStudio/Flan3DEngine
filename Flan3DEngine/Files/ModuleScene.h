@@ -40,6 +40,8 @@ public:
 	void debugDraw()const;
 
 	void Serialize(std::string path, std::string extension);
+	void DeSerialize(std::string path, std::string extension);
+
 private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO() const;

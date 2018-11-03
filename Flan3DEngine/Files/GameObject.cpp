@@ -356,20 +356,7 @@ void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<Co
 	}
 }
 
-uint GameObject::bytesToSerialize() const
-{
-	uint componentBytes = 0u;
-	uint numCompType[(int)ComponentType::MAX_TYPE];
-	for (int i = 0; i < components.size(); ++i)
-	{
-		componentBytes += components[i]->bytesToSerialize();
-		numCompType[(int)components[i]->type]++;
-	}
-
-	return sizeof(UUID) * 2 + sizeof(uint) + sizeof(numCompType) + componentBytes;
-}
-
-void GameObject::Serialize(char* cursor)
+void GameObject::Serialize(char*& cursor)
 {
 	uint bytes = sizeof(uint32_t);
 	memcpy(cursor, &UUID, bytes);
@@ -379,18 +366,36 @@ void GameObject::Serialize(char* cursor)
 	memcpy(cursor, &parentUUID, bytes);
 	cursor += bytes;
 
+	/*if (name.length() > 50)
+		Debug.LogWarning("Care: You are serializing a GameObject's name larger that 50 chars, there will be some info missing");*/
+
+	uint nameLenght = name.length();
 	bytes = sizeof(uint);
-	uint numComponents = components.size();
-	memcpy(cursor, &numComponents, bytes);
+	memcpy(cursor, &nameLenght, bytes);
 	cursor += bytes;
 
-	//Components have to be in the same order always in order to load properly later
-	ReorderComponents();
+	bytes = nameLenght;
+	memcpy(cursor, name.c_str(), bytes);
+	cursor += bytes;
+}
 
-	for (int i = 0; i < components.size(); ++i)
-	{
-		components[i]->Serialize(cursor);
-	}
+void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
+{
+	uint bytes = sizeof(uint32_t);
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&parentUUID, cursor, bytes);
+	cursor += bytes;
+	
+	uint nameLenght = 0u;
+	bytes = sizeof(uint);
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+	
+	bytes = nameLenght;
+	name.assign(cursor, cursor + bytes);
+	cursor += bytes;
 }
 
 void GameObject::ReorderComponents()

@@ -76,6 +76,11 @@ update_status ModuleScene::PreUpdate(float dt)
 	{
 		Serialize("Assets/Scenes/exampleScene", ".flanScene");
 	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		DeSerialize("Assets/Scenes/exampleScene", ".flanScene");
+	}
+
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -291,39 +296,130 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 
 	decomposeScene(gameObject_s, transforms, meshes, cameras);
 
-	uint size = sizeof(uint);
+	uint meshesSize = 0u;
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshesSize += sizeof(uint); //Each mesh size
+		meshesSize += meshes[i]->bytesToSerialize();
+	}
+
+	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
 	{
-		size += gameObject_s[i]->bytesToSerialize();
+		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
 	}
+
+	uint size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
+				sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
+				sizeof(uint) + meshesSize; + //Each mesh has a different size
+				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size();
+
 
 	char* buffer = new char[size];
 	char* cursor = buffer;
-	uint bytes = 0u;
-	
-	uint numGOs = gameObject_s.size();
-	memcpy(cursor, &numGOs, sizeof(numGOs));
-	cursor += sizeof(numGOs);
 
-	for(int i = 0; i < gameObject_s.size(); ++i)
+	uint numGOs = gameObject_s.size();
+
+	uint bytes = sizeof(uint);
+	memcpy(cursor, &numGOs, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < gameObject_s.size(); ++i)
 	{
 		gameObject_s[i]->Serialize(cursor);
 	}
-	
-	//TODO: SAVE THE FILE
-	App->fs->OpenWriteBuffer("Assets/scenes/firstScene.flanScene", buffer, size);
 
-	////Serialize the meshes
-	//for (int i = 0; i < meshes.size(); ++i)
-	//{
-	//	meshes[i]->Serialize();
-	//}
+	uint numTransforms = transforms.size();
 
-	////TODO: Serialize the cameras
-	//for (int i = 0; i < cameras.size(); ++i)
-	//{
-	//	//cameras[i]->Serialize();
-	//}
+	bytes = sizeof(uint);
+	memcpy(cursor, &numTransforms, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < transforms.size(); ++i)
+	{
+		transforms[i]->Serialize(cursor);
+	}
+
+	uint numMeshes = meshes.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numMeshes, bytes);
+	cursor += bytes;
+
+	for(int i = 0; i < numMeshes; ++i)
+	{ 
+		uint meshSize = meshes[i]->bytesToSerialize();
+		bytes = sizeof(uint);
+		memcpy(cursor, &meshSize, bytes);
+		cursor += bytes;
+
+		meshes[i]->Serialize(cursor);
+	}
+
+	uint numCameras = cameras.size();
+	bytes = sizeof(uint);
+	memcpy(cursor, &numCameras, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numCameras; ++i)
+	{
+		cameras[i]->Serialize(cursor);
+	}
+
+	App->fs->OpenWriteBuffer(path + extension, buffer, size);
+
+	delete buffer;
+}
+
+void ModuleScene::DeSerialize(std::string path, std::string extension)
+{
+	char* buffer;
+	int size = 0u;
+	if (!App->fs->OpenRead(path + extension, &buffer, size))
+		return;
+
+	char* cursor = buffer;
+
+	std::vector<GameObject*> gameObject_s;
+	std::vector<ComponentTransform*> transforms;
+	std::vector<ComponentMesh*> meshes;
+	std::vector <ComponentCamera*> cameras;
+
+	uint numGOs = 0;
+	uint bytes = sizeof(uint);
+
+	memcpy(&numGOs, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<uint32_t> parentUUIDs;
+	for (int i = 0; i < numGOs; ++i)
+	{
+		GameObject* newGO = new GameObject(nullptr);
+		uint32_t parentUUID;
+		newGO->DeSerialize(cursor, parentUUID);
+		parentUUIDs.push_back(parentUUID);
+		gameObject_s.push_back(newGO);
+	}
+
+	for (int i = 0; i < gameObject_s.size(); ++i) //For each gameobject
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (parentUUIDs[i] == gameObject_s[j]->UUID) //Look for a gameobject whose UUID is the same as your parent
+			{
+				gameObject_s[i]->parent = gameObject_s[j]; //Create this parent-child relationship
+				gameObject_s[j]->AddChild(gameObject_s[i]);
+			}
+		}
+	}
+
+
+
+
+
+
+
+	delete buffer;
 }
 
 void ModuleScene::DragDrop(GameObject* go)

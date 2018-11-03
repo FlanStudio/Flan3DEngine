@@ -55,13 +55,16 @@ public:
 	void destroyAABBbuffers();
 	void recursiveDebugDraw()const;
 
-	//Serializing methods
+	//----------Serializing methods------------
 	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
 	
-	//UUID, parent UUID, num Components, each component size
-	uint bytesToSerialize() const;
-	void Serialize(char* cursor);
+	//UUID, parent UUID, name (Up to 50 chars)
+	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(uint); };
+	void Serialize(char*& cursor);
+	void DeSerialize(char*& cursor, uint32_t& parentUUID);
 	void ReorderComponents();
+
+	//----------------------------------------
 
 private:
 	void debugDraw()const;
