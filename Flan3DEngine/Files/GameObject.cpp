@@ -538,13 +538,27 @@ void GameObject::transformAABB()
 
 	if (Mesh)
 	{
-		Mesh->updateGameObjectAABB();			
+		Mesh->updateGameObjectAABB();	
+		OBB obb(boundingBox);
+		obb.Transform(this->transform->getMatrix().Transposed());
+		boundingBox = obb.MinimalEnclosingAABB();
+		updateAABBbuffers();
 	}
+	else
+	{
+		if (parent)
+		{
+			Sphere sp;
+			sp.pos = { 0,0,0 };
+			sp.r = 0.2;
+			boundingBox.Enclose(sp);
 
-	OBB obb(boundingBox);
-	obb.Transform(this->transform->getMatrix().Transposed());
-	boundingBox = obb.MinimalEnclosingAABB();
-	updateAABBbuffers();
+			OBB obb(boundingBox);
+			obb.Transform(this->transform->getMatrix().Transposed());
+			boundingBox = obb.MinimalEnclosingAABB();
+			updateAABBbuffers();
+		}		
+	}
 }
 
 void GameObject::encloseParentAABB()

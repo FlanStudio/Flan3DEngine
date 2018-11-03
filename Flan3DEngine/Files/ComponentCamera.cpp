@@ -51,9 +51,11 @@ bool ComponentCamera::Update(float dt)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	frustum.front = gameObject->transform->rotation * float3(0, 0, 1);
-	frustum.up = gameObject->transform->rotation * float3(0, 1, 0);
-	frustum.pos = gameObject->transform->position;
+	ComponentTransform global = gameObject->transform->getGlobal();
+
+	frustum.front = global.rotation * float3(0, 0, 1);
+	frustum.up = global.rotation * float3(0, 1, 0);
+	frustum.pos = global.position;
 
 	float3 cornerPoints[8];
 	frustum.GetCornerPoints(cornerPoints);
