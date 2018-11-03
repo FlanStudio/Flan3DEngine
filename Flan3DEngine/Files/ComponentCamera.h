@@ -18,6 +18,7 @@ public:
 	void calculateVerticalFOV();
 	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
 	void Serialize(char*& cursor) const;
+	void DeSerialize(char*& cursor, uint32_t& goUUID);
 
 private:
 	void debugDraw() override;

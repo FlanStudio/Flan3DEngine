@@ -20,7 +20,7 @@ enum class ComponentType
 class Component
 {
 public:
-	Component(ComponentType type, GameObject* parent, bool active = true) : type(type), gameObject(parent), active(active) { genUUID(); }
+	Component(ComponentType type, GameObject* gameObject, bool active = true) : type(type), gameObject(gameObject), active(active) { genUUID(); }
 	Component() { genUUID(); }
 	virtual ~Component() {}
 	virtual bool Update(float dt) { return true; }

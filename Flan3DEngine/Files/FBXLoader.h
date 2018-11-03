@@ -36,8 +36,6 @@ public:
 
 public:
 	bool LoadFBX(char* path, bool useFS = true);
-	bool SaveMesh(ComponentMesh* mesh);
-	bool LoadMesh(ComponentMesh* mesh, std::string path);
 
 private:
 	bool RecursivelyHierarchy(const aiNode* parent, const GameObject* parentGO, const aiScene* scene);

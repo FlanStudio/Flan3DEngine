@@ -475,8 +475,48 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 		}
 	}
 
+	uint numCameras = 0u;
+	bytes = sizeof(uint);
+	memcpy(&numCameras, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
 
+	for (int i = 0; i < numCameras; ++i)
+	{
+		ComponentCamera* newCamera = new ComponentCamera(nullptr);
+		uint32_t goUUID;
+		newCamera->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		cameras.push_back(newCamera);
+	}
 
+	for (int i = 0; i < cameras.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->UUID)
+			{
+				cameras[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(cameras[i]);
+				cameras[i]->updateFrustum();
+			}
+		}
+	}
+
+	delete gameObjects[0];
+	gameObjects.clear();
+
+	GameObject* root = nullptr;
+	for (int i = 0; i < gameObject_s.size(); ++i)
+	{
+		if (gameObject_s[i]->parent == nullptr)
+		{
+			root = gameObject_s[i];
+			break;
+		}
+	}
+
+	gameObjects.push_back(root);
 
 	delete buffer;
 }

@@ -1,9 +1,9 @@
 #include "ComponentCamera.h"
 #include "GameObject.h"
 
-ComponentCamera::ComponentCamera(GameObject* parent, bool active) : Component(ComponentType::CAMERA, parent, active)
+ComponentCamera::ComponentCamera(GameObject* gameObject, bool active) : Component(ComponentType::CAMERA, gameObject, active)
 {
-	if (!parent)
+	if (!gameObject)
 		Debug.LogWarning("No gameObject attached to this camera component");
 
 	width = height = 50.0f;
@@ -157,6 +157,43 @@ void ComponentCamera::Serialize(char*& cursor) const
 
 	bytes = sizeof(bool);
 	memcpy(cursor, &isMainCamera, bytes);
+	cursor += bytes;
+}
+
+void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
+{
+	uint bytes = sizeof(uint32_t);
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ImVec4);
+	memcpy(&backgroundColor, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&nearDistance, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&farDistance, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&aspectRatio, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&width, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&height, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&horizontalFOV, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&verticalFOV, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&isMainCamera, cursor, bytes);
 	cursor += bytes;
 }
 
