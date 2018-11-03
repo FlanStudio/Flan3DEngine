@@ -298,9 +298,57 @@ void ComponentMesh::Serialize(char*& cursor) const
 	LoadMesh(othermesh, "Library/" + mesh->name + ".jeje");*/
 }
 
-void ComponentMesh::deSerialize(uint32_t UUID)
+void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 {
+	uint bytes = sizeof(uint32_t);
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
 
+	uint ranges[5];
+
+	bytes = sizeof(ranges);
+	memcpy(ranges, cursor, bytes);
+	cursor += bytes;
+
+	num_vertex = ranges[0];
+	num_index = ranges[1];
+
+	bytes = num_vertex * sizeof(float) * 3;
+	vertex = new float[num_vertex * 3];
+	memcpy(vertex, cursor, bytes);
+	cursor += bytes;
+
+	bytes = num_index * sizeof(uint);
+	index = new uint[num_index];
+	memcpy(index, cursor, bytes);
+	cursor += bytes;
+
+	//vertex index colors normals textures
+	if (ranges[2] > 0)
+	{
+		bytes = num_vertex * sizeof(float) * 4;
+		colors = new float[num_vertex * 4];
+		memcpy(colors, cursor, bytes);
+		cursor += bytes;
+	}
+
+	if (ranges[3] > 0)
+	{
+		bytes = num_vertex * sizeof(float) * 3;
+		normals = new float[num_vertex * 3];
+		memcpy(normals, cursor, bytes);
+		cursor += bytes;
+	}
+
+	if (ranges[4] > 0)
+	{
+		bytes = num_vertex * sizeof(float) * 2;
+		textureCoords = new float[num_vertex * 2];
+		memcpy(textureCoords, cursor, bytes);
+		cursor += bytes;
+	}
+
+	genBuffers();
 }
 
 uint ComponentMesh::bytesToSerialize() const

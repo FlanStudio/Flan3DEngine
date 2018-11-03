@@ -442,6 +442,38 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 		}
 	}
 
+	uint numMeshes = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numMeshes, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numMeshes; ++i)
+	{
+		uint meshSize = 0u;
+		bytes = sizeof(uint);
+		memcpy(&meshSize, cursor, bytes);
+		cursor += bytes;
+
+		ComponentMesh* newMesh = App->renderer3D->CreateComponentMesh(nullptr);
+		uint32_t goUUID;
+		newMesh->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		meshes.push_back(newMesh);
+	}
+
+	for (int i = 0; i < meshes.size(); ++i) 
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->UUID) 
+			{
+				meshes[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(meshes[i]);
+			}
+		}
+	}
 
 
 

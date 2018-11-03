@@ -47,7 +47,7 @@ public:
 
 public:
 	void Serialize(char*& cursor) const override;
-	void deSerialize(uint32_t UUID);
+	void DeSerialize(char*& cursor, uint32_t& goUUID);
 	uint bytesToSerialize()const;
 
 private:
