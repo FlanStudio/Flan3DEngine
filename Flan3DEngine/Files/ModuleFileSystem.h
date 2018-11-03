@@ -5,6 +5,9 @@
 #define LIBRARY_FOLDER "Library/"
 #define CONFIG_FOLDER "Library/config/"
 
+#define SCENES_ASSETS_FOLDER "Assets/Scenes/"
+#define SCENES_EXTENSION ".flanScene"
+
 #include <vector>
 #include <string>
 #include "Module.h"
@@ -12,6 +15,7 @@
 
 struct Directory
 {
+	std::string fullPath;
 	std::string name;
 	std::vector<std::string> files;
 	std::vector<Directory> directories;

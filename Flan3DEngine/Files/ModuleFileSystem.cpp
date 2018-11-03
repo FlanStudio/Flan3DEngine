@@ -285,8 +285,9 @@ Directory ModuleFileSystem::getDirFiles(char* dir)
 		std::string file(files[i]);
 		if(file.find(".") == std::string::npos) //Is a directory, have not extension
 		{			
-			std::string fulldir(dir + std::string("/") + std::string(files[i]));			
+			std::string fulldir(dir + std::string("/") + std::string(files[i]));		
 			Directory child = getDirFiles((char*)fulldir.data());
+			child.fullPath = fulldir;
 			ret.directories.push_back(child);
 		}
 		else
@@ -321,7 +322,40 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 		{
 			ImGuiTreeNodeFlags cflags = 0;
 			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
-			if (ImGui::TreeNodeEx(directory.files[i].data(), cflags))
+			bool clicked = ImGui::TreeNodeEx(directory.files[i].data(), cflags);
+			
+			if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemClicked(0))
+			{
+				int pos = directory.files[i].find_last_of(".");
+				std::string extension = directory.files[i].substr(pos);
+				if (extension == SCENES_EXTENSION)
+				{				
+					ImGui::OpenPopup("CAUTION");
+				}
+			}
+			//TODO: Rename files and folders from assets window?
+
+			ImGui::SetNextWindowSize(ImVec2(750, 160));		
+			if (ImGui::BeginPopupModal("CAUTION", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoMove))
+			{				
+				ImVec2 windowPos = ImGui::GetWindowPos();
+				std::string file = directory.files[i].substr(0, directory.files[i].find_last_of("."));
+				ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+				ImGui::SetCursorScreenPos({ cursorPos.x + 20, cursorPos.y });
+				ImGui::TextWrapped("All the not saved elements in hierarchy will be lost. Are you sure you want to load \"%s\"?", file.data());				
+				ImGui::NewLine(); ImGui::NewLine();
+				cursorPos = ImGui::GetCursorScreenPos();
+				ImGui::SetCursorScreenPos({ windowPos.x + 750 / 2 - 250 / 2, cursorPos.y });
+				if (ImGui::Button("LOAD", ImVec2(120, 40))) 
+				{					
+					App->scene->DeSerialize(directory.fullPath + "/" + file, SCENES_EXTENSION);
+					ImGui::CloseCurrentPopup(); 
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("CANCEL", ImVec2(120, 40))) { ImGui::CloseCurrentPopup(); }
+				ImGui::EndPopup();
+			}
+			if(clicked)
 				ImGui::TreePop();
 
 		}

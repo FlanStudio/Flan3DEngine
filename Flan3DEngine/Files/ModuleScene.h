@@ -30,6 +30,7 @@ private:
 	EulerAxis euler;
 	GridPrim grid;
 
+	std::string currentSceneName = "defaultScene";
 	std::vector<GameObject*> gameObjects;
 public:
 	GameObject* CreateGameObject(GameObject* parent);
@@ -39,7 +40,7 @@ public:
 	void selectGO(GameObject* toSelect);
 	void debugDraw()const;
 
-	void Serialize(std::string path, std::string extension);
+	void Serialize();
 	void DeSerialize(std::string path, std::string extension);
 
 private:
@@ -47,6 +48,7 @@ private:
 	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
 	void decomposeScene(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);

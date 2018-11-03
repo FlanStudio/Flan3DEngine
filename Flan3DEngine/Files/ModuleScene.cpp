@@ -72,15 +72,6 @@ update_status ModuleScene::PreUpdate(float dt)
 		gameObjects[0]->deleteSelected();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		Serialize("Assets/Scenes/exampleScene", ".flanScene");
-	}
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		DeSerialize("Assets/Scenes/exampleScene", ".flanScene");
-	}
-
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -287,7 +278,7 @@ void ModuleScene::debugDraw() const
 	}
 }
 
-void ModuleScene::Serialize(std::string path, std::string extension)
+void ModuleScene::Serialize()
 {
 	std::vector<GameObject*> gameObject_s;
 	std::vector<ComponentTransform*> transforms;
@@ -366,7 +357,7 @@ void ModuleScene::Serialize(std::string path, std::string extension)
 		cameras[i]->Serialize(cursor);
 	}
 
-	App->fs->OpenWriteBuffer(path + extension, buffer, size);
+	App->fs->OpenWriteBuffer(SCENES_ASSETS_FOLDER + currentSceneName + SCENES_EXTENSION, buffer, size);
 
 	delete buffer;
 }
@@ -377,6 +368,9 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	int size = 0u;
 	if (!App->fs->OpenRead(path + extension, &buffer, size))
 		return;
+
+	int pos = path.find_last_of("/") != std::string::npos ? path.find_last_of("/") : path.find_last_of("\\");
+	currentSceneName = path.substr(pos + 1);
 
 	char* cursor = buffer;
 
@@ -519,6 +513,8 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	gameObjects.push_back(root);
 
 	delete buffer;
+
+	
 }
 
 void ModuleScene::DragDrop(GameObject* go)

@@ -386,8 +386,11 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (ImGui::BeginMainMenuBar())
 	{
-		if (ImGui::BeginMenu("Application"))
+		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Save Scene", "Ctrl + S"))
+				App->scene->Serialize();
+
 			if (ImGui::MenuItem("Quit"))
 				return update_status::UPDATE_STOP;
 
@@ -423,6 +426,15 @@ update_status ModuleEditor::PreUpdate(float dt)
 		
 		ImGui::EndMainMenuBar();
 	}
+
+	//Menu ShortCuts:
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
+	{
+		App->scene->Serialize();
+	}
+		
+
+
 
 	return UPDATE_CONTINUE;
 }
