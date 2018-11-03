@@ -173,7 +173,6 @@ void ComponentMesh::drawNormals()
 void ComponentMesh::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2f,.2f,.9f,.5f });
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
 
 	ImGuiDragDropFlags flags = 0;
@@ -188,9 +187,8 @@ void ComponentMesh::OnInspector()
 		ImGui::EndDragDropSource();
 	}
 
-	ImGui::PopStyleColor();
 	ImGui::SetCursorPosX(PosX + 20);
-	ImGui::TextColored({ 1,1,0,1 }, "Mesh:");
+	ImGui::Text("Mesh:");
 	if (opened)
 	{
 		ImGui::Text("Mesh: %s", gameObject->name.data()); //TODO: SAVE THE REAL MESH NAME

@@ -62,7 +62,6 @@ void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGloba
 void ComponentTransform::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2f,.2f,.9f,.5f});
 	bool opened = ImGui::CollapsingHeader("##Transform"); ImGui::SameLine();
 
 	ImGuiDragDropFlags flags = 0;
@@ -77,9 +76,8 @@ void ComponentTransform::OnInspector()
 		ImGui::EndDragDropSource();
 	}
 
-	ImGui::PopStyleColor();
 	ImGui::SetCursorPosX(PosX + 20);
-	ImGui::TextColored({ 1,1,0,1 }, "Transform:");	
+	ImGui::Text("Transform:");	
 	if(opened)
 	{
 		ImGui::NewLine();

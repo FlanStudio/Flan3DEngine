@@ -218,7 +218,6 @@ void ComponentCamera::debugDraw()
 void ComponentCamera::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Header, { .2f,.2f,.9f,.5f });
 	bool opened = ImGui::CollapsingHeader("##Camera"); ImGui::SameLine();
 
 	ImGuiDragDropFlags flags = 0;
@@ -233,9 +232,8 @@ void ComponentCamera::OnInspector()
 		ImGui::EndDragDropSource();
 	}
 
-	ImGui::PopStyleColor();
 	ImGui::SetCursorPosX(PosX + 20);
-	ImGui::TextColored({ 1,1,0,1 }, "Camera:");
+	ImGui::Text("Camera:");
 
 	if (opened)
 	{
