@@ -351,42 +351,40 @@ void GameObject::OnInspector()
 			ImGui::MenuItem(names[i], "", &toggles[i]);
 		}
 
+		if (toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) == nullptr)
+		{
+			ComponentMesh* Mesh = new ComponentMesh(parent,true); //When we delete this?
+			AddComponent(Mesh);
+		}
+		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
+		{
+			ClearComponent(getComponentByType(ComponentType::MESH));
+		}
+
+		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
+		{
+			ComponentCamera* Camera = new ComponentCamera(parent, true); //When we delete this?
+			AddComponent(Camera);
+		}
+		else if (!toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) != nullptr)
+		{
+			ClearComponent(getComponentByType(ComponentType::CAMERA));
+		}
+
+		if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
+		{
+			ComponentMesh* Transform = new ComponentMesh(parent, true); //When we delete this?
+			AddComponent(Transform);
+		}
+
+		//Put when we have materials
+		//if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
+		//{
+		//	ComponentCamera* Material = new Componentmaterial(parent, true); //When we delete this?
+		//	AddComponent(Material);
+		//}
 		ImGui::EndPopup();
 	}
-
-	if (toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) == nullptr)
-	{
-		ComponentMesh* Mesh = new ComponentMesh(parent,true); //When we delete this?
-		AddComponent(Mesh);
-	}
-	else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
-	{
-		ClearComponent(getComponentByType(ComponentType::MESH));
-	}
-
-	if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
-	{
-		ComponentCamera* Camera = new ComponentCamera(parent, true); //When we delete this?
-		AddComponent(Camera);
-	}
-	else if (!toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) != nullptr)
-	{
-		ClearComponent(getComponentByType(ComponentType::CAMERA));
-	}
-
-	if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
-	{
-		ComponentMesh* Transform = new ComponentMesh(parent, true); //When we delete this?
-		AddComponent(Transform);
-	}
-
-	//Put when we have materials
-	//if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
-	//{
-	//	ComponentCamera* Material = new Componentmaterial(parent, true); //When we delete this?
-	//	AddComponent(Material);
-	//}
-
 }
 
 void GameObject::InsertChild(GameObject* child, int pos)
