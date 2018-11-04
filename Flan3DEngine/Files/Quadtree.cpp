@@ -70,14 +70,13 @@ bool Quadtree::Intersect(std::vector<GameObject*>& result, const Frustum& frustu
 	planes.resize(6);
 	frustum.GetPlanes(planes.data());
 
-
-
-	if ()
-		return false;
-	else
-	{
-		//CALL CHILDS ETC
-	}
+	//if (1)
+	//	return false;
+	//else
+	//{
+	//	//CALL CHILDS ETC
+	//}
+	return true;
 }
 
 bool Quadtree::isWithinLimits(const GameObject* go) const
