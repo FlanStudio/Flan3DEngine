@@ -64,6 +64,22 @@ void Quadtree::Remove(const GameObject* go)
 	}
 }
 
+bool Quadtree::Intersect(std::vector<GameObject*>& result, const Frustum& frustum) const
+{
+	std::vector<Plane> planes;
+	planes.resize(6);
+	frustum.GetPlanes(planes.data());
+
+
+
+	if ()
+		return false;
+	else
+	{
+		//CALL CHILDS ETC
+	}
+}
+
 bool Quadtree::isWithinLimits(const GameObject* go) const
 {
 	return root.quad.Contains(go->boundingBox);
@@ -116,23 +132,23 @@ void QuadtreeNode::CreateChilds()
 		AABB newAABB;
 		
 		//NORTH WEST
-		newAABB.minPoint = {center + float3(-halfSize, 0, 0)};
-		newAABB.maxPoint = { center + float3(0, 0, halfSize) };
+		newAABB.minPoint = center + float3(-halfSize, -halfSize, 0);
+		newAABB.maxPoint = center + float3(0, halfSize, halfSize);
 		childs[NW].quad = newAABB;
 
 		//NORTH EAST
-		newAABB.minPoint = center;
-		newAABB.maxPoint = { center + float3(halfSize, 0, halfSize) };
+		newAABB.minPoint = center + float3(0, -halfSize, 0);
+		newAABB.maxPoint = center + float3(halfSize, halfSize, halfSize);
 		childs[NE].quad = newAABB;
 
 		//SOUTH WEST
-		newAABB.minPoint = { center + float3(-halfSize, 0, -halfSize) };
-		newAABB.maxPoint = center;
+		newAABB.minPoint = center + float3(-halfSize, -halfSize, -halfSize);
+		newAABB.maxPoint = center + float3(0, halfSize, 0);
 		childs[SW].quad = newAABB;
 
 		//SOURHT EAST
-		newAABB.minPoint = { center + float3(0, 0, -halfSize) };
-		newAABB.maxPoint = { center + float3(halfSize, 0, 0) };
+		newAABB.minPoint = center + float3(0, -halfSize, -halfSize);
+		newAABB.maxPoint = center + float3(halfSize, halfSize, 0);
 		childs[SE].quad = newAABB;
 	}
 }
