@@ -9,10 +9,10 @@ class GameObject;
 class QuadtreeNode
 {
 	friend class Quadtree;
-
 public:
 	QuadtreeNode() { quad.SetNegativeInfinity();}
 	QuadtreeNode(AABB quad) : quad(quad) {}
+	~QuadtreeNode();
 
 	void Initialize(AABB quad);
 	inline bool isInitialized() const { return quad.IsFinite(); }	
@@ -26,12 +26,15 @@ private:
 	void getGameObjects(std::vector<GameObject*>& gameObjects) const;
 	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
 	bool AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const;
+	void Draw();
 
-
-public:
+private:
 	AABB quad;
 	std::vector<QuadtreeNode> childs;
 	std::vector<GameObject*> gameObjects;
+
+	float* vertex = nullptr;
+	uint quadBufferIndex = 0u;
 };
 
 class Quadtree
@@ -48,7 +51,7 @@ public:
 	bool Intersect(std::vector<GameObject*>& result, const Ray& ray)const;
 	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
 	bool isWithinLimits(const GameObject* go) const;
-
+	void Draw();
 };
 
 #endif

@@ -74,6 +74,11 @@ bool Quadtree::isWithinLimits(const GameObject* go) const
 	return root.quad.Contains(go->boundingBox);
 }
 
+void Quadtree::Draw()
+{	
+	root.Draw();
+}
+
 bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const
 {
 	std::vector<Plane> planes;
@@ -103,6 +108,45 @@ bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum)
 		return false;
 	else
 		return true;
+}
+
+void QuadtreeNode::Draw()
+{
+	if (!vertex || quadBufferIndex == 0)
+	{
+		vertex = new float[36 * 3];
+
+		quad.Triangulate(1, 1, 1, (float3*)vertex, nullptr, nullptr, true);
+
+		glGenBuffers(1, &quadBufferIndex);
+		glBindBuffer(GL_ARRAY_BUFFER, quadBufferIndex);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, vertex, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, quadBufferIndex);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawArrays(GL_LINES, 0, quadBufferIndex);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i].Draw();
+	}
+}
+
+QuadtreeNode::~QuadtreeNode()
+{
+	if (vertex || quadBufferIndex == 0)
+	{
+		delete vertex;
+		vertex = nullptr;
+		glDeleteBuffers(1, &quadBufferIndex);
+	}	
 }
 
 void QuadtreeNode::Initialize(AABB quad)
