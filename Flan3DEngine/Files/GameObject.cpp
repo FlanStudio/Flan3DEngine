@@ -328,6 +328,61 @@ void GameObject::OnInspector()
 		ClearComponent(compToReorder);
 		InsertComponent(compToReorder, postoreorder);
 	}
+
+	//-----------------------------Components----------------------------
+
+	//for (int i = 0; i < components.size(); i++)
+	//{
+	//	names[i] = (char*)components[i]->type;
+	//	toggles[i] = false;
+	//}
+
+	// Showing a menu with toggles
+	if (ImGui::Button("Add/Clear Component:"))
+		ImGui::OpenPopup("toggle");
+	if (ImGui::BeginPopup("toggle"))
+	{
+		for (int i = 0; i < IM_ARRAYSIZE(names); i++)
+		{
+			if (getComponentByType((ComponentType)i) != nullptr)
+			{
+				toggles[i] = true;
+			}
+			ImGui::MenuItem(names[i], "", &toggles[i]);
+		}
+
+		if (toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) == nullptr)
+		{
+			CreateComponent(ComponentType::MESH);
+		}
+		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
+		{
+			deleteComponent(getComponentByType(ComponentType::MESH));
+		}
+
+		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
+		{
+			CreateComponent(ComponentType::CAMERA);
+		}
+		else if (!toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) != nullptr)
+		{
+			deleteComponent(getComponentByType(ComponentType::CAMERA));
+		}
+
+		if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
+		{
+			ComponentMesh* Transform = new ComponentMesh(parent, true); //When we delete this?
+			AddComponent(Transform);
+		}
+
+		//Put when we have materials
+		//if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
+		//{
+		//	ComponentCamera* Material = new Componentmaterial(parent, true); //When we delete this?
+		//	AddComponent(Material);
+		//}
+		ImGui::EndPopup();
+	}
 }
 
 void GameObject::InsertChild(GameObject* child, int pos)
@@ -438,6 +493,28 @@ Component* GameObject::getComponentByType(ComponentType type) const
 		}
 	}
 	return nullptr;
+}
+
+void GameObject::deleteComponent(Component * component)
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+		{
+			switch (component->type)
+			{
+			case ComponentType::MESH:
+				App->renderer3D->ClearMesh((ComponentMesh*)component);
+				components.erase(components.begin() + i);
+				break;
+			default:
+				delete component;
+				components.erase(components.begin() + i);
+				break;
+			}
+			break;
+		}
+	}
 }
 
 int OnInputCallback(ImGuiInputTextCallbackData* callback)

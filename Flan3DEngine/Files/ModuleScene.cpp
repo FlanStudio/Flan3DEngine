@@ -171,6 +171,32 @@ void ModuleScene::guiHierarchy()
 		}
 		ImGui::EndDragDropTarget();
 	}
+
+	//Herarchy menu
+
+	if (ImGui::IsItemClicked(1))
+	{
+		ImGui::OpenPopup("Hierarchy menu");
+	}
+	if (ImGui::BeginPopup("Hierarchy menu"))
+	{
+		if (ImGui::BeginMenu("Create"))
+		{
+			if (ImGui::MenuItem("GameObject"))
+			{
+				GameObject* gameObject = CreateGameObject(gameObjects[0]);
+				gameObject->name = "GameObject";
+			}
+			if (ImGui::MenuItem("Camera"))
+			{
+				GameObject* gameObject = CreateGameObject(gameObjects[0]);
+				gameObject->name = "MainCamera";
+				gameObject->CreateComponent(ComponentType::CAMERA);
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 void ModuleScene::PrintHierarchy(GameObject* go)
