@@ -79,10 +79,6 @@ private:
 			UUID = FLAN::randomUINT32_Range();
 	}
 
-	//Components
-	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
-	bool toggles[4] = { true,false,false,false };		//Grow when we have more components
-
 public:
 	//Hierarchy's tree utilities
 	bool selected = false;
