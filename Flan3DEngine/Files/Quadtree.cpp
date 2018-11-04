@@ -32,7 +32,7 @@ void Quadtree::Resize(AABB limits)
 	}
 }
 
-void Quadtree::Insert(GameObject * go)
+void Quadtree::Insert(GameObject* go)
 {
 	if (isWithinLimits(go))
 	{
@@ -40,7 +40,31 @@ void Quadtree::Insert(GameObject * go)
 	}
 }
 
-bool Quadtree::isWithinLimits(GameObject * go) const
+void Quadtree::Remove(GameObject* go)
+{
+	std::vector<GameObject*> gameObjects;
+	root.getGameObjects(gameObjects);
+
+	for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		if (gameObjects[i] == go)
+		{
+			gameObjects.erase(gameObjects.begin() + i);
+			break; //The list doesn't have duplicates
+		}
+	}
+
+	AABB limits = this->root.quad;
+	Clear();
+	Create(limits);
+
+	for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		Insert(gameObjects[i]);
+	}
+}
+
+bool Quadtree::isWithinLimits(GameObject* go) const
 {
 	return root.quad.Contains(go->boundingBox);
 }
