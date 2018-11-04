@@ -12,7 +12,7 @@ void Quadtree::Create(AABB limits)
 {
 	if(!root.isInitialized())
 		root.Initialize(limits);
-}
+}	
 
 void Quadtree::Clear()
 {
@@ -151,8 +151,8 @@ QuadtreeNode::~QuadtreeNode()
 
 void QuadtreeNode::Initialize(AABB quad)
 {
-	if(!isInitialized())
-		this->quad.Enclose(quad);
+	if (!isInitialized())
+		this->quad.Enclose(quad);			
 }
 
 void QuadtreeNode::Clear()
@@ -179,7 +179,7 @@ void QuadtreeNode::Insert(const GameObject* go)
 
 	if (isLeaf()) //No subdivisions yet
 	{
-		if (gameObjects.size() > LIMIT_GAMEOBJECTS)
+		if (gameObjects.size() >= LIMIT_GAMEOBJECTS)
 		{
 			CreateChilds();
 			RedistributeGameObjects();
@@ -198,29 +198,30 @@ void QuadtreeNode::CreateChilds()
 		childs.resize(4);
 		
 		float3 center = quad.CenterPoint();
-		float halfSize = quad.HalfSize().Length();	
+		float3 size = quad.Size();
+		float3 newSize = { size.x*0.5f, size.y, size.z*0.5f };
 
-		AABB newAABB;
+		float3 newCenter = center;
 		
 		//NORTH WEST
-		newAABB.minPoint = center + float3(-halfSize, -halfSize, 0);
-		newAABB.maxPoint = center + float3(0, halfSize, halfSize);
-		childs[NW].quad = newAABB;
+		newCenter.x = center.x - size.x * 0.25;
+		newCenter.z = center.z + size.z * 0.25f;
+		childs[NW].quad.SetFromCenterAndSize(newCenter, newSize);
 
 		//NORTH EAST
-		newAABB.minPoint = center + float3(0, -halfSize, 0);
-		newAABB.maxPoint = center + float3(halfSize, halfSize, halfSize);
-		childs[NE].quad = newAABB;
+		newCenter.x = center.x + size.x * 0.25;
+		newCenter.z = center.z + size.z * 0.25f;
+		childs[NE].quad.SetFromCenterAndSize(newCenter, newSize);
 
 		//SOUTH WEST
-		newAABB.minPoint = center + float3(-halfSize, -halfSize, -halfSize);
-		newAABB.maxPoint = center + float3(0, halfSize, 0);
-		childs[SW].quad = newAABB;
+		newCenter.x = center.x - size.x * 0.25;
+		newCenter.z = center.z - size.z * 0.25f;
+		childs[SW].quad.SetFromCenterAndSize(newCenter, newSize);
 
 		//SOURHT EAST
-		newAABB.minPoint = center + float3(0, -halfSize, -halfSize);
-		newAABB.maxPoint = center + float3(halfSize, halfSize, 0);
-		childs[SE].quad = newAABB;
+		newCenter.x = center.x + size.x * 0.25;
+		newCenter.z = center.z - size.z * 0.25f;
+		childs[SE].quad.SetFromCenterAndSize(newCenter, newSize);
 	}
 }
 
@@ -232,8 +233,11 @@ void QuadtreeNode::RedistributeGameObjects()
 		bool colWith[4] = { false, false, false, false };
 
 		for (int i = 0; i < 4; ++i)
-			if (childs[i].quad.Contains(gameObject->boundingBox))
+		{
+			if (childs[i].quad.Contains(gameObject->boundingBox) || childs[i].quad.Intersects(gameObject->boundingBox))
 				colWith[i] = true;
+		}
+			
 
 		if(colWith[0] && colWith[1] && colWith[2] && colWith[3])
 		{

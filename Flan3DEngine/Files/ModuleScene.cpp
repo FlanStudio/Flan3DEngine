@@ -124,7 +124,16 @@ void ModuleScene::InitQuadtree()
 
 void ModuleScene::UpdateQuadtree()
 {
+	quadtree.Clear();
 	quadtree.Resize(gameObjects[0]->boundingBox);
+
+	std::vector<GameObject*> gameObjects_s;
+	decomposeScene(gameObjects_s);
+
+	for (int i = 0; i < gameObjects_s.size(); ++i)
+	{
+		quadtree.Insert(gameObjects_s[i]);
+	}
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -137,8 +146,6 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 		gameObjects.push_back(ret);
 
 	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
-
-	quadtree.Insert(ret);
 
 	return ret;
 }

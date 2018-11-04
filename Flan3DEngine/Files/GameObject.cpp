@@ -651,7 +651,7 @@ void GameObject::transformAABB()
 
 			OBB obb(boundingBox);
 			ComponentTransform global = transform->getGlobal();
-			obb.Transform(ComponentTransform::composeMatrix(global.position, Quat(0,0,0,1), float3(1,1,1)).Transposed());
+			obb.Transform(ComponentTransform::composeMatrix(global.position, Quat(0, 0, 0, 1), float3(1, 1, 1)).Transposed());
 			boundingBox = obb.MinimalEnclosingAABB();
 			updateAABBbuffers();
 		}		
