@@ -138,6 +138,8 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 
 	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
 
+	quadtree.Insert(ret);
+
 	return ret;
 }
 
@@ -172,7 +174,7 @@ void ModuleScene::guiHierarchy()
 		ImGui::EndDragDropTarget();
 	}
 
-	//Herarchy menu
+	//Hierarchy menu
 
 	if (ImGui::IsItemClicked(1))
 	{
@@ -253,7 +255,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
+			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->UUID)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
 				App->scene->selectGO(go);
