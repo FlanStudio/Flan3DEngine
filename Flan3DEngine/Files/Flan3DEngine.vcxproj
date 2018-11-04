@@ -261,6 +261,7 @@
     <ClInclude Include="Primitives\RayPrim.h" />
     <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="ModuleTextures.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
@@ -337,6 +338,7 @@
     <ClCompile Include="Primitives\RayPrim.cpp" />
     <ClCompile Include="Primitives\SpherePrim.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
