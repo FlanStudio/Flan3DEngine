@@ -66,22 +66,43 @@ void Quadtree::Remove(const GameObject* go)
 
 bool Quadtree::Intersect(std::vector<GameObject*>& result, const Frustum& frustum) const
 {
-	std::vector<Plane> planes;
-	planes.resize(6);
-	frustum.GetPlanes(planes.data());
-
-	//if (1)
-	//	return false;
-	//else
-	//{
-	//	//CALL CHILDS ETC
-	//}
-	return true;
+	return root.Intersect(result, frustum);
 }
 
 bool Quadtree::isWithinLimits(const GameObject* go) const
 {
 	return root.quad.Contains(go->boundingBox);
+}
+
+bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const
+{
+	std::vector<Plane> planes;
+	planes.resize(6);
+	frustum.GetPlanes(planes.data());
+
+	int numPlanesOutSideAABB = 0;
+
+	for (int i = 0; i < 6; ++i) //For each plane
+	{
+		std::vector<float3> points;
+		points.resize(8);
+		aabb.GetCornerPoints(points.data());
+
+		int numPointsOverPlane = 0;
+		for (int j = 0; j < 8; ++j) //Check each aabb vertex
+		{
+			if (planes[i].IsOnPositiveSide(points[j]))
+				numPointsOverPlane++;
+		}
+
+		if (numPointsOverPlane == 8) //All the points are over the plane
+			numPlanesOutSideAABB++;
+	}
+
+	if (numPlanesOutSideAABB == 6) //All the planes are outside the AABB
+		return false;
+	else
+		return true;
 }
 
 void QuadtreeNode::Initialize(AABB quad)
@@ -203,4 +224,41 @@ void QuadtreeNode::getGameObjects(std::vector<GameObject*>& gameObjects) const
 	{
 		childs[i].getGameObjects(gameObjects);
 	}
+}
+
+bool QuadtreeNode::Intersect(std::vector<GameObject*>& result, const Frustum& frustum) const
+{
+	bool ret = false;
+	if (AABBContainsFrustum(quad, frustum))									//If the quad contains the frustum maybe our gameobjects also do that
+	{
+		for (int i = 0; i < gameObjects.size(); ++i)
+		{
+			if (AABBContainsFrustum(gameObjects[i]->boundingBox, frustum))	//If this gameobject's aabb contains the frustum
+			{
+				ret = true;
+				
+				bool alreadyInserted = false;
+
+				for (int j = 0; j < result.size(); ++j)						//Check if we already have added this gameobject to the vector
+				{
+					if (gameObjects[i] == result[j])
+						alreadyInserted = true;
+				}
+
+				if (!alreadyInserted)
+					result.push_back(this->gameObjects[i]);					//Add the gameobject to the result vector
+		
+			}
+		}
+
+		for (int i = 0; i < childs.size(); ++i)
+		{
+			bool childs_ret = childs[i].Intersect(result, frustum);			//Say my childs that maybe they collide with the frustum too
+			
+			if (ret == false)
+				ret = childs_ret;
+		}
+	}
+
+	return ret;
 }

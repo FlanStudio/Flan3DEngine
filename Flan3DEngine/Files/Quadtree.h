@@ -24,6 +24,9 @@ private:
 	void CreateChilds();
 	void RedistributeGameObjects();
 	void getGameObjects(std::vector<GameObject*>& gameObjects) const;
+	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
+	bool AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const;
+
 
 public:
 	AABB quad;
