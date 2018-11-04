@@ -17,7 +17,7 @@ public:
 	void Initialize(AABB quad);
 	inline bool isInitialized() const { return quad.IsFinite(); }	
 	void Clear();
-	void Insert(GameObject* go);
+	void Insert(const GameObject* go);
 
 private:
 	inline bool isLeaf() const { return childs.size() == 0; }
@@ -40,10 +40,11 @@ public:
 	void Create(AABB limits);
 	void Clear();
 	void Resize(AABB limits);
-	void Insert(GameObject* go);
-	void Remove(GameObject* go);
-	bool Intersect(std::vector<GameObject*>& result, Ray ray);
-	bool isWithinLimits(GameObject* go) const;
+	void Insert(const GameObject* go);
+	void Remove(const GameObject* go);
+	bool Intersect(std::vector<GameObject*>& result, const Ray& ray)const;
+	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
+	bool isWithinLimits(const GameObject* go) const;
 
 };
 

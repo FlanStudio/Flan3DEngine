@@ -32,7 +32,7 @@ void Quadtree::Resize(AABB limits)
 	}
 }
 
-void Quadtree::Insert(GameObject* go)
+void Quadtree::Insert(const GameObject* go)
 {
 	if (isWithinLimits(go))
 	{
@@ -40,7 +40,7 @@ void Quadtree::Insert(GameObject* go)
 	}
 }
 
-void Quadtree::Remove(GameObject* go)
+void Quadtree::Remove(const GameObject* go)
 {
 	std::vector<GameObject*> gameObjects;
 	root.getGameObjects(gameObjects);
@@ -64,7 +64,7 @@ void Quadtree::Remove(GameObject* go)
 	}
 }
 
-bool Quadtree::isWithinLimits(GameObject* go) const
+bool Quadtree::isWithinLimits(const GameObject* go) const
 {
 	return root.quad.Contains(go->boundingBox);
 }
@@ -86,9 +86,9 @@ void QuadtreeNode::Clear()
 	gameObjects.clear();
 }
 
-void QuadtreeNode::Insert(GameObject* go)
+void QuadtreeNode::Insert(const GameObject* go)
 {
-	gameObjects.push_back(go);
+	gameObjects.push_back((GameObject*)go);
 
 	if (isLeaf()) //No subdivisions yet
 	{
