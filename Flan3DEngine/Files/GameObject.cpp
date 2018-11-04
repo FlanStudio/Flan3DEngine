@@ -353,22 +353,20 @@ void GameObject::OnInspector()
 
 		if (toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) == nullptr)
 		{
-			ComponentMesh* Mesh = new ComponentMesh(parent,true); //When we delete this?
-			AddComponent(Mesh);
+			CreateComponent(ComponentType::MESH);
 		}
 		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
 		{
-			ClearComponent(getComponentByType(ComponentType::MESH));
+			deleteComponent(getComponentByType(ComponentType::MESH));
 		}
 
 		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
 		{
-			ComponentCamera* Camera = new ComponentCamera(parent, true); //When we delete this?
-			AddComponent(Camera);
+			CreateComponent(ComponentType::CAMERA);
 		}
 		else if (!toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) != nullptr)
 		{
-			ClearComponent(getComponentByType(ComponentType::CAMERA));
+			deleteComponent(getComponentByType(ComponentType::CAMERA));
 		}
 
 		if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
@@ -495,6 +493,28 @@ Component* GameObject::getComponentByType(ComponentType type) const
 		}
 	}
 	return nullptr;
+}
+
+void GameObject::deleteComponent(Component * component)
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+		{
+			switch (component->type)
+			{
+			case ComponentType::MESH:
+				App->renderer3D->ClearMesh((ComponentMesh*)component);
+				components.erase(components.begin() + i);
+				break;
+			default:
+				delete component;
+				components.erase(components.begin() + i);
+				break;
+			}
+			break;
+		}
+	}
 }
 
 int OnInputCallback(ImGuiInputTextCallbackData* callback)

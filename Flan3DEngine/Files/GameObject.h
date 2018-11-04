@@ -43,6 +43,7 @@ public:
 	void AddComponent(Component* component);	
 	void InsertComponent(Component* component, int pos);
 	Component* getComponentByType(ComponentType type) const;	
+	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
 	void ClearComponents();
 
@@ -81,7 +82,7 @@ private:
 
 	//Components
 	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
-	bool toggles[4] = { true,false,false,false };		//Grow when we have more components
+	bool toggles[4] = { true,false,false,false };					//Grow when we have more components
 
 public:
 	//Hierarchy's tree utilities
