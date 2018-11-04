@@ -71,6 +71,17 @@ update_status ModuleScene::PreUpdate(float dt)
 	{
 		gameObjects[0]->deleteSelected();
 	}
+	
+	if (!quadtree.root.isInitialized())
+		InitQuadtree();
+
+	static float timer = 1 / quadTreeUpdateRate;
+	if (timer <= 0)
+	{
+		UpdateQuadtree();
+		timer = 1 / quadTreeUpdateRate;
+	}
+	timer -= dt;
 
 	return update_status::UPDATE_CONTINUE;
 }
@@ -83,6 +94,7 @@ update_status ModuleScene::Update(float dt)
 		gameObjects[i]->Update(dt);
 	}
 	parentAABBs();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -90,11 +102,29 @@ update_status ModuleScene::PostUpdate(float dt)
 {
 	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
 
+
+
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
 	grid.Render();
 
 	return update_status::UPDATE_CONTINUE;
+}
+
+void ModuleScene::InitQuadtree()
+{
+	quadtree.Create(gameObjects[0]->boundingBox);
+	std::vector<GameObject*> decomposedGameObjects;
+	decomposeScene(decomposedGameObjects);
+	for (int i = 0; i < decomposedGameObjects.size(); ++i)
+	{
+		quadtree.Insert(decomposedGameObjects[i]);
+	}
+}
+
+void ModuleScene::UpdateQuadtree()
+{
+	quadtree.Resize(gameObjects[0]->boundingBox);
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -267,12 +297,14 @@ void ModuleScene::selectGO(GameObject* toSelect)
 	toSelect->selected = true;
 }
 
-void ModuleScene::debugDraw() const
+void ModuleScene::debugDraw()
 {
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		gameObjects[i]->recursiveDebugDraw();
 	}
+
+	quadtree.Draw();
 }
 
 void ModuleScene::Serialize()

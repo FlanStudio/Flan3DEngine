@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "Quadtree.h"
+
 class GameObject;
 class ComponentTransform;
 class ComponentMesh;
@@ -32,13 +34,19 @@ private:
 
 	std::string currentSceneName = "defaultScene";
 	std::vector<GameObject*> gameObjects;
+
+	Quadtree quadtree;
+	void InitQuadtree();
+	void UpdateQuadtree();
+	float quadTreeUpdateRate = 2.0f;
+
 public:
 	GameObject* CreateGameObject(GameObject* parent);
 	void ClearGameObjects();
 	void guiHierarchy();
 	void guiInspector();
 	void selectGO(GameObject* toSelect);
-	void debugDraw()const;
+	void debugDraw();
 	GameObject* getRootNode()const { return gameObjects[0]; }
 
 	void Serialize();
@@ -48,9 +56,8 @@ private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
-	void decomposeScene(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+	void decomposeScene(std::vector<GameObject*>& gameObject_s = std::vector<GameObject*>(), std::vector<ComponentTransform*>&transforms = std::vector<ComponentTransform*>(), std::vector<ComponentMesh*>&meshes = std::vector<ComponentMesh*>(), std::vector<ComponentCamera*>&cameras = std::vector<ComponentCamera*>());
 	void parentAABBs();
-
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);

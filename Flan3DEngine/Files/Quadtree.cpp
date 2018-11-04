@@ -128,7 +128,7 @@ void QuadtreeNode::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, quadBufferIndex);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, quadBufferIndex);
+	glDrawArrays(GL_LINES, 0, 36);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -164,6 +164,13 @@ void QuadtreeNode::Clear()
 	}
 	childs.clear();
 	gameObjects.clear();
+
+	if (vertex || quadBufferIndex == 0)
+	{
+		delete vertex;
+		vertex = nullptr;
+		glDeleteBuffers(1, &quadBufferIndex);
+	}
 }
 
 void QuadtreeNode::Insert(const GameObject* go)

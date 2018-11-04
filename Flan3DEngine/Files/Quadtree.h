@@ -3,6 +3,7 @@
 
 #include "MathGeoLib_1.5/MathGeoLib.h"
 #include <vector>
+#include "Globals.h"
 
 class GameObject;
 
