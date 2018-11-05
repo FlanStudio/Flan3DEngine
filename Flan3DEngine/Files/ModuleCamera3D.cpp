@@ -57,7 +57,7 @@ update_status ModuleCamera3D::PreUpdate(float dt)
 	if(activeCamComponent == editorCamComponent)
 		if (!App->editor->isSomeGUIHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		{
-			float2 mousePos = { App->input->GetMouseX(), App->input->GetMouseY() };
+			float2 mousePos = { (float)App->input->GetMouseX(), (float)App->input->GetMouseY() };
 
 			const Frustum frustum = editorCamComponent->getFrustum();
 			frustum.ScreenToViewportSpace(mousePos, SCREEN_WIDTH, SCREEN_HEIGHT);	//Normalize mouse position into viewport coordinates
@@ -107,6 +107,7 @@ update_status ModuleCamera3D::PreUpdate(float dt)
 				}
 			}
 		}
+	return update_status::UPDATE_CONTINUE;
 }
 
 // -----------------------------------------------------------------
