@@ -64,6 +64,11 @@ void Quadtree::Remove(const GameObject* go)
 	}
 }
 
+bool Quadtree::Intersect(std::vector<GameObject*>& result, const LineSegment& segment) const
+{
+	return root.Intersect(result, segment);
+}
+
 bool Quadtree::Intersect(std::vector<GameObject*>& result, const Frustum& frustum) const
 {
 	return root.Intersect(result, frustum);
@@ -275,6 +280,41 @@ void QuadtreeNode::getGameObjects(std::vector<GameObject*>& gameObjects) const
 	{
 		childs[i].getGameObjects(gameObjects);
 	}
+}
+
+bool QuadtreeNode::Intersect(std::vector<GameObject*>& result, const LineSegment& segment) const
+{
+	bool ret = false;
+	if (quad.Intersects(segment))
+	{
+		for (int i = 0; i < gameObjects.size(); ++i)
+		{
+			if (gameObjects[i]->boundingBox.Intersects(segment))
+			{
+				ret = true;
+
+				bool alreadyInserted = false;
+
+				for (int j = 0; j < result.size(); ++j)						
+				{
+					if (gameObjects[i] == result[j])
+						alreadyInserted = true;
+				}
+
+				if (!alreadyInserted)
+					result.push_back(this->gameObjects[i]);
+			}
+		}
+
+		for (int i = 0; i < childs.size(); ++i)
+		{
+			bool childs_ret = childs[i].Intersect(result, segment);			
+
+			if (ret == false)
+				ret = childs_ret;
+		}
+	}
+	return ret;
 }
 
 bool QuadtreeNode::Intersect(std::vector<GameObject*>& result, const Frustum& frustum) const

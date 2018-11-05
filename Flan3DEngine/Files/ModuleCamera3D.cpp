@@ -7,6 +7,7 @@
 
 #include "ComponentCamera.h"
 #include "GameObject.h"
+#include "ComponentMesh.h"
 
 #define SPEED 100.0f
 
@@ -50,6 +51,64 @@ bool ModuleCamera3D::Start()
 	return ret;
 }
 
+update_status ModuleCamera3D::PreUpdate(float dt)
+{
+	//Mouse Picking
+	if(activeCamComponent == editorCamComponent)
+		if (!App->editor->isSomeGUIHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+		{
+			float2 mousePos = { App->input->GetMouseX(), App->input->GetMouseY() };
+
+			const Frustum frustum = editorCamComponent->getFrustum();
+			frustum.ScreenToViewportSpace(mousePos, SCREEN_WIDTH, SCREEN_HEIGHT);	//Normalize mouse position into viewport coordinates
+
+			LineSegment segment = frustum.UnProjectLineSegment(mousePos.x, mousePos.y); //Get the ray from the frustum
+
+			std::vector<GameObject*> intersected;
+			App->scene->quadtree.Intersect(intersected, segment); //Get all the gameobjects stored in the quadtree that collides with the ray
+
+			uint numIterations = 0;
+			do                                                    //Order the gameobjects by their aabb's distance (they are unique in the provided list)
+			{
+				numIterations = 0;
+				for (int i = 0; i < intersected.size(); ++i)
+				{
+					GameObject* nextGO = i + 1 < intersected.size() ? intersected[i + 1] : nullptr;
+					GameObject* currentGO = intersected[i];
+
+					if (nextGO && currentGO->boundingBox.Distance(segment.a) > nextGO->boundingBox.Distance(segment.a))
+					{
+						numIterations++;
+						intersected.erase(intersected.begin() + i);						
+						intersected.insert(intersected.begin() + i + 1, currentGO);
+					}
+				}
+
+			} while (numIterations > 0);
+
+			for (int i = 0; i < intersected.size(); ++i) //For each gameObject
+			{
+				ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
+				if (!mesh)
+					continue;
+
+				bool hit = false;
+				Triangle triHitted(float3::inf, float3::inf, float3::inf);
+
+				for (int tri = 0; tri < mesh->num_vertex/3; ++tri) //For each triangle in the mesh
+				{
+					
+				}
+
+				if (hit)
+				{
+					//Select the gameobject
+					break;
+				}
+			}
+		}
+}
+
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
@@ -63,10 +122,13 @@ update_status ModuleCamera3D::Update(float dt)
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
 
-	editorCamera->Update(dt);
+	if (activeCamera == editorCamera)
+	{
+		editorCamera->Update(dt);
 
-	if(!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
-		CameraInputs(dt);
+		if (!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
+			CameraInputs(dt);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -175,7 +237,7 @@ void ModuleCamera3D::Move(const float3 &movement)
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return editorCamComponent->getViewMatrix().ptr();
+	return activeCamComponent->getViewMatrix().ptr();
 }
 
 // -----------------------------------------------------------------

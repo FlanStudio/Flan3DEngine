@@ -486,7 +486,6 @@ void GameObject::ReorderComponents()
 		}
 	} while (numIterations > 0);
 
-	int a = 9;
 }
 
 Component* GameObject::getComponentByType(ComponentType type) const
