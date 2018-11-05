@@ -28,18 +28,6 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-private:
-	EulerAxis euler;
-	GridPrim grid;
-
-	std::string currentSceneName = "defaultScene";
-	std::vector<GameObject*> gameObjects;
-
-	Quadtree quadtree;
-	void InitQuadtree();
-	void UpdateQuadtree();
-	float quadTreeUpdateRate = 2.0f;
-
 public:
 	GameObject* CreateGameObject(GameObject* parent);
 	void ClearGameObjects();
@@ -52,6 +40,9 @@ public:
 	void Serialize();
 	void DeSerialize(std::string path, std::string extension);
 
+public:
+	Quadtree quadtree;
+
 private:
 	void PrintHierarchy(GameObject* go);
 	GameObject* getSelectedGO() const;
@@ -62,5 +53,18 @@ private:
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);
 	void _ReorderGameObject_Post(GameObject* go);
+
+	void InitQuadtree();
+	void UpdateQuadtree();
+
+private:
+
+	float quadTreeUpdateRate = 2.0f;
+
+	EulerAxis euler;
+	GridPrim grid;
+
+	std::string currentSceneName = "defaultScene";
+	std::vector<GameObject*> gameObjects;
 };
 #endif

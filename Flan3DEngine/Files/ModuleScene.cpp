@@ -45,7 +45,8 @@ bool ModuleScene::Start()
 	//Temp
 	GameObject* camera = new GameObject(gameObjects[0]);
 	camera->CreateComponent(ComponentType::TRANSFORM);
-	camera->CreateComponent(ComponentType::CAMERA);
+	ComponentCamera* camcomp = (ComponentCamera*)camera->CreateComponent(ComponentType::CAMERA);
+	camcomp->setMainCamera();
 	camera->name = "MainCamera";
 	gameObjects[0]->InsertChild(camera, 0);
 
@@ -132,6 +133,9 @@ void ModuleScene::UpdateQuadtree()
 
 	for (int i = 0; i < gameObjects_s.size(); ++i)
 	{
+		if (gameObjects_s[i] == App->camera->gameCamera)
+			continue;
+
 		quadtree.Insert(gameObjects_s[i]);
 	}
 }
@@ -199,7 +203,7 @@ void ModuleScene::guiHierarchy()
 			if (ImGui::MenuItem("Camera"))
 			{
 				GameObject* gameObject = CreateGameObject(gameObjects[0]);
-				gameObject->name = "MainCamera";
+				gameObject->name = "Camera";
 				gameObject->CreateComponent(ComponentType::CAMERA);
 			}
 			ImGui::EndMenu();

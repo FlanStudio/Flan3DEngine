@@ -384,12 +384,31 @@ void ModuleRenderer3D::CalculateSceneBoundingBox()
 
 void ModuleRenderer3D::DrawMeshes() const
 {
-	for (int i = 0; i < meshes.size(); ++i)
+	if (App->camera->gameCamComponent)
 	{
-		meshes[i]->Draw();
+		std::vector<GameObject*> intersected;
+		App->scene->quadtree.Intersect(intersected, App->camera->gameCamComponent->getFrustum());
+		for (int i = 0; i < intersected.size(); ++i)
+		{
+			ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
+			if (mesh)
+			{
+				mesh->Draw();
+				if (drawNormals)
+					mesh->drawNormals();
+			}
+		}
+	}
+	
+	else
+	{
+		for (int i = 0; i < meshes.size(); ++i)
+		{
+			meshes[i]->Draw();
 
-		if (drawNormals)
-			meshes[i]->drawNormals();
+			if (drawNormals)
+				meshes[i]->drawNormals();
+		}
 	}
 }
 

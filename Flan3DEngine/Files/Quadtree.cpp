@@ -85,29 +85,25 @@ bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum)
 	planes.resize(6);
 	frustum.GetPlanes(planes.data());
 
-	int numPlanesOutSideAABB = 0;
-
 	for (int i = 0; i < 6; ++i) //For each plane
 	{
 		std::vector<float3> points;
 		points.resize(8);
 		aabb.GetCornerPoints(points.data());
 
-		int numPointsOverPlane = 0;
+		int numPointsUnderPlane = 8;
 		for (int j = 0; j < 8; ++j) //Check each aabb vertex
 		{
 			if (planes[i].IsOnPositiveSide(points[j]))
-				numPointsOverPlane++;
+			{
+				numPointsUnderPlane--;
+			}
 		}
 
-		if (numPointsOverPlane == 8) //All the points are over the plane
-			numPlanesOutSideAABB++;
+		if (numPointsUnderPlane == 0) //All the points are over the plane
+			return false;
 	}
-
-	if (numPlanesOutSideAABB == 6) //All the planes are outside the AABB
-		return false;
-	else
-		return true;
+	return true;
 }
 
 void QuadtreeNode::Draw()

@@ -19,7 +19,8 @@ public:
 	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
 	void Serialize(char*& cursor) const;
 	void DeSerialize(char*& cursor, uint32_t& goUUID);
-
+	inline const Frustum& getFrustum() const { return frustum; }
+	void setMainCamera();
 private:
 	void debugDraw() override;
 
@@ -30,7 +31,7 @@ public:
 	float aspectRatio = 0.0f;			
 	float width = 0.0f, height = 0.0f;
 	float horizontalFOV = 0.0f;
-	bool isMainCamera = true;
+	bool isMainCamera = false;
 private:	 
 	float verticalFOV = 0.0f;
 	Frustum frustum;

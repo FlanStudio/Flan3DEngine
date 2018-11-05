@@ -26,13 +26,22 @@ public:
 	void rotateAroundCenter(float dt);
 	float* GetViewMatrix();
 	void OnResize(int w, int h);
+	void setGameCamera(ComponentCamera* component);
+
 private:
 	void CameraInputs(float dt);
 
 public:
-	ComponentCamera* editorCamComponent = nullptr;
-private:
+	GameObject* activeCamera = nullptr;
+	ComponentCamera* activeCamComponent = nullptr;
+
 	GameObject* editorCamera = nullptr;
+	ComponentCamera* editorCamComponent = nullptr;
+
+	GameObject* gameCamera = nullptr;
+	ComponentCamera* gameCamComponent = nullptr;
+	
+private:
 	
 
 	float orbitalRadius = 0.0f;

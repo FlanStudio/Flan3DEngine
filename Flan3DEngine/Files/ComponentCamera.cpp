@@ -199,6 +199,12 @@ void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
 	cursor += bytes;
 }
 
+void ComponentCamera::setMainCamera()
+{	
+	isMainCamera = true;
+	App->camera->setGameCamera(this);
+}
+
 void ComponentCamera::debugDraw()
 {
 	if (this == App->camera->editorCamComponent)
@@ -263,7 +269,14 @@ void ComponentCamera::OnInspector()
 
 		if (ImGui::Checkbox("Main Camera", &isMainCamera))
 		{
-			//TODO: Do some stuff in render to keep the game view with this camera
+			if (isMainCamera == true)
+			{
+				App->camera->setGameCamera(this);
+			}
+			else
+			{
+				App->camera->setGameCamera(nullptr);
+			}
 		}
 
 		if (ImGui::ColorEdit3("Background Color", &backgroundColor.x, 0))

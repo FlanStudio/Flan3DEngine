@@ -36,6 +36,10 @@ bool ModuleCamera3D::Init()
 
 
 	editorCamera->transform->position = { 0,2,0 };
+
+	activeCamera = editorCamera;
+	activeCamComponent = editorCamComponent;
+
 	return true;
 }
 
@@ -236,4 +240,18 @@ void ModuleCamera3D::rotateAroundCenter(float dt)
 void ModuleCamera3D::OnResize(int w, int h)
 {
 	editorCamComponent->RecalculateProjectionMatrix(w, h);
+}
+
+void ModuleCamera3D::setGameCamera(ComponentCamera* component)
+{
+	if (component)
+	{
+		gameCamera = component->gameObject;
+		gameCamComponent = component;
+	}
+	else
+	{
+		gameCamera = nullptr;
+		gameCamComponent = nullptr;
+	}
 }
