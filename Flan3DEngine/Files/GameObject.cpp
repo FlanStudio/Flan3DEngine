@@ -177,8 +177,7 @@ void GameObject::deleteSelected()
 				ComponentCamera* camcomp = (ComponentCamera*)childs[i]->getComponentByType(ComponentType::CAMERA);
 				if (camcomp && camcomp->isMainCamera)
 				{
-					App->camera->gameCamera = nullptr;
-					App->camera->gameCamComponent = nullptr;
+					App->camera->setGameCamera(nullptr);
 				}
 					
 				delete childs[i];
