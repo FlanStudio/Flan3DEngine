@@ -80,6 +80,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 			ImGui::InputText("\tEngine Name", &App->engineName, flags);
 			ImGui::InputText("\tOrganization", &App->organization, flags);	
 			ImGui::SliderInt("\tMax FPS", &App->maxFPS, 0, 125);
+			ImGui::SliderFloat("\tGame Scale Speed", &App->time->timeScale, 0.0f, 2.0f);
 
 			char FPSTitle[50];
 			sprintf(FPSTitle, "FPS %.1f", App->FPS[App->FPS_index]);

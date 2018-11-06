@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "Timer.h"
 #include "Module.h"
+#include "ModuleTime.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
@@ -90,6 +91,7 @@ extern LogWindow Debug;
 class Application
 {
 public:
+	ModuleTime* time;
 	ModuleWindow* window;
 	ModuleInput* input;
 	ModuleAudio* audio;

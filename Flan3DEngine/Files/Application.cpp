@@ -5,6 +5,7 @@ LogWindow Debug;
 
 Application::Application()
 {
+	time = new ModuleTime();
 	window = new ModuleWindow();
 	input = new ModuleInput();
 	audio = new ModuleAudio();
@@ -21,6 +22,7 @@ Application::Application()
 	// They will CleanUp() in reverse order
 
 	// Main Modules
+	AddModule(time);
 	AddModule(window);
 	AddModule(camera);
 	AddModule(input);
