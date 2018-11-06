@@ -276,9 +276,14 @@ void ModuleCamera3D::Move(const float3 &movement)
 }
 
 // -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix()
+float4x4 ModuleCamera3D::GetViewMatrix()
 {
-	return activeCamComponent->getViewMatrix().ptr();
+	return activeCamComponent->getViewMatrix();
+}
+
+float4x4 ModuleCamera3D::GetProjMatrix()
+{
+	return activeCamComponent->getProjMatrix();
 }
 
 // -----------------------------------------------------------------

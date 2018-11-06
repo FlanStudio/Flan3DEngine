@@ -18,6 +18,8 @@
 #include "assimp/include/version.h"
 #include "DevIL/include/il.h"
 
+#include "imgui/ImGuizmo/ImGuizmo.h"
+
 ModuleEditor::ModuleEditor(bool start_enabled) : Module("ModuleEditor", start_enabled) {}
 ModuleEditor::~ModuleEditor() {}
 
@@ -47,6 +49,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
+
 	ImGui::GetIO().DeltaTime = dt;
 	
 	//Editor setup down here

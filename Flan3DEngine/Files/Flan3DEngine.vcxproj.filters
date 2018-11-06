@@ -61,6 +61,9 @@
     <Filter Include="Sources\GameObjects">
       <UniqueIdentifier>{f18e7c92-7cf1-4ec7-b350-9ca82aa7d9a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\imgui\ImGuizmo">
+      <UniqueIdentifier>{a16479ed-2cd4-48c6-a970-09c27f04b5de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -630,6 +633,9 @@
     <ClInclude Include="Quadtree.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -853,6 +859,9 @@
     </ClCompile>
     <ClCompile Include="Quadtree.cpp">
       <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

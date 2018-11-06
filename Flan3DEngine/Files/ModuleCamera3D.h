@@ -25,7 +25,8 @@ public:
 	void Move(const float3& Movement);
 	void rotateCamera(float dt);
 	void rotateAroundCenter(float dt);
-	float* GetViewMatrix();
+	float4x4 GetViewMatrix();
+	float4x4 GetProjMatrix();
 	void OnResize(int w, int h);
 	void setGameCamera(ComponentCamera* component);
 
