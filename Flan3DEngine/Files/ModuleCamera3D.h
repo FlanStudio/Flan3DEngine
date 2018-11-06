@@ -31,6 +31,7 @@ public:
 
 private:
 	void CameraInputs(float dt);
+	void MousePicking() const;
 
 public:
 	GameObject* activeCamera = nullptr;

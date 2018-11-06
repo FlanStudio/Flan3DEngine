@@ -232,33 +232,35 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
 
 			if (go->treeOpened)
-				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen;
+				ImGui::SetNextTreeNodeOpen(true);
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
+			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->UUID)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
+
+			if (!opened)
+				go->treeOpened = false;
+			else
+				go->treeOpened = true;
 
 			DragDrop(go);
 
 			_ReorderGameObject_Post(go);
 
 			if(opened)
-			{			
-				go->treeOpened = true;
+			{							
 				for (int i = 0; i < go->childs.size(); ++i)
 				{
 					PrintHierarchy(go->childs[i]);					
 				}			
 				ImGui::TreePop();
 			}
-			else
-			{
-				go->treeOpened = false;
-			}
 			
+
+
 		}
 		else
 		{
@@ -613,8 +615,6 @@ void ModuleScene::DragDrop(GameObject* go)
 
 			if (other->parent == go)
 				abortDrop = true;
-
-			
 
 			if (!abortDrop)
 			{
