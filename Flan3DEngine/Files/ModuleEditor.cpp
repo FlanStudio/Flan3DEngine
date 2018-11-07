@@ -552,11 +552,4 @@ void ModuleEditor::customStyle()
 	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 	style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
-
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 12);
-	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 10);
-	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 14);
-	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 18);
 }
