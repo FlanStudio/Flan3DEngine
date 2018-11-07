@@ -84,7 +84,7 @@ update_status ModuleEditor::PreUpdate()
 			ImGui::InputText("\tEngine Name", &App->engineName, flags);
 			ImGui::InputText("\tOrganization", &App->organization, flags);	
 			ImGui::SliderInt("\tMax FPS", &App->maxFPS, 0, 125);
-			ImGui::SliderFloat("\tGame Scale Speed", &App->time->timeScale, 0.0f, 2.0f);
+			ImGui::SliderFloat("\tGame Scale Speed", &App->time->timeScale, 0.0f, 4.0f);
 
 			char FPSTitle[50];
 			sprintf(FPSTitle, "FPS %.1f", App->FPS[App->FPS_index]);
@@ -552,4 +552,11 @@ void ModuleEditor::customStyle()
 	style->Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 	style->Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 	style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 12);
+	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 10);
+	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 14);
+	//io.Fonts->AddFontFromFileTTF("Assets\fonts\Roboto-Bold.ttf", 18);
 }

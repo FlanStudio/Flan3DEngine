@@ -80,7 +80,6 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	time->dtTimer.Start();
 }
 
 // ---------------------------------------------

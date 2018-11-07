@@ -11,15 +11,14 @@ update_status ModuleTime::PreUpdate()
 {
 	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure)
 
-	////play Dt calculations---------------------(provisional)
-	//if (gameModeEnabled)
-	//{
-	//	playDt = dt * timeScale;
-	//	gameDtTimer.Start();
+	dtTimer.Start();
 
+	//play Dt calculations---------------------(provisional)
+	//if (play)
+	//{
 	//	gameTime += playDt;
 	//}
-	////-----------------PROVISIONAL--since we have gamemode
+	//-----------------PROVISIONAL--since we have gamemode
 
 	return UPDATE_CONTINUE;
 }
@@ -52,4 +51,8 @@ update_status ModuleTime::PostUpdate()
 bool ModuleTime::CleanUp()
 {
 	return true;
+}
+
+void ModuleTime::OnTimeGUI()
+{
 }

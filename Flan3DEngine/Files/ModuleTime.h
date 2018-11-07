@@ -8,7 +8,6 @@
 class ModuleTime : public Module
 {
 public:
-
 	ModuleTime(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
 	~ModuleTime() {}
 
@@ -16,6 +15,9 @@ public:
 	update_status PreUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
+
+private:
+	void OnTimeGUI();
 
 public:
 
