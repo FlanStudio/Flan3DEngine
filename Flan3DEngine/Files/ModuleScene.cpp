@@ -259,7 +259,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->UUID)).data(), flags);
+			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->uuid)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
@@ -291,7 +291,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->UUID)).data(), flags);
+			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->uuid)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
 				App->scene->selectGO(go);
@@ -492,7 +492,7 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
 		{
-			if (parentUUIDs[i] == gameObject_s[j]->UUID) //Look for a gameobject whose UUID is the same as your parent
+			if (parentUUIDs[i] == gameObject_s[j]->uuid) //Look for a gameobject whose UUID is the same as your parent
 			{
 				gameObject_s[i]->parent = gameObject_s[j]; //Create this parent-child relationship
 				gameObject_s[j]->AddChild(gameObject_s[i]);
@@ -520,7 +520,7 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
 		{
-			if (goUUIDs[i] == gameObject_s[j]->UUID) //Look for a gameobject whose UUID is the same as your one
+			if (goUUIDs[i] == gameObject_s[j]->uuid) //Look for a gameobject whose UUID is the same as your one
 			{
 				transforms[i]->gameObject = gameObject_s[j]; //Create this gameobject-component relationship
 				gameObject_s[j]->AddComponent(transforms[i]);
@@ -554,7 +554,7 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
 		{
-			if (goUUIDs[i] == gameObject_s[j]->UUID) 
+			if (goUUIDs[i] == gameObject_s[j]->uuid) 
 			{
 				meshes[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(meshes[i]);
@@ -581,7 +581,7 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
 		{
-			if (goUUIDs[i] == gameObject_s[j]->UUID)
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
 			{
 				cameras[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(cameras[i]);

@@ -220,7 +220,7 @@ void ComponentMesh::updateGameObjectAABB()
 void ComponentMesh::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(uint32_t);
-	memcpy(cursor, &gameObject->UUID, bytes);
+	memcpy(cursor, &gameObject->uuid, bytes);
 	cursor += bytes;
 
 	uint ranges[5] =

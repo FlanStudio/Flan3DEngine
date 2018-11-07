@@ -159,6 +159,7 @@
     <ClInclude Include="DevIL\include\ilut_config.h" />
     <ClInclude Include="DevIL\include\ilu_region.h" />
     <ClInclude Include="DevIL\include\il_wrap.h" />
+    <ClInclude Include="Directory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="FBXLoader.h" />
     <ClInclude Include="Glew\include\eglew.h" />
@@ -263,6 +264,7 @@
     <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
@@ -271,6 +273,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="Directory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="FBXLoader.cpp" />
     <ClCompile Include="Globals.cpp" />
@@ -341,6 +344,7 @@
     <ClCompile Include="Primitives\SpherePrim.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

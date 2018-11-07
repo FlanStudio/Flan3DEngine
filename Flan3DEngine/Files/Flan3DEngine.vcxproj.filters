@@ -636,6 +636,12 @@
     <ClInclude Include="imgui\ImGuizmo\ImGuizmo.h">
       <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Directory.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -862,6 +868,12 @@
     </ClCompile>
     <ClCompile Include="imgui\ImGuizmo\ImGuizmo.cpp">
       <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Directory.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -145,7 +145,7 @@ void ComponentTransform::setFromMatrix(float4x4 matrix)
 void ComponentTransform::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(uint32_t);
-	memcpy(cursor, &gameObject->UUID, bytes);
+	memcpy(cursor, &gameObject->uuid, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(float3);

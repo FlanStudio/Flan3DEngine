@@ -127,7 +127,7 @@ void ComponentCamera::calculateVerticalFOV()
 void ComponentCamera::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(uint32_t);
-	memcpy(cursor, &gameObject->UUID, bytes);
+	memcpy(cursor, &gameObject->uuid, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(ImVec4);

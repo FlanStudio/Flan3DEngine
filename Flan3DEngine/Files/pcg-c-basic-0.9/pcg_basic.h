@@ -82,7 +82,7 @@ namespace FLAN
 	/*
 		* Gen a number between min (INCLUSIVE) and max (EXCLUSIVE), both > 0
 	*/
-	int randomUINT32_Range(uint32_t min = 0, uint32_t max = UINT32_MAX_DECIMAL, pcg32_random_t* seed = NULL);
+	uint32_t randomUINT32_Range(uint32_t min = 0, uint32_t max = UINT32_MAX_DECIMAL, pcg32_random_t* seed = NULL);
 }
 
 #if __cplusplus

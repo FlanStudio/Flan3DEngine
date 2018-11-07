@@ -138,7 +138,7 @@ float FLAN::Random_float_Between_0_and_1(pcg32_random_t* seed)
 	return std::stod(s);
 }
 
-int FLAN::randomUINT32_Range(uint32_t minN, uint32_t maxN, pcg32_random_t* seed)
+uint32_t FLAN::randomUINT32_Range(uint32_t minN, uint32_t maxN, pcg32_random_t* seed)
 {
 	SDL_assert(maxN >= minN && minN >= 0 && maxN >= 0);
 	return (pcg32_boundedrand_r(seed ? seed : &pcg32_global, maxN - minN) + minN);
