@@ -13,7 +13,6 @@ update_status ModuleTime::PreUpdate()
 
 	//dt calculation
 	//dt = (float)dtTimer.Read() / 1000.0f;
-	dtTimer.Start();
 
 	////play Dt calculations---------------------(provisional)
 	//if (gameModeEnabled)
@@ -30,7 +29,7 @@ update_status ModuleTime::PreUpdate()
 
 update_status ModuleTime::PostUpdate()
 {
-	dt = (float)dtTimer.Read() / 1000.0f;
+	BROFILER_CATEGORY("TimePostUpdate", Profiler::Color::Azure)
 
 	//Frame counter
 	frameCount++;
@@ -50,12 +49,12 @@ update_status ModuleTime::PostUpdate()
 		dtSecondCounter = 0.0f;
 	}
 
-	//if (timer < 5.0f)//COMPROVATION (DELETE)
-	//{
-	//	timer += dt;
-	//}
-	//else
-	//	int y = 9;
+	if (timer < 5.0f)//COMPROVATION (DELETE)
+	{
+		timer += dt;
+	}
+	else
+		int y = 9;
 
 	return UPDATE_CONTINUE;
 }
