@@ -80,7 +80,6 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	//time->dtTimer.Start();
 	time->dtTimer.Start();
 }
 
@@ -107,9 +106,6 @@ void Application::FinishUpdate()
 	ms[ms_index++] = (dt) * 1000;
 	if (ms_index >= ms.size())
 		ms_index = 0;
-
-	//dt calculations
-	//dt = (float)time->dtTimer.Read() / 1000.0f;
 
 	//Save and Load config
 	if (save)

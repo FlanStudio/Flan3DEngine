@@ -11,9 +11,6 @@ update_status ModuleTime::PreUpdate()
 {
 	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure)
 
-	//dt calculation
-	//dt = (float)dtTimer.Read() / 1000.0f;
-
 	////play Dt calculations---------------------(provisional)
 	//if (gameModeEnabled)
 	//{
@@ -48,13 +45,6 @@ update_status ModuleTime::PostUpdate()
 		lastSecFramesCounter = 0;
 		dtSecondCounter = 0.0f;
 	}
-
-	if (timer < 5.0f)//COMPROVATION (DELETE)
-	{
-		timer += dt;
-	}
-	else
-		int y = 9;
 
 	return UPDATE_CONTINUE;
 }
