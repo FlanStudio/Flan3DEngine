@@ -9,11 +9,13 @@ bool ModuleTime::Init()
 update_status ModuleTime::PreUpdate()
 {
 	//dt calculation
-	dt = dtTimer.Read() / 1000.0f;
+	dt = (float)dtTimer.Read() / 1000.0f;
 	dtTimer.Start();
 
 	//Frame counter
 	frameCount++;
+
+	static float dtSecondCounter = 0.0f;
 
 	//Frames in 1 sec
 	if (dtSecondCounter < 1.0f)
@@ -28,20 +30,20 @@ update_status ModuleTime::PreUpdate()
 		dtSecondCounter = 0.0f;
 	}
 
-	//play Dt calculations---------------------(provisional)
+	////play Dt calculations---------------------(provisional)
 	//if (gameModeEnabled)
 	//{
-	//	playDt = gameDtTimer.Read() / 1000.0f * timeScale;
+	//	playDt = dt * timeScale;
 	//	gameDtTimer.Start();
 
 	//	gameTime += playDt;
 	//}
-	//-----------------PROVISIONAL--since we have gamemode
+	////-----------------PROVISIONAL--since we have gamemode
 
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleTime::PostUpdate(float dt)
+update_status ModuleTime::PostUpdate()
 {
 
 	return UPDATE_CONTINUE;

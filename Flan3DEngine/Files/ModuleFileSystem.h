@@ -69,7 +69,7 @@ public:
 
 	bool Init();
 	bool Start();
-	update_status PreUpdate(float dt);
+	update_status PreUpdate();
 	bool CleanUp();
 
 	bool AddPath(char* path, char* mount = "");

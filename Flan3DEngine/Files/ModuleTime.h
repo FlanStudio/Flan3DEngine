@@ -14,7 +14,7 @@ public:
 
 	bool Init();
 	update_status PreUpdate();
-	update_status PostUpdate(float dt);
+	update_status PostUpdate();
 	bool CleanUp();
 
 public:
@@ -23,14 +23,14 @@ public:
 	float playDt = 0.0f;
 	float gameTime = 0.0f;
 	float timeScale = 1.0f; //Must be between 0.0f and 2.0f
-	float dtSecondCounter = 0.0f;
 
 	Uint32 frameCount = 0;
-	Uint32 lastSecFramesCounter = 0;
 	Uint32 lastSecFrames = 0;
 
 	Timer dtTimer;
-	Timer gameDtTimer;
+
+private:
+	Uint32 lastSecFramesCounter = 0;
 };
 
 #endif //__MODULE_TIME_H__

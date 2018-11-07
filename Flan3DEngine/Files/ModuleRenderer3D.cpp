@@ -142,7 +142,7 @@ bool ModuleRenderer3D::Init()
 }
 
 // PreUpdate: clear buffer
-update_status ModuleRenderer3D::PreUpdate(float dt)
+update_status ModuleRenderer3D::PreUpdate()
 {
 	BROFILER_CATEGORY("ModuleRenderer3D_Preupdate", Profiler::Color::Azure)
 
@@ -164,7 +164,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 }
 
 // PostUpdate present buffer to screen
-update_status ModuleRenderer3D::PostUpdate(float dt)
+update_status ModuleRenderer3D::PostUpdate()
 {
 	BROFILER_CATEGORY("ModuleRenderer3D_Postupdate", Profiler::Color::Azure)
 

@@ -39,19 +39,6 @@ public:
 		return true;
 	}
 
-	update_status PreUpdate(float dt)
-	{
-		return UPDATE_CONTINUE;
-	}
-	update_status Update(float dt)
-	{
-		return UPDATE_CONTINUE;
-	}
-	update_status PostUpdate(float dt)
-	{
-		return UPDATE_CONTINUE;
-	}
-
 	//Save changes the JSON, not the module
 	bool Save(JSON_Object* obj) const { return true; }
 

@@ -80,6 +80,7 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
+
 }
 
 // ---------------------------------------------
@@ -87,24 +88,24 @@ void Application::FinishUpdate()
 {
 	//dt calculations
 
-	dt = ms_timer.Read() / 1000.0f;
-	ms_timer.Start();
+	float dt = time->dt;
 
 	float timeFrame = 1.0f / maxFPS;
-	
+
 	if (dt < timeFrame)
-	{		
+	{
 		SDL_Delay((timeFrame - dt) * 1000.0f);
 	}
+	else
+		int i = 0;
 
-	FPS[FPS_index++] = ImGui::GetIO().Framerate;
+	FPS[FPS_index++] = 1 / dt;
 	if (FPS_index >= FPS.size())
 		FPS_index = 0;
 
-	ms[ms_index++] = (timeFrame - dt) * 1000;
+	ms[ms_index++] = (dt) * 1000;
 	if (ms_index >= ms.size())
 		ms_index = 0;
-
 
 	//Save and Load config
 	if (save)
@@ -122,6 +123,8 @@ void Application::FinishUpdate()
 
 void Application::DebugDraw() const
 {
+	BROFILER_CATEGORY("Debug Draw", Profiler::Color::Yellow)
+
 	App->scene->debugDraw();
 }
 
@@ -136,17 +139,17 @@ update_status Application::Update()
 	std::list<Module*>::iterator it;
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{
-		ret = (*it)->PreUpdate(dt);
+		ret = (*it)->PreUpdate();
 	}
 
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{
-		ret = (*it)->Update(dt);
+		ret = (*it)->Update();
 	}
 
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{
-		ret = (*it)->PostUpdate(dt);
+		ret = (*it)->PostUpdate();
 	}
 
 	FinishUpdate();

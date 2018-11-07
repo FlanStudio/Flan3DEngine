@@ -43,17 +43,17 @@ bool FBXLoader::CleanUp()
 	return true;
 }
 
-update_status FBXLoader::PreUpdate(float dt)
+update_status FBXLoader::PreUpdate()
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status FBXLoader::Update(float dt)
+update_status FBXLoader::Update()
 {
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status FBXLoader::PostUpdate(float dt)
+update_status FBXLoader::PostUpdate()
 {
 	
 	return update_status::UPDATE_CONTINUE;

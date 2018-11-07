@@ -40,14 +40,14 @@ bool ModuleEditor::Start()
 	return true;	
 }
 
-update_status ModuleEditor::PreUpdate(float dt)
+update_status ModuleEditor::PreUpdate()
 {
 	BROFILER_CATEGORY("ModuleEditor_Preupdate", Profiler::Color::AntiqueWhite)
 
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
-	ImGui::GetIO().DeltaTime = dt;
+	ImGui::GetIO().DeltaTime = App->time->dt;
 	
 	//Editor setup down here
 
@@ -169,8 +169,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 	
 	if (logEnabled)
 	{
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3));
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ));
 		ImGui::Begin("LogWindow", &logEnabled);
 		Debug.Draw();
 		ImGui::End();
@@ -323,8 +323,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (hierarchy) 
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, 23), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(0, 23));
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23));
 		if(ImGui::Begin("Hierarchy", &hierarchy))
 		{
 			App->scene->guiHierarchy();
@@ -334,8 +334,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if (inspector)
 	{
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23));
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23));
 		if (ImGui::Begin("Inspector", &inspector))
 		{
 			App->scene->guiInspector();
@@ -345,8 +345,8 @@ update_status ModuleEditor::PreUpdate(float dt)
 
 	if(fileSystem)
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3));
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4));
 
 		ImGui::Begin("FileSystem", &fileSystem);
 
@@ -407,7 +407,7 @@ update_status ModuleEditor::PreUpdate(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleEditor::Update(float dt)
+update_status ModuleEditor::Update()
 {
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
@@ -425,7 +425,7 @@ update_status ModuleEditor::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleEditor::PostUpdate(float dt)
+update_status ModuleEditor::PostUpdate()
 {
 	return UPDATE_CONTINUE;
 }

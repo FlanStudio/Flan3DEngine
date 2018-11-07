@@ -89,7 +89,7 @@ bool ModuleWindow::Init()
 
 	return ret;
 }
-update_status ModuleWindow::Update(float dt)
+update_status ModuleWindow::Update()
 {
 	BROFILER_CATEGORY("ModuleWindow_Update", Profiler::Color::Azure)
 

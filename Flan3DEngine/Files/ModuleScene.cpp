@@ -66,7 +66,7 @@ bool ModuleScene::CleanUp()
 	return true;
 }
 
-update_status ModuleScene::PreUpdate(float dt)
+update_status ModuleScene::PreUpdate()
 {
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
@@ -82,24 +82,24 @@ update_status ModuleScene::PreUpdate(float dt)
 		UpdateQuadtree();
 		timer = 1 / quadTreeUpdateRate;
 	}
-	timer -= dt;
+	timer -= App->time->dt;
 
 	return update_status::UPDATE_CONTINUE;
 }
 
 // Update
-update_status ModuleScene::Update(float dt)
+update_status ModuleScene::Update()
 {
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
-		gameObjects[i]->Update(dt);
+		gameObjects[i]->Update(App->time->dt);
 	}
 	parentAABBs();
 
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleScene::PostUpdate(float dt)
+update_status ModuleScene::PostUpdate()
 {
 	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
 

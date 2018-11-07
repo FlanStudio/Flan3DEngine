@@ -48,9 +48,9 @@ bool ModuleFileSystem::CleanUp()
 	return ret;
 }
 
-update_status ModuleFileSystem::PreUpdate(float dt)
+update_status ModuleFileSystem::PreUpdate()
 {
-	updateAssetsCounter += dt;
+	updateAssetsCounter += App->time->dt;
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
 	{
 		updateAssetsCounter = 0.0f;

@@ -23,9 +23,9 @@ public:
 	~FBXLoader() {}
 
 	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	update_status PreUpdate();
+	update_status Update();
+	update_status PostUpdate();
 	bool CleanUp();
 
 	//Save changes the JSON, not the module
