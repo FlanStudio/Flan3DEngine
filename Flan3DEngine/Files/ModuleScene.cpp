@@ -17,10 +17,6 @@
 
 #include "imgui/imgui_internal.h"
 
-
-
-#define CHECKERS 8 * 8
-
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
 }
@@ -103,7 +99,7 @@ update_status ModuleScene::PostUpdate()
 {
 	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
 
-
+	DrawGuizmos();
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
@@ -137,6 +133,33 @@ void ModuleScene::UpdateQuadtree()
 			continue;
 
 		quadtree.Insert(gameObjects_s[i]);
+	}
+}
+
+void ModuleScene::DrawGuizmos()
+{
+	GameObject* selected = getSelectedGO();
+	if (selected)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+			currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+		else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+			currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
+		else if(App->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
+			currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
+		
+		ImGuizmo::Enable(true);
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+		float4x4 transformMatrix = selected->transform->getMatrix();
+		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, ImGuizmo::MODE::WORLD, transformMatrix.ptr());
+		selected->transform->setFromMatrix(transformMatrix.Transposed());
+	}
+	else
+	{
+		ImGuizmo::Enable(false);
+		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	}
 }
 
@@ -232,33 +255,35 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
 
 			if (go->treeOpened)
-				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen;
+				ImGui::SetNextTreeNodeOpen(true);
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx(go->name.data(), flags);
+			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->UUID)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
+
+			if (!opened)
+				go->treeOpened = false;
+			else
+				go->treeOpened = true;
 
 			DragDrop(go);
 
 			_ReorderGameObject_Post(go);
 
 			if(opened)
-			{			
-				go->treeOpened = true;
+			{							
 				for (int i = 0; i < go->childs.size(); ++i)
 				{
 					PrintHierarchy(go->childs[i]);					
 				}			
 				ImGui::TreePop();
 			}
-			else
-			{
-				go->treeOpened = false;
-			}
 			
+
+
 		}
 		else
 		{
@@ -343,7 +368,7 @@ void ModuleScene::debugDraw()
 		gameObjects[i]->recursiveDebugDraw();
 	}
 
-	quadtree.Draw();
+	//quadtree.Draw();
 }
 
 void ModuleScene::Serialize()
@@ -613,8 +638,6 @@ void ModuleScene::DragDrop(GameObject* go)
 
 			if (other->parent == go)
 				abortDrop = true;
-
-			
 
 			if (!abortDrop)
 			{

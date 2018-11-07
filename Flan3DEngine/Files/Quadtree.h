@@ -25,6 +25,7 @@ private:
 	void CreateChilds();
 	void RedistributeGameObjects();
 	void getGameObjects(std::vector<GameObject*>& gameObjects) const;
+	bool Intersect(std::vector<GameObject*>& result, const LineSegment& segment)const;
 	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
 	bool AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const;
 	void Draw();
@@ -49,7 +50,7 @@ public:
 	void Resize(AABB limits);
 	void Insert(const GameObject* go);
 	void Remove(const GameObject* go);
-	bool Intersect(std::vector<GameObject*>& result, const Ray& ray)const;
+	bool Intersect(std::vector<GameObject*>& result, const LineSegment& segment)const;
 	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
 	bool isWithinLimits(const GameObject* go) const;
 	void Draw();

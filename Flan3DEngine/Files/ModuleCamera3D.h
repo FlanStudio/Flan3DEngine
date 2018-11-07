@@ -17,6 +17,9 @@ public:
 	bool Init();
 	bool Start();
 	update_status Update();
+	update_status PreUpdate();
+	update_status Update();
+
 	bool CleanUp();
 
 	void Look(const float3& Position, const float3& Reference, bool RotateAroundReference = false);
@@ -24,12 +27,14 @@ public:
 	void Move(const float3& Movement);
 	void rotateCamera(float dt);
 	void rotateAroundCenter(float dt);
-	float* GetViewMatrix();
+	float4x4 GetViewMatrix();
+	float4x4 GetProjMatrix();
 	void OnResize(int w, int h);
 	void setGameCamera(ComponentCamera* component);
 
 private:
 	void CameraInputs(float dt);
+	void MousePicking() const;
 
 public:
 	GameObject* activeCamera = nullptr;

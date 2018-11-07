@@ -11,6 +11,8 @@
 
 #include "Quadtree.h"
 
+#include "imgui/ImGuizmo/ImGuizmo.h"
+
 class GameObject;
 class ComponentTransform;
 class ComponentMesh;
@@ -57,7 +59,10 @@ private:
 	void InitQuadtree();
 	void UpdateQuadtree();
 
+	void DrawGuizmos();
+
 private:
+	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
 
 	float quadTreeUpdateRate = 2.0f;
 

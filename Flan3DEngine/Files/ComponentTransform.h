@@ -23,6 +23,7 @@ public:
 	void OnInspector();
 	float4x4 getMatrix()const;
 	static float4x4 composeMatrix(float3& position, Quat& rotation, float3& scale);
+	void setFromMatrix(float4x4 matrix);
 
 	//GameObject's UUID, Position scale rotation 
 	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(float) * 3 * 2 + sizeof(float) * 4; }

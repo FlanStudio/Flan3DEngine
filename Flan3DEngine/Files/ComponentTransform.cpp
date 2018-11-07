@@ -131,6 +131,17 @@ float4x4 ComponentTransform::composeMatrix(float3& position, Quat& rotation, flo
 	return float4x4::FromTRS(position, rotation, scale).Transposed();
 }
 
+void ComponentTransform::setFromMatrix(float4x4 matrix)
+{	
+	matrix.Decompose(position, rotation, scale);
+	if (gameObject->parent)
+	{
+		position = position - gameObject->parent->transform->position;
+		rotation = rotation / gameObject->parent->transform->rotation;
+		scale = scale.Div(gameObject->parent->transform->scale);
+	}
+}
+
 void ComponentTransform::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(uint32_t);

@@ -101,14 +101,13 @@ void ComponentCamera::RecalculateProjectionMatrix(int w, int h)
 float4x4 ComponentCamera::getViewMatrix()
 {
 	float4x4 mathGeoViewMatrix = frustum.ViewMatrix();
-	float4x4 fixedOpenGLViewMatrix = float4x4::identity;
-	
-	fixedOpenGLViewMatrix.SetCol(0, mathGeoViewMatrix.Row(0));
-	fixedOpenGLViewMatrix.SetCol(1, mathGeoViewMatrix.Row(1));
-	fixedOpenGLViewMatrix.SetCol(2, mathGeoViewMatrix.Row(2));
-	fixedOpenGLViewMatrix.SetCol(3, mathGeoViewMatrix.Row(3));
-
 	return mathGeoViewMatrix.Transposed();
+}
+
+float4x4 ComponentCamera::getProjMatrix()
+{
+	float4x4 mathGeoProjMatrix = frustum.ProjectionMatrix();
+	return mathGeoProjMatrix.Transposed();
 }
 
 void ComponentCamera::updateFrustum()

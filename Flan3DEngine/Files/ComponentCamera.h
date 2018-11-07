@@ -14,6 +14,7 @@ public:
 	void OnInspector();
 	void RecalculateProjectionMatrix(int w, int h);
 	float4x4 getViewMatrix();
+	float4x4 getProjMatrix();
 	void updateFrustum();
 	void calculateVerticalFOV();
 	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }

@@ -7,6 +7,8 @@
 
 #include "ComponentCamera.h"
 #include "GameObject.h"
+#include "ComponentMesh.h"
+
 
 #define SPEED 100.0f
 
@@ -50,6 +52,13 @@ bool ModuleCamera3D::Start()
 	return ret;
 }
 
+update_status ModuleCamera3D::PreUpdate(float dt)
+{
+	MousePicking();
+
+	return update_status::UPDATE_CONTINUE;
+}
+
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
@@ -63,10 +72,13 @@ update_status ModuleCamera3D::Update()
 {
 	BROFILER_CATEGORY("ModuleCamera3D_Update", Profiler::Color::AliceBlue)
 
-	editorCamera->Update(App->time->dt);
+	if (activeCamera == editorCamera)
+	{
+		editorCamera->Update(time->dt);
 
-	if(!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
-		CameraInputs(App->time->dt);
+		if (!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
+			CameraInputs(time->dt);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -133,6 +145,98 @@ void ModuleCamera3D::CameraInputs(float dt)
 	}
 }
 
+void ModuleCamera3D::MousePicking() const
+{
+	if (activeCamComponent == editorCamComponent) //Disable mouse picking in the Game view
+		if (!App->editor->isSomeGUIHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsOver() && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE) //Ensure you're not clicking the gui
+		{
+			float2 mousePos = { (float)App->input->GetMouseX(), (float)App->input->GetMouseY() };
+
+			const Frustum frustum = editorCamComponent->getFrustum();
+			mousePos = frustum.ScreenToViewportSpace(mousePos, SCREEN_WIDTH, SCREEN_HEIGHT);	//Normalize mouse position into viewport coordinates
+
+			LineSegment segment = frustum.UnProjectLineSegment(mousePos.x, mousePos.y); //Get the ray from the frustum
+
+			std::vector<GameObject*> intersected;
+			App->scene->quadtree.Intersect(intersected, segment); //Get all the gameobjects stored in the quadtree that collides with the ray
+
+			uint numIterations = 0;
+			do                                                    //Order the gameobjects by their aabb's distance (they are unique in the provided list)
+			{
+				numIterations = 0;
+				for (int i = 0; i < intersected.size(); ++i)
+				{
+					GameObject* nextGO = i + 1 < intersected.size() ? intersected[i + 1] : nullptr;
+					GameObject* currentGO = intersected[i];
+
+					if (nextGO && currentGO->boundingBox.Distance(segment.a) > nextGO->boundingBox.Distance(segment.a))
+					{
+						numIterations++;
+						intersected.erase(intersected.begin() + i);
+						intersected.insert(intersected.begin() + i + 1, currentGO);
+					}
+				}
+
+			} while (numIterations > 0);
+
+			bool hit = false;
+			float distance = inf;
+			GameObject* clickedGO = nullptr;
+
+			for (int i = 0; i < intersected.size(); ++i) //For each gameObject
+			{
+				ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
+				if (!mesh)
+					continue;
+
+				LineSegment localSpaceSegment(segment);  localSpaceSegment.Transform(intersected[i]->transform->getMatrix().Transposed().Inverted());
+
+				for (int tri = 0; tri < mesh->num_index / 3; ++tri) //For each triangle in the mesh
+				{
+					float3 vertices[3] =
+					{
+						{mesh->vertex[mesh->index[tri * 3] * 3], mesh->vertex[mesh->index[tri * 3] * 3 + 1], mesh->vertex[mesh->index[tri * 3] * 3 + 2]},
+						{mesh->vertex[mesh->index[tri * 3 + 1] * 3], mesh->vertex[mesh->index[tri * 3 + 1] * 3 + 1], mesh->vertex[mesh->index[tri * 3 + 1] * 3 + 2]},
+						{mesh->vertex[mesh->index[tri * 3 + 2] * 3], mesh->vertex[mesh->index[tri * 3 + 2] * 3 + 1], mesh->vertex[mesh->index[tri * 3 + 2] * 3 + 2]}
+					};
+
+					Triangle actualTri(vertices[0], vertices[1], vertices[2]);
+					float newDistance = 0;
+					if (localSpaceSegment.Intersects(actualTri, &newDistance, nullptr))			//if the segmnent intersects with that triangle, compare the hitpoints
+					{
+						if (IsFinite(distance))
+						{
+							if (distance > newDistance) //Keep the closest hitpoint
+							{
+								distance = newDistance;
+								clickedGO = intersected[i];
+							}
+						}
+						else
+						{
+							distance = newDistance;
+							hit = true;
+							clickedGO = intersected[i];
+						}
+					}
+				}
+			}
+
+			if (hit)
+			{
+				//Open all the parents Imgui treenodes
+				GameObject* parent = clickedGO->parent;
+				while (parent)
+				{
+					parent->treeOpened = true;
+					parent = parent->parent;
+				}
+			
+				App->scene->selectGO(clickedGO);
+			}
+		}
+}
+
 // -----------------------------------------------------------------
 void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
 {
@@ -173,9 +277,14 @@ void ModuleCamera3D::Move(const float3 &movement)
 }
 
 // -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix()
+float4x4 ModuleCamera3D::GetViewMatrix()
 {
-	return editorCamComponent->getViewMatrix().ptr();
+	return activeCamComponent->getViewMatrix();
+}
+
+float4x4 ModuleCamera3D::GetProjMatrix()
+{
+	return activeCamComponent->getProjMatrix();
 }
 
 // -----------------------------------------------------------------

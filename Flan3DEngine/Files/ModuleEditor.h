@@ -27,6 +27,9 @@ public:
 
 	void Draw() const;
 
+public:
+	inline bool isSomeGUIHovered()const { return ImGui::IsAnyItemHovered() || ImGui::IsAnyWindowHovered(); }
+
 private:
 	void customStyle();
 
