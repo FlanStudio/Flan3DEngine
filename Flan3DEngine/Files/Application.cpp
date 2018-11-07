@@ -80,13 +80,14 @@ bool Application::Init()
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-
+	//time->dtTimer.Start();
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
 	//dt calculations
+	//dt = (float)time->dtTimer.Read() / 1000.0f;
 
 	float dt = time->dt;
 
@@ -96,16 +97,15 @@ void Application::FinishUpdate()
 	{
 		SDL_Delay((timeFrame - dt) * 1000.0f);
 	}
-	else
-		int i = 0;
 
-	FPS[FPS_index++] = 1 / dt;
+	FPS[FPS_index++] = ImGui::GetIO().Framerate;
 	if (FPS_index >= FPS.size())
 		FPS_index = 0;
 
 	ms[ms_index++] = (dt) * 1000;
 	if (ms_index >= ms.size())
 		ms_index = 0;
+
 
 	//Save and Load config
 	if (save)

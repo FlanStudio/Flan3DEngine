@@ -18,7 +18,6 @@ public:
 	bool Start();
 	update_status Update();
 	update_status PreUpdate();
-	update_status Update();
 
 	bool CleanUp();
 

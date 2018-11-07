@@ -1,6 +1,9 @@
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "PhysFS/physfs.h"
+
+#include "Brofiler\Brofiler.h"
+
 #pragma comment (lib, "PhysFS/physfs.lib")
 
 #include <bitset>
@@ -50,6 +53,8 @@ bool ModuleFileSystem::CleanUp()
 
 update_status ModuleFileSystem::PreUpdate()
 {
+	BROFILER_CATEGORY("FileSystemPreUpdate", Profiler::Color::Azure)
+
 	updateAssetsCounter += App->time->dt;
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
 	{

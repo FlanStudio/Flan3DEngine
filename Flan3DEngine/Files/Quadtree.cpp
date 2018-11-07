@@ -1,6 +1,8 @@
 #include "Quadtree.h"
 #include "GameObject.h"
 
+#include "Brofiler\Brofiler.h"
+
 #define NW 0
 #define NE 1
 #define SW 2
@@ -21,6 +23,8 @@ void Quadtree::Clear()
 
 void Quadtree::Resize(AABB limits)
 {
+	BROFILER_CATEGORY("QuadtreeResize", Profiler::Color::Azure)
+
 	//Clear, initialize and reinsert all the gameobjects
 	std::vector<GameObject*> gameObjects;
 	root.getGameObjects(gameObjects);
@@ -76,16 +80,22 @@ bool Quadtree::Intersect(std::vector<GameObject*>& result, const Frustum& frustu
 
 bool Quadtree::isWithinLimits(const GameObject* go) const
 {
+	BROFILER_CATEGORY("QuadtreeLimits", Profiler::Color::Azure)
+
 	return root.quad.Contains(go->boundingBox);
 }
 
 void Quadtree::Draw()
 {	
+	BROFILER_CATEGORY("QuadtreeDraw", Profiler::Color::Azure)
+
 	root.Draw();
 }
 
 bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum) const
 {
+	BROFILER_CATEGORY("QuadtreeContains", Profiler::Color::Azure)
+
 	std::vector<Plane> planes;
 	planes.resize(6);
 	frustum.GetPlanes(planes.data());
@@ -113,6 +123,8 @@ bool QuadtreeNode::AABBContainsFrustum(const AABB& aabb, const Frustum& frustum)
 
 void QuadtreeNode::Draw()
 {
+	BROFILER_CATEGORY("QuadtreeDraw", Profiler::Color::Azure)
+
 	if (!vertex || quadBufferIndex == 0)
 	{
 		vertex = new float[36 * 3];
@@ -228,6 +240,8 @@ void QuadtreeNode::CreateChilds()
 
 void QuadtreeNode::RedistributeGameObjects()
 {
+	BROFILER_CATEGORY("QuadtreeRedistribute", Profiler::Color::Azure)
+
 	for (std::vector<GameObject*>::iterator itGO = gameObjects.begin(); itGO != gameObjects.end(); /*We will advance manually the for*/)
 	{
 		GameObject* gameObject = *itGO;

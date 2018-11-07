@@ -1,5 +1,6 @@
 #include "ModuleTime.h"
 #include "Application.h"
+#include "Brofiler\Brofiler.h"
 
 bool ModuleTime::Init()
 {
@@ -8,9 +9,28 @@ bool ModuleTime::Init()
 
 update_status ModuleTime::PreUpdate()
 {
+	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure)
+
 	//dt calculation
-	dt = (float)dtTimer.Read() / 1000.0f;
+	//dt = (float)dtTimer.Read() / 1000.0f;
 	dtTimer.Start();
+
+	////play Dt calculations---------------------(provisional)
+	//if (gameModeEnabled)
+	//{
+	//	playDt = dt * timeScale;
+	//	gameDtTimer.Start();
+
+	//	gameTime += playDt;
+	//}
+	////-----------------PROVISIONAL--since we have gamemode
+
+	return UPDATE_CONTINUE;
+}
+
+update_status ModuleTime::PostUpdate()
+{
+	dt = (float)dtTimer.Read() / 1000.0f;
 
 	//Frame counter
 	frameCount++;
@@ -30,21 +50,12 @@ update_status ModuleTime::PreUpdate()
 		dtSecondCounter = 0.0f;
 	}
 
-	////play Dt calculations---------------------(provisional)
-	//if (gameModeEnabled)
+	//if (timer < 5.0f)//COMPROVATION (DELETE)
 	//{
-	//	playDt = dt * timeScale;
-	//	gameDtTimer.Start();
-
-	//	gameTime += playDt;
+	//	timer += dt;
 	//}
-	////-----------------PROVISIONAL--since we have gamemode
-
-	return UPDATE_CONTINUE;
-}
-
-update_status ModuleTime::PostUpdate()
-{
+	//else
+	//	int y = 9;
 
 	return UPDATE_CONTINUE;
 }

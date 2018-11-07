@@ -52,8 +52,10 @@ bool ModuleCamera3D::Start()
 	return ret;
 }
 
-update_status ModuleCamera3D::PreUpdate(float dt)
+update_status ModuleCamera3D::PreUpdate()
 {
+	BROFILER_CATEGORY("Camera3DPreUpdate", Profiler::Color::Azure)
+
 	MousePicking();
 
 	return update_status::UPDATE_CONTINUE;
@@ -74,10 +76,10 @@ update_status ModuleCamera3D::Update()
 
 	if (activeCamera == editorCamera)
 	{
-		editorCamera->Update(time->dt);
+		editorCamera->Update(App->time->dt);
 
 		if (!ImGui::IsAnyItemHovered() && !ImGui::IsAnyWindowHovered())
-			CameraInputs(time->dt);
+			CameraInputs(App->time->dt);
 	}
 
 	return UPDATE_CONTINUE;

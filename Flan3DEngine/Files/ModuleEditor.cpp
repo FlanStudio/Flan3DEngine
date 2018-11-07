@@ -413,6 +413,8 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
+	BROFILER_CATEGORY("EditorUpdate", Profiler::Color::Azure)
+
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
 		showdemowindow = false;

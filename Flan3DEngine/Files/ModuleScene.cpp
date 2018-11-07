@@ -64,6 +64,8 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::PreUpdate()
 {
+	BROFILER_CATEGORY("ScenePreUpdate", Profiler::Color::Azure)
+
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
 		gameObjects[0]->deleteSelected();
@@ -86,6 +88,8 @@ update_status ModuleScene::PreUpdate()
 // Update
 update_status ModuleScene::Update()
 {
+	BROFILER_CATEGORY("SceneUpdate", Profiler::Color::Azure)
+
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
 		gameObjects[i]->Update(App->time->dt);
