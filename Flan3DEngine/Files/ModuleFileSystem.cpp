@@ -22,7 +22,7 @@ bool ModuleFileSystem::Init()
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
 	AddPath("./Library/", "Library");
-	AddPath("./Library/config", "config");
+	AddPath("./Settings/", "Settings");
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
