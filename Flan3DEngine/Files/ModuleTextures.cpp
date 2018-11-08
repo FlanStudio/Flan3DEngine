@@ -84,7 +84,7 @@ uint ModuleTextures::LoadTexture(const char* file, bool useFileSystem)
 		else
 		{
 			//TODO: MORE TEXTURES SUPPORT?
-			deleteTextures();
+			//deleteTextures();
 		}
 	}
 	else
@@ -97,7 +97,7 @@ uint ModuleTextures::LoadTexture(const char* file, bool useFileSystem)
 		else
 		{
 			//TODO: MORE TEXTURES SUPPORT?
-			deleteTextures();
+			//deleteTextures();
 		}
 	}
 	

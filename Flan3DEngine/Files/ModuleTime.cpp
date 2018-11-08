@@ -2,8 +2,9 @@
 #include "Application.h"
 #include "Brofiler\Brofiler.h"
 
-bool ModuleTime::Init()
+bool ModuleTime::Start()
 {
+	timeAtlasId = App->textures->LoadTexture("Assets/textures/play_text.dds");
 	return true;
 }
 
@@ -55,4 +56,36 @@ bool ModuleTime::CleanUp()
 
 void ModuleTime::OnTimeGUI()
 {
+	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	ImGui::SetCursorScreenPos({ windowPos.x + 33.0f,windowPos.y + 2.0f });
+
+	if (!IN_GAME)
+	{
+		if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//play
+		{
+			IN_GAME = true;
+		}
+	}
+	else
+	{
+		if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.0f,0.0f }, { 0.31f,0.47f }))//stop
+		{
+			IN_GAME = false;
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//pause
+	{
+
+	}
+	ImGui::SameLine();
+
+	if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.69f,0.0f }, { 1.0f,-0.47f }))//step
+	{
+
+	}
+	ImGui::SameLine();
 }

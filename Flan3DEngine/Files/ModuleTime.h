@@ -11,16 +11,14 @@ public:
 	ModuleTime(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
 	~ModuleTime() {}
 
-	bool Init();
+	bool Start();
 	update_status PreUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
 
-private:
 	void OnTimeGUI();
 
 public:
-
 	float dt = 0.0f;
 	float playDt = 0.0f;
 	float gameTime = 0.0f;
@@ -35,6 +33,9 @@ public:
 
 private:
 	Uint32 lastSecFramesCounter = 0;
+
+	uint timeAtlasId = 0;
+
 };
 
 #endif //__MODULE_TIME_H__

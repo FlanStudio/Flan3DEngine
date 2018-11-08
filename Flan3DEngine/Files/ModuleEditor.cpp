@@ -54,6 +54,24 @@ update_status ModuleEditor::PreUpdate()
 	ImGui::GetIO().DeltaTime = App->time->dt;
 
 	//Editor setup down here
+	ImGuiWindowFlags timeFlags = 0;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoResize;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoMove;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollWithMouse;
+	timeFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+	ImGui::SetNextWindowSize({ SCREEN_WIDTH / 8.0f,23.0f });
+	ImGui::SetNextWindowPos({ (SCREEN_WIDTH - SCREEN_WIDTH / 8) / 2.0f,23.0f });
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Border, { 0,0,0,0 });
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, { 0,0,0,0 });
+	ImGui::Begin("## Time Buttons", nullptr, timeFlags);
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
+	App->time->OnTimeGUI();
+	ImGui::End();
 
 	if(showdemowindow)
 		ImGui::ShowDemoWindow(&showdemowindow);

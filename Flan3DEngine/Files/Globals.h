@@ -40,4 +40,6 @@ extern bool WIN_BORDERLESS;
 extern bool WIN_FULLSCREEN_DESKTOP;
 extern bool VSYNC;
 extern float BRIGHTNESS;
+
+extern bool IN_GAME;
 #endif

@@ -11,3 +11,5 @@ bool WIN_FULLSCREEN_DESKTOP = false;
 bool VSYNC = false;
 float BRIGHTNESS = 1.0f;
 
+bool IN_GAME = false;
+
