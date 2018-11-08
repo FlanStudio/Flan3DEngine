@@ -36,6 +36,12 @@ public:
 		return mouse_buttons[id];
 	}
 
+	//Normaliced notation ('/') , starting from the hard disk
+	char* getFileDropped()const 
+	{ 
+		return (char*)fileDropped.c_str(); 
+	}
+
 	int GetMouseX() const
 	{
 		return mouse_x;
@@ -69,5 +75,7 @@ private:
 	int mouse_z;
 	int mouse_x_motion;
 	int mouse_y_motion;
+	
+	std::string fileDropped;
 };
 #endif

@@ -121,6 +121,16 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			case SDL_DROPFILE:
 			{
+				fileDropped = e.drop.file;
+
+				//Normalize the path to '/'
+				uint Pos = fileDropped.find("\\");
+				while (Pos != std::string::npos)
+				{
+					fileDropped = fileDropped.replace(Pos, 1, "/");
+					Pos = fileDropped.find("\\");
+				}
+
 				std::string filePath = e.drop.file;
 				uint pos = filePath.find_last_of(".");
 				if (pos != std::string::npos)
