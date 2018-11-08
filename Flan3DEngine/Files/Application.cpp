@@ -223,7 +223,7 @@ bool Application::LoadNow()
 
 	char* buf;
 	int size;
-	if (fs->OpenRead("config/config.json", &buf, size))
+	if (fs->OpenRead(SETTINGS_FOLDER + std::string("settings.json"), &buf, size))
 	{
 		JSON_Value* root = json_parse_string(buf);
 		JSON_Object* rootObj = json_value_get_object(root);
@@ -298,13 +298,13 @@ bool Application::SaveNow()const
 		int size = json_serialization_size_pretty(root);
 		char* jsonFile = new char[size];
 		json_serialize_to_buffer_pretty(root, jsonFile, size);
-		ret = App->fs->OpenWrite("./Library/config/config.json", jsonFile);
+		ret = App->fs->OpenWrite(SETTINGS_FOLDER + std::string("settings.json"), jsonFile);
 		delete[] jsonFile;
 
 		if (ret)
 			Debug.Log("Configuration succesfully saved");
 		else
-			Debug.LogError("Failed saving \"config/config.json\"");
+			Debug.LogError("Failed saving \"%s\"", (std::string(SETTINGS_FOLDER) + std::string("settings.json")).data());
 	}
 	else
 	{

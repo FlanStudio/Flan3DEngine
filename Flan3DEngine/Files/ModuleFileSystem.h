@@ -3,7 +3,7 @@
 
 #define ASSETS_FOLDER "Assets/"
 #define LIBRARY_FOLDER "Library/"
-#define CONFIG_FOLDER "Library/config/"
+#define SETTINGS_FOLDER "Settings/"
 
 #define SCENES_ASSETS_FOLDER "Assets/Scenes/"
 #define SCENES_EXTENSION ".flanScene"
