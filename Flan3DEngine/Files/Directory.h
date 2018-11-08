@@ -18,6 +18,16 @@ struct Directory
 		directories.clear();
 	}
 
+	void getFullPaths(std::vector<std::string>& fullpaths)
+	{
+		for (int i = 0; i < files.size(); ++i)
+			fullpaths.push_back(fullPath + "/" + files[i]);
+
+		for (int i = 0; i < directories.size(); ++i)
+			directories[i].getFullPaths(fullpaths);
+	}
+
+
 	bool operator == (Directory other)
 	{
 		bool ret = true;

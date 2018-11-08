@@ -21,6 +21,9 @@
 #include <vector>
 #include <string>
 
+#include "Event.h"
+#include <queue>
+
 struct LogWindow
 {
 private:
@@ -120,6 +123,10 @@ public:
 	std::string organization = "FlanStudio";
 
 	bool debugDraw = true;
+
+public:
+	void SendEvent(Event event);
+	std::queue<Event> events;
 
 public:
 

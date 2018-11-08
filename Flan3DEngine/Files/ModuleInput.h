@@ -3,9 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include <queue>
 #include <string>
-#include "Directory.h"
 
 #define MAX_MOUSE_BUTTONS 5
 
@@ -16,26 +14,6 @@ enum KEY_STATE
 	KEY_REPEAT,
 	KEY_UP
 };
-
-enum EventType
-{
-	UNKNOWN = -1,
-	ASSETS_MODIFIED
-};
-
-struct AssetEvent
-{
-	EventType type;
-	Directory* prevAssetsState; //Solution to the union restriction: Well controled pointers || Change the Directory class to not use std::string or std::vector
-	Directory* AssetsState;
-};
-
-union Event
-{
-	EventType type;
-	AssetEvent assetevent;
-};
-
 
 class ModuleInput : public Module
 {
@@ -91,7 +69,5 @@ private:
 	int mouse_z;
 	int mouse_x_motion;
 	int mouse_y_motion;
-	
-	std::queue<Event> events;
 };
 #endif

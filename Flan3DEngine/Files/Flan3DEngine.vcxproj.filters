@@ -64,6 +64,9 @@
     <Filter Include="Sources\Tools\imgui\ImGuizmo">
       <UniqueIdentifier>{a16479ed-2cd4-48c6-a970-09c27f04b5de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Events">
+      <UniqueIdentifier>{0c4fe1b2-2a93-4cb5-a0c6-020f13c31e86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -641,6 +644,9 @@
     </ClInclude>
     <ClInclude Include="Directory.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Sources\Containers\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

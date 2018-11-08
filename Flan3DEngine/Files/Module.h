@@ -3,6 +3,7 @@
 
 #include "Globals.h"
 #include "Parson/parson.h"
+#include "Event.h"
 
 class Application;
 
@@ -72,6 +73,9 @@ public:
 
 	//Load changes the module, not the JSON
 	virtual bool Load(const JSON_Object* obj) { return true; }
+
+	//Receive events
+	virtual void ReceiveEvent(Event event) {}
 };
 
 #endif

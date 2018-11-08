@@ -3,6 +3,11 @@
 
 LogWindow Debug;
 
+void Application::SendEvent(Event event)
+{
+	events.push(event);
+}
+
 Application::Application()
 {
 	window = new ModuleWindow();
@@ -132,6 +137,29 @@ update_status Application::Update()
 	PrepareUpdate();
 	
 	std::list<Module*>::iterator it;
+
+	//Send last frame events before doing anything
+	while (events.size() > 0)
+	{
+		Event event = events.front();		
+		for (it = list_modules.begin(); it != list_modules.end(); ++it)
+		{
+			(*it)->ReceiveEvent(event);
+		}
+
+		//Deallocate memory
+		switch (event.type)
+		{
+			case EventType::FILE_CREATED:
+			case EventType::FILE_DELETED:
+			{
+				if(event.fileEvent.fileChanged)
+					delete event.fileEvent.fileChanged;
+			}
+		}
+		events.pop();
+	}
+	
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{
 		ret = (*it)->PreUpdate(dt);

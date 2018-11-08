@@ -58,9 +58,35 @@ update_status ModuleFileSystem::PreUpdate(float dt)
 		
 		if (newAssetsDir != AssetsDirSystem)
 		{
-			//TODO: SEND EVENTS, ASSETS CHANGED.
+			std::vector<std::string> newfullPaths;
+			std::vector<std::string> oldfullPaths;
+
+			newAssetsDir.getFullPaths(newfullPaths);
+			AssetsDirSystem.getFullPaths(oldfullPaths);
+
+			for (int i = 0; i < oldfullPaths.size(); ++i)
+			{
+				bool exists = false;
+				for (int j = 0; j < newfullPaths.size(); ++j)
+				{
+					if (oldfullPaths[i] == newfullPaths[j])
+						exists = true;
+				}
+				if (!exists)
+				{
+					//Send event: File deleted
+					Event event;
+					event.type = EventType::FILE_DELETED;
+					FileSystemEvent temp;
+					temp.type = FILE_DELETED;
+					temp.fileChanged = new char[oldfullPaths[i].size()];
+					memcpy((char*)temp.fileChanged, oldfullPaths[i].c_str(), sizeof(char) * (oldfullPaths[i].length() + 1));
+					event.fileEvent = temp;
+					App->SendEvent(event);
+				}
+			}
 			AssetsDirSystem = newAssetsDir;
-		}		
+		}	
 	}
 	return update_status::UPDATE_CONTINUE;
 }

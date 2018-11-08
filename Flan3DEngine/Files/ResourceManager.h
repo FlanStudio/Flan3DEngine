@@ -50,9 +50,11 @@ public:
 	bool Start();
 	bool CleanUp();
 	update_status PreUpdate(float dt);
+	void ReceiveEvent(Event event);
 
 public:
 	Resource* Get(UID uuid) const;
+	Resource* FindByFile(char* file);
 
 private:
 	std::map<UID, Resource*> resources;

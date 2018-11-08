@@ -13,6 +13,8 @@
 #include "Module.h"
 #include "Timer.h"
 
+#include "Directory.h"
+
 class ModuleFileSystem : public Module
 {
 public:
