@@ -51,6 +51,10 @@ void ResourceManager::ReceiveEvent(Event event)
 				toUpdate->setFile((char*)event.fileEvent.file);
 			break;
 		}
+		case EventType::FILE_MODIFIED:
+		{
+			break;
+		}
 	}
 }
 
