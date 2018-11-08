@@ -296,7 +296,7 @@ Directory ModuleFileSystem::getDirFiles(char* dir)
 			PHYSFS_Stat stats;
 			PHYSFS_stat(fulldir.data(), &stats);
 			File file;
-			file.lastModTime = stats.modtime;
+			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
 			file.name = files[i];
 			ret.files.push_back(file);
 		}
