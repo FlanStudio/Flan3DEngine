@@ -8,13 +8,13 @@ bool ResourceManager::Start()
 {
 	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
 
-	return false;
+	return true;
 }
 
 bool ResourceManager::CleanUp()
 {
 
-	return false;
+	return true;
 }
 
 update_status ResourceManager::PreUpdate(float dt)
@@ -30,7 +30,7 @@ void ResourceManager::ReceiveEvent(Event event)
 	{
 		case EventType::FILE_DELETED:
 		{
-			Resource* toDelete = FindByFile((char*)event.fileEvent.fileChanged);
+			Resource* toDelete = FindByFile((char*)event.fileEvent.file);			
 			if (toDelete)
 			{
 				//TODO: ALERT ALL THE REFERENCES TO STOP USING THIS DELETED RESOURCE
@@ -41,6 +41,14 @@ void ResourceManager::ReceiveEvent(Event event)
 		case EventType::FILE_CREATED:
 		{
 			//TODO: CHECK THE FORMAT AND EXPORT IN OUR BINARY ONE. STORE IT IN THE RESOURCES MAP.
+			break;
+		}
+		case EventType::FILE_MOVED:
+		{
+			//TODO: DUPLICATE THE BEHAVIOR IN LIBRARY?
+			Resource* toUpdate = FindByFile((char*)event.fileEvent.oldLocation);
+			if(toUpdate)
+				toUpdate->setFile((char*)event.fileEvent.file);
 			break;
 		}
 	}
@@ -65,7 +73,7 @@ Resource* ResourceManager::FindByFile(char* file)
 	for (it = resources.begin(); it != resources.end(); ++it)
 	{
 		Resource* resource = it->second;
-		if (resource->getFile() == file)
+		if (strcmp(resource->getFile(), file) == 0)
 			return resource;
 	}
 	return nullptr;
@@ -73,10 +81,10 @@ Resource* ResourceManager::FindByFile(char* file)
 
 uint Resource::amountReferences() const
 {
-	return uint();
+	return 0;
 }
 
 bool Resource::LoadToMemory()
 {
-	return false;
+	return true;
 }

@@ -50,6 +50,7 @@ public:
 
 private:
 	void recursiveDirectory(Directory& directory);
+	void SendEvents(const Directory& newAssetsDir);
 
 public:
 	Directory AssetsDirSystem;

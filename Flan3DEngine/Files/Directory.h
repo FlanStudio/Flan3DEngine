@@ -18,7 +18,7 @@ struct Directory
 		directories.clear();
 	}
 
-	void getFullPaths(std::vector<std::string>& fullpaths)
+	void getFullPaths(std::vector<std::string>& fullpaths) const
 	{
 		for (int i = 0; i < files.size(); ++i)
 			fullpaths.push_back(fullPath + "/" + files[i]);
@@ -27,6 +27,14 @@ struct Directory
 			directories[i].getFullPaths(fullpaths);
 	}
 
+	void getFiles(std::vector<std::string>& _files) const
+	{
+		for (int i = 0; i < files.size(); ++i)
+			_files.push_back(files[i]);
+
+		for (int i = 0; i < directories.size(); ++i)
+			directories[i].getFiles(_files);
+	}
 
 	bool operator == (Directory other)
 	{

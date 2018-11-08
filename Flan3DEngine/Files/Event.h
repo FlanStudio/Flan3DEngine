@@ -6,7 +6,10 @@
 struct FileSystemEvent
 {
 	uint32_t type;
-	const char* fileChanged;
+	const char* file;
+
+	//ONLY USED WHEN FILE_MOVED
+	const char* oldLocation;
 };
 
 enum EventType
@@ -16,7 +19,8 @@ enum EventType
 	//FileSystem Events
 	FILE_CREATED = 0x100,
 	FILE_DELETED,
-	FILE_MOVED
+	FILE_MOVED,
+	FILE_MODIFIED //TODO: HOW TO DETECT THAT?
 };
 
 union Event

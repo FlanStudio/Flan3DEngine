@@ -25,6 +25,7 @@ public:
 	inline ResourceType getType() const { return type; }
 	inline UID getUUID() const { return uuid; }
 	inline const char* getFile() const { return file.data(); }
+	inline void setFile(char* newLocation) { file = std::string(newLocation); }
 	inline const char* getExportedFile() const { return exportedFile.data(); }
 	inline bool isLoadedToMemory() const { return amountLoaded > 0; }
 	

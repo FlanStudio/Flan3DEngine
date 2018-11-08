@@ -20,6 +20,7 @@ Application::Application()
 	fs = new ModuleFileSystem();
 	fbxLoader = new FBXLoader();
 	textures = new ModuleTextures();
+	resources = new ResourceManager();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -27,17 +28,16 @@ Application::Application()
 
 	// Main Modules
 	AddModule(window);
-	AddModule(camera);
 	AddModule(input);
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
+	AddModule(camera);
 	AddModule(fbxLoader);
+	AddModule(resources);
 	// Scenes
 	AddModule(scene);
 
-	//Debug geometry here
-	//AddModule(debug);
 	AddModule(editor);
 	
 	// Renderer last!
@@ -153,8 +153,18 @@ update_status Application::Update()
 			case EventType::FILE_CREATED:
 			case EventType::FILE_DELETED:
 			{
-				if(event.fileEvent.fileChanged)
-					delete event.fileEvent.fileChanged;
+				if(event.fileEvent.file)
+					delete event.fileEvent.file;
+				break;
+			}
+			case EventType::FILE_MOVED:
+			{
+				if (event.fileEvent.file)
+					delete event.fileEvent.file;
+
+				if (event.fileEvent.oldLocation)
+					delete event.fileEvent.oldLocation;
+				break;
 			}
 		}
 		events.pop();

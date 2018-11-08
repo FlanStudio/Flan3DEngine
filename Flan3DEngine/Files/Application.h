@@ -14,6 +14,7 @@
 #include "ModuleFileSystem.h"
 #include "FBXLoader.h"
 #include "ModuleTextures.h"
+#include "ResourceManager.h"
 
 #include "Parson/parson.h"
 
@@ -103,6 +104,7 @@ public:
 	ModuleFileSystem* fs;
 	FBXLoader* fbxLoader;
 	ModuleTextures* textures;
+	ResourceManager* resources;
 
 private:
 	Timer	ms_timer;
