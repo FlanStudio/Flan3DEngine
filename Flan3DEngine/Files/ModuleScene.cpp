@@ -30,21 +30,16 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	/*App->camera->Move(float3(0.0f, 5.0f, 5.0f));
-	App->camera->LookAt(float3(0, 0, 0));*/
-
-
-	//-------------SPAWN HOUSE WITH THE TEXTURE-----------
 	App->fbxLoader->LoadFBX("Assets/meshes/BakerHouse.fbx");
-	App->textures->LoadTexture("Assets/textures/Baker_house.dds");
 
 	//Temp
-	GameObject* camera = new GameObject(gameObjects[0]);
+	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
 	camera->CreateComponent(ComponentType::TRANSFORM);
 	ComponentCamera* camcomp = (ComponentCamera*)camera->CreateComponent(ComponentType::CAMERA);
 	camcomp->setMainCamera();
 	camera->name = "MainCamera";
-	gameObjects[0]->InsertChild(camera, 0);
+	gameObjects[0]->AddChild(camera);
+
 
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
@@ -52,6 +47,16 @@ bool ModuleScene::Start()
 	euler.Init();
 
 	return ret;
+}
+
+bool ModuleScene::Init()
+{
+	if (gameObjects.size() == 0)
+	{
+		GameObject* root = CreateGameObject(nullptr);
+		root->name = "RootNode";
+	}
+	return true;
 }
 
 // Load assets

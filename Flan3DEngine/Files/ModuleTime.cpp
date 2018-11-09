@@ -2,9 +2,10 @@
 #include "Application.h"
 #include "Brofiler\Brofiler.h"
 
+#include "ResourceTexture.h"
+
 bool ModuleTime::Start()
 {
-	timeAtlasId = App->textures->LoadTexture("Assets/textures/timeAtlas.dds");
 	return true;
 }
 
@@ -27,7 +28,7 @@ update_status ModuleTime::PreUpdate()
 update_status ModuleTime::PostUpdate()
 {
 	BROFILER_CATEGORY("TimePostUpdate", Profiler::Color::Azure)
-
+	
 	//Frame counter
 	frameCount++;
 
@@ -56,20 +57,23 @@ bool ModuleTime::CleanUp()
 
 void ModuleTime::OnTimeGUI()
 {
+	if (!timeAtlas)
+		timeAtlas = App->textures->textures[3]; //Temporal, this will be in a hidden directory
+
 	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetCursorScreenPos({ windowPos.x + 33.0f,windowPos.y + 2.0f });
 
 	if (!IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//play
+		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
 		{
 			IN_GAME = true;
 		}
 	}
 	else
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.0f,0.0f }, { 0.31f,0.47f }))//stop
+		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
 		}
@@ -77,13 +81,13 @@ void ModuleTime::OnTimeGUI()
 
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//pause
+	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
 	{
 
 	}
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlasId, { 18,18 }, { 0.69f,0.0f }, { 1.0f,-0.47f }))//step
+	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
 	{
 
 	}

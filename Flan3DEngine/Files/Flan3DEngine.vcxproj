@@ -266,7 +266,9 @@
     <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
@@ -348,6 +350,7 @@
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

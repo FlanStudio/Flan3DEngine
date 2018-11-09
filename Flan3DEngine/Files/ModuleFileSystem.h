@@ -8,6 +8,12 @@
 #define SCENES_ASSETS_FOLDER "Assets/Scenes/"
 #define SCENES_EXTENSION ".flanScene"
 
+#define PREFABS_FOLDER "Assets/Prefabs"
+#define PREFABS_EXTENSION ".flanPrefab"
+
+#define TEXTURES_LIBRARY_FOLDER "Library/Textures"
+#define TEXTURES_EXTENSION ".dds"
+
 #include <vector>
 #include <string>
 #include "Module.h"
@@ -41,21 +47,30 @@ public:
 	//WARNING: Don't forget to delete the buffer
 	char* BINARY_TO_ASCII(char* binary_string);
 
-	//WARNING: Don't forget to delete the Directory file after use
-	Directory getDirFiles(char* dir);
-
 	void fileSystemGUI();
 
 	bool Exists(std::string file) const;
 
+	//Fill a vector with all the files in Assets, with their respective path
+	void getFilesPath(std::vector<std::string>& files) const;
+
+	//Extracts the extension from a string. 
+	// return "" if not founded
+	std::string getExt(const std::string& file) const;
+
+	bool deleteDirectory(const std::string& directory) const;
+	bool emptyDirectory(const std::string& directory) const;
+
 private:
+	//WARNING: Don't forget to delete the Directory file after use
+	Directory getDirFiles(char* dir) const;
+
 	void recursiveDirectory(Directory& directory);
 	void SendEvents(const Directory& newAssetsDir);
 
-public:
+private:
 	Directory AssetsDirSystem;
 
-private:
 	float updateAssetsCounter = 0.0f;
 	float updateAssetsRate = 1.0f;
 };
