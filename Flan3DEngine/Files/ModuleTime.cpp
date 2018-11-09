@@ -66,14 +66,14 @@ void ModuleTime::OnTimeGUI()
 
 	if (!IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//play
+		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
 		{
 			IN_GAME = true;
 		}
 	}
 	else
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.0f,0.0f }, { 0.31f,0.47f }))//stop
+		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
 		}
@@ -81,13 +81,13 @@ void ModuleTime::OnTimeGUI()
 
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//pause
+	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
 	{
 
 	}
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.69f,0.0f }, { 1.0f,-0.47f }))//step
+	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
 	{
 
 	}

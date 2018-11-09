@@ -152,12 +152,6 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 		Debug.LogError("Error converting the image \"%s\" to RGBA. Error: %s", file, iluErrorString(ilGetError()));
 		return nullptr;
 	}
-
-	if (!iluFlipImage())
-	{
-		Debug.LogError("Error flipping the image \"%s\". Error: %s", file, iluErrorString(ilGetError()));
-		return nullptr;
-	}
 	
 	//Create an OpenGL texture and initialize it with the active Image data
 	uint openGLID = 0;
@@ -188,29 +182,19 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 
 	std::string resourcePath = TEXTURES_LIBRARY_FOLDER + std::string("/") + std::to_string(text->getUUID()) + ".dds";
 
-	if (App->fs->getExt(file) != ".dds")
+	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+
+	savedSize = ilSaveL(IL_DDS, NULL, 0);
+	savedBuffer = new ILubyte[savedSize];
+	if (ilSaveL(IL_DDS, savedBuffer, savedSize) <= 0)
 	{
-		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
-
-		savedSize = ilSaveL(IL_DDS, NULL, 0);
-		savedBuffer = new ILubyte[savedSize];
-		if (ilSaveL(IL_DDS, savedBuffer, savedSize) <= 0)
-		{
-			Debug.LogError("DevIL failed saving the texture \"%s\" to a buffer. Error: %s", file.data(), iluErrorString(ilGetError()));
-			return nullptr;
-		}
-
-		if (!App->fs->OpenWriteBuffer(resourcePath, savedBuffer, savedSize))
-		{
-			return nullptr;
-		}
+		Debug.LogError("DevIL failed saving the texture \"%s\" to a buffer. Error: %s", file.data(), iluErrorString(ilGetError()));
+		return nullptr;
 	}
-	else
+
+	if (!App->fs->OpenWriteBuffer(resourcePath, savedBuffer, savedSize))
 	{
-		if (!App->fs->OpenWriteBuffer(resourcePath, buffer, size))
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 
 	text->setExportedFile((char*)resourcePath.data());

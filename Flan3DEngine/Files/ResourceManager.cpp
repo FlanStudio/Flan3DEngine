@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Resource.h"
+#include "ResourceTexture.h"
 
 ResourceManager::~ResourceManager()
 {
@@ -27,8 +28,10 @@ bool ResourceManager::Start()
 		if (App->textures->isSupported(extension))
 		{
 			//Its a texture. Call Texture Exporter and save a .dds file in library
-			App->textures->ExportResource(fullPaths[i]);
+			ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
+			resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
 
+			//TODO: SAVE A .META CONTAINING THE LINK BETWEEN BOTH FILES
 		}
 		else if (extension == ".fbx" || extension == ".FBX")
 		{
