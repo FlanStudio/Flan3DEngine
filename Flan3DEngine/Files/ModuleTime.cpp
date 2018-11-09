@@ -4,7 +4,7 @@
 
 bool ModuleTime::Start()
 {
-	timeAtlasId = App->textures->LoadTexture("Assets/textures/play_text.dds");
+	timeAtlasId = App->textures->LoadTexture("Assets/textures/timeAtlas.dds");
 	return true;
 }
 

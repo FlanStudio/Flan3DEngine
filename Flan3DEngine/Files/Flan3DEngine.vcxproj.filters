@@ -61,6 +61,12 @@
     <Filter Include="Sources\GameObjects">
       <UniqueIdentifier>{f18e7c92-7cf1-4ec7-b350-9ca82aa7d9a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Events">
+      <UniqueIdentifier>{6805a2c1-353a-4393-b3dd-5222534f64d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\imgui\ImGuizmo">
+      <UniqueIdentifier>{75177216-8540-4e21-bda5-a05166810051}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -633,6 +639,18 @@
     <ClInclude Include="ModuleTime.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Directory.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Sources\Containers\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -858,6 +876,15 @@
       <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="ModuleTime.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Directory.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Tools\imgui\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
