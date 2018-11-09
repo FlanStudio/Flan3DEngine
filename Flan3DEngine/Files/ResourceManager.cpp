@@ -20,11 +20,14 @@ bool ResourceManager::CleanUp()
 
 update_status ResourceManager::PreUpdate(float dt)
 {
-	//Receive Drop events, create a resources copy in library and link both. Check for deletion or modifying. FBX = scene + few files
+	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
 	std::string dropped = App->input->getFileDropped();
 	if (!dropped.empty())
-	{ }
+	{
 		//Manage imports here
+	
+	}
+		
 
 	return update_status::UPDATE_CONTINUE;
 }
