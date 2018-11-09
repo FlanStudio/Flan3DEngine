@@ -30,14 +30,6 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	/*App->camera->Move(float3(0.0f, 5.0f, 5.0f));
-	App->camera->LookAt(float3(0, 0, 0));*/
-
-
-	//-------------SPAWN HOUSE WITH THE TEXTURE-----------
-	/*App->fbxLoader->LoadFBX("Assets/meshes/BakerHouse.fbx");					//Fix that, rootnode is a bad rootnode
-	App->textures->LoadTexture("Assets/textures/Baker_house.dds");*/
-
 	//Temp
 	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
 	camera->CreateComponent(ComponentType::TRANSFORM);

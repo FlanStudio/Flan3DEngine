@@ -2,6 +2,7 @@
 #include "Glew/include/glew.h"
 #include "GameObject.h"
 #include "ModuleFileSystem.h"
+#include "ResourceTexture.h"
 
 ComponentMesh::~ComponentMesh()
 {
@@ -206,7 +207,6 @@ void ComponentMesh::OnInspector()
 			ImGui::Text("Texture %i", i); ImGui::NewLine();
 			ImGui::SetCursorPosX(36);
 			ImGui::Image((GLuint*)App->textures->textures[i]->id, { 50,50 }, { 0,1 }, { 1,0 });
-			ImGui::TextWrapped("\tFile: %s", App->textures->textures[i]->name.data());
 			ImGui::Text("\tsize: %dx%d", App->textures->textures[i]->width, App->textures->textures[i]->height);
 		}
 	}

@@ -5,6 +5,8 @@
 #include "Globals.h"
 #include "Timer.h"
 
+class ResourceTexture;
+
 class ModuleTime : public Module
 {
 public:
@@ -34,7 +36,7 @@ public:
 private:
 	Uint32 lastSecFramesCounter = 0;
 
-	uint timeAtlasId = 0;
+	ResourceTexture* timeAtlas = nullptr;
 
 };
 

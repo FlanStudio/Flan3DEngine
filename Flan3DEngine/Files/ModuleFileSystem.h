@@ -11,6 +11,9 @@
 #define PREFABS_FOLDER "Assets/Prefabs"
 #define PREFABS_EXTENSION ".flanPrefab"
 
+#define TEXTURES_LIBRARY_FOLDER "Library/Textures"
+#define TEXTURES_EXTENSION ".dds"
+
 #include <vector>
 #include <string>
 #include "Module.h"

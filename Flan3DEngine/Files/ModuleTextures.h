@@ -6,23 +6,7 @@
 #include <vector>
 #include <string>
 
-struct Texture
-{
-	std::string name;
-
-	unsigned char* data = nullptr;
-
-	//OpenGL id
-	uint id = 0;
-
-	uint width = 0;
-	uint height = 0;
-
-	~Texture();
-};
-
-
-
+class ResourceTexture;
 
 class ModuleTextures : public Module
 {
@@ -45,9 +29,6 @@ public:
 	//Load changes the module, not the JSON
 	bool Load(const JSON_Object* obj) { return true; }
 
-	//returns the index of the image loaded
-	uint LoadTexture(const char* file, bool useFileSystem = true);
-
 	void getTextureSize(uint id, uint& width, uint& size) const;
 
 	void deleteTextures();
@@ -56,10 +37,10 @@ public:
 
 	bool isSupported(const std::string& extension) const;
 
-	//bool Export(const char* buffer, uint& uid, bool deleteBuffer = true);
+	ResourceTexture* ExportResource(std::string file);
 
 public:
-	std::vector<Texture*> textures;
+	std::vector<ResourceTexture*> textures;
 };
 
 #endif
