@@ -54,6 +54,10 @@ public:
 
 	void guiTextures() const;
 
+	bool isSupported(const std::string& extension) const;
+
+	//bool Export(const char* buffer, uint& uid, bool deleteBuffer = true);
+
 public:
 	std::vector<Texture*> textures;
 };

@@ -185,3 +185,41 @@ void ModuleTextures::guiTextures() const
 		ImGui::Text("\tsize: %dx%d", textures[i]->width, textures[i]->height);
 	}
 }
+
+bool ModuleTextures::isSupported(const std::string& extension) const
+{
+	if (extension == ".bmp" || extension == ".BMP"	||
+		extension == ".cut" || extension == ".CUT"	||
+		extension == ".dds" || extension == ".DDS"	||
+		extension == ".gif"	|| extension == ".GIF"	||
+		extension == ".ico" || extension == ".ICO"	||
+		extension == ".cur"	|| extension == ".CUR"	||
+		extension == ".jpg" || extension == ".JPG"	||
+		extension == ".jpe"	|| extension == ".JPE"	||
+		extension == ".jpeg"|| extension == ".JPEG" ||
+		extension == ".lbm"	|| extension == ".LBM"	||
+		extension == ".lif" || extension == ".LIF"	||
+		extension == ".lmp" || extension == ".LMP"	||
+		extension == ".mdl" || extension == ".MDL"	||
+		extension == ".mng" || extension == ".MNG"	||
+		extension == ".pcd" || extension == ".PCD"	||
+		extension == ".pcx" || extension == ".PCX"	||
+		extension == ".pic" || extension == ".PIC"	||
+		extension == ".png" || extension == ".PNG"	||
+		extension == ".pbm" || extension == ".PBM"	||
+		extension == ".pgm" || extension == ".PGM"	||
+		extension == ".ppm" || extension == ".PPM"	||
+		extension == ".pnm" || extension == ".PNM"	||
+		extension == ".psd" || extension == ".PSD"	||
+		extension == ".sgi" || extension == ".SGI"	||
+		extension == ".bw"  || extension == ".BW"	||
+		extension == ".rgb" || extension == ".RGB"	||
+		extension == ".rgba"|| extension == ".RGBA"	||
+		extension == ".tga" || extension == ".TGA"	||
+		extension == ".tif" || extension == ".TIF"	||
+		extension == ".tiff"|| extension == ".TIFF"	||
+		extension == ".wal"|| extension == ".WAL")
+			return true;
+	
+	return false;
+}

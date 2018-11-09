@@ -7,7 +7,35 @@ ResourceManager::~ResourceManager()
 
 bool ResourceManager::Start()
 {
+	//OPTIONAL TODO: Omit that step and make it an export button, then clear the library and export all the saved files
+
 	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
+	
+	std::vector<std::string> fullPaths;
+	App->fs->getFilesPath(fullPaths);
+
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+
+		if (extension.empty())
+			continue;
+
+		if (App->textures->isSupported(extension))
+		{
+			//Its a texture. Call Texture Exporter and save a .dds file in library
+
+
+		}
+		else if (extension == ".fbx" || extension == ".FBX")
+		{
+			//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
+			//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
+		}
+
+		//TODO: Materials, audio, animations, etc?
+	}
 
 	return true;
 }
@@ -24,8 +52,7 @@ update_status ResourceManager::PreUpdate(float dt)
 	std::string dropped = App->input->getFileDropped();
 	if (!dropped.empty())
 	{
-		//Manage imports here
-	
+		//Manage imports here, check if the file has already been imported	
 	}
 		
 

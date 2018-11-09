@@ -13,6 +13,8 @@
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
+#define SHOWMETAFILES false
+
 bool ModuleFileSystem::Init()
 {
 	//Initialize PhysFS library
@@ -30,6 +32,9 @@ bool ModuleFileSystem::Init()
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
 	AssetsDirSystem = getDirFiles("Assets");
+
+	//ALWAYS RE-EXPORT ALL THE RESOURCES WHEN OPENING THE ENGINE, FOR NOW
+	emptyDirectory("Library");
 
 	return true;
 }
@@ -267,7 +272,7 @@ char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
 	return ret;
 }
 
-Directory ModuleFileSystem::getDirFiles(char* dir)
+Directory ModuleFileSystem::getDirFiles(char* dir) const 
 {
 	Directory ret;
 	ret.fullPath = dir;
@@ -298,6 +303,9 @@ Directory ModuleFileSystem::getDirFiles(char* dir)
 		}
 		else
 		{
+			if (getExt(files[i]) == ".meta" && !SHOWMETAFILES)
+				continue;
+
 			PHYSFS_Stat stats;
 			PHYSFS_stat(fulldir.data(), &stats);
 			File file;
@@ -319,6 +327,46 @@ void ModuleFileSystem::fileSystemGUI()
 bool ModuleFileSystem::Exists(std::string file) const
 {
 	return PHYSFS_exists(file.data());
+}
+
+void ModuleFileSystem::getFilesPath(std::vector<std::string>& files) const
+{
+	AssetsDirSystem.getFullPaths(files);
+}
+
+std::string ModuleFileSystem::getExt(const std::string& file) const
+{
+	std::string ret;
+
+	uint pos = file.find_last_of(".");
+	ret = file.substr(pos);
+
+	return ret;
+}
+
+bool ModuleFileSystem::deleteDirectory(const std::string & directory) const
+{
+	emptyDirectory(directory);
+	PHYSFS_delete(directory.data());
+	return true;
+}
+
+bool ModuleFileSystem::emptyDirectory(const std::string& dir) const
+{
+	Directory directory = getDirFiles((char*)dir.c_str());
+
+	for(int i = 0; i < directory.files.size(); ++i)
+	{
+		PHYSFS_delete(std::string(directory.fullPath + "/" + directory.files[i].name).c_str());
+	}
+
+	for (int i = 0; i < directory.directories.size(); ++i)
+	{
+		emptyDirectory(directory.directories[i].fullPath);
+		deleteDirectory(directory.directories[i].fullPath);
+	}	
+
+	return true;
 }
 
 void ModuleFileSystem::recursiveDirectory(Directory& directory)
