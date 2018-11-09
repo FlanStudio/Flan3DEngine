@@ -107,7 +107,7 @@ void Application::FinishUpdate()
 	if (FPS_index >= FPS.size())
 		FPS_index = 0;
 
-	ms[ms_index++] = (dt) * 1000;
+	ms[ms_index++] = (time->dt) * 1000;
 	if (ms_index >= ms.size())
 		ms_index = 0;
 
