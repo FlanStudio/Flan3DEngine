@@ -76,8 +76,8 @@ private:
 
 	void genUUID()
 	{
-		if (UUID == 0)
-			UUID = FLAN::randomUINT32_Range();
+		if (uuid == 0)
+			uuid = FLAN::randomUINT32_Range();
 	}
 
 	//Components
@@ -91,7 +91,7 @@ public:
 
 	bool drawAABBs = true;
 
-	uint32_t UUID = 0u;
+	UID uuid = 0u;
 	std::vector<Component*> components;
 
 private:

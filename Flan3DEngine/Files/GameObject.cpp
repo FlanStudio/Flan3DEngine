@@ -427,10 +427,10 @@ void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<Co
 void GameObject::Serialize(char*& cursor)
 {
 	uint bytes = sizeof(uint32_t);
-	memcpy(cursor, &UUID, bytes);
+	memcpy(cursor, &uuid, bytes);
 	cursor += bytes;
 	
-	uint32_t parentUUID = parent ? parent->UUID : 0;
+	uint32_t parentUUID = parent ? parent->uuid : 0;
 	memcpy(cursor, &parentUUID, bytes);
 	cursor += bytes;
 
@@ -450,7 +450,7 @@ void GameObject::Serialize(char*& cursor)
 void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
 {
 	uint bytes = sizeof(uint32_t);
-	memcpy(&UUID, cursor, bytes);
+	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
 	memcpy(&parentUUID, cursor, bytes);

@@ -39,6 +39,7 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate()
 {
+
 	BROFILER_CATEGORY("ModuleInput_Preupdate", Profiler::Color::Aqua)
 
 	SDL_PumpEvents();
@@ -120,6 +121,16 @@ update_status ModuleInput::PreUpdate()
 
 			case SDL_DROPFILE:
 			{
+				fileDropped = e.drop.file;
+
+				//Normalize the path to '/'
+				uint Pos = fileDropped.find("\\");
+				while (Pos != std::string::npos)
+				{
+					fileDropped = fileDropped.replace(Pos, 1, "/");
+					Pos = fileDropped.find("\\");
+				}
+
 				std::string filePath = e.drop.file;
 				uint pos = filePath.find_last_of(".");
 				if (pos != std::string::npos)

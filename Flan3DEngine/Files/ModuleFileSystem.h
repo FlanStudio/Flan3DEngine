@@ -3,7 +3,7 @@
 
 #define ASSETS_FOLDER "Assets/"
 #define LIBRARY_FOLDER "Library/"
-#define CONFIG_FOLDER "Library/config/"
+#define SETTINGS_FOLDER "Settings/"
 
 #define SCENES_ASSETS_FOLDER "Assets/Scenes/"
 #define SCENES_EXTENSION ".flanScene"
@@ -13,53 +13,7 @@
 #include "Module.h"
 #include "Timer.h"
 
-struct Directory
-{
-	std::string fullPath;
-	std::string name;
-	std::vector<std::string> files;
-	std::vector<Directory> directories;
-
-	~Directory()
-	{
-		name.clear();
-		files.clear();
-		directories.clear();
-	}
-
-	bool operator == (Directory other)
-	{
-		bool ret = true;
-
-		if (name != other.name || files.size() != other.files.size() || directories.size() != other.directories.size())
-			ret = false;
-
-		if (ret)
-		{
-			for (int i = 0; i < files.size() && ret; ++i)
-			{
-				if (files[i] != other.files[i])
-					ret = false;
-			}
-
-			if (ret)
-			{
-				for (int i = 0; i < directories.size() && ret; ++i)
-				{
-					if (directories[i] != other.directories[i])
-						ret = false;
-				}
-			}
-		}
-		return ret;
-	}
-
-	bool operator != (Directory other)
-	{
-		return !(*this== other);
-	}
-
-};
+#include "Directory.h"
 
 class ModuleFileSystem : public Module
 {
@@ -96,6 +50,7 @@ public:
 
 private:
 	void recursiveDirectory(Directory& directory);
+	void SendEvents(const Directory& newAssetsDir);
 
 public:
 	Directory AssetsDirSystem;

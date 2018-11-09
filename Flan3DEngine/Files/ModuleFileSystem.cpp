@@ -25,7 +25,7 @@ bool ModuleFileSystem::Init()
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
 	AddPath("./Library/", "Library");
-	AddPath("./Library/config", "config");
+	AddPath("./Settings/", "Settings");
 
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
@@ -62,10 +62,10 @@ update_status ModuleFileSystem::PreUpdate()
 		Directory newAssetsDir = getDirFiles("Assets");
 		
 		if (newAssetsDir != AssetsDirSystem)
-		{
-			//TODO: SEND EVENTS, ASSETS CHANGED.
+		{			
+			SendEvents(newAssetsDir);
 			AssetsDirSystem = newAssetsDir;
-		}		
+		}	
 	}
 	return update_status::UPDATE_CONTINUE;
 }
@@ -270,6 +270,7 @@ char* ModuleFileSystem::BINARY_TO_ASCII(char* binary_string)
 Directory ModuleFileSystem::getDirFiles(char* dir)
 {
 	Directory ret;
+	ret.fullPath = dir;
 	std::string dirstr(dir);
 	std::string name;
 	int pos = dirstr.find_last_of("/");
@@ -287,17 +288,22 @@ Directory ModuleFileSystem::getDirFiles(char* dir)
 	char** files = PHYSFS_enumerateFiles(dir);
 	for (int i = 0; files[i] != nullptr; ++i)
 	{
+		std::string fulldir(dir + std::string("/") + std::string(files[i]));
 		std::string file(files[i]);
 		if(file.find(".") == std::string::npos) //Is a directory, have not extension
-		{			
-			std::string fulldir(dir + std::string("/") + std::string(files[i]));		
+		{							
 			Directory child = getDirFiles((char*)fulldir.data());
 			child.fullPath = fulldir;
 			ret.directories.push_back(child);
 		}
 		else
 		{
-			ret.files.push_back(files[i]);
+			PHYSFS_Stat stats;
+			PHYSFS_stat(fulldir.data(), &stats);
+			File file;
+			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
+			file.name = files[i];
+			ret.files.push_back(file);
 		}
 	}
 	PHYSFS_freeList(files);
@@ -332,12 +338,12 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 		{
 			ImGuiTreeNodeFlags cflags = 0;
 			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
-			bool clicked = ImGui::TreeNodeEx(directory.files[i].data(), cflags);
+			bool clicked = ImGui::TreeNodeEx(directory.files[i].name.data(), cflags);
 			
 			if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemClicked(0))
 			{
-				int pos = directory.files[i].find_last_of(".");
-				std::string extension = directory.files[i].substr(pos);
+				int pos = directory.files[i].name.find_last_of(".");
+				std::string extension = directory.files[i].name.substr(pos);
 				if (extension == SCENES_EXTENSION)
 				{				
 					ImGui::OpenPopup("CAUTION");
@@ -349,7 +355,7 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 			if (ImGui::BeginPopupModal("CAUTION", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoMove))
 			{				
 				ImVec2 windowPos = ImGui::GetWindowPos();
-				std::string file = directory.files[i].substr(0, directory.files[i].find_last_of("."));
+				std::string file = directory.files[i].name.substr(0, directory.files[i].name.find_last_of("."));
 				ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 				ImGui::SetCursorScreenPos({ cursorPos.x + 20, cursorPos.y });
 				ImGui::TextWrapped("All the not saved elements in hierarchy will be lost. Are you sure you want to load \"%s\"?", file.data());				
@@ -371,5 +377,153 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 		}
 
 		ImGui::TreePop();
+	}
+}
+
+void ModuleFileSystem::SendEvents(const Directory& newAssetsDir)
+{
+	//To get the moved elements, initialize here 2 vectors with both fullpaths. Below here when a file is detected as added or deleted, 
+	//delete their reference in both fullpaths. At the end of the added and deleted fors, compare both fullpaths. 
+	//The different ones have to have been moved.
+
+	//Two arrays with a complete path for each file contained in the directory
+	std::vector<std::string> newFullPaths;
+	std::vector<std::string> oldFullPaths;
+	newAssetsDir.getFullPaths(newFullPaths);
+	AssetsDirSystem.getFullPaths(oldFullPaths);
+
+	//Get the file names, without the path, for each file contained in the directory
+	std::vector<File> newFiles;
+	std::vector<File> oldFiles;
+	AssetsDirSystem.getFiles(oldFiles);
+	newAssetsDir.getFiles(newFiles);
+
+	//Check for deleted files
+	for (int i = 0; i < oldFiles.size(); ++i)
+	{
+		bool exists = false;
+		bool modified = false;
+		for (int j = 0; j < newFiles.size(); ++j)
+		{
+			if (oldFiles[i] == newFiles[j])
+				exists = true;
+			else
+				if (oldFiles[i].name == newFiles[j].name) //Exists, but the file has been modified
+				{
+					exists = true;
+					modified = true;
+				}
+		}
+		if (!exists)
+		{
+			//A file has been deleted, get the full path and send the event.
+			//Delete this file from the oldFullPaths vector.
+
+			std::string file = oldFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < oldFullPaths.size(); ++j)
+			{
+				if (oldFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path
+					fullPathFile = oldFullPaths[j];
+					oldFullPaths.erase(oldFullPaths.begin() + j);
+					break;
+				}
+			}
+			Event event;
+			event.fileEvent.type = EventType::FILE_DELETED;
+			event.fileEvent.file = new char[fullPathFile.size() + 1];
+			strcpy((char*)event.fileEvent.file, fullPathFile.c_str());
+			App->SendEvent(event);
+		}
+		if (modified)
+		{
+			//Send the event
+			std::string file = oldFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < oldFullPaths.size(); ++j)
+			{
+				if (oldFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path. Do not erase from the vector
+					fullPathFile = oldFullPaths[j];
+					break;
+				}
+			}
+			Event event;
+			event.fileEvent.type = EventType::FILE_MODIFIED;
+			event.fileEvent.file = new char[fullPathFile.size() + 1];
+			strcpy((char*)event.fileEvent.file, fullPathFile.c_str());
+			App->SendEvent(event);
+		}
+	}
+
+	//Check for added files
+	for (int i = 0; i < newFiles.size(); ++i)
+	{
+		bool existed = false;
+		bool modified = false;
+		for (int j = 0; j < oldFiles.size(); ++j)
+		{
+			if (newFiles[i].name == oldFiles[j].name) //We already checked and sent events for file modifications above.
+				existed = true;
+		}
+		if (!existed)
+		{
+			//A file has been added, get the full path and send the event
+			//Delete this file from the newFullPaths vector.
+
+			std::string file = newFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < newFullPaths.size(); ++j)
+			{
+				if (newFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path
+					fullPathFile = newFullPaths[j];
+					newFullPaths.erase(newFullPaths.begin() + j);
+					break;
+				}
+			}
+			Event event;
+			event.fileEvent.type = EventType::FILE_CREATED;
+			event.fileEvent.file = new char[fullPathFile.size() + 1];
+			strcpy((char*)event.fileEvent.file, fullPathFile.c_str());
+			App->SendEvent(event);
+		}
+	}
+
+	//Now we only have complete paths referencing the same files in the FullPath vectors. 
+	//Compare same-named files' paths and send events if they are different.
+	for (int i = 0; i < oldFullPaths.size(); ++i)
+	{
+		int oldPos = oldFullPaths[i].find_last_of("/") + 1;
+		std::string oldfile = oldFullPaths[i].substr(oldPos);
+
+		for (int j = 0; j < newFullPaths.size(); ++j)
+		{
+			int newPos = newFullPaths[j].find_last_of("/") + 1;
+			std::string newfile = newFullPaths[j].substr(newPos);
+
+			if (oldfile != newfile) //Different files, don't care their path, continue searching
+				continue;
+
+			std::string oldPath = oldFullPaths[i].substr(0, oldPos);
+			std::string newPath = newFullPaths[j].substr(0, newPos);
+
+			if (oldPath != newPath) //Same file, different paths
+			{
+				Event event;
+				event.fileEvent.type = EventType::FILE_MOVED;
+				event.fileEvent.file = new char[newFullPaths[j].size() + 1];
+				strcpy((char*)event.fileEvent.file, newFullPaths[j].c_str());
+
+				event.fileEvent.oldLocation = new char[oldFullPaths[i].size() + 1];
+				strcpy((char*)event.fileEvent.oldLocation, oldFullPaths[i].c_str());
+				App->SendEvent(event);
+				break;
+			}
+		}
 	}
 }

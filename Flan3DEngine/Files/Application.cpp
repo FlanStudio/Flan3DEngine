@@ -3,6 +3,11 @@
 
 LogWindow Debug;
 
+void Application::SendEvent(Event event)
+{
+	events.push(event);
+}
+
 Application::Application()
 {
 	time = new ModuleTime();
@@ -16,6 +21,7 @@ Application::Application()
 	fs = new ModuleFileSystem();
 	fbxLoader = new FBXLoader();
 	textures = new ModuleTextures();
+	resources = new ResourceManager();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -24,17 +30,16 @@ Application::Application()
 	// Main Modules
 	AddModule(time);
 	AddModule(window);
-	AddModule(camera);
 	AddModule(input);
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
+	AddModule(camera);
 	AddModule(fbxLoader);
+	AddModule(resources);
 	// Scenes
 	AddModule(scene);
 
-	//Debug geometry here
-	//AddModule(debug);
 	AddModule(editor);
 	
 	// Renderer last!
@@ -136,6 +141,39 @@ update_status Application::Update()
 	PrepareUpdate();
 	
 	std::list<Module*>::iterator it;
+
+	//Send last frame events before doing anything
+	while (events.size() > 0)
+	{
+		Event event = events.front();		
+		for (it = list_modules.begin(); it != list_modules.end(); ++it)
+		{
+			(*it)->ReceiveEvent(event);
+		}
+
+		//Deallocate memory
+		switch (event.type)
+		{
+			case EventType::FILE_CREATED:
+			case EventType::FILE_DELETED:
+			{
+				if(event.fileEvent.file)
+					delete event.fileEvent.file;
+				break;
+			}
+			case EventType::FILE_MOVED:
+			{
+				if (event.fileEvent.file)
+					delete event.fileEvent.file;
+
+				if (event.fileEvent.oldLocation)
+					delete event.fileEvent.oldLocation;
+				break;
+			}
+		}
+		events.pop();
+	}
+	
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{
 		ret = (*it)->PreUpdate();
@@ -189,7 +227,7 @@ bool Application::LoadNow()
 
 	char* buf;
 	int size;
-	if (fs->OpenRead("config/config.json", &buf, size))
+	if (fs->OpenRead(SETTINGS_FOLDER + std::string("settings.json"), &buf, size))
 	{
 		JSON_Value* root = json_parse_string(buf);
 		JSON_Object* rootObj = json_value_get_object(root);
@@ -264,13 +302,13 @@ bool Application::SaveNow()const
 		int size = json_serialization_size_pretty(root);
 		char* jsonFile = new char[size];
 		json_serialize_to_buffer_pretty(root, jsonFile, size);
-		ret = App->fs->OpenWrite("./Library/config/config.json", jsonFile);
+		ret = App->fs->OpenWrite(SETTINGS_FOLDER + std::string("settings.json"), jsonFile);
 		delete[] jsonFile;
 
 		if (ret)
 			Debug.Log("Configuration succesfully saved");
 		else
-			Debug.LogError("Failed saving \"config/config.json\"");
+			Debug.LogError("Failed saving \"%s\"", (std::string(SETTINGS_FOLDER) + std::string("settings.json")).data());
 	}
 	else
 	{

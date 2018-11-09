@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
+#include <string>
 
 #define MAX_MOUSE_BUTTONS 5
 
@@ -33,6 +34,12 @@ public:
 	KEY_STATE GetMouseButton(int id) const
 	{
 		return mouse_buttons[id];
+	}
+
+	//Normaliced notation ('/') , starting from the hard disk
+	char* getFileDropped()const 
+	{ 
+		return (char*)fileDropped.c_str(); 
 	}
 
 	int GetMouseX() const
@@ -68,6 +75,7 @@ private:
 	int mouse_z;
 	int mouse_x_motion;
 	int mouse_y_motion;
-	//int mouse_z_motion;
+	
+	std::string fileDropped;
 };
 #endif

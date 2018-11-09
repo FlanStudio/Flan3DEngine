@@ -15,12 +15,16 @@
 #include "ModuleFileSystem.h"
 #include "FBXLoader.h"
 #include "ModuleTextures.h"
+#include "ResourceManager.h"
 
 #include "Parson/parson.h"
 
 #include <list>
 #include <vector>
 #include <string>
+
+#include "Event.h"
+#include <queue>
 
 struct LogWindow
 {
@@ -102,6 +106,7 @@ public:
 	ModuleFileSystem* fs;
 	FBXLoader* fbxLoader;
 	ModuleTextures* textures;
+	ResourceManager* resources;
 
 private:
 	std::list<Module*> list_modules;
@@ -120,6 +125,10 @@ public:
 	std::string organization = "FlanStudio";
 
 	bool debugDraw = true;
+
+public:
+	void SendEvent(Event event);
+	std::queue<Event> events;
 
 public:
 
