@@ -249,107 +249,147 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 	//Extras: We need to give the user the capability to access the different meshes and textures, and reference them inside components, as if they were
 	//separated files.
+
+	//We do not support Embedded Textures for now
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	//Create and storage in the vector all the ResourceMeshes.
-	for (int i = 0; i < scene->mNumMeshes; ++i)
-	{
-		aiMesh* assimpMesh = scene->mMeshes[i];
-		ResourceMesh* myMesh = new ResourceMesh();
-
-		//Store vertex
-		myMesh->num_vertex = assimpMesh->mNumVertices;
-		myMesh->vertex = new float[myMesh->num_vertex * 3];
-		memcpy(myMesh->vertex, assimpMesh->mVertices, sizeof(float) * myMesh->num_vertex * 3);
-
-		//Store index
-		if (assimpMesh->HasFaces())
-		{
-			myMesh->num_index = assimpMesh->mNumFaces * 3; //Assuming each face has 3 vertices => They all are triangles.
-			myMesh->index = new uint[myMesh->num_index];
-			for (uint j = 0; j < assimpMesh->mNumFaces; ++j)
-			{
-				if (assimpMesh->mFaces[j].mNumIndices != 3)
-					Debug.LogWarning("Charging a geometry face with != 3 vertices! Some errors might happen");
-				else // This face has 3 vertex
-					memcpy(&myMesh->index[j * 3], assimpMesh->mFaces[j].mIndices, 3 * sizeof(uint));
-			}
-		}
-
-		//Store Normals
-		if (assimpMesh->HasNormals())
-		{
-			myMesh->normals = new float[myMesh->num_vertex * 3];
-			memcpy(myMesh->normals, assimpMesh->mNormals, sizeof(float) * myMesh->num_vertex * 3);
-		}
-
-		//Store the first set of colors
-		if (assimpMesh->HasVertexColors(0))
-		{
-			myMesh->colors = new float[myMesh->num_vertex * 4];
-			memcpy(myMesh->colors, assimpMesh->mColors[i], sizeof(float) * myMesh->num_vertex * 4);
-		}
-
-		//Store the first set of UVs
-		if (assimpMesh->HasTextureCoords(0))
-		{
-			myMesh->textureCoords = new float[myMesh->num_vertex * 2]; //Assimp stores a 3D vector for texture coordinates, we only support 2D ones
-			for (int j = 0; j < myMesh->num_vertex; ++j)
-			{
-				memcpy(&myMesh->textureCoords[j * 2], &assimpMesh->mTextureCoords[0][j].x, sizeof(float));
-				memcpy(&myMesh->textureCoords[(j * 2) + 1], &assimpMesh->mTextureCoords[0][j].y, sizeof(float));
-			}
-		}
-
-		myMesh->meshName = assimpMesh->mName.C_Str();
-		ret.push_back(myMesh);
-		
-		char* meshBuffer = new char[myMesh->bytesToSerialize()];
-		char* cursor = meshBuffer;
-		myMesh->Serialize(cursor);
-		App->fs->OpenWriteBuffer(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION, meshBuffer, myMesh->bytesToSerialize());
-		delete meshBuffer;
-	}
-
-	//TODO: EMBEDDED TEXTURES?
-	
-	//Create and storage in the vector all the ResourceTextures
-	std::vector<ResourceTexture*> textures; //This is to avoid duplicating textures in Library
-	for (int i = 0; i < scene->mNumMaterials; ++i)
-	{
-		aiMaterial* assimpMaterial = scene->mMaterials[i];
-		//TODO: SPECULAR, EMMISIVE, NORMAL MAPS, ETC?
-
-		if (assimpMaterial->GetTextureCount(aiTextureType_DIFFUSE) < 0)
-			continue;
-
-		//Note: We do not support multiple texture channels for now
-
-		aiString path;
-		assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-
-		bool alreadyStored = false;
-		for (int j = 0; j < textures.size(); ++j)
-		{
-			if (textures[j]->getFile() == path.C_Str())
-			{
-				alreadyStored = true;
-			}
-		}
-		if (alreadyStored)
-			continue;
-
-		ResourceTexture* myTexture = App->textures->ExportResource(path.C_Str());
-		textures.push_back(myTexture);
-		ret.push_back(myTexture);
-	}
 
 	//Storage the node-structure
 	std::vector<const aiNode*> decomposedHierarchy = decomposeAssimpHierarchy(scene->mRootNode);
 
-	//Now we can store in Library a file containing fake-UIDs for each aiNode referencing to their parent, 
-	//and store in resources all the nodes that were referencing them 
+	//We can store in Library a file containing fake-UIDs for each aiNode referencing to their parent, 
+	//and keep their resources UID.
 
+	//Fake UIDS
+	UID* uids = new UID[decomposedHierarchy.size()];
+	for (int i = 0; i < decomposedHierarchy.size(); ++i)
+	{
+		uids[i] = FLAN::randomUINT32_Range();
+	}
+
+	//Parent for each aiNode
+	UID* parent_uids = new UID[decomposedHierarchy.size()];
+	for (int i = 0; i < decomposedHierarchy.size(); ++i)
+	{
+		for (int j = 0; j < decomposedHierarchy.size(); ++j)
+		{
+			if (decomposedHierarchy[i]->mParent == decomposedHierarchy[j])
+			{
+				parent_uids[i] = uids[j];
+			}
+		}
+	}
+
+	std::vector<ResourceTexture*> textures;
+	std::map<const aiMesh*, ResourceMesh*> meshes;
+
+	for (int i = 0; i < decomposedHierarchy.size(); ++i)
+	{
+		//Scan all the resources this aiNode is referencing
+
+		if (decomposedHierarchy[i]->mNumMeshes > 0)
+		{
+			//We only support 1 mesh each gameObject
+			const aiMesh* assimpMesh = scene->mMeshes[decomposedHierarchy[i]->mMeshes[0]];
+			
+			aiMaterial* assimpMaterial = scene->mMaterials[assimpMesh->mMaterialIndex];
+			std::string texturePath;
+			if (assimpMaterial)
+			{
+				aiString temp;
+				assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &temp); //TODO: SPECULAR, EMMISIVE, NORMAL MAPS, ETC?
+				texturePath = temp.C_Str();
+			}
+
+			//Now we have a Mesh and a Texture. Save them in our Resources vector
+
+			//Store the mesh, if this has not been saved yet
+
+			ResourceMesh* savedMesh = meshes.at(assimpMesh);
+			UID meshUID = 0;
+
+			if(!savedMesh)
+			{
+				ResourceMesh* myMesh = new ResourceMesh();
+				meshUID = myMesh->getUUID();
+				//Store vertex
+				myMesh->num_vertex = assimpMesh->mNumVertices;
+				myMesh->vertex = new float[myMesh->num_vertex * 3];
+				memcpy(myMesh->vertex, assimpMesh->mVertices, sizeof(float) * myMesh->num_vertex * 3);
+
+				//Store index
+				if (assimpMesh->HasFaces())
+				{
+					myMesh->num_index = assimpMesh->mNumFaces * 3; //Assuming each face has 3 vertices => They all are triangles.
+					myMesh->index = new uint[myMesh->num_index];
+					for (uint j = 0; j < assimpMesh->mNumFaces; ++j)
+					{
+						if (assimpMesh->mFaces[j].mNumIndices != 3)
+							Debug.LogWarning("Charging a geometry face with != 3 vertices! Some errors might happen");
+						else // This face has 3 vertex
+							memcpy(&myMesh->index[j * 3], assimpMesh->mFaces[j].mIndices, 3 * sizeof(uint));
+					}
+				}
+
+				//Store Normals
+				if (assimpMesh->HasNormals())
+				{
+					myMesh->normals = new float[myMesh->num_vertex * 3];
+					memcpy(myMesh->normals, assimpMesh->mNormals, sizeof(float) * myMesh->num_vertex * 3);
+				}
+
+				//Store the first set of colors
+				if (assimpMesh->HasVertexColors(0))
+				{
+					myMesh->colors = new float[myMesh->num_vertex * 4];
+					memcpy(myMesh->colors, assimpMesh->mColors[i], sizeof(float) * myMesh->num_vertex * 4);
+				}
+
+				//Store the first set of UVs
+				if (assimpMesh->HasTextureCoords(0))
+				{
+					myMesh->textureCoords = new float[myMesh->num_vertex * 2]; //Assimp stores a 3D vector for texture coordinates, we only support 2D ones
+					for (int j = 0; j < myMesh->num_vertex; ++j)
+					{
+						memcpy(&myMesh->textureCoords[j * 2], &assimpMesh->mTextureCoords[0][j].x, sizeof(float));
+						memcpy(&myMesh->textureCoords[(j * 2) + 1], &assimpMesh->mTextureCoords[0][j].y, sizeof(float));
+					}
+				}
+
+				myMesh->meshName = assimpMesh->mName.C_Str();
+				ret.push_back(myMesh);
+				meshes.insert(std::pair<const aiMesh*, ResourceMesh*>(assimpMesh, myMesh));
+			}
+			else
+			{
+				meshUID = savedMesh->getUUID();
+			}
+
+			//Store the texture
+
+			UID textureUID = 0;
+
+			bool alreadyStored = false;
+			for (int j = 0; j < textures.size(); ++j)
+			{
+				if (textures[j]->getFile() == texturePath)
+				{
+					alreadyStored = true;
+					textureUID = textures[j]->getUUID();
+				}
+			}
+			
+			if (!alreadyStored)
+			{
+				ResourceTexture* myTexture = App->textures->ExportResource(texturePath);
+				textures.push_back(myTexture);
+				ret.push_back(myTexture);
+				textureUID = myTexture->getUUID();
+			}
+		}
+
+		//Save here the uuids: This one's, parent's, textures and meshes
+
+	}
 
 
 
@@ -386,7 +426,11 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 	//
 
 
-
+	char* meshBuffer = new char[myMesh->bytesToSerialize()];
+	char* cursor = meshBuffer;
+	myMesh->Serialize(cursor);
+	App->fs->OpenWriteBuffer(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION, meshBuffer, myMesh->bytesToSerialize());
+	delete meshBuffer;
 
 	aiReleaseImport(scene);
 	delete buffer;
