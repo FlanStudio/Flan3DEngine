@@ -30,10 +30,36 @@ void ComponentMaterial::OnInspector()
 		ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 		drawingPos = { drawingPos.x - 10, drawingPos.y };
 		ImGui::SetCursorScreenPos(drawingPos);
-
-		uint buttonWidth = ImGui::GetWindowWidth() - ImGui::GetWindowWidth() / 3;
+	
+		uint buttonWidth = 2 * ImGui::GetWindowWidth() / 3;
 		ImGui::ButtonEx("##TextureReceiver", { (float)buttonWidth, 15 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
-		
+			
+		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemClicked(0))
+		{
+			textureClicked = false;
+		}
+		else if (ImGui::IsItemClicked(0))
+		{
+			textureClicked = true;
+		}
+		else if (!textureClicked && ImGui::IsItemHovered())
+		{
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+		}
+
+		if(textureClicked)
+		{
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+			if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+			{
+				//TODO: Notify the resource that you don't need him anymore
+				texture = nullptr;
+				textureClicked = false;
+			}
+		}	
+
 		//Dropping textures
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -62,11 +88,10 @@ void ComponentMaterial::OnInspector()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("Drop here a Texture");
+			ImGui::Text("Drop here a Texture.\nSelect it and press Backspace to erase the reference.");
 			ImGui::EndTooltip();
 		}
 		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
-
 
 		//Calculate the text fitting the button rect
 		std::string originalText = texture ? texture->getFile() : "No texture assigned";
@@ -87,5 +112,4 @@ void ComponentMaterial::OnInspector()
 
 		ImGui::NewLine();
 	}
-
 }

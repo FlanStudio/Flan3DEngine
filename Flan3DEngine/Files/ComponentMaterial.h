@@ -14,6 +14,8 @@ private:
 public:
 	ResourceTexture* texture = nullptr;
 
+private:
+	bool textureClicked = false;
 
 };
 
