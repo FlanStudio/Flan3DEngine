@@ -13,6 +13,7 @@ private:
 
 public:
 	ResourceTexture* texture = nullptr;
+	ImVec4 colorTint = { 1,1,1,1 };
 
 private:
 	bool textureClicked = false;

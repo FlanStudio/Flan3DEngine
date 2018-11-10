@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "ModuleFileSystem.h"
 #include "ResourceTexture.h"
+#include "ComponentMaterial.h"
 
 ComponentMesh::~ComponentMesh()
 {
@@ -92,7 +93,13 @@ void ComponentMesh::Draw()
 	glColorPointer(4, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindTexture(GL_TEXTURE_2D, App->textures->textures.empty() ? 0 : App->textures->textures[0]->id);
+	ComponentMaterial* material = (ComponentMaterial*)gameObject->getComponentByType(ComponentType::MATERIAL);
+	if (material)
+	{
+		glBindTexture(GL_TEXTURE_2D, material->texture ? material->texture->id : 0);		
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glColor4f(material->colorTint.x, material->colorTint.y, material->colorTint.z, material->colorTint.w);
+	}	
 
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
@@ -104,6 +111,7 @@ void ComponentMesh::Draw()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor4f(1, 1, 1, 1);
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);

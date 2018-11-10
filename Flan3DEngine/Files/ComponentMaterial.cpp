@@ -110,6 +110,21 @@ void ComponentMaterial::OnInspector()
 
 		ImGui::Text(clampedText.data());
 
+		//Tinting textures		
+		drawingPos = ImGui::GetCursorScreenPos();
+		ImGui::SetCursorScreenPos({ drawingPos.x, drawingPos.y+5});
+
+		ImGui::Text("Tint: "); ImGui::SameLine();
+
+		drawingPos = ImGui::GetCursorScreenPos();
+		ImGui::SetCursorScreenPos({ drawingPos.x, drawingPos.y - 5 });
+
+		ImGuiColorEditFlags colorFlags = 0;
+		colorFlags |= ImGuiColorEditFlags_::ImGuiColorEditFlags_NoInputs;
+		colorFlags |= ImGuiColorEditFlags_::ImGuiColorEditFlags_AlphaBar;
+		
+		ImGui::ColorEdit4("##TextureTint", &colorTint.x, colorFlags);
+
 		ImGui::NewLine();
 	}
 }
