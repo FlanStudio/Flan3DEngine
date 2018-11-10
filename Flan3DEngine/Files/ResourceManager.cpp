@@ -4,16 +4,20 @@
 #include "Resource.h"
 #include "ResourceTexture.h"
 
+#include "Brofiler/Brofiler.h"
+
 ResourceManager::~ResourceManager()
 {
 }
 
 bool ResourceManager::Start()
 {
-	//OPTIONAL TODO: Omit that step and make it an export button, then clear the library and export all the saved files
+	//OPTIONAL TODO: Omit that step and make it an export button, then clear the library and export all the saved files. Exporting big textures takes a while.
 
 	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
 	
+	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black)
+
 	std::vector<std::string> fullPaths;
 	App->fs->getFilesPath(fullPaths);
 
@@ -31,7 +35,16 @@ bool ResourceManager::Start()
 			ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
 			resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
 
-			//TODO: SAVE A .META CONTAINING THE LINK BETWEEN BOTH FILES
+			//Save a .meta to link both files through the UID
+			char* buffer;
+			uint size = 0;
+			size += sizeof(UID);
+
+			buffer = new char[size];
+			UID uid = textureR->getUUID();
+			memcpy(buffer, &uid, size);
+
+			App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
 		}
 		else if (extension == ".fbx" || extension == ".FBX")
 		{
@@ -51,7 +64,7 @@ bool ResourceManager::CleanUp()
 	return true;
 }
 
-update_status ResourceManager::PreUpdate(float dt)
+update_status ResourceManager::PreUpdate()
 {
 	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
 	std::string dropped = App->input->getFileDropped();
@@ -59,8 +72,7 @@ update_status ResourceManager::PreUpdate(float dt)
 	{
 		//Manage imports here, check if the file has already been imported	
 	}
-		
-
+	
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -113,14 +125,20 @@ Resource* ResourceManager::Get(UID uuid) const
 
 Resource* ResourceManager::FindByFile(char* file)
 {
-	std::map<UID, Resource*>::iterator it;
-	for (it = resources.begin(); it != resources.end(); ++it)
-	{
-		Resource* resource = it->second;
-		if (strcmp(resource->getFile(), file) == 0)
-			return resource;
-	}
-	return nullptr;
+	char* buffer = nullptr;
+	int size;
+
+	App->fs->OpenRead(file + std::string(".meta"), &buffer, size);
+
+	if (!buffer)
+		return nullptr;
+
+	UID uuid;
+	memcpy(&uuid, buffer, sizeof(UID));
+
+	delete buffer;
+
+	return resources.at(uuid);
 }
 
 uint Resource::amountReferences() const

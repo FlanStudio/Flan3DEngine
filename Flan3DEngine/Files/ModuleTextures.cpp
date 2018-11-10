@@ -12,6 +12,8 @@
 
 #include "ResourceTexture.h"
 
+#include "Brofiler/Brofiler.h"
+
 ModuleTextures::~ModuleTextures()
 {
 	deleteTextures();
@@ -127,6 +129,8 @@ bool ModuleTextures::isSupported(const std::string& extension) const
 
 ResourceTexture* ModuleTextures::ExportResource(std::string file)
 {
+	BROFILER_CATEGORY("Export ResourceTexture", Profiler::Color::Azure);
+
 	//Get the buffer from the FileSystem
 	char* buffer;
 	int size;
