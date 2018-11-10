@@ -5,8 +5,14 @@
 
 class ComponentMaterial : public Component
 {
+public:
+	ComponentMaterial(GameObject* gameObject, bool active = true) : Component(ComponentType::MATERIAL, gameObject, active) {}
 
+private:
+	void OnInspector();
 
+public:
+	ResourceTexture* texture = nullptr;
 
 
 };

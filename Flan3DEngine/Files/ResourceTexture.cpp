@@ -9,3 +9,8 @@ ResourceTexture::~ResourceTexture()
 		glDeleteTextures(1, &id);
 	}
 }
+
+uint ResourceTexture::getBytes() const
+{
+	return sizeof(ResourceTexture);
+}

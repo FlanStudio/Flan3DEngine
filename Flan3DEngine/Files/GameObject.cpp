@@ -2,9 +2,13 @@
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentMesh.h"
+#include "ComponentMaterial.h"
+
+
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
-#include "ComponentMesh.h"
+
 
 GameObject::~GameObject()
 {
@@ -45,6 +49,13 @@ Component* GameObject::CreateComponent(ComponentType type)
 			ComponentCamera* cameraComp = new ComponentCamera(this);
 			AddComponent(cameraComp);
 			ret = cameraComp;
+			break;
+		}
+		case ComponentType::MATERIAL:
+		{
+			ComponentMaterial* material = new ComponentMaterial(this);
+			AddComponent(material);
+			ret = material;
 			break;
 		}
 		case ComponentType::TRANSFORM:
@@ -381,12 +392,14 @@ void GameObject::OnInspector()
 			AddComponent(Transform);
 		}
 
-		//Put when we have materials
-		//if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
-		//{
-		//	ComponentCamera* Material = new Componentmaterial(parent, true); //When we delete this?
-		//	AddComponent(Material);
-		//}
+		if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
+		{
+			CreateComponent(ComponentType::MATERIAL);
+		}
+		else if (!toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) != nullptr)
+		{
+			deleteComponent(getComponentByType(ComponentType::MATERIAL));
+		}
 		ImGui::EndPopup();
 	}
 }

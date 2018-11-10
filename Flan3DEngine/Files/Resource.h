@@ -38,6 +38,8 @@ public:
 
 	bool LoadToMemory();
 
+	virtual uint getBytes() const = 0;
+
 protected:
 	UID uuid = 0u;
 	std::string file;

@@ -14,6 +14,9 @@ public:
 
 	uint width = 0;
 	uint height = 0;
+
+private:
+	uint getBytes() const;
 };
 
 #endif

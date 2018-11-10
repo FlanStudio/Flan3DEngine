@@ -10,6 +10,8 @@
 
 #include "imgui/imgui.h"
 
+#include "Resource.h"
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
@@ -407,6 +409,20 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 			bool clicked = ImGui::TreeNodeEx(directory.files[i].name.data(), cflags);
 			
+			//Starting the drag event			
+			if (ImGui::BeginDragDropSource())
+			{
+				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());			
+				if (resource)
+				{
+					ImGui::SetDragDropPayload("DraggingResources", &resource, resource->getBytes());
+					ImGui::BeginTooltip();
+					ImGui::Text(resource->getFile());
+					ImGui::EndTooltip();
+				}			
+				ImGui::EndDragDropSource();
+			}
+
 			if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemClicked(0))
 			{
 				int pos = directory.files[i].name.find_last_of(".");
