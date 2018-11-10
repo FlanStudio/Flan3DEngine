@@ -45,8 +45,6 @@ private:
 	std::vector<Resource*> ExportFBX(const std::string& file) const;
 	std::vector<const aiNode*> decomposeAssimpHierarchy(const aiNode* rootNode) const;
 
-	void ExportResourceMesh(const ResourceMesh* mesh) const;
-
 private:
 	aiLogStream stream;
 };
