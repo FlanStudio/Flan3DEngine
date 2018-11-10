@@ -13,7 +13,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleEditor.h"
 #include "ModuleFileSystem.h"
-#include "FBXLoader.h"
+#include "FBXExporter.h"
 #include "ModuleTextures.h"
 #include "ResourceManager.h"
 
@@ -104,7 +104,7 @@ public:
 	ModuleCamera3D* camera;
 	ModuleEditor* editor;
 	ModuleFileSystem* fs;
-	FBXLoader* fbxLoader;
+	FBXExporter* fbxexporter;
 	ModuleTextures* textures;
 	ResourceManager* resources;
 

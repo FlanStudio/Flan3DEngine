@@ -163,7 +163,7 @@
     <ClInclude Include="Directory.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="FBXLoader.h" />
+    <ClInclude Include="FBXExporter.h" />
     <ClInclude Include="Glew\include\eglew.h" />
     <ClInclude Include="Glew\include\glew.h" />
     <ClInclude Include="Glew\include\glxew.h" />
@@ -269,6 +269,7 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
@@ -281,7 +282,7 @@
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="Directory.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="FBXLoader.cpp" />
+    <ClCompile Include="FBXExporter.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\ImGuizmo\ImGuizmo.cpp" />
@@ -352,6 +353,7 @@
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

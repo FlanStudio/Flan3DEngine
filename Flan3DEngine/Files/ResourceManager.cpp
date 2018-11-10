@@ -50,6 +50,10 @@ bool ResourceManager::Start()
 		{
 			//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
 			//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
+
+
+
+
 		}
 
 		//TODO: Materials, audio, animations, etc?

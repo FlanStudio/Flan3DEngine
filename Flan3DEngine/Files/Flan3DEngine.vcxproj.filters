@@ -624,9 +624,6 @@
     <ClInclude Include="ModuleScene.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="FBXLoader.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentTransform.h">
       <Filter>Sources\GameObjects</Filter>
     </ClInclude>
@@ -662,6 +659,12 @@
     </ClInclude>
     <ClInclude Include="ComponentMaterial.h">
       <Filter>Sources\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXExporter.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMesh.h">
+      <Filter>Sources\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -872,9 +875,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Sources\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="FBXLoader.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ComponentTransform.cpp">
       <Filter>Sources\GameObjects</Filter>
     </ClCompile>
@@ -903,6 +903,12 @@
       <Filter>Sources\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXExporter.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>

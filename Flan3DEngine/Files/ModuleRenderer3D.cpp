@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "FBXLoader.h"
+#include "FBXExporter.h"
 
 #include "Glew/include/glew.h"
 #include "SDL/include/SDL_opengl.h"

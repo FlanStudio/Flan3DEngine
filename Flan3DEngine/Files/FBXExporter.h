@@ -1,5 +1,5 @@
-#ifndef __FBXLOADER_H__
-#define __FBXLOADER_H__
+#ifndef __FBXExporter_H__
+#define __FBXExporter_H__
 
 #include "Module.h"
 #include "Globals.h"
@@ -15,12 +15,14 @@ class aiMesh;
 class ComponentMesh;
 class GameObject;
 class aiScene;
+class Resource;
+class ResourceMesh;
 
-class FBXLoader : public Module
+class FBXExporter : public Module
 {
 public:
-	FBXLoader(bool start_enabled = true) : Module("FBXLoader", start_enabled) { }
-	~FBXLoader() {}
+	FBXExporter(bool start_enabled = true) : Module("FBXExporter", start_enabled) { }
+	~FBXExporter() {}
 
 	bool Start();
 	update_status PreUpdate();
@@ -40,6 +42,10 @@ public:
 private:
 	bool RecursivelyHierarchy(const aiNode* parent, const GameObject* parentGO, const aiScene* scene);
 	bool FillMeshData(ComponentMesh* mymesh, aiMesh* mesh);
+	std::vector<Resource*> ExportFBX(const std::string& file) const;
+	std::vector<const aiNode*> decomposeAssimpHierarchy(const aiNode* rootNode) const;
+
+	void ExportResourceMesh(const ResourceMesh* mesh) const;
 
 private:
 	aiLogStream stream;
