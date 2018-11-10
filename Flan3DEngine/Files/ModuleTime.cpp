@@ -57,8 +57,11 @@ bool ModuleTime::CleanUp()
 
 void ModuleTime::OnTimeGUI()
 {
-	if (!timeAtlas)
+	if (!timeAtlas && App->textures->textures.size() > 0)
 		timeAtlas = App->textures->textures[3]; //Temporal, this will be in a hidden directory
+
+	if (!timeAtlas)
+		return;
 
 	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 	ImVec2 windowPos = ImGui::GetWindowPos();

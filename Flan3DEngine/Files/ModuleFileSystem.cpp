@@ -10,6 +10,8 @@
 
 #include "imgui/imgui.h"
 
+#include "Resource.h"
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module("ModuleFileSystem", start_enabled) {}
 ModuleFileSystem::~ModuleFileSystem() {}
 
@@ -35,6 +37,7 @@ bool ModuleFileSystem::Init()
 
 	//ALWAYS RE-EXPORT ALL THE RESOURCES WHEN OPENING THE ENGINE, FOR NOW
 	emptyDirectory("Library");
+	deleteFiles("Assets", ".meta");
 
 	return true;
 }
@@ -303,9 +306,6 @@ Directory ModuleFileSystem::getDirFiles(char* dir) const
 		}
 		else
 		{
-			if (getExt(files[i]) == ".meta" && !SHOWMETAFILES)
-				continue;
-
 			PHYSFS_Stat stats;
 			PHYSFS_stat(fulldir.data(), &stats);
 			File file;
@@ -369,6 +369,24 @@ bool ModuleFileSystem::emptyDirectory(const std::string& dir) const
 	return true;
 }
 
+bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& extension) const
+{
+	Directory directory = getDirFiles((char*)root.c_str());
+
+	for (int i = 0; i < directory.files.size(); ++i)
+	{
+		if(getExt(directory.files[i].name) == extension)
+			PHYSFS_delete(std::string(directory.fullPath + "/" + directory.files[i].name).c_str());
+	}
+
+	for (int i = 0; i < directory.directories.size(); ++i)
+	{
+		deleteFiles(directory.directories[i].fullPath, extension);
+	}
+
+	return true;
+}
+
 void ModuleFileSystem::recursiveDirectory(Directory& directory)
 {
 	ImGuiTreeNodeFlags flags = 0;
@@ -384,10 +402,27 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 
 		for (int i = 0; i < directory.files.size(); ++i)
 		{
+			if (getExt(directory.files[i].name) == ".meta" && !SHOWMETAFILES)
+				continue;
+
 			ImGuiTreeNodeFlags cflags = 0;
 			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 			bool clicked = ImGui::TreeNodeEx(directory.files[i].name.data(), cflags);
 			
+			//Starting the drag event			
+			if (ImGui::BeginDragDropSource())
+			{
+				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());			
+				if (resource)
+				{
+					ImGui::SetDragDropPayload("DraggingResources", &resource, resource->getBytes());
+					ImGui::BeginTooltip();
+					ImGui::Text(resource->getFile());
+					ImGui::EndTooltip();
+				}			
+				ImGui::EndDragDropSource();
+			}
+
 			if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemClicked(0))
 			{
 				int pos = directory.files[i].name.find_last_of(".");

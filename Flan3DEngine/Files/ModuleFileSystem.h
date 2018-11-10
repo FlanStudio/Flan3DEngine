@@ -60,6 +60,8 @@ public:
 
 	bool deleteDirectory(const std::string& directory) const;
 	bool emptyDirectory(const std::string& directory) const;
+	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
+
 
 private:
 	//WARNING: Don't forget to delete the Directory file after use

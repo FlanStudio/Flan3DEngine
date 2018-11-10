@@ -660,6 +660,9 @@
     <ClInclude Include="ResourceTexture.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentMaterial.h">
+      <Filter>Sources\GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -896,7 +899,12 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceTexture.cpp" />
+    <ClCompile Include="ComponentMaterial.cpp">
+      <Filter>Sources\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib_1.5\Math\Matrix.inl">

@@ -14,7 +14,7 @@ public:
 
 	bool Start();
 	bool CleanUp();
-	update_status PreUpdate(float dt);
+	update_status PreUpdate();
 	void ReceiveEvent(Event event);
 
 public:
