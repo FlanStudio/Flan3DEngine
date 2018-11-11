@@ -313,6 +313,38 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 				aiString temp;
 				assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &temp); //TODO: SPECULAR, EMMISIVE, NORMAL MAPS, ETC?
 				texturePath = temp.C_Str();
+
+				if (!texturePath.empty())
+				{
+					//Normalize the path
+					while (texturePath.find_first_of("\\") != std::string::npos) /*First of \ */
+					{
+						uint pos = texturePath.find_first_of("\\");
+						texturePath.replace(pos, 1, "/");
+					}
+
+					//Manage ".."
+
+					uint lastPos = file.find_last_of("/");
+					std::string path = file.substr(0, lastPos + 1);
+
+					bool prevDirFound = texturePath.find("..") != std::string::npos;
+
+					if (prevDirFound)
+					{
+						//Delete "lastDir/" from the fbx path and "../" from the texturePath
+						uint lastSlashPos = path.find_last_of("/");
+						path.erase(lastSlashPos);
+						lastSlashPos = path.find_last_of("/");
+						path.replace(lastSlashPos + 1, std::string::npos, "");
+
+						uint texturePos = texturePath.find("..");
+						texturePath.replace(texturePos, 3, "");
+					}
+
+					texturePath.insert(0, path);
+				}
+				
 			}
 
 			//Now we have a Mesh and a Texture. Save them in our Resources vector

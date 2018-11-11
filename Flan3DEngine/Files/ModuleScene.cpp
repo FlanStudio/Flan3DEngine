@@ -30,7 +30,7 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	App->fbxexporter->LoadFBX("Assets/meshes/BakerHouse.fbx");
+	//App->fbxexporter->LoadFBX("Assets/meshes/BakerHouse.fbx");
 
 	//Temp
 	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
