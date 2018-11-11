@@ -72,5 +72,8 @@ private:
 
 	std::string currentSceneName = "defaultScene";
 	std::vector<GameObject*> gameObjects;
+
+	char* tempSceneBuffer = nullptr;
+	uint tempSceneBufferSize = 0;
 };
 #endif

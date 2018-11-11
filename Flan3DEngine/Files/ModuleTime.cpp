@@ -72,6 +72,9 @@ void ModuleTime::OnTimeGUI()
 		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
 		{
 			IN_GAME = true;
+			Event event;
+			event.timeEvent.type = EventType::PLAY;
+			App->SendEvent(event);
 		}
 	}
 	else

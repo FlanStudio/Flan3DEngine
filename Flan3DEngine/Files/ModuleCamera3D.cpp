@@ -239,6 +239,23 @@ void ModuleCamera3D::MousePicking() const
 		}
 }
 
+void ModuleCamera3D::ReceiveEvent(Event event)
+{
+	switch (event.type)
+	{
+		case EventType::PLAY:
+		{
+			
+			break;
+		}
+		case EventType::PAUSE:
+		{
+
+			break;
+		}
+	}
+}
+
 // -----------------------------------------------------------------
 void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
 {

@@ -12,6 +12,11 @@ struct FileSystemEvent
 	const char* oldLocation;
 };
 
+struct TimeEvent
+{
+	uint32_t type;
+};
+
 enum EventType
 {
 	INVALID_TYPE = 0,
@@ -20,13 +25,20 @@ enum EventType
 	FILE_CREATED = 0x100,
 	FILE_DELETED,
 	FILE_MOVED,
-	FILE_MODIFIED
+	FILE_MODIFIED,
+
+	//Time Events
+	PLAY = 0x200,
+	STOP,
+	PAUSE,
+	STEP
 };
 
 union Event
 {
 	uint32_t type;
 	FileSystemEvent fileEvent;
+	TimeEvent timeEvent;
 };
 
 
