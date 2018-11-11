@@ -147,7 +147,7 @@ void ModuleScene::UpdateQuadtree()
 
 void ModuleScene::DrawGuizmos()
 {
-	/*GameObject* selected = getSelectedGO();
+	GameObject* selected = getSelectedGO();
 	if (selected)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -163,15 +163,16 @@ void ModuleScene::DrawGuizmos()
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
 		float4x4 transformMatrix = selected->transform->getGlobalMatrix();
-		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, ImGuizmo::MODE::WORLD, transformMatrix.ptr());
+		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, guizmoMode, transformMatrix.ptr());
 		selected->transform->setFromGlobalMatrix(transformMatrix.Transposed());
 	}
 	else
 	{
 		ImGuizmo::Enable(false);
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	}*/
+	}
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -644,6 +645,7 @@ void ModuleScene::TransformGUI()
 		if (ImGui::Button("Global", { 50,28 }))
 		{
 			GLOBAL = true;
+			guizmoMode = ImGuizmo::MODE::LOCAL;
 		}
 	}
 	else
@@ -651,14 +653,10 @@ void ModuleScene::TransformGUI()
 		if (ImGui::Button("Local", { 50,28 }))
 		{
 			GLOBAL = false;
+			guizmoMode = ImGuizmo::MODE::WORLD;
 		}
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Pick(Q)", { 54,28 }))
-	{
-		currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
-	}
 	ImGui::SameLine();
 	if (ImGui::Button("Tra(W)", { 50,28 }))
 	{

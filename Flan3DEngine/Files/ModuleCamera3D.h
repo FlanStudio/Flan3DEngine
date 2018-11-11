@@ -35,6 +35,8 @@ private:
 	void CameraInputs(float dt);
 	void MousePicking() const;
 
+	void ReceiveEvent(Event event);
+
 public:
 	GameObject* activeCamera = nullptr;
 	ComponentCamera* activeCamComponent = nullptr;

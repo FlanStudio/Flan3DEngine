@@ -69,6 +69,7 @@ private:
 
 private:
 	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
+	ImGuizmo::MODE guizmoMode;
 
 	float quadTreeUpdateRate = 2.0f;
 
@@ -77,5 +78,8 @@ private:
 
 	std::string currentSceneName = "defaultScene";
 	std::vector<GameObject*> gameObjects;
+
+	char* tempSceneBuffer = nullptr;
+	uint tempSceneBufferSize = 0;
 };
 #endif
