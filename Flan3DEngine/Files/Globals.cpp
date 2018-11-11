@@ -12,4 +12,5 @@ bool VSYNC = false;
 float BRIGHTNESS = 1.0f;
 
 bool IN_GAME = false;
+bool GLOBAL= false;
 

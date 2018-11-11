@@ -150,11 +150,13 @@ void ModuleScene::DrawGuizmos()
 	GameObject* selected = getSelectedGO();
 	if (selected)
 	{
-		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-		else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+		else if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN)
+			currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
+		else if(App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
 			currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
-		else if(App->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
+		else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 			currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
 		
 		ImGuizmo::Enable(true);
@@ -617,6 +619,55 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	delete buffer;
 
 	
+}
+
+void ModuleScene::TransformGUI()
+{
+	//if (!timeAtlas && App->textures->textures.size() > 0)
+	//	timeAtlas = App->textures->textures[3]; //Temporal, this will be in a hidden directory
+
+	//if (!timeAtlas)
+	//	return;
+
+	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	ImGui::SetCursorScreenPos({ windowPos.x + 7.0f,windowPos.y + 2.0f });
+
+	if (!GLOBAL)
+	{
+		if (ImGui::Button("Global", { 50,28 }))
+		{
+			GLOBAL = true;
+		}
+	}
+	else
+	{
+		if (ImGui::Button("Local", { 50,28 }))
+		{
+			GLOBAL = false;
+		}
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Pick(Q)", { 54,28 }))
+	{
+		currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Tra(W)", { 50,28 }))
+	{
+		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Rot(E)", { 50,28 }))
+	{
+		currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Sca(R)", { 50,28 }))
+	{
+		currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
+	}
 }
 
 void ModuleScene::DragDrop(GameObject* go)
