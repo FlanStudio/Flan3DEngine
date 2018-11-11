@@ -324,21 +324,7 @@ update_status ModuleEditor::PreUpdate()
 
 		ImGui::Begin("Properties",&propWindow);
 
-		if (ImGui::CollapsingHeader("Transformation"))
-		{
-			//ImGui::TextColored({ 1,1,0,1 }, "All these properties are not visible in the mesh."); ImGui::Separator();
-			ImGui::TextColored({ .5,0,0,1 }, "This info has been moved. Check View->Hierarchy");
-		}
-
-		if (ImGui::CollapsingHeader("Geometry"))
-		{
-			App->renderer3D->guiMeshesGeometry();
-		}
-
-		if (ImGui::CollapsingHeader("Textures"))
-		{
-			App->textures->guiTextures();
-		}
+		//TODO: SHOW HERE ALL THE RESOURCES LOADED? 
 
 		ImGui::End();
 	}

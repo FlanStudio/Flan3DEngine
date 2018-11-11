@@ -287,7 +287,7 @@ void ModuleRenderer3D::guiRenderer()
 	ImGui::Checkbox("draw normals", &drawNormals);
 	if(ImGui::DragFloat("normals lenght", &normalsLenght, 0.2, 0.1, 30, "%.1f"))
 	{
-		UpdateNormalsLenght();
+		UpdateNormalsLenght(normalsLenght);
 	}
 }
 
@@ -351,34 +351,12 @@ void ModuleRenderer3D::ClearMesh(ComponentMesh* mesh)
 	}
 }
 
-void ModuleRenderer3D::UpdateNormalsLenght()
+void ModuleRenderer3D::UpdateNormalsLenght(uint normalsLenght)
 {
 	for (int i = 0; i < meshes.size(); ++i)
 	{
-		meshes[i]->UpdateNormalsLenght();
+		meshes[i]->UpdateNormalsLenght(normalsLenght);
 	}
-}
-
-void ModuleRenderer3D::CalculateSceneBoundingBox()
-{
-	float3 minCorner = { 0,0,0 };
-	float3 maxCorner = { 0,0,0 };
-
-	for (int mesh = 0; mesh < meshes.size(); mesh++)
-	{
-		for (int vertex = 0; vertex < meshes[mesh]->num_vertex; ++vertex)
-		{
-			float3 actualVertex = { meshes[mesh]->vertex[vertex * 3], meshes[mesh]->vertex[vertex * 3 + 1], meshes[mesh]->vertex[vertex * 3 + 2] };
-			minCorner.x = MIN(minCorner.x, actualVertex.x);
-			minCorner.y = MIN(minCorner.y, actualVertex.y);
-			minCorner.z = MIN(minCorner.z, actualVertex.z);
-
-			maxCorner.x = MAX(maxCorner.x, actualVertex.x);
-			maxCorner.y = MAX(maxCorner.y, actualVertex.y);
-			maxCorner.z = MAX(maxCorner.z, actualVertex.z);
-		}
-	}
-	sceneBoundingBox = { minCorner, maxCorner };
 }
 
 void ModuleRenderer3D::DrawMeshes() const
@@ -386,7 +364,7 @@ void ModuleRenderer3D::DrawMeshes() const
 	if (App->camera->gameCamComponent)
 	{
 		std::vector<GameObject*> intersected;
-		App->scene->quadtree.Intersect(intersected, App->camera->gameCamComponent->getFrustum());
+		App->scene->quadtree.Intersect(intersected, App->camera->gameCamComponent->getFrustum()); //TODO: NON-STATIC OBJECTS?
 		for (int i = 0; i < intersected.size(); ++i)
 		{
 			ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
@@ -416,8 +394,4 @@ ComponentMesh* ModuleRenderer3D::CreateComponentMesh(GameObject* parent)
 	ComponentMesh* meshComp = new ComponentMesh(parent);
 	meshes.push_back(meshComp);
 	return meshComp;
-}
-
-void ModuleRenderer3D::guiMeshesGeometry() const
-{
 }

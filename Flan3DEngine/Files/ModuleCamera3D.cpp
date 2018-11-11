@@ -8,6 +8,7 @@
 #include "ComponentCamera.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ResourceMesh.h"
 
 
 #define SPEED 100.0f
@@ -89,7 +90,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 {
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
-		AABB bb = App->renderer3D->getSceneAABB();
+		AABB bb = App->scene->getSceneAABB();
 		center = bb.CenterPoint();
 
 		float3 dir = (editorCamera->transform->position - center).Normalized();
@@ -187,19 +188,19 @@ void ModuleCamera3D::MousePicking() const
 
 			for (int i = 0; i < intersected.size(); ++i) //For each gameObject
 			{
-				ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
-				if (!mesh)
+				ComponentMesh* componentMesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
+				if (!componentMesh)
 					continue;
 
 				LineSegment localSpaceSegment(segment);  localSpaceSegment.Transform(intersected[i]->transform->getMatrix().Transposed().Inverted());
 
-				for (int tri = 0; tri < mesh->num_index / 3; ++tri) //For each triangle in the mesh
+				for (int tri = 0; tri < componentMesh->mesh->num_index / 3; ++tri) //For each triangle in the mesh
 				{
 					float3 vertices[3] =
 					{
-						{mesh->vertex[mesh->index[tri * 3] * 3], mesh->vertex[mesh->index[tri * 3] * 3 + 1], mesh->vertex[mesh->index[tri * 3] * 3 + 2]},
-						{mesh->vertex[mesh->index[tri * 3 + 1] * 3], mesh->vertex[mesh->index[tri * 3 + 1] * 3 + 1], mesh->vertex[mesh->index[tri * 3 + 1] * 3 + 2]},
-						{mesh->vertex[mesh->index[tri * 3 + 2] * 3], mesh->vertex[mesh->index[tri * 3 + 2] * 3 + 1], mesh->vertex[mesh->index[tri * 3 + 2] * 3 + 2]}
+						{componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3] * 3], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3] * 3 + 1], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3] * 3 + 2]},
+						{componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 1] * 3], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 1] * 3 + 1], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 1] * 3 + 2]},
+						{componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 2] * 3], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 2] * 3 + 1], componentMesh->mesh->vertex[componentMesh->mesh->index[tri * 3 + 2] * 3 + 2]}
 					};
 
 					Triangle actualTri(vertices[0], vertices[1], vertices[2]);

@@ -6,6 +6,10 @@
 
 #include "Brofiler/Brofiler.h"
 
+#include "GameObject.h"
+#include "ComponentMesh.h"
+#include "ComponentMaterial.h"
+
 ResourceManager::~ResourceManager()
 {
 }
@@ -48,6 +52,21 @@ bool ResourceManager::Start()
 		}
 		else if (extension == ".fbx" || extension == ".FBX")
 		{
+			continue; //Let the fbx to the end so all the other resources can be loaded first
+		}
+		//TODO: Materials, audio, animations, etc?
+	}
+
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+
+		if (extension.empty())
+			continue;
+
+		if (extension == ".fbx" || extension == ".FBX")
+		{
 			//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
 			//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
 
@@ -58,6 +77,126 @@ bool ResourceManager::Start()
 			{
 				resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
 			}
+
+			//Debug Purposes: Load this recently stored fbx into our scene hierarchy
+			char* metaBuffer = nullptr;
+			int metaBufferSize;
+			App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaBufferSize);
+
+			if (!metaBuffer)
+				continue;
+
+			char* cursor = metaBuffer;
+
+			uint numGOs;
+			memcpy(&numGOs, cursor, sizeof(uint));
+			cursor += sizeof(uint);
+
+			struct goInfo
+			{
+				std::string name;
+				UID uid;
+				UID parentUID;
+				UID textureUID;
+				UID meshUID;
+
+				float3 position, scale;
+				Quat rotation;
+
+			};
+
+			std::vector<goInfo> gos(numGOs);
+
+			for (int j = 0; j < numGOs; ++j)
+			{
+				uint bytes = 100;
+				gos[j].name.resize(100);
+				memcpy((void*)gos[j].name.c_str(), cursor, 100);
+				cursor += 100;
+
+				bytes = sizeof(UID);
+				memcpy(&gos[j].uid, cursor, bytes);
+				cursor += bytes;
+
+				memcpy(&gos[j].parentUID, cursor, bytes);
+				cursor += bytes;
+
+				bytes = sizeof(float3);
+				memcpy(&gos[j].position, cursor, bytes);
+				cursor += bytes;
+
+				bytes = sizeof(Quat);
+				memcpy(&gos[j].rotation, cursor, bytes);
+				cursor += bytes;
+
+				bytes = sizeof(float3);
+				memcpy(&gos[j].scale, cursor, bytes);
+				cursor += bytes;
+
+				bytes = sizeof(UID);
+				memcpy(&gos[j].meshUID, cursor, bytes);
+				cursor += bytes;
+
+				memcpy(&gos[j].textureUID, cursor, bytes);
+				cursor += bytes;
+			}
+			delete metaBuffer;
+
+			std::vector<GameObject*> gameObjects;
+
+			for (int j = 0; j < gos.size(); ++j)
+			{
+				GameObject* gameObject = new GameObject(nullptr);
+				gameObject->uuid = gos[j].uid;
+				
+				ComponentTransform* transform = (ComponentTransform*)gameObject->CreateComponent(ComponentType::TRANSFORM);
+				transform->position = gos[j].position;
+				transform->rotation = gos[j].rotation;
+				transform->scale = gos[j].scale;
+
+				UID meshUID = gos[j].meshUID;
+				if (meshUID != 0)
+				{
+					ComponentMesh* meshComp = (ComponentMesh*)gameObject->CreateComponent(ComponentType::MESH);
+					meshComp->mesh = (ResourceMesh*)resources.at(meshUID);
+				}
+
+				UID textureUID = gos[j].textureUID;
+				if (textureUID != 0)
+				{
+					ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
+					matComp->texture = (ResourceTexture*)resources.at(textureUID);
+				}
+
+				gameObject->name = gos[j].name;
+
+				gameObjects.push_back(gameObject);
+			}
+
+			for (int j = 0; j < gos.size(); ++j)
+			{
+				for (int k = 0; k < gameObjects.size(); ++k)
+				{
+					if (gos[j].parentUID == gameObjects[k]->uuid)
+					{
+						gameObjects[j]->parent = gameObjects[k];
+						gameObjects[k]->AddChild(gameObjects[j]);
+						break;
+					}
+				}
+			}
+
+			GameObject* root;
+			for (int j = 0; j < gameObjects.size(); ++j)
+			{
+				if (gameObjects[j]->parent == nullptr)
+				{
+					root = gameObjects[j];
+				}
+			}
+
+			App->scene->AddGameObject(root);
+
 		}
 		//TODO: Materials, audio, animations, etc?
 	}
@@ -145,7 +284,7 @@ Resource* ResourceManager::FindByFile(char* file)
 
 	delete buffer;
 
-	return resources.at(uuid);
+	return	resources.find(uuid) != resources.end() ? resources.at(uuid) : nullptr;
 }
 
 uint Resource::amountReferences() const

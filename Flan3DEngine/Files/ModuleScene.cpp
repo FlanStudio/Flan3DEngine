@@ -148,28 +148,28 @@ void ModuleScene::UpdateQuadtree()
 void ModuleScene::DrawGuizmos()
 {
 	GameObject* selected = getSelectedGO();
-	if (selected)
-	{
-		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
-			currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-		else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
-			currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
-		else if(App->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
-			currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
-		
-		ImGuizmo::Enable(true);
+	//if (selected)
+	//{
+	//	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+	//		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+	//	else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+	//		currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
+	//	else if(App->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
+	//		currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
+	//	
+	//	ImGuizmo::Enable(true);
 
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-		float4x4 transformMatrix = selected->transform->getMatrix();
-		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, ImGuizmo::MODE::WORLD, transformMatrix.ptr());
-		selected->transform->setFromMatrix(transformMatrix.Transposed());
-	}
-	else
-	{
-		ImGuizmo::Enable(false);
-		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	}
+	//	ImGuiIO& io = ImGui::GetIO();
+	//	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	//	float4x4 transformMatrix = selected->transform->getMatrix();
+	//	ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, ImGuizmo::MODE::WORLD, transformMatrix.ptr());
+	//	selected->transform->setFromMatrix(transformMatrix.Transposed());
+	//}
+	//else
+	//{
+	//	ImGuizmo::Enable(false);
+	//	currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+	//}
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -184,6 +184,11 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
 
 	return ret;
+}
+
+void ModuleScene::AddGameObject(GameObject* gameObject)
+{
+	gameObjects[0]->AddChild(gameObject);
 }
 
 void ModuleScene::guiHierarchy()
@@ -617,6 +622,11 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	delete buffer;
 
 	
+}
+
+AABB ModuleScene::getSceneAABB() const
+{
+	return gameObjects.size() > 0 ? gameObjects[0]->boundingBox : AABB(-float3::inf, -float3::inf); 
 }
 
 void ModuleScene::DragDrop(GameObject* go)

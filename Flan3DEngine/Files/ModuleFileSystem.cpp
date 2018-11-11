@@ -409,8 +409,10 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 			cflags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 			bool clicked = ImGui::TreeNodeEx(directory.files[i].name.data(), cflags);
 			
-			//Starting the drag event			
-			if (ImGui::BeginDragDropSource())
+			//Starting the drag event	
+			ImGuiDragDropFlags flags = 0;
+			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoPreviewTooltip; //This is to only let ImGui create the Tooltip if we are dragging a loaded resource
+			if (ImGui::BeginDragDropSource(flags))
 			{
 				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());			
 				if (resource)

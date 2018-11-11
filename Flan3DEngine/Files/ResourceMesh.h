@@ -11,25 +11,27 @@ public:
 	virtual ~ResourceMesh();
 
 public:
-
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
-	void UpdateNormalsLenght();
+	void UpdateNormalsLenght(uint lenght);
 	void drawNormals();
 
 	void updateGameObjectAABB();
 
 	void Serialize(char*& cursor) const;
-	void DeSerialize(char*& cursor, uint32_t& goUUID);
+	void DeSerialize(char*& cursor, uint normalLenght);
 
 	uint getBytes() const;
 
 	uint bytesToSerialize()const;
 
-	void genNormalLines();
+	void genNormalLines(uint lenght);
 
 public:
+
+	uint normalsLenght = 0.5f;
+
 	std::string meshName = "default";
 
 	uint index_ID = 0;			// index in VRAM

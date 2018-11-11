@@ -111,7 +111,12 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosY(posY);
 		float posX = ImGui::GetCursorPosX();
 		ImGui::SetCursorPosX(posX + 21);
+
+		float3 tempScale;
 		ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
+
+		//scale = {Equal(tempScale.x, 0) ? 0.1f : tempScale.x, Equal(tempScale.y, 0) ? 0.1f : tempScale.y, Equal(tempScale.z, 0) ? 0.1f : tempScale.z};
+
 		ImGui::SetCursorPosX(posX);
 	}
 }

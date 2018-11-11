@@ -82,6 +82,7 @@ void GameObject::AddComponent(Component* component)
 {
 	if (component->type != ComponentType::TRANSFORM || !transform) //Max 1 ComponentTransform
 	{
+		component->gameObject = this;
 		components.push_back(component);
 		if (component->type == ComponentType::TRANSFORM)
 			this->transform = transform;
