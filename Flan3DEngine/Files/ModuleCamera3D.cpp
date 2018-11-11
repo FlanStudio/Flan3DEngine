@@ -110,22 +110,22 @@ void ModuleCamera3D::CameraInputs(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP)
 		speed = SPEED * dt;
 
-	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_Y) == KEY_REPEAT) 
 		editorCamera->transform->position -= float3(0,1,0) * speed;
 	
-	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_REPEAT) 
 		editorCamera->transform->position += float3(0, 1, 0) * speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) 
 		editorCamera->transform->position += editorCamera->transform->rotation * float3(0, 0, 1) * speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
 		editorCamera->transform->position -= editorCamera->transform->rotation * float3(0, 0, 1) * speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) 
 		editorCamera->transform->position += editorCamera->transform->rotation * float3(1, 0, 0) * speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		editorCamera->transform->position -= editorCamera->transform->rotation * float3(1, 0, 0) * speed;
 
 	if (App->input->GetMouseZ() != 0)
@@ -245,12 +245,14 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 	{
 		case EventType::PLAY:
 		{
-			
+			activeCamComponent = gameCamComponent;
+			activeCamera = gameCamera;
 			break;
 		}
-		case EventType::PAUSE:
+		case EventType::STOP:
 		{
-
+			activeCamera = editorCamera;
+			activeCamComponent = editorCamComponent;
 			break;
 		}
 	}

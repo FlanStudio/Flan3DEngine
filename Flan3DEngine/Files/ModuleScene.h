@@ -66,6 +66,7 @@ private:
 
 private:
 	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
+	ImGuizmo::MODE guizmoMode;
 
 	float quadTreeUpdateRate = 2.0f;
 

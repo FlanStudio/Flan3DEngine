@@ -82,6 +82,9 @@ void ModuleTime::OnTimeGUI()
 		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
+			Event event;
+			event.timeEvent.type = EventType::STOP;
+			App->SendEvent(event);
 		}
 	}
 
@@ -89,13 +92,17 @@ void ModuleTime::OnTimeGUI()
 
 	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
 	{
-
+		Event event;
+		event.timeEvent.type = EventType::PAUSE;
+		App->SendEvent(event);
 	}
 	ImGui::SameLine();
 
 	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
 	{
-
+		Event event;
+		event.timeEvent.type = EventType::STEP;
+		App->SendEvent(event);
 	}
 	ImGui::SameLine();
 }
