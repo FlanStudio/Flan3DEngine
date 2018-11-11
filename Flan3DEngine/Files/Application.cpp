@@ -19,7 +19,7 @@ Application::Application()
 	camera = new ModuleCamera3D();
 	editor = new ModuleEditor();
 	fs = new ModuleFileSystem();
-	fbxLoader = new FBXLoader();
+	fbxexporter = new FBXExporter();
 	textures = new ModuleTextures();
 	resources = new ResourceManager();
 
@@ -35,7 +35,7 @@ Application::Application()
 	AddModule(textures);
 	AddModule(audio);
 	AddModule(camera);
-	AddModule(fbxLoader);
+	AddModule(fbxexporter);
 	AddModule(resources);
 	// Scenes
 	AddModule(scene);

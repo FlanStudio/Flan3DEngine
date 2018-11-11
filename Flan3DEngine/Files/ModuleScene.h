@@ -33,6 +33,7 @@ public:
 
 public:
 	GameObject* CreateGameObject(GameObject* parent);
+	void AddGameObject(GameObject* gameObject);
 	void ClearGameObjects();
 	void guiHierarchy();
 	void guiInspector();
@@ -44,6 +45,8 @@ public:
 	void DeSerialize(std::string path, std::string extension);
 
 	void TransformGUI();
+
+	AABB getSceneAABB() const;
 
 public:
 	Quadtree quadtree;

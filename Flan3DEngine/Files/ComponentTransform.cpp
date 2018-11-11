@@ -2,21 +2,26 @@
 #include "GameObject.h"
 
 ComponentTransform ComponentTransform::getGlobal() const
-{
-	ComponentTransform global;
-	global.position = position;
-	global.rotation = rotation;
-	global.scale = scale;
+{	
+	std::list<float4x4> temp;
 
-	GameObject* parent = gameObject->parent;
-	while (parent)
+	GameObject* currentGO = this->gameObject;
+	while(currentGO)
 	{
-		global.position += parent->transform->position;
-		global.rotation = global.rotation.Mul(parent->transform->rotation);
-		global.scale = global.scale.Mul(parent->transform->scale);
-		parent = parent->parent;
+		temp.push_back(currentGO->transform->getLocalMatrix().Transposed());
+		currentGO = currentGO->parent;
 	}
-	return global;
+	
+	float4x4 globalMatrix = float4x4::identity;
+	for (std::list<float4x4>::reverse_iterator it = temp.rbegin(); it != temp.rend(); ++it)
+	{
+		globalMatrix = globalMatrix * (*it);
+	}
+
+	ComponentTransform globalTransform;
+	globalMatrix.Decompose(globalTransform.position, globalTransform.rotation, globalTransform.scale);
+
+	return globalTransform;
 }
 
 ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) const
@@ -26,7 +31,6 @@ ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) c
 	ComponentTransform childGlobal = getGlobal();
 
 	ComponentTransform parentGlobal = newParent->getGlobal();
-	
 
 	local.position = childGlobal.position - parentGlobal.position;
 	local.rotation = childGlobal.rotation / parentGlobal.rotation;
@@ -111,12 +115,17 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosY(posY);
 		float posX = ImGui::GetCursorPosX();
 		ImGui::SetCursorPosX(posX + 21);
+
+		float3 tempScale;
 		ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
+
+		//scale = {Equal(tempScale.x, 0) ? 0.1f : tempScale.x, Equal(tempScale.y, 0) ? 0.1f : tempScale.y, Equal(tempScale.z, 0) ? 0.1f : tempScale.z};
+
 		ImGui::SetCursorPosX(posX);
 	}
 }
 
-float4x4 ComponentTransform::getMatrix()const
+float4x4 ComponentTransform::getGlobalMatrix()const
 {
 	float4x4 ret;
 
@@ -126,20 +135,34 @@ float4x4 ComponentTransform::getMatrix()const
 	return ret.Transposed();
 }
 
+float4x4 ComponentTransform::getLocalMatrix() const
+{
+	float4x4 ret;
+
+	ret = float4x4::FromTRS(position, rotation, scale);
+
+	return ret.Transposed();
+}
+
 float4x4 ComponentTransform::composeMatrix(float3& position, Quat& rotation, float3& scale)
 {
 	return float4x4::FromTRS(position, rotation, scale).Transposed();
 }
 
-void ComponentTransform::setFromMatrix(float4x4 matrix)
+void ComponentTransform::setFromGlobalMatrix(float4x4 matrix)
 {	
-	matrix.Decompose(position, rotation, scale);
+	float4x4 localMatrix = float4x4::identity;
 	if (gameObject->parent)
 	{
-		position = position - gameObject->parent->transform->position;
-		rotation = rotation / gameObject->parent->transform->rotation;
-		scale = scale.Div(gameObject->parent->transform->scale);
+		float4x4 parentGlobalMatrix = gameObject->transform->getGlobalMatrix().Transposed();
+		localMatrix = parentGlobalMatrix.Inverted() * matrix;
 	}
+	else
+	{
+		localMatrix = matrix;
+	}
+
+	localMatrix.Decompose(position, rotation, scale);
 }
 
 void ComponentTransform::Serialize(char*& cursor) const

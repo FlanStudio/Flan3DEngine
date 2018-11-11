@@ -37,19 +37,14 @@ public:
 
 	void guiGPU()const;
 	void guiRenderer();
-	void guiMeshesGeometry() const;
 
 	void setWireframe(bool boolean);
 
 	void AddMesh(ComponentMesh* newMesh) { meshes.push_back(newMesh); }
 	void ClearMeshes();
 	void ClearMesh(ComponentMesh* mesh);
-	void UpdateNormalsLenght();
+	void UpdateNormalsLenght(uint normalsLenght);
 	void DrawMeshes() const;
-
-	void CalculateSceneBoundingBox();
-	AABB getSceneAABB() const { return sceneBoundingBox; }
-
 
 	ComponentMesh* CreateComponentMesh(GameObject* parent);
 
@@ -63,13 +58,11 @@ public:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 
-	AABB sceneBoundingBox; //A bounding box containing all the geometries //TODO: change that system
-
 private:
 	bool depthTest = false, cullFace = false, lighting = false, colorMaterial = false, texture2D = false;
 	bool wireframe = false;
 
-	std::vector<ComponentMesh*> meshes; //Only contain meshes for now
+	std::vector<ComponentMesh*> meshes;
 
 	bool drawNormals = false;
 	float normalsLenght = 0.5f;

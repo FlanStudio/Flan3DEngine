@@ -58,7 +58,7 @@ bool ModuleTime::CleanUp()
 void ModuleTime::OnTimeGUI()
 {
 	if (!timeAtlas && App->textures->textures.size() > 0)
-		timeAtlas = App->textures->textures[3]; //Temporal, this will be in a hidden directory
+		timeAtlas = App->textures->textures[0]; //Temporal, this will be in a hidden directory
 
 	if (!timeAtlas)
 		return;

@@ -14,6 +14,9 @@
 #define TEXTURES_LIBRARY_FOLDER "Library/Textures"
 #define TEXTURES_EXTENSION ".dds"
 
+#define MESHES_LIBRARY_FOLDER "Library/Meshes"
+#define MESHES_EXTENSION ".flanMesh"
+
 #include <vector>
 #include <string>
 #include "Module.h"

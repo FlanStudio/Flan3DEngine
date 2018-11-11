@@ -82,6 +82,7 @@ void GameObject::AddComponent(Component* component)
 {
 	if (component->type != ComponentType::TRANSFORM || !transform) //Max 1 ComponentTransform
 	{
+		component->gameObject = this;
 		components.push_back(component);
 		if (component->type == ComponentType::TRANSFORM)
 			this->transform = transform;
@@ -447,9 +448,6 @@ void GameObject::Serialize(char*& cursor)
 	memcpy(cursor, &parentUUID, bytes);
 	cursor += bytes;
 
-	/*if (name.length() > 50)
-		Debug.LogWarning("Care: You are serializing a GameObject's name larger that 50 chars, there will be some info missing");*/
-
 	uint nameLenght = name.length();
 	bytes = sizeof(uint);
 	memcpy(cursor, &nameLenght, bytes);
@@ -600,7 +598,6 @@ void GameObject::updateAABBbuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*numAABBvertex * 3, AABBvertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 void GameObject::destroyAABBbuffers()
@@ -654,7 +651,7 @@ void GameObject::transformAABB()
 	{
 		Mesh->updateGameObjectAABB();	
 		OBB obb(boundingBox);
-		obb.Transform(this->transform->getMatrix().Transposed());
+		obb.Transform(this->transform->getGlobalMatrix().Transposed());
 		boundingBox = obb.MinimalEnclosingAABB();
 		updateAABBbuffers();
 	}

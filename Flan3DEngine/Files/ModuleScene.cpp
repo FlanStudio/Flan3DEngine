@@ -30,7 +30,7 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	App->fbxLoader->LoadFBX("Assets/meshes/BakerHouse.fbx");
+	//App->fbxexporter->LoadFBX("Assets/meshes/BakerHouse.fbx");
 
 	//Temp
 	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
@@ -147,7 +147,7 @@ void ModuleScene::UpdateQuadtree()
 
 void ModuleScene::DrawGuizmos()
 {
-	GameObject* selected = getSelectedGO();
+	/*GameObject* selected = getSelectedGO();
 	if (selected)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -163,15 +163,15 @@ void ModuleScene::DrawGuizmos()
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-		float4x4 transformMatrix = selected->transform->getMatrix();
+		float4x4 transformMatrix = selected->transform->getGlobalMatrix();
 		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, ImGuizmo::MODE::WORLD, transformMatrix.ptr());
-		selected->transform->setFromMatrix(transformMatrix.Transposed());
+		selected->transform->setFromGlobalMatrix(transformMatrix.Transposed());
 	}
 	else
 	{
 		ImGuizmo::Enable(false);
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	}
+	}*/
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -186,6 +186,12 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
 
 	return ret;
+}
+
+void ModuleScene::AddGameObject(GameObject* gameObject)
+{
+	gameObjects[0]->AddChild(gameObject);
+	gameObject->parent = gameObjects[0];
 }
 
 void ModuleScene::guiHierarchy()
@@ -668,6 +674,11 @@ void ModuleScene::TransformGUI()
 	{
 		currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
 	}
+}
+
+AABB ModuleScene::getSceneAABB() const
+{
+	return gameObjects.size() > 0 ? gameObjects[0]->boundingBox : AABB(-float3::inf, -float3::inf); 
 }
 
 void ModuleScene::DragDrop(GameObject* go)
