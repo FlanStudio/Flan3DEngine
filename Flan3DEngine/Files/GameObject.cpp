@@ -598,7 +598,6 @@ void GameObject::updateAABBbuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*numAABBvertex * 3, AABBvertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 void GameObject::destroyAABBbuffers()
@@ -652,7 +651,7 @@ void GameObject::transformAABB()
 	{
 		Mesh->updateGameObjectAABB();	
 		OBB obb(boundingBox);
-		obb.Transform(this->transform->getMatrix().Transposed());
+		obb.Transform(this->transform->getGlobalMatrix().Transposed());
 		boundingBox = obb.MinimalEnclosingAABB();
 		updateAABBbuffers();
 	}

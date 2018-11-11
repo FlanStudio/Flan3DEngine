@@ -21,7 +21,9 @@ public:
 	void setLocal(ComponentTransform* newTransform);
 	void setLocalWithParentGlobal(ComponentTransform parentGlobal);
 	void OnInspector();
-	float4x4 getMatrix()const;
+	float4x4 getGlobalMatrix()const;
+	float4x4 getLocalMatrix() const;
+
 	static float4x4 composeMatrix(float3& position, Quat& rotation, float3& scale);
 	void setFromMatrix(float4x4 matrix);
 

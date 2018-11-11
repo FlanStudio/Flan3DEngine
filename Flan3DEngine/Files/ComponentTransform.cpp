@@ -2,21 +2,26 @@
 #include "GameObject.h"
 
 ComponentTransform ComponentTransform::getGlobal() const
-{
-	ComponentTransform global;
-	global.position = position;
-	global.rotation = rotation;
-	global.scale = scale;
+{	
+	std::list<float4x4> temp;
 
-	GameObject* parent = gameObject->parent;
-	while (parent)
+	GameObject* currentGO = this->gameObject;
+	while(currentGO)
 	{
-		global.position += parent->transform->position;
-		global.rotation = global.rotation.Mul(parent->transform->rotation);
-		global.scale = global.scale.Mul(parent->transform->scale);
-		parent = parent->parent;
+		temp.push_back(currentGO->transform->getLocalMatrix().Transposed());
+		currentGO = currentGO->parent;
 	}
-	return global;
+	
+	float4x4 globalMatrix = float4x4::identity;
+	for (std::list<float4x4>::reverse_iterator it = temp.rbegin(); it != temp.rend(); ++it)
+	{
+		globalMatrix = globalMatrix * (*it);
+	}
+
+	ComponentTransform globalTransform;
+	globalMatrix.Decompose(globalTransform.position, globalTransform.rotation, globalTransform.scale);
+
+	return globalTransform;
 }
 
 ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) const
@@ -26,7 +31,6 @@ ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) c
 	ComponentTransform childGlobal = getGlobal();
 
 	ComponentTransform parentGlobal = newParent->getGlobal();
-	
 
 	local.position = childGlobal.position - parentGlobal.position;
 	local.rotation = childGlobal.rotation / parentGlobal.rotation;
@@ -121,12 +125,21 @@ void ComponentTransform::OnInspector()
 	}
 }
 
-float4x4 ComponentTransform::getMatrix()const
+float4x4 ComponentTransform::getGlobalMatrix()const
 {
 	float4x4 ret;
 
 	ComponentTransform global = getGlobal();
 	ret = float4x4::FromTRS(global.position, global.rotation, global.scale);
+
+	return ret.Transposed();
+}
+
+float4x4 ComponentTransform::getLocalMatrix() const
+{
+	float4x4 ret;
+
+	ret = float4x4::FromTRS(position, rotation, scale);
 
 	return ret.Transposed();
 }

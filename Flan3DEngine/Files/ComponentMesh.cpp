@@ -23,12 +23,12 @@ void ComponentMesh::destroyBuffers()
 
 void ComponentMesh::Draw()
 {
-	if (!gameObject)
+	if (!gameObject || !mesh)
 		return;
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	float4x4 myMatrix = gameObject->transform->getMatrix();
+	float4x4 myMatrix = gameObject->transform->getGlobalMatrix();
 
 	glMultMatrixf(myMatrix.ptr());
 
@@ -58,7 +58,8 @@ void ComponentMesh::genNormalLines()
 
 void ComponentMesh::drawNormals()
 {
-	mesh->drawNormals();
+	if (mesh)
+		mesh->drawNormals();
 }
 
 void ComponentMesh::OnInspector()
@@ -97,9 +98,8 @@ void ComponentMesh::OnInspector()
 
 void ComponentMesh::updateGameObjectAABB()
 {
-	//Change that to the new Resources System
-
-	//gameObject->boundingBox.Enclose((float3*)vertex, num_vertex);
+	if(mesh)
+		gameObject->boundingBox.Enclose((float3*)mesh->vertex, mesh->num_vertex);
 }
 
 void ComponentMesh::Serialize(char*& cursor) const

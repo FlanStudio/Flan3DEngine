@@ -192,7 +192,7 @@ void ModuleCamera3D::MousePicking() const
 				if (!componentMesh)
 					continue;
 
-				LineSegment localSpaceSegment(segment);  localSpaceSegment.Transform(intersected[i]->transform->getMatrix().Transposed().Inverted());
+				LineSegment localSpaceSegment(segment);  localSpaceSegment.Transform(intersected[i]->transform->getGlobalMatrix().Transposed().Inverted());
 
 				for (int tri = 0; tri < componentMesh->mesh->num_index / 3; ++tri) //For each triangle in the mesh
 				{

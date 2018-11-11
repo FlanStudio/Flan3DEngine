@@ -82,7 +82,7 @@ bool Quadtree::isWithinLimits(const GameObject* go) const
 {
 	BROFILER_CATEGORY("QuadtreeLimits", Profiler::Color::Azure)
 
-	return root.quad.Contains(go->boundingBox);
+	return root.quad.Intersects(go->boundingBox) || root.quad.Contains(go->boundingBox);
 }
 
 void Quadtree::Draw()
@@ -266,7 +266,7 @@ void QuadtreeNode::RedistributeGameObjects()
 			itGO = gameObjects.erase(itGO);
 			for (int i = 0; i < 4; ++i)
 			{
-				if (childs[i].quad.Contains(gameObject->boundingBox))
+				if (childs[i].quad.Contains(gameObject->boundingBox) || childs[i].quad.Intersects(gameObject->boundingBox))
 					childs[i].Insert(gameObject);
 			}
 		}

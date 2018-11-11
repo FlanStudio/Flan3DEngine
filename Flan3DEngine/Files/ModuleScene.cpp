@@ -189,6 +189,7 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 void ModuleScene::AddGameObject(GameObject* gameObject)
 {
 	gameObjects[0]->AddChild(gameObject);
+	gameObject->parent = gameObjects[0];
 }
 
 void ModuleScene::guiHierarchy()
