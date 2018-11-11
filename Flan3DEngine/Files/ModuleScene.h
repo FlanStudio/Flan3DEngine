@@ -43,6 +43,8 @@ public:
 	void Serialize();
 	void DeSerialize(std::string path, std::string extension);
 
+	void TransformGUI();
+
 public:
 	Quadtree quadtree;
 
