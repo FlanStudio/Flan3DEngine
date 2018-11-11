@@ -245,7 +245,8 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//Now we have a bunch of data in the scene. We want to export all that the fbx contains in different files in Library, keeping the conection in a .meta file.
 	//We also need to keep somewhere the node-structure, in order to be able of instanciating this fbx. 
-	//Options: Inside the .meta? Hidden prefab in Library, linked with the .meta, as our Scene's style? We will follow the last one.
+	//Options: Inside the .meta? Hidden prefab in Library, linked with the .meta, as our Scene's style? We will store that in the .meta because of for now we have
+	//		   no data to store there. 
 
 	//Extras: We need to give the user the capability to access the different meshes and textures, and reference them inside components, as if they were
 	//separated files.
@@ -281,10 +282,24 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 	std::vector<ResourceTexture*> textures;
 	std::map<const aiMesh*, ResourceMesh*> meshes;
+	
+	uint fileSize = decomposedHierarchy.size() *
+		(
+			sizeof(char[100]) +
+			sizeof(aiVector3D) * 2 +
+			sizeof(aiQuaternion) +
+			sizeof(UID) * 4
+		);
+	
+	char* hierarchyBuffer = new char[fileSize];
+	char* cursor = hierarchyBuffer;
 
 	for (int i = 0; i < decomposedHierarchy.size(); ++i)
 	{
 		//Scan all the resources this aiNode is referencing
+
+		UID meshUID = 0;
+		UID textureUID = 0;
 
 		if (decomposedHierarchy[i]->mNumMeshes > 0)
 		{
@@ -304,8 +319,8 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 			//Store the mesh, if this has not been saved yet
 
-			ResourceMesh* savedMesh = meshes.at(assimpMesh);
-			UID meshUID = 0;
+
+			ResourceMesh* savedMesh = meshes.find(assimpMesh) != meshes.end() ? meshes.at(assimpMesh) : nullptr;
 
 			if(!savedMesh)
 			{
@@ -358,6 +373,12 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 				myMesh->meshName = assimpMesh->mName.C_Str();
 				ret.push_back(myMesh);
 				meshes.insert(std::pair<const aiMesh*, ResourceMesh*>(assimpMesh, myMesh));
+
+				char* meshBuffer = new char[myMesh->bytesToSerialize()];
+				char* cursor = meshBuffer;
+				myMesh->Serialize(cursor);
+				App->fs->OpenWriteBuffer(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION, meshBuffer, myMesh->bytesToSerialize());
+				delete meshBuffer;
 			}
 			else
 			{
@@ -366,75 +387,87 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 			//Store the texture
 
-			UID textureUID = 0;
-
-			bool alreadyStored = false;
-			for (int j = 0; j < textures.size(); ++j)
+			if (!texturePath.empty())
 			{
-				if (textures[j]->getFile() == texturePath)
+				bool alreadyStored = false;
+				for (int j = 0; j < textures.size(); ++j)
 				{
-					alreadyStored = true;
-					textureUID = textures[j]->getUUID();
+					if (textures[j]->getFile() == texturePath)
+					{
+						alreadyStored = true;
+						textureUID = textures[j]->getUUID();
+					}
 				}
-			}
-			
-			if (!alreadyStored)
-			{
-				ResourceTexture* myTexture = App->textures->ExportResource(texturePath);
-				textures.push_back(myTexture);
-				ret.push_back(myTexture);
-				textureUID = myTexture->getUUID();
-			}
+
+				if (!alreadyStored)
+				{
+					ResourceTexture* myTexture = App->textures->ExportResource(texturePath);
+					if (myTexture)
+					{
+						textures.push_back(myTexture);
+						ret.push_back(myTexture);
+						textureUID = myTexture->getUUID();
+					}
+				}
+			}			
 		}
 
-		//Save here the uuids: This one's, parent's, textures and meshes
+		//Save here the uuids: This one's, parent's, textures and meshes + transform
 
-	}
+		std::string name = decomposedHierarchy[i]->mName.C_Str();
+		if (name.length() >= 100)
+			Debug.LogWarning("A file in the FBX hierarchy has a name greater than 100 chars. Wow. Some info may be missing");
 
+		name = name.substr(0, 100);
+		name.resize(100);
 
+		aiVector3D pos, scale;
+		aiQuaternion rotation;
+		decomposedHierarchy[i]->mTransformation.Decompose(pos, rotation, scale);
+		
+		uint uidBytes = sizeof(UID);
 
+		//Your name
+		memcpy(cursor, name.c_str(), 100);
+		cursor += 100;
 
+		//Your uid
+		memcpy(cursor, &uids[i], uidBytes);
+		cursor += uidBytes;
 
+		//Your parent's uid
+		memcpy(cursor, &parent_uids[i], uidBytes);
+		cursor += uidBytes;
 
-
-	//Generate the .meta file (We only save the amount of meshes, amount of textures and all theirs UIDs, for now)
-	uint metaSize = sizeof(uint[2]);
-	metaSize += scene->mNumMeshes * sizeof(uint);
-	metaSize += textures.size() * sizeof(uint);
-
-	char* metaBuffer = new char[metaSize];
-	char* cursor = metaBuffer;
-
-	uint quantities[2] =
-	{
-		scene->mNumMaterials,
-		textures.size()
-	};
-
-	uint bytes = sizeof(uint[2]);
-	memcpy(cursor, quantities, bytes);
-	cursor += bytes;
-
-	bytes = sizeof(UID);
-	for (int i = 0; i < ret.size(); ++i)
-	{
-		UID uid = ret[i]->getUUID();
-		memcpy(cursor, &uid, bytes);
+		//Transform
+		uint bytes = sizeof(aiVector3D);
+		memcpy(cursor, &pos, bytes);
 		cursor += bytes;
+
+		bytes = sizeof(aiQuaternion);
+		memcpy(cursor, &rotation, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(aiVector3D);
+		memcpy(cursor, &scale, bytes);
+		cursor += bytes;
+
+		//Mesh / Texture UID
+		memcpy(cursor, &meshUID, uidBytes);
+		cursor += uidBytes;
+
+		memcpy(cursor, &textureUID, uidBytes);
+		cursor += uidBytes;
 	}
 
-	//
-
-
-	char* meshBuffer = new char[myMesh->bytesToSerialize()];
-	char* cursor = meshBuffer;
-	myMesh->Serialize(cursor);
-	App->fs->OpenWriteBuffer(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION, meshBuffer, myMesh->bytesToSerialize());
-	delete meshBuffer;
+	//Save the stored hierarchy in a .meta file
+	App->fs->OpenWriteBuffer(file + ".meta", hierarchyBuffer, fileSize);
 
 	aiReleaseImport(scene);
 	delete buffer;
-	delete metaBuffer;
+	delete hierarchyBuffer;
+
+	return ret;
 }
 
 std::vector<const aiNode*> FBXExporter::decomposeAssimpHierarchy(const aiNode* rootNode) const

@@ -191,8 +191,8 @@ update_status ModuleEditor::PreUpdate()
 	
 	if (logEnabled)
 	{
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3));
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ));
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH/4, SCREEN_HEIGHT/4*3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4 ), ImGuiCond_FirstUseEver);
 		ImGui::Begin("LogWindow", &logEnabled);
 		Debug.Draw();
 		ImGui::End();
@@ -345,8 +345,8 @@ update_status ModuleEditor::PreUpdate()
 
 	if (hierarchy) 
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, 23));
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23));
+		ImGui::SetNextWindowPos(ImVec2(0, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23), ImGuiCond_FirstUseEver);
 		if(ImGui::Begin("Hierarchy", &hierarchy))
 		{
 			App->scene->guiHierarchy();
@@ -356,8 +356,8 @@ update_status ModuleEditor::PreUpdate()
 
 	if (inspector)
 	{
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23));
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23));
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin("Inspector", &inspector))
 		{
 			App->scene->guiInspector();
@@ -367,8 +367,8 @@ update_status ModuleEditor::PreUpdate()
 
 	if(fileSystem)
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3));
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4));
+		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
 
 		ImGui::Begin("FileSystem", &fileSystem);
 
@@ -474,19 +474,23 @@ void LogWindow::Draw()
 	logsTitle = std::string(std::string("Logs (") + std::to_string(numLogs) + std::string(")")).c_str();
 	if (ImGui::AddTab(logsTitle.data()))
 	{
-		ImGui::TextUnformatted(NormalBuf.begin());
+		ImGui::TextWrapped(NormalBuf.begin());
 	}
 
 	warningTitle = std::string(std::string("Warnings (") + std::to_string(numwarnings) + std::string(")")).c_str();
 	if (ImGui::AddTab(warningTitle.data()))
 	{
-		ImGui::TextColored(ImVec4(255, 255, 0, 255), WarningBuf.begin());
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 0, 255));
+		ImGui::TextWrapped(WarningBuf.begin());
+		ImGui::PopStyleColor();
 	}
 
 	errorTitle = std::string(std::string("Errors (") + std::to_string(numerrors) + std::string(")")).c_str();
 	if (ImGui::AddTab(errorTitle.data()))
 	{
-		ImGui::TextColored(ImVec4(255, 0, 0, 255), ErrorBuf.begin());
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 0, 0, 255));
+		ImGui::TextWrapped(ErrorBuf.begin());
+		ImGui::PopStyleColor();
 	}
 	ImGui::EndTabBar();
 	ImGui::PopStyleVar();

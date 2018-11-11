@@ -4,6 +4,11 @@ ResourceMesh::~ResourceMesh()
 {
 }
 
+uint ResourceMesh::getBytes() const
+{
+	return sizeof(ResourceMesh);
+}
+
 uint ResourceMesh::bytesToSerialize() const
 {
 	uint nameLenght = meshName.length();

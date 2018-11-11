@@ -51,11 +51,14 @@ bool ResourceManager::Start()
 			//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
 			//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
 
+			//TODO: ANOTHER FBX USING THE SAME RESOURCES?
 
-
-
+			std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX(fullPaths[i]);
+			for (int j = 0; j < exportedRes.size(); ++j)
+			{
+				resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+			}
 		}
-
 		//TODO: Materials, audio, animations, etc?
 	}
 
