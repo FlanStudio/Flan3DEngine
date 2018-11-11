@@ -23,6 +23,9 @@ void ComponentMesh::destroyBuffers()
 
 void ComponentMesh::Draw()
 {
+	if (!gameObject)
+		return;
+
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	float4x4 myMatrix = gameObject->transform->getMatrix();

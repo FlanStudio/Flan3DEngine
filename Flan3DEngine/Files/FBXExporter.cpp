@@ -429,21 +429,34 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 			if (!texturePath.empty())
 			{
 				bool alreadyStored = false;
-				for (int j = 0; j < textures.size(); ++j)
+
+				//First, search in the previously stored Resources
+				Resource* myTexture = App->resources->FindByFile((char*)texturePath.data());
+
+				if (myTexture)
 				{
-					if (textures[j]->getFile() == texturePath)
-					{
-						alreadyStored = true;
-						textureUID = textures[j]->getUUID();
-					}
-				}
+					alreadyStored = true;
+					textureUID = myTexture->getUUID();
+				}					
 
 				if (!alreadyStored)
 				{
-					ResourceTexture* myTexture = App->textures->ExportResource(texturePath);
+					for (int j = 0; j < textures.size(); ++j)
+					{
+						if (textures[j]->getFile() == texturePath)
+						{
+							alreadyStored = true;
+							textureUID = textures[j]->getUUID();
+						}
+					}
+				}				
+
+				if (!alreadyStored)
+				{
+					myTexture = App->textures->ExportResource(texturePath);
 					if (myTexture)
 					{
-						textures.push_back(myTexture);
+						textures.push_back((ResourceTexture*)myTexture);
 						ret.push_back(myTexture);
 						textureUID = myTexture->getUUID();
 					}
