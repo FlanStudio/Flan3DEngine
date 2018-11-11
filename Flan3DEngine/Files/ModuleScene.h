@@ -69,7 +69,7 @@ private:
 
 private:
 	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
-	ImGuizmo::MODE guizmoMode;
+	ImGuizmo::MODE guizmoMode = ImGuizmo::MODE::WORLD;
 
 	float quadTreeUpdateRate = 2.0f;
 

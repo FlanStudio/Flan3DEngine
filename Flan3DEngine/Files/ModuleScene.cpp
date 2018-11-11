@@ -147,7 +147,7 @@ void ModuleScene::UpdateQuadtree()
 
 void ModuleScene::DrawGuizmos()
 {
-	GameObject* selected = getSelectedGO();
+	/*GameObject* selected = getSelectedGO();
 	if (selected)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -172,7 +172,7 @@ void ModuleScene::DrawGuizmos()
 	{
 		ImGuizmo::Enable(false);
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	}
+	}*/
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
