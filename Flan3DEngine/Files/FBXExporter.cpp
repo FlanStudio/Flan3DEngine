@@ -281,7 +281,6 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 		}
 	}
 
-	std::vector<ResourceTexture*> textures;
 	std::map<const aiMesh*, ResourceMesh*> meshes;
 	
 	uint fileSize = sizeof(uint) + //Num aiNodes
@@ -428,35 +427,20 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 			if (!texturePath.empty())
 			{
-				bool alreadyStored = false;
-
 				//First, search in the previously stored Resources
 				Resource* myTexture = App->resources->FindByFile((char*)texturePath.data());
 
 				if (myTexture)
 				{
-					alreadyStored = true;
 					textureUID = myTexture->getUUID();
 				}					
 
-				if (!alreadyStored)
+				if (!myTexture)
 				{
-					for (int j = 0; j < textures.size(); ++j)
-					{
-						if (textures[j]->getFile() == texturePath)
-						{
-							alreadyStored = true;
-							textureUID = textures[j]->getUUID();
-						}
-					}
-				}				
-
-				if (!alreadyStored)
-				{
+					//This may be a file outside Assets folder, care, we have to copy things
 					myTexture = App->textures->ExportResource(texturePath);
 					if (myTexture)
 					{
-						textures.push_back((ResourceTexture*)myTexture);
 						ret.push_back(myTexture);
 						textureUID = myTexture->getUUID();
 					}
