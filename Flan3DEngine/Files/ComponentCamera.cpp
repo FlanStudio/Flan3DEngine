@@ -71,16 +71,12 @@ bool ComponentCamera::Update(float dt)
 
 void ComponentCamera::RecalculateProjectionMatrix(int w, int h)
 {
-	glViewport(0, 0, w, h);
 	this->aspectRatio = w / h;
 	width = w; 
 	height = h;
 	verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 
-	//Update frustum
-	frustum.verticalFov = verticalFOV;
-	frustum.farPlaneDistance = farDistance;
-	frustum.nearPlaneDistance = nearDistance;
+	updateFrustum();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -251,6 +247,10 @@ void ComponentCamera::OnInspector()
 			verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 			aspectRatio = width / height;
 			updateFrustum();
+			if (this == App->camera->activeCamComponent)
+			{
+				RecalculateProjectionMatrix(width, height);
+			}
 		}
 		
 		float hFOVDegrees = RadToDeg(horizontalFOV);
@@ -259,11 +259,19 @@ void ComponentCamera::OnInspector()
 			horizontalFOV = DegToRad(hFOVDegrees);
 			verticalFOV = 2 * atanf(tanf(horizontalFOV / 2) * (height / width));
 			updateFrustum();
+			if (this == App->camera->activeCamComponent)
+			{
+				RecalculateProjectionMatrix(width, height);
+			}
 		}
 
 		if (ImGui::DragFloat("Far Distance", &farDistance, .1, 10, 2000, "%.2f"))
 		{
 			updateFrustum();
+			if (this == App->camera->activeCamComponent)
+			{
+				RecalculateProjectionMatrix(width, height);
+			}
 		}
 
 		if (ImGui::Checkbox("Main Camera", &isMainCamera))
@@ -278,9 +286,6 @@ void ComponentCamera::OnInspector()
 			}
 		}
 
-		if (ImGui::ColorEdit3("Background Color", &backgroundColor.x, 0))
-		{
-			//TODO: CHANGE THE BACKGROUND
-		}
+		ImGui::ColorEdit3("Background Color", &backgroundColor.x, 0);
 	}
 }

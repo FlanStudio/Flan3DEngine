@@ -38,7 +38,6 @@ bool ModuleCamera3D::Init()
 	editorCamComponent->updateFrustum();
 	editorCamComponent->backgroundColor = { 0,0,0,0 };
 
-
 	editorCamera->transform->position = { 0,2,0 };
 
 	activeCamera = editorCamera;
@@ -251,6 +250,7 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 			{
 				activeCamComponent = gameCamComponent;
 				activeCamera = gameCamera;
+				activeCamComponent->RecalculateProjectionMatrix(activeCamComponent->width, activeCamComponent->height);
 			}
 			else
 			{
@@ -264,6 +264,7 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 		{
 			activeCamera = editorCamera;
 			activeCamComponent = editorCamComponent;
+			activeCamComponent->RecalculateProjectionMatrix(activeCamComponent->width, activeCamComponent->height);
 			break;
 		}
 	}
@@ -386,7 +387,12 @@ void ModuleCamera3D::rotateAroundCenter(float dt)
 
 void ModuleCamera3D::OnResize(int w, int h)
 {
-	editorCamComponent->RecalculateProjectionMatrix(w, h);
+	if (activeCamComponent)
+	{
+		glViewport(0, 0, w, h);
+		activeCamComponent->RecalculateProjectionMatrix(w, h);
+	}
+		
 }
 
 void ModuleCamera3D::setGameCamera(ComponentCamera* component)
