@@ -36,6 +36,7 @@ bool ModuleCamera3D::Init()
 	editorCamComponent->horizontalFOV = DegToRad(60);
 	editorCamComponent->calculateVerticalFOV();
 	editorCamComponent->updateFrustum();
+	editorCamComponent->backgroundColor = { 0,0,0,0 };
 
 
 	editorCamera->transform->position = { 0,2,0 };
@@ -399,5 +400,18 @@ void ModuleCamera3D::setGameCamera(ComponentCamera* component)
 	{
 		gameCamera = nullptr;
 		gameCamComponent = nullptr;
+	}
+}
+
+float4 ModuleCamera3D::getBackground() const
+{
+	if (activeCamComponent)
+	{
+		ImVec4 color = activeCamComponent->backgroundColor;
+		return float4(color.x, color.y, color.z, color.w);
+	}
+	else
+	{
+		return float4::zero;
 	}
 }

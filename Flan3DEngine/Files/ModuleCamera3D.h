@@ -30,6 +30,7 @@ public:
 	float4x4 GetProjMatrix();
 	void OnResize(int w, int h);
 	void setGameCamera(ComponentCamera* component);
+	float4 getBackground() const;
 
 private:
 	void CameraInputs(float dt);

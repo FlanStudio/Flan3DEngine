@@ -146,8 +146,8 @@ update_status ModuleRenderer3D::PreUpdate()
 {
 	BROFILER_CATEGORY("ModuleRenderer3D_Preupdate", Profiler::Color::Azure)
 
-	//Color color = App->camera->background;
-	glClearColor(0, 0, 0, 0);
+	float4 color = App->camera->getBackground();
+	glClearColor(color.x, color.y, color.z, color.w);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glMatrixMode(GL_MODELVIEW);
