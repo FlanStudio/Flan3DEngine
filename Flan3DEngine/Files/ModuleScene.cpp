@@ -108,7 +108,11 @@ update_status ModuleScene::PostUpdate()
 {
 	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
 
-	DrawGuizmos();
+	if (!IN_GAME)
+	{
+		DrawGuizmos();
+		
+	}
 
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
@@ -299,9 +303,6 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 				}			
 				ImGui::TreePop();
 			}
-			
-
-
 		}
 		else
 		{
@@ -749,6 +750,8 @@ void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vec
 
 void ModuleScene::parentAABBs()
 {
+	BROFILER_CATEGORY("parentAABBScene", Profiler::Color::Azure)
+
 	gameObjects[0]->encloseParentAABB();
 }
 

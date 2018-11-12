@@ -169,7 +169,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	DrawMeshes();
 
-	if (App->debugDraw)
+	if (App->debugDraw && !IN_GAME)
 		App->DebugDraw();
 
 	App->editor->Draw();

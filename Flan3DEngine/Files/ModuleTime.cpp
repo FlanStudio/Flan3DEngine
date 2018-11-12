@@ -17,7 +17,7 @@ update_status ModuleTime::PreUpdate()
 	dtTimer.Start();
 
 	//play Dt calculations---------------------(provisional)
-	//if (play)
+	//if (IN_GAME)
 	//{
 	//	gameTime += playDt;
 	//}
@@ -29,7 +29,6 @@ update_status ModuleTime::PreUpdate()
 update_status ModuleTime::PostUpdate()
 {
 	BROFILER_CATEGORY("TimePostUpdate", Profiler::Color::Azure)
-
 
 	//Frame counter
 	frameCount++;
