@@ -16,13 +16,13 @@ public:
 
 public:
 	ComponentTransform getGlobal() const;
-	ComponentTransform getLocal(ComponentTransform* newParent) const;
+	ComponentTransform getLocalWithParent(ComponentTransform* newParent) const;
 	void setLocalWithParent(ComponentTransform* newParent);
 	void setLocal(ComponentTransform* newTransform);
-	void setLocalWithParentGlobal(ComponentTransform parentGlobal);
 	void OnInspector();
 	float4x4 getGlobalMatrix()const;
 	float4x4 getLocalMatrix() const;
+	void setFromLocalMatrix(float4x4 localMatrix);
 
 	static float4x4 composeMatrix(float3& position, Quat& rotation, float3& scale);
 	void setFromGlobalMatrix(float4x4 matrix);

@@ -44,5 +44,4 @@ extern bool VSYNC;
 extern float BRIGHTNESS;
 
 extern bool IN_GAME;
-extern bool GLOBAL;
 #endif
