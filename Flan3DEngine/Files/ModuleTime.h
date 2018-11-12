@@ -22,7 +22,6 @@ public:
 
 public:
 	float dt = 0.0f;
-	float playDt = 0.0f;
 	float gameTime = 0.0f;
 	float timeScale = 1.0f; //Must be between 0.0f and 2.0f
 
