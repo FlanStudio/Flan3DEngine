@@ -83,10 +83,13 @@ void ResourceMesh::Draw()
 	glColorPointer(4, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (textureCoords_ID != 0)
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, textureCoords_ID);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_ID);
 	glDrawElements(GL_TRIANGLES, num_index, GL_UNSIGNED_INT, NULL);
