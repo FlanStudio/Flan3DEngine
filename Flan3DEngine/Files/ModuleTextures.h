@@ -8,6 +8,13 @@
 
 class ResourceTexture;
 
+//Only for internal purposes
+struct Texture
+{
+	uint OpenGLID = 0;
+	std::string fileName;
+};
+
 class ModuleTextures : public Module
 {
 public:
@@ -39,8 +46,13 @@ public:
 
 	ResourceTexture* ExportResource(std::string file);
 
+	void LoadInternalTexture(const std::string fileName);
+	uint getInternalTextureID(const std::string fileName) const;
+
 public:
 	std::vector<ResourceTexture*> textures;
+
+	std::vector<Texture*> internalTextures;
 };
 
 #endif

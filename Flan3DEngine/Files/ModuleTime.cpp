@@ -6,12 +6,13 @@
 
 bool ModuleTime::Start()
 {
+	TimeAtlasID = App->textures->getInternalTextureID("timeAtlas.dds");
 	return true;
 }
 
 update_status ModuleTime::PreUpdate()
 {
-	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure)
+	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure);
 
 	dtTimer.Start();
 
@@ -28,7 +29,8 @@ update_status ModuleTime::PreUpdate()
 update_status ModuleTime::PostUpdate()
 {
 	BROFILER_CATEGORY("TimePostUpdate", Profiler::Color::Azure)
-	
+
+
 	//Frame counter
 	frameCount++;
 
@@ -57,19 +59,13 @@ bool ModuleTime::CleanUp()
 
 void ModuleTime::OnTimeGUI()
 {
-	if (!timeAtlas && App->textures->textures.size() > 0)
-		timeAtlas = App->textures->textures[0]; //Temporal, this will be in a hidden directory
-
-	if (!timeAtlas)
-		return;
-
 	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetCursorScreenPos({ windowPos.x + 33.0f,windowPos.y + 2.0f });
 
 	if (!IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
 		{
 			IN_GAME = true;
 			Event event;
@@ -79,7 +75,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	else
 	{
-		if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
 			Event event;
@@ -90,7 +86,7 @@ void ModuleTime::OnTimeGUI()
 
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
+	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
 	{
 		Event event;
 		event.timeEvent.type = EventType::PAUSE;
@@ -98,7 +94,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	ImGui::SameLine();
 
-	if (ImGui::ImageButton((GLuint*)timeAtlas->id, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
+	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
 	{
 		Event event;
 		event.timeEvent.type = EventType::STEP;

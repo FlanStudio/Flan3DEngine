@@ -28,12 +28,12 @@ Application::Application()
 	// They will CleanUp() in reverse order
 
 	// Main Modules
-	AddModule(time);
 	AddModule(window);
 	AddModule(input);
 	AddModule(fs);
 	AddModule(textures);
 	AddModule(audio);
+	AddModule(time);
 	AddModule(camera);
 	AddModule(fbxexporter);
 	AddModule(resources);

@@ -52,7 +52,7 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::Start()
 {
-	
+	LoadInternalTexture("timeAtlas.dds");
 	return true;
 }
 
@@ -213,4 +213,64 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 	ilDeleteImage(ilID);
 
 	return text;
+}
+
+void ModuleTextures::LoadInternalTexture(std::string fileName)
+{
+	char* textureBuffer;
+	int bufferSize;
+	if (!App->fs->OpenRead("Internal/textures/" + fileName, &textureBuffer, bufferSize))
+		return;
+
+	//Create and load an empty DevIL image
+	ILuint ilID;
+	ilGenImages(1, &ilID);
+	ilBindImage(ilID);
+
+	//Load the current binded image with the buffer received from the FileSystem
+	if (!ilLoadL(IL_TYPE_UNKNOWN, textureBuffer, bufferSize))
+	{
+		return;
+	}
+
+	if (!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) //Convert the active image into rgba format
+	{
+		return;
+	}
+
+	//Create an OpenGL texture and initialize it with the active Image data
+	uint openGLID = 0;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &openGLID);
+	glBindTexture(GL_TEXTURE_2D, openGLID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
+		0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//Create our local storage of the texture
+	Texture* text = new Texture();
+	text->fileName = fileName;
+	text->OpenGLID = openGLID;
+	internalTextures.push_back(text);
+
+	if (textureBuffer)
+		delete textureBuffer;
+
+	ilDeleteImage(ilID);
+}
+
+uint ModuleTextures::getInternalTextureID(const std::string fileName) const
+{
+	for (int i = 0; i < internalTextures.size(); ++i)
+	{
+		if (internalTextures[i]->fileName == fileName)
+			return internalTextures[i]->OpenGLID;
+	}
+	return 0;
 }

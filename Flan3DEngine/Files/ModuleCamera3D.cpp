@@ -246,8 +246,17 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 	{
 		case EventType::PLAY:
 		{
-			activeCamComponent = gameCamComponent;
-			activeCamera = gameCamera;
+			if (gameCamComponent && gameCamera)
+			{
+				activeCamComponent = gameCamComponent;
+				activeCamera = gameCamera;
+			}
+			else
+			{
+				Debug.LogError("No cameras attached as MainCamera.");
+				activeCamComponent = nullptr;
+				activeCamera = nullptr;
+			}
 			break;
 		}
 		case EventType::STOP:
@@ -301,12 +310,18 @@ void ModuleCamera3D::Move(const float3 &movement)
 // -----------------------------------------------------------------
 float4x4 ModuleCamera3D::GetViewMatrix()
 {
-	return activeCamComponent->getViewMatrix();
+	if (activeCamComponent)
+		return activeCamComponent->getViewMatrix();
+	else
+		return float4x4::nan;
 }
 
 float4x4 ModuleCamera3D::GetProjMatrix()
 {
-	return activeCamComponent->getProjMatrix();
+	if (activeCamComponent)
+		return activeCamComponent->getProjMatrix();
+	else
+		return float4x4::nan;
 }
 
 // -----------------------------------------------------------------

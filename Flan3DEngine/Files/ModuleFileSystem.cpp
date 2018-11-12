@@ -31,6 +31,9 @@ bool ModuleFileSystem::Init()
 	AddPath("./Library/", "Library");
 	AddPath("./Settings/", "Settings");
 
+	//Internal Directory: Engine textures
+	AddPath("./internal.f", "Internal");
+
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
 	AssetsDirSystem = getDirFiles("Assets");

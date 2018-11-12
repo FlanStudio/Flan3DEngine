@@ -36,8 +36,8 @@ public:
 private:
 	Uint32 lastSecFramesCounter = 0;
 
-	ResourceTexture* timeAtlas = nullptr;
-
+	uint TimeAtlasID = 0;
+	
 };
 
 #endif //__MODULE_TIME_H__
