@@ -313,7 +313,10 @@ void ModuleCamera3D::Move(const float3 &movement)
 float4x4 ModuleCamera3D::GetViewMatrix()
 {
 	if (activeCamComponent)
-		return activeCamComponent->getViewMatrix();
+	{
+		float4x4 viewMatrix = activeCamComponent->getViewMatrix();
+		return viewMatrix;
+	}	
 	else
 		return float4x4::nan;
 }
@@ -321,7 +324,10 @@ float4x4 ModuleCamera3D::GetViewMatrix()
 float4x4 ModuleCamera3D::GetProjMatrix()
 {
 	if (activeCamComponent)
-		return activeCamComponent->getProjMatrix();
+	{
+		float4x4 projMatrix = activeCamComponent->getProjMatrix();
+		return projMatrix;
+	}		
 	else
 		return float4x4::nan;
 }

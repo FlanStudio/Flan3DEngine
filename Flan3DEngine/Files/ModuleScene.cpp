@@ -151,7 +151,7 @@ void ModuleScene::UpdateQuadtree()
 
 void ModuleScene::DrawGuizmos()
 {
-	/*GameObject* selected = getSelectedGO();
+	GameObject* selected = getSelectedGO();
 	if (selected)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -162,21 +162,29 @@ void ModuleScene::DrawGuizmos()
 			currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
 		else if(App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 			currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
-		
+
 		ImGuizmo::Enable(true);
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-		float4x4 transformMatrix = selected->transform->getGlobalMatrix();
-		ImGuizmo::Manipulate(App->camera->GetViewMatrix().ptr(), App->camera->GetProjMatrix().ptr(), currentGuizmoOperation, guizmoMode, transformMatrix.ptr());
-		selected->transform->setFromGlobalMatrix(transformMatrix.Transposed());
+		math::float4x4 viewMatrix = App->camera->GetViewMatrix();
+		math::float4x4 projectionMatrix = App->camera->GetProjMatrix();
+		math::float4x4 transformMatrix = selected->transform->getGlobalMatrix();
+
+		ImGuizmo::Manipulate(viewMatrix.ptr(), projectionMatrix.ptr(), currentGuizmoOperation, guizmoMode, transformMatrix.ptr());
+
+		if (ImGuizmo::IsUsing())
+		{
+			transformMatrix = transformMatrix.Transposed();
+			selected->transform->setFromGlobalMatrix(transformMatrix);
+		}
 	}
 	else
 	{
 		ImGuizmo::Enable(false);
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	}*/
+	}
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
@@ -631,21 +639,14 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 
 void ModuleScene::TransformGUI()
 {
-	//if (!timeAtlas && App->textures->textures.size() > 0)
-	//	timeAtlas = App->textures->textures[3]; //Temporal, this will be in a hidden directory
-
-	//if (!timeAtlas)
-	//	return;
-
 	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetCursorScreenPos({ windowPos.x + 7.0f,windowPos.y + 2.0f });
 
-	if (!GLOBAL)
+	if (guizmoMode == ImGuizmo::MODE::WORLD)
 	{
 		if (ImGui::Button("Global", { 50,28 }))
 		{
-			GLOBAL = true;
 			guizmoMode = ImGuizmo::MODE::LOCAL;
 		}
 	}
@@ -653,7 +654,6 @@ void ModuleScene::TransformGUI()
 	{
 		if (ImGui::Button("Local", { 50,28 }))
 		{
-			GLOBAL = false;
 			guizmoMode = ImGuizmo::MODE::WORLD;
 		}
 	}

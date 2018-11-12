@@ -3,20 +3,8 @@
 
 ComponentTransform ComponentTransform::getGlobal() const
 {	
-	std::list<float4x4> temp;
-
-	GameObject* currentGO = this->gameObject;
-	while(currentGO)
-	{
-		temp.push_back(currentGO->transform->getLocalMatrix().Transposed());
-		currentGO = currentGO->parent;
-	}
-	
-	float4x4 globalMatrix = float4x4::identity;
-	for (std::list<float4x4>::reverse_iterator it = temp.rbegin(); it != temp.rend(); ++it)
-	{
-		globalMatrix = globalMatrix * (*it);
-	}
+	float4x4 globalMatrix = getGlobalMatrix();
+	globalMatrix = globalMatrix.Transposed();
 
 	ComponentTransform globalTransform;
 	globalMatrix.Decompose(globalTransform.position, globalTransform.rotation, globalTransform.scale);
@@ -24,24 +12,28 @@ ComponentTransform ComponentTransform::getGlobal() const
 	return globalTransform;
 }
 
-ComponentTransform ComponentTransform::getLocal(ComponentTransform* newParent) const
+ComponentTransform ComponentTransform::getLocalWithParent(ComponentTransform* newParent) const
 {
+	float4x4 globalMatrixParent = newParent->getGlobalMatrix();
+	globalMatrixParent = globalMatrixParent.Transposed();
+
+	float4x4 globalMatrixChild = getGlobalMatrix();
+	globalMatrixChild = globalMatrixChild.Transposed();
+
+	float4x4 parentInverted = globalMatrixParent.Inverted();
+
+	float4x4 newLocalMatrix = float4x4::identity;
+	newLocalMatrix = parentInverted * globalMatrixChild;
+
 	ComponentTransform local;
-
-	ComponentTransform childGlobal = getGlobal();
-
-	ComponentTransform parentGlobal = newParent->getGlobal();
-
-	local.position = childGlobal.position - parentGlobal.position;
-	local.rotation = childGlobal.rotation / parentGlobal.rotation;
-	local.scale = childGlobal.scale.Div(parentGlobal.scale);
+	newLocalMatrix.Decompose(local.position, local.rotation, local.scale);
 
 	return local;
 }
 
 void ComponentTransform::setLocalWithParent(ComponentTransform* newParent)
 {
-	ComponentTransform local = getLocal(newParent);
+	ComponentTransform local = getLocalWithParent(newParent);
 	position = local.position;
 	rotation = local.rotation;
 	scale = local.scale;
@@ -52,15 +44,6 @@ void ComponentTransform::setLocal(ComponentTransform* newTransform)
 	position = newTransform->position;
 	rotation = newTransform->rotation;
 	scale = newTransform->scale;
-}
-
-void ComponentTransform::setLocalWithParentGlobal(ComponentTransform parentGlobal)
-{
-	ComponentTransform childGlobal = getGlobal();
-
-	position = childGlobal.position - parentGlobal.position;
-	rotation = childGlobal.rotation / parentGlobal.rotation;
-	scale = childGlobal.scale.Div(parentGlobal.scale);
 }
 
 void ComponentTransform::OnInspector()
@@ -127,12 +110,22 @@ void ComponentTransform::OnInspector()
 
 float4x4 ComponentTransform::getGlobalMatrix()const
 {
-	float4x4 ret;
+	std::list<float4x4> temp;
 
-	ComponentTransform global = getGlobal();
-	ret = float4x4::FromTRS(global.position, global.rotation, global.scale);
+	GameObject* currentGO = this->gameObject;
+	while (currentGO)
+	{
+		temp.push_back(currentGO->transform->getLocalMatrix().Transposed());
+		currentGO = currentGO->parent;
+	}
 
-	return ret.Transposed();
+	float4x4 globalMatrix = float4x4::identity;
+	for (std::list<float4x4>::reverse_iterator it = temp.rbegin(); it != temp.rend(); ++it)
+	{
+		globalMatrix = globalMatrix * (*it);
+	}
+
+	return globalMatrix.Transposed();
 }
 
 float4x4 ComponentTransform::getLocalMatrix() const
@@ -144,9 +137,16 @@ float4x4 ComponentTransform::getLocalMatrix() const
 	return ret.Transposed();
 }
 
+void ComponentTransform::setFromLocalMatrix(float4x4 localMatrix)
+{
+	localMatrix.Transpose();
+	localMatrix.Decompose(position, rotation, scale);
+}
+
 float4x4 ComponentTransform::composeMatrix(float3& position, Quat& rotation, float3& scale)
 {
-	return float4x4::FromTRS(position, rotation, scale).Transposed();
+	float4x4 ret = float4x4::FromTRS(position, rotation, scale);
+	return ret.Transposed();
 }
 
 void ComponentTransform::setFromGlobalMatrix(float4x4 matrix)
@@ -154,8 +154,10 @@ void ComponentTransform::setFromGlobalMatrix(float4x4 matrix)
 	float4x4 localMatrix = float4x4::identity;
 	if (gameObject->parent)
 	{
-		float4x4 parentGlobalMatrix = gameObject->transform->getGlobalMatrix().Transposed();
-		localMatrix = parentGlobalMatrix.Inverted() * matrix;
+		float4x4 parentGlobalMatrix = gameObject->parent->transform->getGlobalMatrix();
+		parentGlobalMatrix = parentGlobalMatrix.Transposed();
+		localMatrix = parentGlobalMatrix.Inverted();
+		localMatrix = localMatrix * matrix;
 	}
 	else
 	{
