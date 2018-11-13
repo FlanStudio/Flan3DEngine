@@ -109,16 +109,30 @@ void ComponentMesh::updateGameObjectAABB()
 
 void ComponentMesh::Serialize(char*& cursor) const
 {
-	//Change that to the new Resources System
+	uint bytes = sizeof(UID);
+
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+	memcpy(cursor, &gameObject->uuid, bytes);
+	cursor += bytes;
+
+	UID meshUID = mesh ? mesh->getUUID() : 0;
+	memcpy(cursor, &meshUID, bytes);
+	cursor += bytes;
 }
 
 void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 {
-	//Change that to the new Resources System
-}
+	uint bytes = sizeof(UID);
 
-uint ComponentMesh::bytesToSerialize() const
-{
-	//Change that to the new Resources System
-	return 0;
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	UID meshUID;
+	memcpy(&meshUID, cursor, bytes);
+	cursor += bytes;
+
+	mesh = (ResourceMesh*)App->resources->Get(meshUID);
 }

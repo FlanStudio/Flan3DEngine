@@ -404,16 +404,9 @@ void ModuleScene::Serialize()
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
+	//TODO: MATERIALS
 
 	decomposeScene(gameObject_s, transforms, meshes, cameras);
-
-	uint meshesSize = 0u;
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		meshesSize += sizeof(uint32_t); //GameObject's UUID
-		meshesSize += sizeof(uint); //Each mesh size
-		meshesSize += meshes[i]->bytesToSerialize();
-	}
 
 	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
@@ -423,7 +416,7 @@ void ModuleScene::Serialize()
 
 	uint size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
 				sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
-				sizeof(uint) + meshesSize; + //Each mesh has a different size
+				sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size();
 
 	char* buffer = new char[size];
@@ -459,11 +452,6 @@ void ModuleScene::Serialize()
 
 	for(int i = 0; i < numMeshes; ++i)
 	{ 
-		uint meshSize = meshes[i]->bytesToSerialize();
-		bytes = sizeof(uint);
-		memcpy(cursor, &meshSize, bytes);
-		cursor += bytes;
-
 		meshes[i]->Serialize(cursor);
 	}
 
@@ -565,11 +553,6 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 
 	for (int i = 0; i < numMeshes; ++i)
 	{
-		uint meshSize = 0u;
-		bytes = sizeof(uint);
-		memcpy(&meshSize, cursor, bytes);
-		cursor += bytes;
-
 		ComponentMesh* newMesh = App->renderer3D->CreateComponentMesh(nullptr);
 		uint32_t goUUID;
 		newMesh->DeSerialize(cursor, goUUID);
