@@ -157,5 +157,13 @@ void ComponentMaterial::OnInspector()
 		ImGui::ColorEdit4("##TextureTint", &colorTint.x, colorFlags);
 
 		ImGui::NewLine();
+
+		if (texture)
+		{
+			ImGui::Image((GLuint*)texture->id, { 50, 50 });
+			ImGui::Text("Size: %dx%d", texture->width, texture->height);
+		}
+
+		ImGui::NewLine();
 	}
 }
