@@ -43,7 +43,6 @@ Component* GameObject::CreateComponent(ComponentType type)
 		{
 			ret = (Component*)App->renderer3D->CreateComponentMesh(this);
 			AddComponent(ret);
-			transformAABB();
 			break;
 		}
 		case ComponentType::CAMERA:
@@ -115,7 +114,6 @@ void GameObject::ClearComponents()
 			{
 				App->renderer3D->ClearMesh((ComponentMesh*)components[0]);
 				ClearComponent(components[0]);
-				transformAABB();
 				break;
 			}
 			case ComponentType::TRANSFORM:
@@ -155,6 +153,12 @@ void GameObject::ClearComponent(Component* component)
 			break;
 		}
 	}
+}
+
+void GameObject::ClearComponentAt(int i)
+{
+	if (i < components.size())
+		components.erase(components.begin() + i);
 }
 
 bool GameObject::HasChilds() const
@@ -268,7 +272,7 @@ void GameObject::OnInspector()
 	if (components.size() > 0)
 	{
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 }); //The line above the first component
 		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -280,7 +284,7 @@ void GameObject::OnInspector()
 			{
 				compToReorder = *(Component**)payload->Data;
 				compToReorderIndex = getComponentIndex(compToReorder);
-				if (compToReorder != components.front())
+				if (compToReorder != components.front()) //If the one im dragging is different that the already placed in the first place
 				{
 					//Draw a line
 					ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -314,7 +318,7 @@ void GameObject::OnInspector()
 	{
 		components[i]->OnInspector();
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 }); //The line after the rendered component, which has an index of i
 		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -325,7 +329,7 @@ void GameObject::OnInspector()
 			{
 				compToReorder = *(Component**)payload->Data;
 				compToReorderIndex = getComponentIndex(compToReorder);
-				if ( components[i] != compToReorder && (compToReorderIndex != i + 1))
+				if ( components[i] != compToReorder && (compToReorderIndex != i + 1)) //If im not dropping a component to the same position and the component im dropping isn't already in place
 				{
 					//Draw a line
 					ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -337,7 +341,7 @@ void GameObject::OnInspector()
 					
 					if(ImGui::IsMouseReleased(0))
 					{
-						postoreorder = i;
+						postoreorder = i+1;  //Set the desired position to the next one of the component indexed as i
 					}
 					else
 					{
@@ -358,8 +362,8 @@ void GameObject::OnInspector()
 
 	if (postoreorder >= 0 && compToReorder)
 	{
-		ClearComponent(compToReorder);
 		InsertComponent(compToReorder, postoreorder);
+		ClearComponentAt(postoreorder > compToReorderIndex ? compToReorderIndex : compToReorderIndex +1);
 	}
 
 	//-----------------------------Components----------------------------
@@ -391,6 +395,8 @@ void GameObject::OnInspector()
 		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
 		{
 			deleteComponent(getComponentByType(ComponentType::MESH));
+			initAABB();
+			transformAABB();
 		}
 
 		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
@@ -595,7 +601,6 @@ void GameObject::updateAABBbuffers()
 		destroyAABBbuffers();
 		return;
 	}
-		
 
 	if (AABBvertex == nullptr)
 	{
@@ -654,7 +659,7 @@ void GameObject::initAABB()
 {
 	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
 
-	if (Mesh)
+	if (Mesh && Mesh->mesh)
 	{
 		Mesh->updateGameObjectAABB();
 	}
@@ -665,26 +670,23 @@ void GameObject::initAABB()
 			Sphere sp;
 			sp.pos = { 0,0,0 };
 			sp.r = 0.2;
-			boundingBox.Enclose(sp);
+			initialAABB.SetNegativeInfinity();
+			initialAABB.Enclose(sp);
 		}
 	}
-}
-
-void GameObject::updateInitAABB()
-{
-	boundingBox.Enclose(initialAABB);
-	transformAABB();
-
 }
 
 AABB GameObject::getAABBChildsEnclosed()
 {
 	AABB bb;
+	bb.SetNegativeInfinity();
 
-	for (int i = 0; this->childs[i] != nullptr; i++)
+	for (int i = 0; i < childs.size(); ++i)
 	{
-		bb.Enclose(this->childs[i]->getAABBChildsEnclosed());
+		bb.Enclose(childs[i]->getAABBChildsEnclosed());
 	}
+
+	bb.Enclose(boundingBox);
 
 	return bb;
 }
@@ -732,19 +734,5 @@ void GameObject::transformAABB()
 			boundingBox = obb.MinimalEnclosingAABB();
 			updateAABBbuffers();
 		}
-	}
-}
-
-void GameObject::encloseParentAABB()
-{
-	for (uint i = 0; i < childs.size(); ++i)
-	{
-		childs[i]->encloseParentAABB();
-	}
-
-	if (parent)
-	{		
-		parent->boundingBox.Enclose(boundingBox);
-		parent->updateAABBbuffers();
 	}
 }

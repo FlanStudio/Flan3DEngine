@@ -65,7 +65,6 @@ private:
 	void decomposeScene(std::vector<GameObject*>& gameObject_s = std::vector<GameObject*>(), std::vector<ComponentTransform*>&transforms = std::vector<ComponentTransform*>(), 
 		std::vector<ComponentMesh*>&meshes = std::vector<ComponentMesh*>(), std::vector<ComponentCamera*>&cameras = std::vector<ComponentCamera*>(), 
 		std::vector<ComponentMaterial*>&materials = std::vector<ComponentMaterial*>()) const;
-	void parentAABBs();
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);

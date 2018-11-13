@@ -206,7 +206,7 @@ void ModuleCamera3D::MousePicking() const
 
 					Triangle actualTri(vertices[0], vertices[1], vertices[2]);
 					float newDistance = 0;
-					if (localSpaceSegment.Intersects(actualTri, &newDistance, nullptr))			//if the segmnent intersects with that triangle, compare the hitpoints
+					if (localSpaceSegment.Intersects(actualTri, &newDistance, nullptr))			//if the segment intersects with that triangle, compare the hitpoints
 					{
 						if (IsFinite(distance))
 						{

@@ -130,9 +130,9 @@ void ComponentMaterial::OnInspector()
 		
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
 		
-		if (textSize.x > buttonWidth)
+		if (textSize.x > buttonWidth-5)
 		{
-			uint maxTextLenght = originalText.length() * (buttonWidth - 6) / textSize.x;
+			uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
 			clampedText = originalText.substr(0, maxTextLenght - 5);
 			clampedText.append("(...)");
 		}
@@ -155,6 +155,14 @@ void ComponentMaterial::OnInspector()
 		colorFlags |= ImGuiColorEditFlags_::ImGuiColorEditFlags_AlphaBar;
 		
 		ImGui::ColorEdit4("##TextureTint", &colorTint.x, colorFlags);
+
+		ImGui::NewLine();
+
+		if (texture)
+		{
+			ImGui::Image((GLuint*)texture->id, { 50, 50 });
+			ImGui::Text("Size: %dx%d", texture->width, texture->height);
+		}
 
 		ImGui::NewLine();
 	}

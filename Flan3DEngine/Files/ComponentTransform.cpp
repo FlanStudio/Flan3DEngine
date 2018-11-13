@@ -73,7 +73,10 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosY(posY + 3);
 		ImGui::Text("Position: "); ImGui::SameLine();
 		ImGui::SetCursorPosY(posY);
-		ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f");
+		if (ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f"))
+		{
+			gameObject->transformAABB();
+		}
 
 		posY = ImGui::GetCursorPosY();
 		ImGui::SetCursorPosY(posY + 3);
@@ -102,9 +105,10 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosX(posX + 21);
 
 		float3 tempScale;
-		ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
-
-		//scale = {Equal(tempScale.x, 0) ? 0.1f : tempScale.x, Equal(tempScale.y, 0) ? 0.1f : tempScale.y, Equal(tempScale.z, 0) ? 0.1f : tempScale.z};
+		if(ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f"))
+		{
+			gameObject->transformAABB();
+		}
 
 		ImGui::SetCursorPosX(posX);
 	}
@@ -112,20 +116,19 @@ void ComponentTransform::OnInspector()
 
 float4x4 ComponentTransform::getGlobalMatrix()const
 {
-	std::list<float4x4> temp;
-
-	GameObject* currentGO = this->gameObject;
-	while (currentGO)
+	if (!gameObject->parent)
 	{
-		temp.push_back(currentGO->transform->getLocalMatrix().Transposed());
-		currentGO = currentGO->parent;
+		return getLocalMatrix();
 	}
+	float4x4 globalMatrix;
 
-	float4x4 globalMatrix = float4x4::identity;
-	for (std::list<float4x4>::reverse_iterator it = temp.rbegin(); it != temp.rend(); ++it)
-	{
-		globalMatrix = globalMatrix * (*it);
-	}
+	float4x4 myLocalMatrix = getLocalMatrix();
+	myLocalMatrix = myLocalMatrix.Transposed();
+
+	float4x4 myParentGlobalMatrix = gameObject->parent->transform->getGlobalMatrix();
+	myParentGlobalMatrix = myParentGlobalMatrix.Transposed();
+
+	globalMatrix = myParentGlobalMatrix * myLocalMatrix;
 
 	return globalMatrix.Transposed();
 }
@@ -158,8 +161,8 @@ void ComponentTransform::setFromGlobalMatrix(float4x4 matrix)
 	{
 		float4x4 parentGlobalMatrix = gameObject->parent->transform->getGlobalMatrix();
 		parentGlobalMatrix = parentGlobalMatrix.Transposed();
-		localMatrix = parentGlobalMatrix.Inverted();
-		localMatrix = localMatrix * matrix;
+		parentGlobalMatrix = parentGlobalMatrix.Inverted();
+		localMatrix = parentGlobalMatrix * matrix;
 	}
 	else
 	{

@@ -194,6 +194,7 @@ bool ResourceManager::Start()
 				{
 					root = gameObjects[j];
 				}
+				gameObjects[j]->transformAABB();
 			}
 
 			App->scene->AddGameObject(root);
