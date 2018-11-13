@@ -8,12 +8,10 @@
 
 ComponentMesh::~ComponentMesh()
 {
-	
 }
 
 void ComponentMesh::genBuffers()
 {
-	
 }
 
 void ComponentMesh::destroyBuffers()
@@ -82,6 +80,8 @@ void ComponentMesh::OnInspector()
 		ComponentMesh* thisOne = (ComponentMesh*)this;
 		ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentMesh));
 		ImGui::EndDragDropSource();
+
+		gameObject->transformAABB();
 	}
 
 	ImGui::SetCursorPosX(PosX + 20);

@@ -90,6 +90,8 @@ void ComponentTransform::OnInspector()
 			angleRadians = DegToRad(angleDegrees);
 			axis = axisbyAngle.Normalized();
 			rotation.SetFromAxisAngle(axis, angleRadians);
+
+			gameObject->transformAABB();
 		}
 
 		posY = ImGui::GetCursorPosY();
