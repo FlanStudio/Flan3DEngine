@@ -481,20 +481,20 @@ void LogWindow::Draw()
 
 	ImGui::BeginTabBar("");
 	ImGui::Separator();
-	ImGui::BeginChild("scrolling");
+	ImGui::BeginChild("scrolling", {0,0}, false, ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar);
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
 
 	logsTitle = std::string(std::string("Logs (") + std::to_string(numLogs) + std::string(")")).c_str();
 	if (ImGui::AddTab(logsTitle.data()))
 	{
-		ImGui::TextWrapped(NormalBuf.begin());
+		ImGui::TextUnformatted(NormalBuf.begin());
 	}
 
 	warningTitle = std::string(std::string("Warnings (") + std::to_string(numwarnings) + std::string(")")).c_str();
 	if (ImGui::AddTab(warningTitle.data()))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 0, 255));
-		ImGui::TextWrapped(WarningBuf.begin());
+		ImGui::TextUnformatted(WarningBuf.begin());
 		ImGui::PopStyleColor();
 	}
 
@@ -502,7 +502,7 @@ void LogWindow::Draw()
 	if (ImGui::AddTab(errorTitle.data()))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 0, 0, 255));
-		ImGui::TextWrapped(ErrorBuf.begin());
+		ImGui::TextUnformatted(ErrorBuf.begin());
 		ImGui::PopStyleColor();
 	}
 	ImGui::EndTabBar();
