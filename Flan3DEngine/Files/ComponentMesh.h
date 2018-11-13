@@ -39,6 +39,9 @@ private:
 
 public:
 	ResourceMesh* mesh = nullptr;
+
+private:
+	bool meshClicked = false;
 };
 
 #endif

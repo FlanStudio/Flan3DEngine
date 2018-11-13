@@ -132,7 +132,7 @@ void ComponentMaterial::OnInspector()
 		
 		if (textSize.x > buttonWidth)
 		{
-			uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
+			uint maxTextLenght = originalText.length() * (buttonWidth - 6) / textSize.x;
 			clampedText = originalText.substr(0, maxTextLenght - 5);
 			clampedText.append("(...)");
 		}
