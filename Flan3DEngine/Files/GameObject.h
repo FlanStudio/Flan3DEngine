@@ -44,6 +44,7 @@ public:
 	Component* getComponentByType(ComponentType type) const;	
 	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
+	void ClearComponentAt(int i);
 	void ClearComponents();
 	int getComponentIndex(const Component* component) const;
 

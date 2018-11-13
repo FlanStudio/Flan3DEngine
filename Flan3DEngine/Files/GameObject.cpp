@@ -153,6 +153,12 @@ void GameObject::ClearComponent(Component* component)
 	}
 }
 
+void GameObject::ClearComponentAt(int i)
+{
+	if (i < components.size())
+		components.erase(components.begin() + i);
+}
+
 bool GameObject::HasChilds() const
 {
 	return childs.size() > 0;
@@ -264,7 +270,7 @@ void GameObject::OnInspector()
 	if (components.size() > 0)
 	{
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 }); //The line above the first component
 		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -276,7 +282,7 @@ void GameObject::OnInspector()
 			{
 				compToReorder = *(Component**)payload->Data;
 				compToReorderIndex = getComponentIndex(compToReorder);
-				if (compToReorder != components.front())
+				if (compToReorder != components.front()) //If the one im dragging is different that the already placed in the first place
 				{
 					//Draw a line
 					ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -310,7 +316,7 @@ void GameObject::OnInspector()
 	{
 		components[i]->OnInspector();
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 });
+		ImGui::Dummy({ ImGui::GetWindowWidth(), 5 }); //The line after the rendered component, which has an index of i
 		ImGui::SetCursorScreenPos(cursorPos);
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -321,7 +327,7 @@ void GameObject::OnInspector()
 			{
 				compToReorder = *(Component**)payload->Data;
 				compToReorderIndex = getComponentIndex(compToReorder);
-				if ( components[i] != compToReorder && (compToReorderIndex != i + 1))
+				if ( components[i] != compToReorder && (compToReorderIndex != i + 1)) //If im not dropping a component to the same position and the component im dropping isn't already in place
 				{
 					//Draw a line
 					ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -333,7 +339,7 @@ void GameObject::OnInspector()
 					
 					if(ImGui::IsMouseReleased(0))
 					{
-						postoreorder = i;
+						postoreorder = i+1;  //Set the desired position to the next one of the component indexed as i
 					}
 					else
 					{
@@ -354,8 +360,8 @@ void GameObject::OnInspector()
 
 	if (postoreorder >= 0 && compToReorder)
 	{
-		ClearComponent(compToReorder);
 		InsertComponent(compToReorder, postoreorder);
+		ClearComponentAt(postoreorder > compToReorderIndex ? compToReorderIndex : compToReorderIndex +1);
 	}
 
 	//-----------------------------Components----------------------------
