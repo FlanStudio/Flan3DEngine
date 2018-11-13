@@ -45,6 +45,7 @@ public:
 	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
 	void ClearComponents();
+	int getComponentIndex(const Component* component) const;
 
 	//Other methods
 	void OnInspector();

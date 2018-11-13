@@ -131,6 +131,16 @@ void GameObject::ClearComponents()
 	}
 }
 
+int GameObject::getComponentIndex(const Component * component) const
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+			return i;
+	}
+	return -1;
+}
+
 void GameObject::ClearComponent(Component* component)
 {
 	for (int i = 0; i < components.size(); ++i)
@@ -250,7 +260,7 @@ void GameObject::OnInspector()
 
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
-			
+	int compToReorderIndex = -1;
 	if (components.size() > 0)
 	{
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
@@ -265,6 +275,7 @@ void GameObject::OnInspector()
 			if (payload)
 			{
 				compToReorder = *(Component**)payload->Data;
+				compToReorderIndex = getComponentIndex(compToReorder);
 				if (compToReorder != components.front())
 				{
 					//Draw a line
@@ -309,7 +320,8 @@ void GameObject::OnInspector()
 			if (payload)
 			{
 				compToReorder = *(Component**)payload->Data;
-				if ( components[i] != compToReorder && (i < components.size()-1 ? (components[i+1] != compToReorder) : 1))
+				compToReorderIndex = getComponentIndex(compToReorder);
+				if ( components[i] != compToReorder && (compToReorderIndex != i + 1))
 				{
 					//Draw a line
 					ImGuiWindow* window = ImGui::GetCurrentWindow();
