@@ -137,7 +137,7 @@ void ModuleScene::InitQuadtree()
 void ModuleScene::UpdateQuadtree()
 {
 	quadtree.Clear();
-	quadtree.Resize(gameObjects[0]->boundingBox);
+	quadtree.Resize(gameObjects[0]->getAABBChildsEnclosed());
 
 	std::vector<GameObject*> gameObjects_s;
 	decomposeScene(gameObjects_s);

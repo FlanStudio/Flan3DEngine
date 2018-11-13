@@ -679,11 +679,14 @@ void GameObject::initAABB()
 AABB GameObject::getAABBChildsEnclosed()
 {
 	AABB bb;
+	bb.SetNegativeInfinity();
 
-	for (int i = 0; this->childs[i] != nullptr; i++)
+	for (int i = 0; i < childs.size(); ++i)
 	{
-		bb.Enclose(this->childs[i]->getAABBChildsEnclosed());
+		bb.Enclose(childs[i]->getAABBChildsEnclosed());
 	}
+
+	bb.Enclose(boundingBox);
 
 	return bb;
 }
