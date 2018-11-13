@@ -67,12 +67,6 @@ update_status ModuleTime::PostUpdate()
 		dtSecondCounter = 0.0f;
 	}
 
-	//if (steped)
-	//{
-	//	paused = true;
-	//	steped = false;
-	//}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -147,17 +141,4 @@ void ModuleTime::OnTimeGUI()
 	}
 	ImGui::PopID();
 	ImGui::SameLine();
-}
-
-void ModuleTime::ReceiveEvent(Event event)
-{
-	//switch (event.type)
-	//{
-	//	case EventType::STEP:
-	//	{
-	//		steped = false;
-	//		paused = true;
-	//		break;
-	//	}
-	//}
 }

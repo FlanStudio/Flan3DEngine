@@ -19,8 +19,6 @@ public:
 	bool CleanUp();
 
 	void OnTimeGUI();
-private:
-	void ReceiveEvent(Event event);
 public:
 	float dt = 0.0f;
 	float playDt = 0.0f;
