@@ -53,6 +53,8 @@ public:
 	inline std::string getCurrentScene() const { return currentSceneName; }
 	inline void setCurrentScene(const std::string& newName)	{currentSceneName = newName;}
 
+	void OnRenameGUI();
+
 public:
 	Quadtree quadtree;
 

@@ -17,6 +17,7 @@
 #include <bitset>
 
 #include "imgui/imgui_internal.h"
+#include "imgui/imgui_stl.h"
 
 
 
@@ -726,6 +727,29 @@ void ModuleScene::TransformGUI()
 AABB ModuleScene::getSceneAABB() const
 {
 	return gameObjects.size() > 0 ? gameObjects[0]->boundingBox : AABB(-float3::inf, -float3::inf); 
+}
+
+void ModuleScene::OnRenameGUI()
+{
+	if (ImGui::BeginPopup("#### Renaming Scene"))
+	{
+		static std::string temp = currentSceneName;
+
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+		ImGui::SetCursorScreenPos({cursorPos.x, cursorPos.y + 6});
+		ImGui::Text("New Name: "); ImGui::SameLine();
+		cursorPos = ImGui::GetCursorScreenPos();
+		ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 6});
+		ImGui::InputText("##RenamingSceneName", &temp);
+
+		if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		{
+			currentSceneName = temp;
+			ImGui::CloseCurrentPopup();
+		}
+			
+		ImGui::EndPopup();
+	}
 }
 
 void ModuleScene::DragDrop(GameObject* go)
