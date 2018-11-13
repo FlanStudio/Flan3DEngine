@@ -130,9 +130,9 @@ void ComponentMaterial::OnInspector()
 		
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
 		
-		if (textSize.x > buttonWidth)
+		if (textSize.x > buttonWidth-5)
 		{
-			uint maxTextLenght = originalText.length() * (buttonWidth - 6) / textSize.x;
+			uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
 			clampedText = originalText.substr(0, maxTextLenght - 5);
 			clampedText.append("(...)");
 		}

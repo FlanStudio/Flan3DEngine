@@ -165,9 +165,9 @@ void ComponentMesh::OnInspector()
 
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
 
-		if (textSize.x > buttonWidth)
+		if (textSize.x > buttonWidth - 5)
 		{
-			uint maxTextLenght = originalText.length() * (buttonWidth - 6) / textSize.x;
+			uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
 			clampedText = originalText.substr(0, maxTextLenght - 5);
 			clampedText.append("(...)");
 		}
@@ -176,6 +176,15 @@ void ComponentMesh::OnInspector()
 
 		ImGui::Text(clampedText.data());
 
+		ImGui::NewLine();
+
+		//Current mesh data
+		if (mesh)
+		{
+			ImGui::TextWrapped("\tNum Vertex: %d", mesh->num_vertex);
+			ImGui::TextWrapped("\tHas Normals: %s", mesh->normals ? "true" : "false");
+			ImGui::TextWrapped("\tHas UVs set: %s", mesh->textureCoords ? "true" : "false");
+		}
 		ImGui::NewLine();
 	}
 }
