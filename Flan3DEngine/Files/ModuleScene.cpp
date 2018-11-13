@@ -12,10 +12,13 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 #include "Component.h"
+#include "ComponentMaterial.h"
 
 #include <bitset>
 
 #include "imgui/imgui_internal.h"
+
+
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
@@ -398,22 +401,41 @@ void ModuleScene::debugDraw()
 	//quadtree.Draw();
 }
 
-void ModuleScene::Serialize()
+void ModuleScene::Serialize() const
+{	
+	char* buffer;
+	uint size;
+
+	SerializeToBuffer(buffer, size);
+	App->fs->OpenWriteBuffer(SCENES_ASSETS_FOLDER + currentSceneName + SCENES_EXTENSION, buffer, size);
+
+	delete buffer;
+}
+
+void ModuleScene::DeSerialize(std::string path, std::string extension)
+{
+	char* buffer;
+	int size = 0u;
+	if (!App->fs->OpenRead(path + extension, &buffer, size))
+		return;
+
+	int pos = path.find_last_of("/") != std::string::npos ? path.find_last_of("/") : path.find_last_of("\\");
+	currentSceneName = path.substr(pos + 1);
+
+	DeSerializeFromBuffer(buffer);
+
+	delete buffer;
+}
+
+void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 {
 	std::vector<GameObject*> gameObject_s;
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
 
-	decomposeScene(gameObject_s, transforms, meshes, cameras);
-
-	uint meshesSize = 0u;
-	for (int i = 0; i < meshes.size(); ++i)
-	{
-		meshesSize += sizeof(uint32_t); //GameObject's UUID
-		meshesSize += sizeof(uint); //Each mesh size
-		meshesSize += meshes[i]->bytesToSerialize();
-	}
+	decomposeScene(gameObject_s, transforms, meshes, cameras, materials);
 
 	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
@@ -421,12 +443,13 @@ void ModuleScene::Serialize()
 		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
 	}
 
-	uint size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
-				sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
-				sizeof(uint) + meshesSize; + //Each mesh has a different size
-				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size();
+	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
+		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
+		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
+		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
+		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size();
 
-	char* buffer = new char[size];
+	buffer = new char[size];
 	char* cursor = buffer;
 
 	uint numGOs = gameObject_s.size();
@@ -457,13 +480,8 @@ void ModuleScene::Serialize()
 	memcpy(cursor, &numMeshes, bytes);
 	cursor += bytes;
 
-	for(int i = 0; i < numMeshes; ++i)
-	{ 
-		uint meshSize = meshes[i]->bytesToSerialize();
-		bytes = sizeof(uint);
-		memcpy(cursor, &meshSize, bytes);
-		cursor += bytes;
-
+	for (int i = 0; i < numMeshes; ++i)
+	{
 		meshes[i]->Serialize(cursor);
 	}
 
@@ -477,27 +495,28 @@ void ModuleScene::Serialize()
 		cameras[i]->Serialize(cursor);
 	}
 
-	App->fs->OpenWriteBuffer(SCENES_ASSETS_FOLDER + currentSceneName + SCENES_EXTENSION, buffer, size);
+	uint numMaterials = materials.size();
+	bytes = sizeof(uint);
 
-	delete buffer;
+	memcpy(cursor, &numMaterials, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		materials[i]->Serialize(cursor);
+	}
+
 }
 
-void ModuleScene::DeSerialize(std::string path, std::string extension)
+void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 {
-	char* buffer;
-	int size = 0u;
-	if (!App->fs->OpenRead(path + extension, &buffer, size))
-		return;
-
-	int pos = path.find_last_of("/") != std::string::npos ? path.find_last_of("/") : path.find_last_of("\\");
-	currentSceneName = path.substr(pos + 1);
-
 	char* cursor = buffer;
 
 	std::vector<GameObject*> gameObject_s;
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
 
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
@@ -565,11 +584,6 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 
 	for (int i = 0; i < numMeshes; ++i)
 	{
-		uint meshSize = 0u;
-		bytes = sizeof(uint);
-		memcpy(&meshSize, cursor, bytes);
-		cursor += bytes;
-
 		ComponentMesh* newMesh = App->renderer3D->CreateComponentMesh(nullptr);
 		uint32_t goUUID;
 		newMesh->DeSerialize(cursor, goUUID);
@@ -577,11 +591,11 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 		meshes.push_back(newMesh);
 	}
 
-	for (int i = 0; i < meshes.size(); ++i) 
+	for (int i = 0; i < meshes.size(); ++i)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
 		{
-			if (goUUIDs[i] == gameObject_s[j]->uuid) 
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
 			{
 				meshes[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(meshes[i]);
@@ -595,15 +609,25 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	cursor += bytes;
 	goUUIDs.clear();
 
+	bool mainCamera = false;
+
 	for (int i = 0; i < numCameras; ++i)
 	{
 		ComponentCamera* newCamera = new ComponentCamera(nullptr);
 		uint32_t goUUID;
 		newCamera->DeSerialize(cursor, goUUID);
+		if (!mainCamera && newCamera->isMainCamera)
+		{
+			mainCamera = true;
+			App->camera->setGameCamera(newCamera);
+		}		
 		goUUIDs.push_back(goUUID);
 		cameras.push_back(newCamera);
 	}
-
+	if (!mainCamera)
+	{
+		App->camera->setGameCamera(nullptr);
+	}
 	for (int i = 0; i < cameras.size(); ++i)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
@@ -613,6 +637,34 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 				cameras[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(cameras[i]);
 				cameras[i]->updateFrustum();
+			}
+		}
+	}
+
+	uint numMaterials = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numMaterials, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		ComponentMaterial* newMaterial = new ComponentMaterial(nullptr);
+		uint32_t goUUID;
+		newMaterial->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		materials.push_back(newMaterial);
+	}
+
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				materials[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(materials[i]);
 			}
 		}
 	}
@@ -631,10 +683,6 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	}
 
 	gameObjects.push_back(root);
-
-	delete buffer;
-
-	
 }
 
 void ModuleScene::TransformGUI()
@@ -743,9 +791,10 @@ void ModuleScene::DragDrop(GameObject* go)
 	}
 }
 
-void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
+void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
+								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials) const
 {
-	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras);
+	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials);
 }
 
 void ModuleScene::parentAABBs()

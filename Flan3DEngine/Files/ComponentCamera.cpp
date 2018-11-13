@@ -1,5 +1,6 @@
 #include "ComponentCamera.h"
 #include "GameObject.h"
+#include "ComponentTransform.h"
 
 ComponentCamera::ComponentCamera(GameObject* gameObject, bool active) : Component(ComponentType::CAMERA, gameObject, active)
 {

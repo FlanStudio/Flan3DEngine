@@ -418,7 +418,8 @@ int GameObject::getChildPos(const GameObject* child) const
 	}
 }
 
-void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
+void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
+						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials)
 {
 	gameObjects.push_back(this);
 	transforms.push_back(transform);
@@ -431,9 +432,13 @@ void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<Co
 	if (camera)
 		cameras.push_back(camera);
 
+	ComponentMaterial* material = (ComponentMaterial*)getComponentByType(ComponentType::MATERIAL);
+	if (material)
+		materials.push_back(material);
+
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		childs[i]->Decompose(gameObjects, transforms, meshes, cameras);
+		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials);
 	}
 }
 
