@@ -12,10 +12,13 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 #include "Component.h"
+#include "ComponentMaterial.h"
 
 #include <bitset>
 
 #include "imgui/imgui_internal.h"
+
+
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
@@ -404,9 +407,10 @@ void ModuleScene::Serialize()
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
 	//TODO: MATERIALS
 
-	decomposeScene(gameObject_s, transforms, meshes, cameras);
+	decomposeScene(gameObject_s, transforms, meshes, cameras, materials);
 
 	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
@@ -726,9 +730,10 @@ void ModuleScene::DragDrop(GameObject* go)
 	}
 }
 
-void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, std::vector<ComponentCamera*>&cameras)
+void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
+								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials)
 {
-	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras);
+	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials);
 }
 
 void ModuleScene::parentAABBs()

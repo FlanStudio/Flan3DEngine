@@ -5,6 +5,7 @@
 #include "ResourceTexture.h"
 #include "ComponentMaterial.h"
 #include "ResourceMesh.h"
+#include "ComponentTransform.h"
 
 ComponentMesh::~ComponentMesh()
 {

@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ResourceMesh.h"
+#include "ComponentTransform.h"
 
 
 #define SPEED 100.0f

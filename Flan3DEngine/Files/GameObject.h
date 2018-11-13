@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Component.h"
-#include "ComponentTransform.h"
 
 #include "MathGeoLib_1.5/Math/float3x3.h"
 
@@ -58,7 +57,7 @@ public:
 	void recursiveDebugDraw()const;
 
 	//----------Serializing methods------------
-	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
 	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char); };
