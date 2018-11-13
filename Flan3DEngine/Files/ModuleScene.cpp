@@ -609,15 +609,25 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	cursor += bytes;
 	goUUIDs.clear();
 
+	bool mainCamera = false;
+
 	for (int i = 0; i < numCameras; ++i)
 	{
 		ComponentCamera* newCamera = new ComponentCamera(nullptr);
 		uint32_t goUUID;
 		newCamera->DeSerialize(cursor, goUUID);
+		if (!mainCamera && newCamera->isMainCamera)
+		{
+			mainCamera = true;
+			App->camera->setGameCamera(newCamera);
+		}		
 		goUUIDs.push_back(goUUID);
 		cameras.push_back(newCamera);
 	}
-
+	if (!mainCamera)
+	{
+		App->camera->setGameCamera(nullptr);
+	}
 	for (int i = 0; i < cameras.size(); ++i)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
