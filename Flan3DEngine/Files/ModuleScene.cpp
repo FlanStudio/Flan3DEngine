@@ -421,7 +421,8 @@ void ModuleScene::Serialize()
 	uint size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
 				sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 				sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
-				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size();
+				sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
+				sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size();
 
 	char* buffer = new char[size];
 	char* cursor = buffer;
@@ -469,6 +470,17 @@ void ModuleScene::Serialize()
 		cameras[i]->Serialize(cursor);
 	}
 
+	uint numMaterials = materials.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numMaterials, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		materials[i]->Serialize(cursor);
+	}
+
 	App->fs->OpenWriteBuffer(SCENES_ASSETS_FOLDER + currentSceneName + SCENES_EXTENSION, buffer, size);
 
 	delete buffer;
@@ -490,6 +502,7 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
 
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
@@ -600,6 +613,34 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 				cameras[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(cameras[i]);
 				cameras[i]->updateFrustum();
+			}
+		}
+	}
+
+	uint numMaterials = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numMaterials, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		ComponentMaterial* newMaterial = new ComponentMaterial(nullptr);
+		uint32_t goUUID;
+		newMaterial->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		materials.push_back(newMaterial);
+	}
+
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				materials[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(materials[i]);
 			}
 		}
 	}

@@ -1,6 +1,37 @@
 #include "ComponentMaterial.h"
 #include "ResourceTexture.h"
 #include "imgui/imgui_internal.h"
+#include "GameObject.h"
+
+void ComponentMaterial::Serialize(char *& cursor) const
+{
+	uint bytes = sizeof(UID);
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &gameObject->uuid, bytes);
+	cursor += bytes;
+
+	UID textureUID = texture ? texture->getUUID() : 0;
+	memcpy(cursor, &textureUID, bytes);
+	cursor += bytes;
+}
+
+void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
+{
+	uint bytes = sizeof(UID);
+
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	UID textureUID;
+	memcpy(&textureUID, cursor, bytes);
+	cursor += bytes;
+
+	texture = (ResourceTexture*)App->resources->Get(textureUID);
+}
 
 void ComponentMaterial::OnInspector()
 {
