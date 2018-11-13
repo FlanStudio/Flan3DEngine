@@ -375,10 +375,17 @@ update_status ModuleEditor::PreUpdate()
 		ImGui::End();
 	}
 
+	bool clickedRenameMenu = false; //Due to an error with ImGui's IDs
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
-		{
+		{			
+			if (ImGui::MenuItem("Rename Loaded Scene"))
+			{
+				clickedRenameMenu = true;			
+			}
+			
 			if (ImGui::MenuItem("Save Scene", "Ctrl + S"))
 				App->scene->Serialize();
 
@@ -387,6 +394,9 @@ update_status ModuleEditor::PreUpdate()
 
 			ImGui::EndMenu();
 		}
+
+		
+
 		if (ImGui::BeginMenu("View"))
 		{
 			ImGui::MenuItem("Demo Window", "", &showdemowindow);
@@ -417,6 +427,11 @@ update_status ModuleEditor::PreUpdate()
 		
 		ImGui::EndMainMenuBar();
 	}
+
+	if(clickedRenameMenu)
+		ImGui::OpenPopup("#### Renaming Scene");
+
+	App->scene->OnRenameGUI();
 
 	//Menu ShortCuts:
 	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)

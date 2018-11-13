@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Component.h"
-#include "ComponentTransform.h"
 
 #include "MathGeoLib_1.5/Math/float3x3.h"
 
@@ -40,6 +39,7 @@ public:
 	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
 	void ClearComponents();
+	int getComponentIndex(const Component* component) const;
 
 	//Other methods
 	void OnInspector();
@@ -55,10 +55,10 @@ public:
 	AABB getAABBChildsEnclosed();
 
 	//----------Serializing methods------------
-	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&);
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
-	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(uint); };
+	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char); };
 	void Serialize(char*& cursor);
 	void DeSerialize(char*& cursor, uint32_t& parentUUID);
 	void ReorderComponents();

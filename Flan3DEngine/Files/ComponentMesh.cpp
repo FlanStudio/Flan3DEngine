@@ -5,6 +5,8 @@
 #include "ResourceTexture.h"
 #include "ComponentMaterial.h"
 #include "ResourceMesh.h"
+#include "ComponentTransform.h"
+#include "imgui/imgui_internal.h"
 
 ComponentMesh::~ComponentMesh()
 {
@@ -88,16 +90,93 @@ void ComponentMesh::OnInspector()
 	ImGui::Text("Mesh:");
 	if (opened)
 	{
-		//Change that to the new Resources System
+		ImGui::NewLine();
 
-		/*ImGui::Text("Mesh: %s", gameObject->name.data()); //TODO: SAVE THE REAL MESH NAME
-		//ImGui::Text("Vertices: %i", num_vertex);
-		//ImGui::Text("Triangles: %i",num_vertex / 3);
-		//
-		//ImGui::NewLine();
-		//ImGui::Separator();
-		//ImGui::NewLine();
-		//}*/
+		ImGui::Text("Mesh:  "); ImGui::SameLine();
+
+		ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+		drawingPos = { drawingPos.x - 10, drawingPos.y };
+		ImGui::SetCursorScreenPos(drawingPos);
+
+		uint buttonWidth = 2 * ImGui::GetWindowWidth() / 3;
+		ImGui::ButtonEx("##MeshReceiver", { (float)buttonWidth, 15 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemClicked(0))
+		{
+			meshClicked = false;
+		}
+		else if (ImGui::IsItemClicked(0))
+		{
+			meshClicked = true;
+		}
+		else if (!meshClicked && ImGui::IsItemHovered())
+		{
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+		}
+
+		if (meshClicked)
+		{
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+			if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+			{
+				//TODO: Notify the resource that you don't need him anymore
+				mesh = nullptr;
+				meshClicked = false;
+			}
+		}
+
+		//Dropping textures
+		if (ImGui::BeginDragDropTarget())
+		{
+			ImGuiDragDropFlags dropFlags = 0;
+			dropFlags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+
+			const ImGuiPayload* meshPayload = ImGui::AcceptDragDropPayload("DraggingResources", dropFlags);
+			if (meshPayload)
+			{
+				//Check if the resource is a texture
+				Resource* resource = *(Resource**)meshPayload->Data;
+				if (resource->getType() == Resource::ResourceType::MESH)
+				{
+					//Check for the mouse release and bind the resource here
+					if (ImGui::IsMouseReleased(0))
+					{
+						mesh = (ResourceMesh*)resource;
+					}
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("Drop here a Mesh from a FBX.\nSelect it and press Backspace to erase the reference.");
+			ImGui::EndTooltip();
+		}
+		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
+
+		//Calculate the text fitting the button rect
+		std::string originalText = mesh ? mesh->meshName : "No mesh assigned";
+		std::string clampedText;
+
+		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
+
+		if (textSize.x > buttonWidth)
+		{
+			uint maxTextLenght = originalText.length() * (buttonWidth - 6) / textSize.x;
+			clampedText = originalText.substr(0, maxTextLenght - 5);
+			clampedText.append("(...)");
+		}
+		else
+			clampedText = originalText;
+
+		ImGui::Text(clampedText.data());
+
+		ImGui::NewLine();
 	}
 }
 
@@ -109,16 +188,30 @@ void ComponentMesh::updateGameObjectAABB()
 
 void ComponentMesh::Serialize(char*& cursor) const
 {
-	//Change that to the new Resources System
+	uint bytes = sizeof(UID);
+
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+	memcpy(cursor, &gameObject->uuid, bytes);
+	cursor += bytes;
+
+	UID meshUID = mesh ? mesh->getUUID() : 0;
+	memcpy(cursor, &meshUID, bytes);
+	cursor += bytes;
 }
 
 void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 {
-	//Change that to the new Resources System
-}
+	uint bytes = sizeof(UID);
 
-uint ComponentMesh::bytesToSerialize() const
-{
-	//Change that to the new Resources System
-	return 0;
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	UID meshUID;
+	memcpy(&meshUID, cursor, bytes);
+	cursor += bytes;
+
+	mesh = (ResourceMesh*)App->resources->Get(meshUID);
 }

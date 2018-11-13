@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
 ResourceManager::~ResourceManager()
 {

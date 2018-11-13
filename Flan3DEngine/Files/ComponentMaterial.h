@@ -8,6 +8,11 @@ class ComponentMaterial : public Component
 public:
 	ComponentMaterial(GameObject* gameObject, bool active = true) : Component(ComponentType::MATERIAL, gameObject, active) {}
 
+public:
+	inline static uint bytesToSerialize() { return sizeof(UID) * 3; } //Your uid, your gameObject uid, your Texture uid
+	void Serialize(char*& cursor) const;
+	void DeSerialize(char*& cursor, uint32_t& goUUID);
+
 private:
 	void OnInspector();
 

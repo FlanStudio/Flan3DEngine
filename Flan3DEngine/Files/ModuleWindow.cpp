@@ -93,7 +93,7 @@ update_status ModuleWindow::Update()
 {
 	BROFILER_CATEGORY("ModuleWindow_Update", Profiler::Color::Azure)
 
-	SDL_SetWindowTitle(window, (App->engineName + "_" + App->organization).c_str());
+	SDL_SetWindowTitle(window, (App->engineName + "_" + App->organization + " Current Scene: " + App->scene->getCurrentScene()).c_str());
 	return UPDATE_CONTINUE;
 }
 
