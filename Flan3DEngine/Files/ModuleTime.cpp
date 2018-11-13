@@ -17,10 +17,10 @@ update_status ModuleTime::PreUpdate()
 	dtTimer.Start();
 
 	//play Dt calculations---------------------(provisional)
-	//if (IN_GAME)
-	//{
-	//	gameTime += playDt;
-	//}
+	if (IN_GAME)
+	{
+		gameTime += dt;
+	}
 	//-----------------PROVISIONAL--since we have gamemode
 
 	return UPDATE_CONTINUE;

@@ -115,7 +115,6 @@ update_status ModuleScene::PostUpdate()
 	if (!IN_GAME)
 	{
 		DrawGuizmos();
-		
 	}
 
 	//-------------------INITIAL GRID---------------------
@@ -182,6 +181,7 @@ void ModuleScene::DrawGuizmos()
 		{
 			transformMatrix = transformMatrix.Transposed();
 			selected->transform->setFromGlobalMatrix(transformMatrix);
+			selected->transformAABB();
 		}
 	}
 	else

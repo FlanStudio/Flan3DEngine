@@ -5,6 +5,8 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 
+#include "Brofiler\Brofiler.h"
+
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
 
@@ -18,7 +20,7 @@ GameObject::~GameObject()
 
 bool GameObject::Update(float dt)
 {
-	transformAABB();
+	BROFILER_CATEGORY("GameObjUpdate", Profiler::Color::Azure)
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
@@ -41,6 +43,7 @@ Component* GameObject::CreateComponent(ComponentType type)
 		{
 			ret = (Component*)App->renderer3D->CreateComponentMesh(this);
 			AddComponent(ret);
+			transformAABB();
 			break;
 		}
 		case ComponentType::CAMERA:
@@ -112,6 +115,7 @@ void GameObject::ClearComponents()
 			{
 				App->renderer3D->ClearMesh((ComponentMesh*)components[0]);
 				ClearComponent(components[0]);
+				transformAABB();
 				break;
 			}
 			case ComponentType::TRANSFORM:
@@ -652,6 +656,45 @@ void GameObject::recursiveDebugDraw() const
 	}
 }
 
+void GameObject::initAABB()
+{
+	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+
+	if (Mesh)
+	{
+		Mesh->updateGameObjectAABB();
+	}
+	else
+	{
+		if (parent)
+		{
+			Sphere sp;
+			sp.pos = { 0,0,0 };
+			sp.r = 0.2;
+			boundingBox.Enclose(sp);
+		}
+	}
+}
+
+void GameObject::updateInitAABB()
+{
+	boundingBox.Enclose(initialAABB);
+	transformAABB();
+
+}
+
+AABB GameObject::getAABBChildsEnclosed()
+{
+	AABB bb;
+
+	for (int i = 0; this->childs[i] != nullptr; i++)
+	{
+		bb.Enclose(this->childs[i]->getAABBChildsEnclosed());
+	}
+
+	return bb;
+}
+
 void GameObject::debugDraw() const
 {
 	if(drawAABBs && this != App->scene->getRootNode())
@@ -665,13 +708,21 @@ void GameObject::debugDraw() const
 
 void GameObject::transformAABB()
 {
-	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+	BROFILER_CATEGORY("transformAABB", Profiler::Color::Azure);
+
+	if (!initialAABB.IsFinite())
+	{
+		initAABB();
+	}
 
 	boundingBox.SetNegativeInfinity();
 
+	boundingBox.Enclose(initialAABB);
+
+	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+
 	if (Mesh)
 	{
-		Mesh->updateGameObjectAABB();	
 		OBB obb(boundingBox);
 		obb.Transform(this->transform->getGlobalMatrix().Transposed());
 		boundingBox = obb.MinimalEnclosingAABB();
@@ -681,17 +732,12 @@ void GameObject::transformAABB()
 	{
 		if (parent)
 		{
-			Sphere sp;
-			sp.pos = { 0,0,0 };
-			sp.r = 0.2;
-			boundingBox.Enclose(sp);
-
 			OBB obb(boundingBox);
 			ComponentTransform global = transform->getGlobal();
 			obb.Transform(ComponentTransform::composeMatrix(global.position, Quat(0, 0, 0, 1), float3(1, 1, 1)).Transposed());
 			boundingBox = obb.MinimalEnclosingAABB();
 			updateAABBbuffers();
-		}		
+		}
 	}
 }
 

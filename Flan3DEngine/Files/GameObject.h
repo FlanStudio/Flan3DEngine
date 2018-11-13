@@ -14,17 +14,11 @@ public:
 	GameObject(GameObject* parent) : parent(parent)
 	{
 		boundingBox.SetNegativeInfinity();
+		initialAABB.SetNegativeInfinity();
 		genUUID();
 	}
 	virtual ~GameObject();
 	virtual bool Update(float dt);
-
-public:
-	GameObject* parent = nullptr;
-	ComponentTransform* transform = nullptr;
-	std::string name = "default";
-	std::vector<GameObject*> childs;
-	AABB boundingBox;
 
 public:
 	//Child-related methods
@@ -57,6 +51,9 @@ public:
 	void encloseParentAABB();
 	void destroyAABBbuffers();
 	void recursiveDebugDraw()const;
+	void initAABB();
+	void updateInitAABB();
+	AABB getAABBChildsEnclosed();
 
 	//----------Serializing methods------------
 	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
@@ -69,11 +66,11 @@ public:
 
 	//----------------------------------------
 
-private:
-	void debugDraw()const;
-
 	//Makes his AABB enclose its ComponentMesh vertex, transformed
 	void transformAABB();
+
+private:
+	void debugDraw()const;
 
 	void genUUID()
 	{
@@ -81,19 +78,20 @@ private:
 			uuid = FLAN::randomUINT32_Range();
 	}
 
-	//Components
-	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
-	bool toggles[4] = { true,false,false,false };					//Grow when we have more components
-
 public:
 	//Hierarchy's tree utilities
 	bool selected = false;
 	bool treeOpened = false;
-
 	bool drawAABBs = true;
 
 	UID uuid = 0u;
 	std::vector<Component*> components;
+
+	GameObject* parent = nullptr;
+	ComponentTransform* transform = nullptr;
+	std::string name = "default";
+	std::vector<GameObject*> childs;
+	AABB boundingBox;
 
 private:
 	bool active = true;
@@ -103,6 +101,11 @@ private:
 	float* AABBvertex = nullptr;
 	uint numAABBvertex = 0u;
 	uint bufferIndex = 0u;
+	AABB initialAABB;
+
+	//Components
+	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
+	bool toggles[4] = { true,false,false,false };					//Grow when we have more components
 };
 
 //Manually changing a gameObject's name to 'default' when name is empty
