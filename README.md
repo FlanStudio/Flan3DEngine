@@ -59,6 +59,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 - **FileSystem** using [PHYSFS](https://icculus.org/physfs/) and implemented in all textures and meshes loading.
 - **LogWindow** using and modifying [this](https://github.com/ocornut/imgui/issues/300) example the creator of ImGui posted in an issue.
 - **Serializing in Binary Files**
+- **Materials tinting plain colors and textures**
 
 ## Assets
 
