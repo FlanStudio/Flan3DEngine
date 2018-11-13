@@ -15,7 +15,7 @@ public:
 	{
 		boundingBox.SetNegativeInfinity();
 		initialAABB.SetNegativeInfinity();
-		genUUID();
+		genUUID();	
 	}
 	virtual ~GameObject();
 	virtual bool Update(float dt);
@@ -48,11 +48,9 @@ public:
 	//AABB drawing data-----------------
 	void drawAABB()const;
 	void updateAABBbuffers();	
-	void encloseParentAABB();
 	void destroyAABBbuffers();
 	void recursiveDebugDraw()const;
 	void initAABB();
-	void updateInitAABB();
 	AABB getAABBChildsEnclosed();
 
 	//----------Serializing methods------------
@@ -92,6 +90,7 @@ public:
 	std::string name = "default";
 	std::vector<GameObject*> childs;
 	AABB boundingBox;
+	AABB initialAABB;
 
 private:
 	bool active = true;
@@ -101,7 +100,6 @@ private:
 	float* AABBvertex = nullptr;
 	uint numAABBvertex = 0u;
 	uint bufferIndex = 0u;
-	AABB initialAABB;
 
 	//Components
 	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components

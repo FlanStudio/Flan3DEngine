@@ -43,7 +43,6 @@ Component* GameObject::CreateComponent(ComponentType type)
 		{
 			ret = (Component*)App->renderer3D->CreateComponentMesh(this);
 			AddComponent(ret);
-			transformAABB();
 			break;
 		}
 		case ComponentType::CAMERA:
@@ -115,7 +114,6 @@ void GameObject::ClearComponents()
 			{
 				App->renderer3D->ClearMesh((ComponentMesh*)components[0]);
 				ClearComponent(components[0]);
-				transformAABB();
 				break;
 			}
 			case ComponentType::TRANSFORM:
@@ -397,6 +395,8 @@ void GameObject::OnInspector()
 		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
 		{
 			deleteComponent(getComponentByType(ComponentType::MESH));
+			initAABB();
+			transformAABB();
 		}
 
 		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
@@ -601,7 +601,6 @@ void GameObject::updateAABBbuffers()
 		destroyAABBbuffers();
 		return;
 	}
-		
 
 	if (AABBvertex == nullptr)
 	{
@@ -660,7 +659,7 @@ void GameObject::initAABB()
 {
 	ComponentMesh* Mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
 
-	if (Mesh)
+	if (Mesh && Mesh->mesh)
 	{
 		Mesh->updateGameObjectAABB();
 	}
@@ -671,16 +670,10 @@ void GameObject::initAABB()
 			Sphere sp;
 			sp.pos = { 0,0,0 };
 			sp.r = 0.2;
-			boundingBox.Enclose(sp);
+			initialAABB.SetNegativeInfinity();
+			initialAABB.Enclose(sp);
 		}
 	}
-}
-
-void GameObject::updateInitAABB()
-{
-	boundingBox.Enclose(initialAABB);
-	transformAABB();
-
 }
 
 AABB GameObject::getAABBChildsEnclosed()
@@ -738,19 +731,5 @@ void GameObject::transformAABB()
 			boundingBox = obb.MinimalEnclosingAABB();
 			updateAABBbuffers();
 		}
-	}
-}
-
-void GameObject::encloseParentAABB()
-{
-	for (uint i = 0; i < childs.size(); ++i)
-	{
-		childs[i]->encloseParentAABB();
-	}
-
-	if (parent)
-	{		
-		parent->boundingBox.Enclose(boundingBox);
-		parent->updateAABBbuffers();
 	}
 }

@@ -73,7 +73,10 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosY(posY + 3);
 		ImGui::Text("Position: "); ImGui::SameLine();
 		ImGui::SetCursorPosY(posY);
-		ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f");
+		if (ImGui::DragFloat3("##1", position.ptr(), .1f, -10000, 10000, "%.2f"))
+		{
+			gameObject->transformAABB();
+		}
 
 		posY = ImGui::GetCursorPosY();
 		ImGui::SetCursorPosY(posY + 3);
@@ -102,7 +105,10 @@ void ComponentTransform::OnInspector()
 		ImGui::SetCursorPosX(posX + 21);
 
 		float3 tempScale;
-		ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f");
+		if(ImGui::DragFloat3("##3", scale.ptr(), .1f, -10000, 10000, "%.2f"))
+		{
+			gameObject->transformAABB();
+		}
 
 		ImGui::SetCursorPosX(posX);
 	}

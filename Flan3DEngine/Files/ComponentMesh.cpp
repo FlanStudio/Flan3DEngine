@@ -124,6 +124,8 @@ void ComponentMesh::OnInspector()
 				//TODO: Notify the resource that you don't need him anymore
 				mesh = nullptr;
 				meshClicked = false;
+				gameObject->initAABB();
+				gameObject->transformAABB();
 			}
 		}
 
@@ -192,7 +194,7 @@ void ComponentMesh::OnInspector()
 void ComponentMesh::updateGameObjectAABB()
 {
 	if(mesh)
-		gameObject->boundingBox.Enclose((float3*)mesh->vertex, mesh->num_vertex);
+		gameObject->initialAABB.Enclose((float3*)mesh->vertex, mesh->num_vertex);
 }
 
 void ComponentMesh::Serialize(char*& cursor) const

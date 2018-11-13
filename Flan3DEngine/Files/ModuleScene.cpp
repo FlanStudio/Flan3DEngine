@@ -103,7 +103,6 @@ update_status ModuleScene::Update()
 	{
 		gameObjects[i]->Update(App->time->dt);
 	}
-	parentAABBs();
 
 	return UPDATE_CONTINUE;
 }
@@ -201,6 +200,10 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 		gameObjects.push_back(ret);
 
 	ret->CreateComponent(ComponentType::TRANSFORM); //All GameObjects have a Transform
+
+	ret->initAABB();
+	ret->transformAABB();
+	ret->updateAABBbuffers();
 
 	return ret;
 }
@@ -819,13 +822,6 @@ void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vec
 								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials) const
 {
 	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials);
-}
-
-void ModuleScene::parentAABBs()
-{
-	BROFILER_CATEGORY("parentAABBScene", Profiler::Color::Azure)
-
-	gameObjects[0]->encloseParentAABB();
 }
 
 void ModuleScene::_ReorderGameObject_Pre(GameObject* go)
