@@ -47,6 +47,8 @@ public:
 	void TransformGUI();
 
 	AABB getSceneAABB() const;
+	inline std::string getCurrentScene() const { return currentSceneName; }
+	inline void setCurrentScene(const std::string& newName)	{currentSceneName = newName;}
 
 public:
 	Quadtree quadtree;
