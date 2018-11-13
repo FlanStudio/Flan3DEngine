@@ -103,11 +103,6 @@ void Application::FinishUpdate()
 
 	time->dt = (float)time->dtTimer.Read() / 1000.0f;
 
-	if (IN_GAME)
-	{
-		time->dt *= time->timeScale;
-	}
-
 	FPS[FPS_index++] = time->lastSecFrames;
 	if (FPS_index >= FPS.size())
 		FPS_index = 0;

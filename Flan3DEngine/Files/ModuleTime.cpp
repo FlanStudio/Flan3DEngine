@@ -14,14 +14,33 @@ update_status ModuleTime::PreUpdate()
 {
 	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure);
 
+	//if (IN_GAME && !paused)
+	//{
+	//	++h;
+	//	Debug.Log("%s", playDt);
+	//}
+
+	Debug.Log("%f", playDt);
+
+
 	dtTimer.Start();
 
-	//play Dt calculations---------------------(provisional)
+	//play Dt calculations--------------
+	playDt = dt * timeScale;
+
 	if (IN_GAME)
 	{
-		gameTime += dt;
+		if (paused && !steped)
+		{
+			playDt = 0.0f;
+		}
+		if (steped)
+		{
+			paused = true;
+			steped = false;
+		}
+		gameTime += playDt;
 	}
-	//-----------------PROVISIONAL--since we have gamemode
 
 	return UPDATE_CONTINUE;
 }
@@ -48,6 +67,12 @@ update_status ModuleTime::PostUpdate()
 		dtSecondCounter = 0.0f;
 	}
 
+	//if (steped)
+	//{
+	//	paused = true;
+	//	steped = false;
+	//}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -61,6 +86,8 @@ void ModuleTime::OnTimeGUI()
 	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetCursorScreenPos({ windowPos.x + 33.0f,windowPos.y + 2.0f });
+
+	ImGui::PushID("playButton");
 
 	if (!IN_GAME)
 	{
@@ -77,27 +104,60 @@ void ModuleTime::OnTimeGUI()
 		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
+			paused = false;
 			Event event;
 			event.timeEvent.type = EventType::STOP;
 			App->SendEvent(event);
 		}
 	}
-
+	ImGui::PopID();
+	ImGui::PushID("pauseButton");
 	ImGui::SameLine();
-
-	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }))//pause
+	if (!paused)
 	{
-		Event event;
-		event.timeEvent.type = EventType::PAUSE;
-		App->SendEvent(event);
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }) && IN_GAME)//pause
+		{
+			Event event;
+			event.timeEvent.type = EventType::PAUSE;
+			App->SendEvent(event);
+			paused = true;
+		}
+		ImGui::SameLine();
 	}
-	ImGui::SameLine();
-
-	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }))//step
+	else if (IN_GAME)
+	{
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0,0,0,0 }, {.8,.3,.3,1}))//resume
+		{
+			Event event;
+			event.timeEvent.type = EventType::RESUME;
+			App->SendEvent(event);
+			paused = false;
+		}
+		ImGui::SameLine();
+	}
+	ImGui::PopID();
+	ImGui::PushID("stepButtons");
+	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }) && paused)//step
 	{
 		Event event;
 		event.timeEvent.type = EventType::STEP;
 		App->SendEvent(event);
+		steped = true;
+		paused = false;
 	}
+	ImGui::PopID();
 	ImGui::SameLine();
+}
+
+void ModuleTime::ReceiveEvent(Event event)
+{
+	//switch (event.type)
+	//{
+	//	case EventType::STEP:
+	//	{
+	//		steped = false;
+	//		paused = true;
+	//		break;
+	//	}
+	//}
 }

@@ -31,6 +31,7 @@ enum EventType
 	PLAY = 0x200,
 	STOP,
 	PAUSE,
+	RESUME,
 	STEP
 };
 
