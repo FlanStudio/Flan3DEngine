@@ -363,18 +363,6 @@ update_status ModuleEditor::PreUpdate()
 		ImGui::End();
 	}
 
-	if(fileSystem)
-	{
-		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
-
-		ImGui::Begin("FileSystem", &fileSystem);
-
-		App->fs->fileSystemGUI();
-
-		ImGui::End();
-	}
-
 	bool clickedRenameMenu = false; //Due to an error with ImGui's IDs
 
 	if (ImGui::BeginMainMenuBar())
@@ -464,6 +452,17 @@ update_status ModuleEditor::Update()
 
 update_status ModuleEditor::PostUpdate()
 {
+	if (fileSystem)
+	{
+		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
+
+		ImGui::Begin("FileSystem", &fileSystem);
+
+		App->fs->fileSystemGUI();
+
+		ImGui::End();
+	}
 	return UPDATE_CONTINUE;
 }
 
