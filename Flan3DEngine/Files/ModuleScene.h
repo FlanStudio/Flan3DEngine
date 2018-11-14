@@ -96,5 +96,7 @@ private:
 	uint tempSceneBufferSize = 0;
 
 	uint TransformAtlasID = 0;
+
+	bool deserialize = false;
 };
 #endif
