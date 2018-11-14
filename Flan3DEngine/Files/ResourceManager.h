@@ -21,6 +21,8 @@ public:
 	Resource* Get(UID uuid) const;
 	Resource* FindByFile(char* file);
 
+	void InstanciateFBX(const std::string& path) const;
+
 private:
 	std::map<UID, Resource*> resources;
 };

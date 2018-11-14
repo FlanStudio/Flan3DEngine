@@ -79,130 +79,11 @@ bool ResourceManager::Start()
 				resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
 			}
 
-			//Debug Purposes: Load this recently stored fbx into our scene hierarchy
-			char* metaBuffer = nullptr;
-			int metaBufferSize;
-			App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaBufferSize);
-
-			if (!metaBuffer)
-				continue;
-
-			char* cursor = metaBuffer;
-
-			uint numGOs;
-			memcpy(&numGOs, cursor, sizeof(uint));
-			cursor += sizeof(uint);
-
-			struct goInfo
-			{
-				std::string name;
-				UID uid;
-				UID parentUID;
-				UID textureUID;
-				UID meshUID;
-
-				float3 position, scale;
-				Quat rotation;
-
-			};
-
-			std::vector<goInfo> gos(numGOs);
-
-			for (int j = 0; j < numGOs; ++j)
-			{
-				uint bytes = 100;
-				gos[j].name.resize(100);
-				memcpy((void*)gos[j].name.c_str(), cursor, 100);
-				cursor += 100;
-
-				bytes = sizeof(UID);
-				memcpy(&gos[j].uid, cursor, bytes);
-				cursor += bytes;
-
-				memcpy(&gos[j].parentUID, cursor, bytes);
-				cursor += bytes;
-
-				bytes = sizeof(float3);
-				memcpy(&gos[j].position, cursor, bytes);
-				cursor += bytes;
-
-				bytes = sizeof(Quat);
-				memcpy(&gos[j].rotation, cursor, bytes);
-				cursor += bytes;
-
-				bytes = sizeof(float3);
-				memcpy(&gos[j].scale, cursor, bytes);
-				cursor += bytes;
-
-				bytes = sizeof(UID);
-				memcpy(&gos[j].meshUID, cursor, bytes);
-				cursor += bytes;
-
-				memcpy(&gos[j].textureUID, cursor, bytes);
-				cursor += bytes;
-			}
-			delete metaBuffer;
-
-			std::vector<GameObject*> gameObjects;
-
-			for (int j = 0; j < gos.size(); ++j)
-			{
-				GameObject* gameObject = new GameObject(nullptr);
-				gameObject->uuid = gos[j].uid;
-				
-				ComponentTransform* transform = (ComponentTransform*)gameObject->CreateComponent(ComponentType::TRANSFORM);
-				transform->position = gos[j].position;
-				transform->rotation = gos[j].rotation;
-				transform->scale = gos[j].scale;
-
-				UID meshUID = gos[j].meshUID;
-				if (meshUID != 0)
-				{
-					ComponentMesh* meshComp = (ComponentMesh*)gameObject->CreateComponent(ComponentType::MESH);
-					meshComp->mesh = (ResourceMesh*)resources.at(meshUID);
-				}
-
-				UID textureUID = gos[j].textureUID;
-				if (textureUID != 0)
-				{
-					ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
-					matComp->texture = (ResourceTexture*)resources.at(textureUID);
-				}
-
-				gameObject->name = gos[j].name;
-
-				gameObjects.push_back(gameObject);
-			}
-
-			for (int j = 0; j < gos.size(); ++j)
-			{
-				for (int k = 0; k < gameObjects.size(); ++k)
-				{
-					if (gos[j].parentUID == gameObjects[k]->uuid)
-					{
-						gameObjects[j]->parent = gameObjects[k];
-						gameObjects[k]->AddChild(gameObjects[j]);
-						break;
-					}
-				}
-			}
-
-			GameObject* root;
-			for (int j = 0; j < gameObjects.size(); ++j)
-			{
-				if (gameObjects[j]->parent == nullptr)
-				{
-					root = gameObjects[j];
-				}
-				gameObjects[j]->transformAABB();
-			}
-
-			App->scene->AddGameObject(root);
+			InstanciateFBX(fullPaths[i]);
 
 		}
 		//TODO: Materials, audio, animations, etc?
 	}
-
 	return true;
 }
 
@@ -287,6 +168,127 @@ Resource* ResourceManager::FindByFile(char* file)
 	delete buffer;
 
 	return	resources.find(uuid) != resources.end() ? resources.at(uuid) : nullptr;
+}
+
+void ResourceManager::InstanciateFBX(const std::string& path) const
+{
+	char* metaBuffer = nullptr;
+	int metaBufferSize;
+	App->fs->OpenRead(path + ".meta", &metaBuffer, metaBufferSize);
+
+	if (!metaBuffer)
+		return;
+
+	char* cursor = metaBuffer;
+
+	uint numGOs;
+	memcpy(&numGOs, cursor, sizeof(uint));
+	cursor += sizeof(uint);
+
+	struct goInfo
+	{
+		std::string name;
+		UID uid;
+		UID parentUID;
+		UID textureUID;
+		UID meshUID;
+
+		float3 position, scale;
+		Quat rotation;
+	};
+
+	std::vector<goInfo> gos(numGOs);
+
+	for (int j = 0; j < numGOs; ++j)
+	{
+		uint bytes = 100;
+		gos[j].name.resize(100);
+		memcpy((void*)gos[j].name.c_str(), cursor, 100);
+		cursor += 100;
+
+		bytes = sizeof(UID);
+		memcpy(&gos[j].uid, cursor, bytes);
+		cursor += bytes;
+
+		memcpy(&gos[j].parentUID, cursor, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(float3);
+		memcpy(&gos[j].position, cursor, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(Quat);
+		memcpy(&gos[j].rotation, cursor, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(float3);
+		memcpy(&gos[j].scale, cursor, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(UID);
+		memcpy(&gos[j].meshUID, cursor, bytes);
+		cursor += bytes;
+
+		memcpy(&gos[j].textureUID, cursor, bytes);
+		cursor += bytes;
+	}
+	delete metaBuffer;
+
+	std::vector<GameObject*> gameObjects;
+
+	for (int j = 0; j < gos.size(); ++j)
+	{
+		GameObject* gameObject = new GameObject(nullptr);
+		gameObject->uuid = gos[j].uid;
+
+		ComponentTransform* transform = (ComponentTransform*)gameObject->CreateComponent(ComponentType::TRANSFORM);
+		transform->position = gos[j].position;
+		transform->rotation = gos[j].rotation;
+		transform->scale = gos[j].scale;
+
+		UID meshUID = gos[j].meshUID;
+		if (meshUID != 0)
+		{
+			ComponentMesh* meshComp = (ComponentMesh*)gameObject->CreateComponent(ComponentType::MESH);
+			meshComp->mesh = (ResourceMesh*)resources.at(meshUID);
+		}
+
+		UID textureUID = gos[j].textureUID;
+		if (textureUID != 0)
+		{
+			ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
+			matComp->texture = (ResourceTexture*)resources.at(textureUID);
+		}
+
+		gameObject->name = gos[j].name;
+
+		gameObjects.push_back(gameObject);
+	}
+
+	for (int j = 0; j < gos.size(); ++j)
+	{
+		for (int k = 0; k < gameObjects.size(); ++k)
+		{
+			if (gos[j].parentUID == gameObjects[k]->uuid)
+			{
+				gameObjects[j]->parent = gameObjects[k];
+				gameObjects[k]->AddChild(gameObjects[j]);
+				break;
+			}
+		}
+	}
+
+	GameObject* root;
+	for (int j = 0; j < gameObjects.size(); ++j)
+	{
+		if (gameObjects[j]->parent == nullptr)
+		{
+			root = gameObjects[j];
+		}
+		gameObjects[j]->transformAABB();
+	}
+
+	App->scene->AddGameObject(root);
 }
 
 uint Resource::amountReferences() const
