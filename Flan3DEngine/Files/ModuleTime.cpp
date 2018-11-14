@@ -14,15 +14,6 @@ update_status ModuleTime::PreUpdate()
 {
 	BROFILER_CATEGORY("TimePreUpdate", Profiler::Color::Azure);
 
-	//if (IN_GAME && !paused)
-	//{
-	//	++h;
-	//	Debug.Log("%s", playDt);
-	//}
-
-	Debug.Log("%f", playDt);
-
-
 	dtTimer.Start();
 
 	//play Dt calculations--------------
@@ -120,7 +111,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	else if (IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0,0,0,0 }, {.8,.3,.3,1}))//resume
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0.0f,0.0f,0.0f,0.0f }, {0.8f,0.3f,0.3f,1.0f}))//resume
 		{
 			Event event;
 			event.timeEvent.type = EventType::RESUME;

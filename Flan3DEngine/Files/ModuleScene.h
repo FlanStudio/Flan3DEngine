@@ -89,5 +89,7 @@ private:
 
 	char* tempSceneBuffer = nullptr;
 	uint tempSceneBufferSize = 0;
+
+	uint TransformAtlasID = 0;
 };
 #endif

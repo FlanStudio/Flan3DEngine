@@ -34,7 +34,7 @@ bool ModuleScene::Start()
 	Debug.Log("Loading Intro assets");
 	bool ret = true;
 
-	//App->fbxexporter->LoadFBX("Assets/meshes/BakerHouse.fbx");
+	TransformAtlasID = App->textures->getInternalTextureID("transBtnTex.dds");
 
 	//Temp
 	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
@@ -710,21 +710,35 @@ void ModuleScene::TransformGUI()
 		}
 	}
 
+
+	ImGui::PushID("Pick");
 	ImGui::SameLine();
-	if (ImGui::Button("Tra(W)", { 50,28 }))
+	if (ImGui::ImageButton((GLuint*)TransformAtlasID, { 25,25 }, { 0.042f,0.042f }, { 0.45f,0.44f }))//pick
+	{
+		currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
+	}
+	ImGui::PopID();
+	ImGui::PushID("Transform");
+	ImGui::SameLine();
+	if (ImGui::ImageButton((GLuint*)TransformAtlasID, { 25,25 }, { 0.06f,0.513f }, { 0.47f,0.92f }))//transform
 	{
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	}
+	ImGui::PopID();
+	ImGui::PushID("Rotation");
 	ImGui::SameLine();
-	if (ImGui::Button("Rot(E)", { 50,28 }))
+	if (ImGui::ImageButton((GLuint*)TransformAtlasID, { 25,25 }, { 0.6f,0.074f }, { 0.93f,0.405f }))//rotation
 	{
 		currentGuizmoOperation = ImGuizmo::OPERATION::ROTATE;
 	}
+	ImGui::PopID();
+	ImGui::PushID("Scale");
 	ImGui::SameLine();
-	if (ImGui::Button("Sca(R)", { 50,28 }))
+	if (ImGui::ImageButton((GLuint*)TransformAtlasID, { 25,25 }, { 0.53f,0.489f }, { 0.974f,0.947f }))//scale
 	{
 		currentGuizmoOperation = ImGuizmo::OPERATION::SCALE;
 	}
+	ImGui::PopID();
 }
 
 AABB ModuleScene::getSceneAABB() const
