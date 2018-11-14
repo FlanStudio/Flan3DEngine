@@ -102,11 +102,21 @@ update_status ResourceManager::PreUpdate()
 		{
 			if (extension == ".fbx" || extension == ".FBX")
 			{
-				//TODO: CHECK IF THE FBX HAS BEEN ALREADY ADDED
-
 				uint fileNamePos = dropped.find_last_of("/");
-				std::string directory = dropped.substr(0, fileNamePos+1);
+				std::string directory = dropped.substr(0, fileNamePos + 1);
 				std::string fileName = dropped.substr(fileNamePos + 1);
+
+				App->fs->UpdateAssetsDir();
+
+				std::vector<std::string> files;
+				App->fs->getFilesPath(files);
+
+				for (int i = 0; i < files.size(); ++i)
+				{
+					std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+					if (assets_FileName == fileName)
+						return UPDATE_CONTINUE;
+				}
 
 				App->fs->BeginTempException(directory);
 				
@@ -127,12 +137,26 @@ update_status ResourceManager::PreUpdate()
 			else
 			{
 				if(App->textures->isSupported(extension))
-				{
-					//TODO: CHECK IF THIS TEXTURE HAS BEEN ALREADY ADDED
-					
+				{				
+					//Check if this texture is already in Assets
+
 					uint fileNamePos = dropped.find_last_of("/");
 					std::string directory = dropped.substr(0, fileNamePos + 1);
 					std::string fileName = dropped.substr(fileNamePos + 1);
+
+					App->fs->UpdateAssetsDir();
+
+					std::vector<std::string> files;
+					App->fs->getFilesPath(files);
+
+					for (int i = 0; i < files.size(); ++i)
+					{
+						std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+						if (assets_FileName == fileName)
+							return UPDATE_CONTINUE;
+					}
+
+					//If not, copy it and export
 
 					App->fs->BeginTempException(directory);
 					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");

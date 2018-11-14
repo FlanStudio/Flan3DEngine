@@ -34,13 +34,36 @@ bool ModuleFileSystem::Init()
 	//Internal Directory: Engine textures
 	AddPath("./internal.f", "Internal");
 
+	//User-Dependent Directory
+	AddPath((char*)PHYSFS_getPrefDir(App->organization.data(), App->engineName.data()), "Saves");
+
 	//NOTE: We are not using a .zip because of .zip's are Read-Only in PHYSFS and it's directories are not mountable.
 	
-	AssetsDirSystem = getDirFiles("Assets");
+	//Check if Assets has changed since the last time the engine was closed
 
-	//ALWAYS RE-EXPORT ALL THE RESOURCES WHEN OPENING THE ENGINE, FOR NOW
-	emptyDirectory("Library");
-	deleteFiles("Assets", ".meta");
+	char* buffer;
+	int size;
+	if(OpenRead("Saves/lastAssetsState.fl", &buffer, size))
+	{
+		Directory newDirectory;
+		char* cursor = buffer;
+		AssetsDirSystem.DeSerialize(cursor);
+
+		newDirectory = getDirFiles("Assets");
+
+		if (newDirectory != AssetsDirSystem)
+		{
+			SendEvents(newDirectory);
+		}
+
+		delete buffer;
+	}
+	else
+	{		
+		emptyDirectory("Library");
+		deleteFiles("Assets", ".meta");
+		AssetsDirSystem = getDirFiles("Assets");
+	}
 
 	return true;
 }
@@ -52,6 +75,9 @@ bool ModuleFileSystem::Start()
 
 bool ModuleFileSystem::CleanUp()
 {
+
+	saveAssetsState();
+
 	bool ret = PHYSFS_deinit() != 0;
 
 	if (ret == false)
@@ -70,13 +96,7 @@ update_status ModuleFileSystem::PreUpdate()
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
 	{
 		updateAssetsCounter = 0.0f;
-		Directory newAssetsDir = getDirFiles("Assets");
-		
-		if (newAssetsDir != AssetsDirSystem)
-		{			
-			SendEvents(newAssetsDir);
-			AssetsDirSystem = newAssetsDir;
-		}	
+		UpdateAssetsDir();
 	}
 	return update_status::UPDATE_CONTINUE;
 }
@@ -422,7 +442,6 @@ void ModuleFileSystem::BeginTempException(std::string directory)
 		if (PHYSFS_mount(directory.data(), "Exception", 1) == 0)
 		{
 			char* error = (char*)PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-			int a = 2;
 		}
 	}
 	else
@@ -435,6 +454,37 @@ void ModuleFileSystem::EndTempException()
 {
 	PHYSFS_unmount(tempException.data());
 	tempException.clear();
+}
+
+void ModuleFileSystem::UpdateAssetsDir()
+{
+	Directory newAssetsDir = getDirFiles("Assets");
+
+	if (newAssetsDir != AssetsDirSystem)
+	{
+		SendEvents(newAssetsDir);
+		AssetsDirSystem = newAssetsDir;
+	}
+}
+
+void ModuleFileSystem::saveAssetsState()
+{
+	//We cannot update the assets dir before saving because of no one would receive events after cleanup
+
+	uint fileSize = AssetsDirSystem.bytesToSerialize();
+	char* buffer = new char[fileSize];
+	char* cursor = buffer;
+
+	AssetsDirSystem.Serialize(cursor);
+
+	std::string prevWriteDir = PHYSFS_getWriteDir();
+
+	std::string userPath = PHYSFS_getPrefDir(App->organization.data(), App->engineName.data());
+	setWriteDir((char*)userPath.data());
+	
+	App->fs->OpenWriteBuffer("lastAssetsState.fl", buffer, fileSize);
+
+	setWriteDir((char*)prevWriteDir.data());
 }
 
 void ModuleFileSystem::recursiveDirectory(Directory& directory)
