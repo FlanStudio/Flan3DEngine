@@ -233,10 +233,10 @@ void ModuleScene::AddGameObject(GameObject* gameObject)
 
 void ModuleScene::guiHierarchy()
 {
-	PrintHierarchy(gameObjects[0]);
-
 	ImVec2 pos = ImGui::GetCursorPos();
-	ImGui::Dummy({ ImGui::GetWindowSize().x - pos.x,  ImGui::GetWindowSize().y - pos.y});
+	PrintHierarchy(gameObjects[0]);
+	ImGui::SetCursorPos({pos.x - 15, pos.y});
+	ImGui::Dummy({ ImGui::GetWindowSize().x,  ImGui::GetWindowSize().y-40});
 	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 	{
 		GameObject* selected = getSelectedGO();
