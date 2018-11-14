@@ -76,17 +76,19 @@ update_status ModuleScene::PreUpdate()
 {
 	BROFILER_CATEGORY("ScenePreUpdate", Profiler::Color::Azure)
 
-	if (!quadtree.root.isInitialized())
-		InitQuadtree();
-
-	static float timer = 1 / quadTreeUpdateRate;
-	if (timer <= 0)
+	if (!IN_GAME)
 	{
-		UpdateQuadtree();
-		timer = 1 / quadTreeUpdateRate;
-	}
-	timer -= App->time->dt;
+		if (!quadtree.root.isInitialized())
+			InitQuadtree();
 
+		static float timer = 1 / quadTreeUpdateRate;
+		if (timer <= 0)
+		{
+			UpdateQuadtree();
+			timer = 1 / quadTreeUpdateRate;
+		}
+		timer -= App->time->dt;
+	}
 	return update_status::UPDATE_CONTINUE;
 }
 
