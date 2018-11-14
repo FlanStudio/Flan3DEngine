@@ -102,6 +102,7 @@ update_status ResourceManager::PreUpdate()
 		{
 			if (extension == ".fbx" || extension == ".FBX")
 			{
+				//TODO: CHECK IF THE FBX HAS BEEN ALREADY ADDED
 
 				uint fileNamePos = dropped.find_last_of("/");
 				std::string directory = dropped.substr(0, fileNamePos+1);
@@ -127,7 +128,28 @@ update_status ResourceManager::PreUpdate()
 			{
 				if(App->textures->isSupported(extension))
 				{
-					//Import texture
+					//TODO: CHECK IF THIS TEXTURE HAS BEEN ALREADY ADDED
+					
+					uint fileNamePos = dropped.find_last_of("/");
+					std::string directory = dropped.substr(0, fileNamePos + 1);
+					std::string fileName = dropped.substr(fileNamePos + 1);
+
+					App->fs->BeginTempException(directory);
+					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");
+					App->fs->EndTempException();
+
+					ResourceTexture* texture = App->textures->ExportResource("Assets/textures/" + fileName);
+					
+					resources.insert(std::pair<UID, Resource*>(texture->getUUID(), texture));
+
+					char* buffer;
+					uint size = sizeof(uint);
+					buffer = new char[size];
+					UID textureUID = texture->getUUID();
+					memcpy(buffer, &textureUID, size);
+
+					App->fs->OpenWriteBuffer("Assets/textures/" + fileName + ".meta", buffer, size);
+
 				}
 			}
 		}
