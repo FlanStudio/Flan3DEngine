@@ -71,6 +71,8 @@ public:
 	void EndTempException();
 
 	void UpdateAssetsDir();
+	void saveAssetsState();
+
 
 private:
 	//WARNING: Don't forget to delete the Directory file after use
