@@ -189,6 +189,7 @@ void ModuleScene::DrawGuizmos()
 	}
 	else
 	{
+		ImGuizmo::SetRect(0, 0, 0, 0);
 		ImGuizmo::Enable(false);
 		currentGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	}

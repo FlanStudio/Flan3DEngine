@@ -152,7 +152,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 void ModuleCamera3D::MousePicking() const
 {
 	if (activeCamComponent == editorCamComponent) //Disable mouse picking in the Game view
-		if (!App->editor->isSomeGUIHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !ImGuizmo::IsOver() && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE) //Ensure you're not clicking the gui
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver() && !App->editor->isSomeGUIHovered()) //Ensure you're not clicking the gui
 		{
 			float2 mousePos = { (float)App->input->GetMouseX(), (float)App->input->GetMouseY() };
 
