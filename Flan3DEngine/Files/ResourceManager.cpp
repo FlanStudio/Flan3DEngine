@@ -78,9 +78,6 @@ bool ResourceManager::Start()
 			{
 				resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
 			}
-
-			InstanciateFBX(fullPaths[i]);
-
 		}
 		//TODO: Materials, audio, animations, etc?
 	}
@@ -286,6 +283,8 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 			root = gameObjects[j];
 		}
 		gameObjects[j]->transformAABB();
+		//We need to re-Randomize here the UUID in order to evade duplicates with the pre-Loaded hierarchy
+		gameObjects[j]->genUUID();
 	}
 
 	App->scene->AddGameObject(root);

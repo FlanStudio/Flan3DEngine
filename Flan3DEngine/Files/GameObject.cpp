@@ -13,6 +13,11 @@
 
 GameObject::~GameObject()
 {
+	Event event;
+	event.goEvent.type = EventType::GO_DESTROYED;
+	event.goEvent.gameObject = this;
+	App->SendEvent(event);
+
 	destroyAABBbuffers();
 	ClearChilds();
 	ClearComponents();
@@ -164,60 +169,6 @@ void GameObject::ClearComponentAt(int i)
 bool GameObject::HasChilds() const
 {
 	return childs.size() > 0;
-}
-
-GameObject* GameObject::getSelectedGO() const
-{
-	GameObject* ret = nullptr;
-
-	if (selected)
-	{
-		ret = (GameObject*)this;
-	}
-	else
-	{
-		for (int i = 0; i < childs.size() && !ret; ++i)
-		{
-			if (childs[i]->selected)
-			{
-				ret = childs[i];
-			}
-			else
-			{
-				ret = childs[i]->getSelectedGO();			
-			}	
-		}
-	}
-	return ret;
-}
-
-void GameObject::deleteSelected()
-{
-	if (selected)
-	{
-		//Rootnode can never be selected
-	}
-	else
-	{
-		for (int i = 0; i < childs.size() && !selected; ++i)
-		{
-			if (childs[i]->selected)
-			{
-				ComponentCamera* camcomp = (ComponentCamera*)childs[i]->getComponentByType(ComponentType::CAMERA);
-				if (camcomp && camcomp->isMainCamera)
-				{
-					App->camera->setGameCamera(nullptr);
-				}
-					
-				delete childs[i];
-				childs.erase(childs.begin() + i);
-			}
-			else
-			{
-				childs[i]->deleteSelected();
-			}
-		}
-	}
 }
 
 void GameObject::ClearChild(GameObject* child)
@@ -426,6 +377,27 @@ void GameObject::OnInspector()
 	}
 }
 
+void GameObject::ReceiveEvent(Event event)
+{
+	switch (event.type)
+	{
+		case EventType::GO_DESTROYED:
+		{
+			for(int i = 0; i < childs.size(); ++i)
+			{
+				if (childs[i] == event.goEvent.gameObject)
+				{
+					childs.erase(childs.begin() + i);
+					i--;
+				}
+				else
+					childs[i]->ReceiveEvent(event);
+			}
+			break;
+		}
+	}
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
@@ -442,8 +414,7 @@ int GameObject::getChildPos(const GameObject* child) const
 
 void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
 						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials)
-{
-	gameObjects.push_back(this);
+{	
 	transforms.push_back(transform);
 
 	ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
@@ -460,6 +431,7 @@ void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<Co
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
+		gameObjects.push_back(childs[i]);
 		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials);
 	}
 }

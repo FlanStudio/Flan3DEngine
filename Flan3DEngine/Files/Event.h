@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+class GameObject;
+
 struct FileSystemEvent
 {
 	uint32_t type;
@@ -15,6 +17,12 @@ struct FileSystemEvent
 struct TimeEvent
 {
 	uint32_t type;
+};
+
+struct GameObjectEvent
+{
+	uint32_t type;
+	GameObject* gameObject;
 };
 
 enum EventType
@@ -32,7 +40,10 @@ enum EventType
 	STOP,
 	PAUSE,
 	RESUME,
-	STEP
+	STEP,
+
+	//GameObject Events
+	GO_DESTROYED = 0x300
 };
 
 union Event
@@ -40,8 +51,8 @@ union Event
 	uint32_t type;
 	FileSystemEvent fileEvent;
 	TimeEvent timeEvent;
+	GameObjectEvent goEvent;
 };
-
 
 
 #endif

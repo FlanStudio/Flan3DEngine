@@ -417,7 +417,8 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 			flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoPreviewTooltip; //This is to only let ImGui create the Tooltip if we are dragging a loaded resource
 			if (ImGui::BeginDragDropSource(flags))
 			{
-				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());			
+				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());	
+				std::string ext = getExt(directory.files[i].name);
 				if (resource)
 				{
 					ImGui::SetDragDropPayload("DraggingResources", &resource, resource->getBytes());
@@ -425,6 +426,15 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 					ImGui::Text(resource->getFile());
 					ImGui::EndTooltip();
 				}			
+				else if(ext == ".FBX" || ext == ".fbx")
+				{
+					//Manage FBX drag and drop here
+					std::string fullAddress = directory.fullPath + "/" + directory.files[i].name;
+					ImGui::SetDragDropPayload("DraggingFBX", (char*)fullAddress.c_str(), fullAddress.size()+1);
+					ImGui::BeginTooltip();
+					ImGui::Text(directory.files[i].name.data());
+					ImGui::EndTooltip();
+				}
 				ImGui::EndDragDropSource();
 			}
 

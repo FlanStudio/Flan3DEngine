@@ -268,6 +268,14 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 			activeCamComponent->RecalculateProjectionMatrix(activeCamComponent->width, activeCamComponent->height);
 			break;
 		}
+
+
+		case EventType::GO_DESTROYED:
+		{
+			if (event.goEvent.gameObject == gameCamera)
+				setGameCamera(nullptr);
+			break;
+		}
 	}
 }
 

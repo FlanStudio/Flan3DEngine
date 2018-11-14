@@ -116,6 +116,9 @@ void ComponentTransform::OnInspector()
 
 float4x4 ComponentTransform::getGlobalMatrix()const
 {
+	if (!this)
+		return float4x4();
+
 	if (!gameObject->parent)
 	{
 		return getLocalMatrix();

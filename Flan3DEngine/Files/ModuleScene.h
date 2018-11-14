@@ -78,6 +78,9 @@ private:
 	void ReceiveEvent(Event event);
 
 private:
+
+	GameObject* selectedGO = nullptr;
+
 	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
 	ImGuizmo::MODE guizmoMode = ImGuizmo::MODE::WORLD;
 

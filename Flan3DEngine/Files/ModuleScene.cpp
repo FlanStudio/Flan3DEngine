@@ -75,11 +75,6 @@ update_status ModuleScene::PreUpdate()
 {
 	BROFILER_CATEGORY("ScenePreUpdate", Profiler::Color::Azure)
 
-	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
-	{
-		gameObjects[0]->deleteSelected();
-	}
-	
 	if (!quadtree.root.isInitialized())
 		InitQuadtree();
 
@@ -109,7 +104,16 @@ update_status ModuleScene::Update()
 
 update_status ModuleScene::PostUpdate()
 {
-	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet)
+	BROFILER_CATEGORY("ModuleSceneIntro", Profiler::Color::DarkViolet);
+
+	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+	{
+		if (selectedGO)
+		{			
+			delete selectedGO;
+			selectedGO = nullptr;			
+		}
+	}
 
 	if (!IN_GAME)
 	{
@@ -204,6 +208,15 @@ void ModuleScene::ReceiveEvent(Event event)
 			//deserialize
 			break;
 		}
+		case EventType::GO_DESTROYED:
+		{
+			if (event.goEvent.gameObject == selectedGO)
+				selectedGO = nullptr;
+
+			gameObjects[0]->ReceiveEvent(event);
+
+			break;
+		}
 	}
 }
 
@@ -287,6 +300,26 @@ void ModuleScene::guiHierarchy()
 		}
 		ImGui::EndPopup();
 	}
+
+
+	//Dropping FBX (prefabs when implemented)
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingFBX", flags);
+		if (payload)
+		{
+			char* path = (char*)payload->Data;
+			if (path != nullptr)
+			{
+				App->resources->InstanciateFBX(path);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+
 }
 
 void ModuleScene::PrintHierarchy(GameObject* go)
@@ -312,9 +345,8 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 				ImGui::SetNextTreeNodeOpen(true);
 
 			_ReorderGameObject_Pre(go);
-
-			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->uuid)).data(), flags);
-			
+			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
+		
 			if (ImGui::IsItemClicked(0) && !go->selected)
 				App->scene->selectGO(go);
 
@@ -342,7 +374,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			_ReorderGameObject_Pre(go);
 
-			bool opened = ImGui::TreeNodeEx((go->name + "##" + std::to_string(go->uuid)).data(), flags);
+			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
 			
 			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
 				App->scene->selectGO(go);
@@ -392,24 +424,17 @@ void ModuleScene::guiInspector()
 
 GameObject* ModuleScene::getSelectedGO() const
 {
-	GameObject* ret = nullptr;
-	
-	for (int i = 0; i < gameObjects.size() && !ret; ++i)
-	{
-		ret = gameObjects[i]->getSelectedGO();
-	}
-
-	return ret;
+	return selectedGO;
 }
 
 void ModuleScene::selectGO(GameObject* toSelect)
 {
-	GameObject* selected = getSelectedGO();
-	if (selected)
+	if (selectedGO)
 	{
-		selected->selected = false;
+		selectedGO->selected = false;
 	}
-	toSelect->selected = true;
+	selectedGO = toSelect;
+	selectedGO->selected = true;
 }
 
 void ModuleScene::debugDraw()
@@ -692,19 +717,23 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 
 	delete gameObjects[0];
 	gameObjects.clear();
+	CreateGameObject(nullptr);
 
-	GameObject* root = nullptr;
+	std::vector<GameObject*> roots;
 	for (int i = 0; i < gameObject_s.size(); ++i)
 	{
 		if (gameObject_s[i]->parent == nullptr)
 		{
-			root = gameObject_s[i];			
+			roots.push_back(gameObject_s[i]);			
 		}
 		gameObject_s[i]->initAABB();
 		gameObject_s[i]->transformAABB();
 	}
 
-	gameObjects.push_back(root);
+	for (int i = 0; i < roots.size(); ++i)
+	{
+		AddGameObject(roots[i]);
+	}
 }
 
 void ModuleScene::TransformGUI()

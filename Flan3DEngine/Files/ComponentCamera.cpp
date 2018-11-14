@@ -203,7 +203,7 @@ void ComponentCamera::setMainCamera()
 
 void ComponentCamera::debugDraw()
 {
-	if (this == App->camera->editorCamComponent)
+	if (this == App->camera->editorCamComponent || vertexID == 0)
 		return;
 
 	glEnableClientState(GL_VERTEX_ARRAY);

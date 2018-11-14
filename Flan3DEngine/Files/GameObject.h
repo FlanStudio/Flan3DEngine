@@ -27,8 +27,6 @@ public:
 	void ClearChild(GameObject* child);
 	void ClearChilds();
 	bool HasChilds() const;
-	GameObject* getSelectedGO() const;
-	void deleteSelected();
 	int getChildPos(const GameObject* child) const;
 
 	//Component-related methods
@@ -44,6 +42,7 @@ public:
 
 	//Other methods
 	void OnInspector();
+	void ReceiveEvent(Event event);
 	
 	//AABB drawing data-----------------
 	void drawAABB()const;
@@ -67,14 +66,13 @@ public:
 	//Makes his AABB enclose its ComponentMesh vertex, transformed
 	void transformAABB();
 
-private:
-	void debugDraw()const;
-
 	void genUUID()
 	{
-		if (uuid == 0)
-			uuid = FLAN::randomUINT32_Range();
+		uuid = FLAN::randomUINT32_Range();
 	}
+
+private:
+	void debugDraw()const;	
 
 public:
 	//Hierarchy's tree utilities
