@@ -190,6 +190,23 @@ void ModuleScene::DrawGuizmos()
 	}
 }
 
+void ModuleScene::ReceiveEvent(Event event)
+{
+	switch (event.type)
+	{
+		case EventType::PLAY:
+		{
+			//serialize to buffer
+			break;
+		}
+		case EventType::STOP:
+		{
+			//deserialize
+			break;
+		}
+	}
+}
+
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 {
 	GameObject* ret = new GameObject(parent);

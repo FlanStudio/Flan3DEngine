@@ -75,6 +75,8 @@ private:
 
 	void DrawGuizmos();
 
+	void ReceiveEvent(Event event);
+
 private:
 	ImGuizmo::OPERATION currentGuizmoOperation = ImGuizmo::OPERATION::BOUNDS;
 	ImGuizmo::MODE guizmoMode = ImGuizmo::MODE::WORLD;
