@@ -70,13 +70,7 @@ update_status ModuleFileSystem::PreUpdate()
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
 	{
 		updateAssetsCounter = 0.0f;
-		Directory newAssetsDir = getDirFiles("Assets");
-		
-		if (newAssetsDir != AssetsDirSystem)
-		{			
-			SendEvents(newAssetsDir);
-			AssetsDirSystem = newAssetsDir;
-		}	
+		UpdateAssetsDir();
 	}
 	return update_status::UPDATE_CONTINUE;
 }
@@ -435,6 +429,17 @@ void ModuleFileSystem::EndTempException()
 {
 	PHYSFS_unmount(tempException.data());
 	tempException.clear();
+}
+
+void ModuleFileSystem::UpdateAssetsDir()
+{
+	Directory newAssetsDir = getDirFiles("Assets");
+
+	if (newAssetsDir != AssetsDirSystem)
+	{
+		SendEvents(newAssetsDir);
+		AssetsDirSystem = newAssetsDir;
+	}
 }
 
 void ModuleFileSystem::recursiveDirectory(Directory& directory)

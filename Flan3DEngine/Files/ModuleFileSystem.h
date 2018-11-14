@@ -70,6 +70,8 @@ public:
 	void BeginTempException(std::string directory);
 	void EndTempException();
 
+	void UpdateAssetsDir();
+
 private:
 	//WARNING: Don't forget to delete the Directory file after use
 	Directory getDirFiles(char* dir) const;
