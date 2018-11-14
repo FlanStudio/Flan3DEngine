@@ -64,8 +64,8 @@ update_status ModuleEditor::PreUpdate()
 	noBackWindowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 	//Play-Pause Window
-	ImGui::SetNextWindowSize({ SCREEN_WIDTH / 8.0f,23.0f });
-	ImGui::SetNextWindowPos({ (SCREEN_WIDTH - SCREEN_WIDTH / 8) / 2.0f,23.0f });
+	ImGui::SetNextWindowSize({ SCREEN_WIDTH / 8.0f,50.0f });
+	ImGui::SetNextWindowPos({ (SCREEN_WIDTH - SCREEN_WIDTH / 8) / 2.0f,26.0f });
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Border, { 0,0,0,0 });
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, { 0,0,0,0 });
 	ImGui::Begin("## Time Buttons", nullptr, noBackWindowFlags);
@@ -75,7 +75,7 @@ update_status ModuleEditor::PreUpdate()
 	ImGui::End();
 
 	//Guizmos Window
-	ImGui::SetNextWindowSize({ SCREEN_WIDTH / 4.0f,150.0f });
+	ImGui::SetNextWindowSize({ SCREEN_WIDTH / 4.0f,50.0f });
 	ImGui::SetNextWindowPos({ SCREEN_WIDTH / 4.0f,26.0f });
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Border, { 0,0,0,0 });
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, { 0,0,0,0 });

@@ -120,6 +120,15 @@ update_status ModuleScene::PostUpdate()
 		DrawGuizmos();
 	}
 
+	if (deserialize)
+	{
+		deserialize = false;
+		//deserialize
+		DeSerializeFromBuffer(tempSceneBuffer);
+		delete tempSceneBuffer;
+		tempSceneBuffer = nullptr;
+	}
+
 	//-------------------INITIAL GRID---------------------
 	euler.Render();
 	grid.Render();
@@ -202,11 +211,12 @@ void ModuleScene::ReceiveEvent(Event event)
 		case EventType::PLAY:
 		{
 			//serialize to buffer
+			SerializeToBuffer(tempSceneBuffer, tempSceneBufferSize);
 			break;
 		}
 		case EventType::STOP:
 		{
-			//deserialize
+			deserialize = true;
 			break;
 		}
 		case EventType::GO_DESTROYED:
@@ -215,6 +225,8 @@ void ModuleScene::ReceiveEvent(Event event)
 				selectedGO = nullptr;
 
 			gameObjects[0]->ReceiveEvent(event);
+
+			quadtree.Remove(event.goEvent.gameObject);
 
 			break;
 		}
@@ -565,6 +577,8 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
 
+	App->renderer3D->ClearMeshes();
+
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
 
@@ -622,6 +636,10 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		}
 	}
 
+	delete gameObjects[0];
+	gameObjects.clear();
+	CreateGameObject(nullptr);
+
 	uint numMeshes = 0u;
 	bytes = sizeof(uint);
 
@@ -656,7 +674,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	cursor += bytes;
 	goUUIDs.clear();
 
-	bool mainCamera = false;
+	ComponentCamera* mainCamera = nullptr;
 
 	for (int i = 0; i < numCameras; ++i)
 	{
@@ -665,16 +683,12 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		newCamera->DeSerialize(cursor, goUUID);
 		if (!mainCamera && newCamera->isMainCamera)
 		{
-			mainCamera = true;
-			App->camera->setGameCamera(newCamera);
+			mainCamera = newCamera;
 		}		
 		goUUIDs.push_back(goUUID);
 		cameras.push_back(newCamera);
 	}
-	if (!mainCamera)
-	{
-		App->camera->setGameCamera(nullptr);
-	}
+
 	for (int i = 0; i < cameras.size(); ++i)
 	{
 		for (int j = 0; j < gameObject_s.size(); ++j)
@@ -687,6 +701,8 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 			}
 		}
 	}
+
+	App->camera->setGameCamera(mainCamera);
 
 	uint numMaterials = 0u;
 	bytes = sizeof(uint);
@@ -716,10 +732,6 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		}
 	}
 
-	delete gameObjects[0];
-	gameObjects.clear();
-	CreateGameObject(nullptr);
-
 	std::vector<GameObject*> roots;
 	for (int i = 0; i < gameObject_s.size(); ++i)
 	{
@@ -735,6 +747,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	{
 		AddGameObject(roots[i]);
 	}
+	int hjjh = 9;
 }
 
 void ModuleScene::TransformGUI()
@@ -745,14 +758,14 @@ void ModuleScene::TransformGUI()
 
 	if (guizmoMode == ImGuizmo::MODE::WORLD)
 	{
-		if (ImGui::Button("Global", { 50,28 }))
+		if (ImGui::Button("Global", { 50,35 }))
 		{
 			guizmoMode = ImGuizmo::MODE::LOCAL;
 		}
 	}
 	else
 	{
-		if (ImGui::Button("Local", { 50,28 }))
+		if (ImGui::Button("Local", { 50,35 }))
 		{
 			guizmoMode = ImGuizmo::MODE::WORLD;
 		}

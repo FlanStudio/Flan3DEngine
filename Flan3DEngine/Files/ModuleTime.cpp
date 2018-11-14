@@ -76,7 +76,7 @@ void ModuleTime::OnTimeGUI()
 
 	if (!IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.345f,0.0f }, { 0.655f,0.47f }))//play
 		{
 			IN_GAME = true;
 			Event event;
@@ -86,7 +86,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	else
 	{
-		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.0f,0.0f }, { 0.31f, -0.47f }))//stop
 		{
 			IN_GAME = false;
 			paused = false;
@@ -100,7 +100,7 @@ void ModuleTime::OnTimeGUI()
 	ImGui::SameLine();
 	if (!paused)
 	{
-		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }) && IN_GAME)//pause
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.345f,0.0f }, { 0.655f,-0.47f }) && IN_GAME)//pause
 		{
 			Event event;
 			event.timeEvent.type = EventType::PAUSE;
@@ -111,7 +111,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	else if (IN_GAME)
 	{
-		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0.0f,0.0f,0.0f,0.0f }, {0.8f,0.3f,0.3f,1.0f}))//resume
+		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0.0f,0.0f,0.0f,0.0f }, {0.8f,0.3f,0.3f,1.0f}))//resume
 		{
 			Event event;
 			event.timeEvent.type = EventType::RESUME;
@@ -122,7 +122,7 @@ void ModuleTime::OnTimeGUI()
 	}
 	ImGui::PopID();
 	ImGui::PushID("stepButtons");
-	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 18,18 }, { 0.69f,0.0f }, { 1.0f,0.47f }) && paused)//step
+	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.69f,0.0f }, { 1.0f,0.47f }) && paused)//step
 	{
 		Event event;
 		event.timeEvent.type = EventType::STEP;
