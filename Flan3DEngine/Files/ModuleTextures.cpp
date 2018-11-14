@@ -53,6 +53,7 @@ bool ModuleTextures::Init()
 bool ModuleTextures::Start()
 {
 	LoadInternalTexture("timeAtlas.dds");
+	LoadInternalTexture("transBtnTex.dds");
 	return true;
 }
 
