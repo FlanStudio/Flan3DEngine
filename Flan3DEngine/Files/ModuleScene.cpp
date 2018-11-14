@@ -13,6 +13,7 @@
 #include "ComponentMesh.h"
 #include "Component.h"
 #include "ComponentMaterial.h"
+#include "Quadtree.h"
 
 #include <bitset>
 
@@ -576,6 +577,8 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
+	
+	quadtree.Remove(gameObject_s);
 
 	App->renderer3D->ClearMeshes();
 

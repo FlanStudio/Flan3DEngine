@@ -68,6 +68,33 @@ void Quadtree::Remove(const GameObject* go)
 	}
 }
 
+void Quadtree::Remove(const std::vector<GameObject*> go)
+{
+	std::vector<GameObject*> gameObjects;
+	root.getGameObjects(gameObjects);
+
+	for (int j = 0; j < go.size(); j++)
+	{
+		for (int i = 0; i < gameObjects.size(); ++i)
+		{
+			if (gameObjects[i] == go[j])
+			{
+				gameObjects.erase(gameObjects.begin() + i);
+				break; //The list doesn't have duplicates
+			}
+		}
+	}
+
+	AABB limits = this->root.quad;
+	Clear();
+	Create(limits);
+
+	for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		Insert(gameObjects[i]);
+	}
+}
+
 bool Quadtree::Intersect(std::vector<GameObject*>& result, const LineSegment& segment) const
 {
 	return root.Intersect(result, segment);

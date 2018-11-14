@@ -50,6 +50,7 @@ public:
 	void Resize(AABB limits);
 	void Insert(const GameObject* go);
 	void Remove(const GameObject* go);
+	void Remove(const std::vector<GameObject*> go);
 	bool Intersect(std::vector<GameObject*>& result, const LineSegment& segment)const;
 	bool Intersect(std::vector<GameObject*>& result, const Frustum& frustum)const;
 	bool isWithinLimits(const GameObject* go) const;
