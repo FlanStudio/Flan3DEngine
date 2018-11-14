@@ -698,9 +698,10 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	{
 		if (gameObject_s[i]->parent == nullptr)
 		{
-			root = gameObject_s[i];
-			break;
+			root = gameObject_s[i];			
 		}
+		gameObject_s[i]->initAABB();
+		gameObject_s[i]->transformAABB();
 	}
 
 	gameObjects.push_back(root);

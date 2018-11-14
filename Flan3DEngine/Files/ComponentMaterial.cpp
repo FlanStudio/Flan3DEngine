@@ -15,6 +15,11 @@ void ComponentMaterial::Serialize(char *& cursor) const
 	UID textureUID = texture ? texture->getUUID() : 0;
 	memcpy(cursor, &textureUID, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(ImVec4);
+	memcpy(cursor, &colorTint.x, bytes);
+	cursor += bytes;
+
 }
 
 void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -31,6 +36,10 @@ void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
 	cursor += bytes;
 
 	texture = (ResourceTexture*)App->resources->Get(textureUID);
+
+	bytes = sizeof(ImVec4);
+	memcpy(&colorTint.x, cursor, bytes);
+	cursor += bytes;
 }
 
 void ComponentMaterial::OnInspector()

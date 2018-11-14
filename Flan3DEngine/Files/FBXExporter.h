@@ -37,12 +37,9 @@ public:
 	bool Load(const JSON_Object* obj);
 
 public:
-	bool LoadFBX(char* path, bool useFS = true);
 	std::vector<Resource*> ExportFBX(const std::string& file) const;
 
 private:
-	bool RecursivelyHierarchy(const aiNode* parent, const GameObject* parentGO, const aiScene* scene);
-	bool FillMeshData(ComponentMesh* mymesh, aiMesh* mesh);
 	std::vector<const aiNode*> decomposeAssimpHierarchy(const aiNode* rootNode) const;
 
 private:
