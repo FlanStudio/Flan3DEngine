@@ -97,6 +97,40 @@ update_status ResourceManager::PreUpdate()
 	if (!dropped.empty())
 	{
 		//Manage imports here, check if the file has already been imported	
+		std::string extension = App->fs->getExt(dropped);
+		if (!extension.empty())
+		{
+			if (extension == ".fbx" || extension == ".FBX")
+			{
+
+				uint fileNamePos = dropped.find_last_of("/");
+				std::string directory = dropped.substr(0, fileNamePos+1);
+				std::string fileName = dropped.substr(fileNamePos + 1);
+
+				App->fs->BeginTempException(directory);
+				
+				char* metaBuffer;
+				uint metaSize;
+				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Exception/" + fileName, metaBuffer, metaSize);
+				for (int j = 0; j < exportedRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+				}
+
+				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
+				
+				App->fs->OpenWriteBuffer("Assets/meshes/" + fileName + ".meta", metaBuffer, metaSize);
+
+				App->fs->EndTempException();
+			}
+			else
+			{
+				if(App->textures->isSupported(extension))
+				{
+					//Import texture
+				}
+			}
+		}
 	}
 	
 	return update_status::UPDATE_CONTINUE;

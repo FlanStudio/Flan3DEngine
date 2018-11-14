@@ -44,6 +44,8 @@ public:
 	bool OpenWrite(std::string file, char* buffer);
 	bool OpenWriteBuffer(std::string file, void* buffer, uint size);
 	
+	bool CopyExternalFileInto(const std::string& file, const std::string& newLocation);
+
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);
 
@@ -65,6 +67,8 @@ public:
 	bool emptyDirectory(const std::string& directory) const;
 	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
 
+	void BeginTempException(std::string directory);
+	void EndTempException();
 
 private:
 	//WARNING: Don't forget to delete the Directory file after use
@@ -78,5 +82,7 @@ private:
 
 	float updateAssetsCounter = 0.0f;
 	float updateAssetsRate = 1.0f;
+
+	std::string tempException;
 };
 #endif

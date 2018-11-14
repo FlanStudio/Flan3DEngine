@@ -248,6 +248,28 @@ bool ModuleFileSystem::OpenWriteBuffer(std::string file, void* buffer, uint size
 	return true;
 }
 
+bool ModuleFileSystem::CopyExternalFileInto(const std::string& file, const std::string& newLocation)
+{
+	uint fileNamePos = file.find_last_of("/");
+	std::string fileName = file.substr(fileNamePos+1);
+
+	char* buffer;
+	int size;
+	if (!OpenRead("Exception/" + fileName, &buffer, size))
+	{
+		return false;
+	}
+
+	if (!OpenWriteBuffer(newLocation + fileName, buffer, size))
+	{
+		return false;
+	}
+
+	delete buffer;
+
+	return true;
+}
+
 char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
 {
 	std::string ascii(ascii_string);
@@ -388,6 +410,31 @@ bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& e
 	}
 
 	return true;
+}
+
+void ModuleFileSystem::BeginTempException(std::string directory)
+{
+	if (tempException.empty())
+	{
+		tempException = directory;
+
+		//Add to the search path
+		if (PHYSFS_mount(directory.data(), "Exception", 1) == 0)
+		{
+			char* error = (char*)PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+			int a = 2;
+		}
+	}
+	else
+	{
+		Debug.LogError("FILESYSTEM: YOU CAN ONLY HAVE 1 EXCEPTION LOADED AT THE SAME TIME");
+	}
+}
+
+void ModuleFileSystem::EndTempException()
+{
+	PHYSFS_unmount(tempException.data());
+	tempException.clear();
 }
 
 void ModuleFileSystem::recursiveDirectory(Directory& directory)

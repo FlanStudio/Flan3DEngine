@@ -21,7 +21,6 @@ public:
 
 	bool CleanUp();
 
-	void Look(const float3& Position, const float3& Reference, bool RotateAroundReference = false);
 	void LookAt(const float3& target);
 	void Move(const float3& Movement);
 	void rotateCamera(float dt);

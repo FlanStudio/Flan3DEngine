@@ -40,7 +40,10 @@ bool ModuleInput::Init()
 update_status ModuleInput::PreUpdate()
 {
 
-	BROFILER_CATEGORY("ModuleInput_Preupdate", Profiler::Color::Aqua)
+	BROFILER_CATEGORY("ModuleInput_Preupdate", Profiler::Color::Aqua);
+
+	fileDropped.clear();
+
 
 	SDL_PumpEvents();
 

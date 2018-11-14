@@ -280,25 +280,6 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 }
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
-{
-	/*this->Position = Position;
-	this->Reference = Reference;
-
-	Z = (Position - Reference).Normalized();
-	X = float3(0.0f, 1.0f, 0.0f).Cross(Z).Normalized();
-	Y = Z.Cross(X);
-
-	if(!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}
-
-	CalculateViewMatrix();*/
-}
-
-// -----------------------------------------------------------------
 void ModuleCamera3D::LookAt(const float3 &target)
 {
 	//Orient the localY axis to the World-Y axis

@@ -79,6 +79,21 @@ bool FBXExporter::Load(const JSON_Object* obj)
 std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 {
 	std::vector<Resource*> ret;
+	char* metaBuffer;
+	uint metaSize;
+
+	ret = ExportFBX(file, metaBuffer, metaSize);
+
+	//Save the stored hierarchy in a .meta file
+	App->fs->OpenWriteBuffer(file + ".meta", metaBuffer, metaSize);
+	delete metaBuffer;
+
+	return ret;
+}
+
+std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& metaBuffer, uint& metaSize) const
+{
+	std::vector<Resource*> ret;
 
 	char* buffer;
 	int size;
@@ -94,7 +109,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 		delete buffer;
 		return ret;
 	}
-		
+
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//Now we have a bunch of data in the scene. We want to export all that the fbx contains in different files in Library, keeping the conection in a .meta file.
 	//We also need to keep somewhere the node-structure, in order to be able of instanciating this fbx. 
@@ -135,18 +150,18 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 	}
 
 	std::map<const aiMesh*, ResourceMesh*> meshes;
-	
-	uint fileSize = sizeof(uint) + //Num aiNodes
+
+	metaSize = sizeof(uint) + //Num aiNodes
 		decomposedHierarchy.size() *
 		(
 			sizeof(char[100]) + //aiNode Name
 			sizeof(aiVector3D) * 2 + //Position, scale
 			sizeof(aiQuaternion) + //Rotation
 			sizeof(UID) * 4 //Your uid, your parent's uid, your texture uid and your mesh uid
-		);
-	
-	char* hierarchyBuffer = new char[fileSize];
-	char* cursor = hierarchyBuffer;
+			);
+
+	metaBuffer = new char[metaSize];
+	char* cursor = metaBuffer;
 
 	uint numaiNodes = decomposedHierarchy.size();
 	memcpy(cursor, &numaiNodes, sizeof(uint));
@@ -163,7 +178,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 		{
 			//We only support 1 mesh each gameObject
 			const aiMesh* assimpMesh = scene->mMeshes[decomposedHierarchy[i]->mMeshes[0]];
-			
+
 			aiMaterial* assimpMaterial = scene->mMaterials[assimpMesh->mMaterialIndex];
 			std::string texturePath;
 			if (assimpMaterial)
@@ -202,7 +217,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 					texturePath.insert(0, path);
 				}
-				
+
 			}
 
 			//Now we have a Mesh and a Texture. Save them in our Resources vector
@@ -212,7 +227,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 			ResourceMesh* savedMesh = meshes.find(assimpMesh) != meshes.end() ? meshes.at(assimpMesh) : nullptr;
 
-			if(!savedMesh)
+			if (!savedMesh)
 			{
 				ResourceMesh* myMesh = new ResourceMesh();
 				meshUID = myMesh->getUUID();
@@ -231,9 +246,9 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 						if (assimpMesh->mFaces[j].mNumIndices != 3)
 						{
 							Debug.LogWarning("Charging a geometry face with != 3 vertices! Some errors might happen");
-							uint temp [3] = { 0,0,0 };
+							uint temp[3] = { 0,0,0 };
 							memcpy(&myMesh->index[j * 3], temp, 3 * sizeof(uint)); //Solution to not let empty spaces in the index array, or Mouse Clicking will explode in certain situations
-						}							
+						}
 						else // This face has 3 vertex
 							memcpy(&myMesh->index[j * 3], assimpMesh->mFaces[j].mIndices, 3 * sizeof(uint));
 					}
@@ -290,7 +305,18 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 				if (myTexture)
 				{
 					textureUID = myTexture->getUUID();
-				}					
+				}
+				else
+				{
+					for (int j = 0; j < ret.size(); ++j)
+					{
+						if (ret[j]->getFile() == texturePath)
+						{
+							myTexture = ret[j];
+							textureUID = myTexture->getUUID();
+						}
+					}
+				}
 
 				if (!myTexture)
 				{
@@ -302,7 +328,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 						textureUID = myTexture->getUUID();
 					}
 				}
-			}			
+			}
 		}
 
 		//Save here the uuids: This one's, parent's, textures and meshes + transform
@@ -317,7 +343,7 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 		aiVector3D pos, scale;
 		aiQuaternion rotation;
 		decomposedHierarchy[i]->mTransformation.Decompose(scale, rotation, pos);
-		
+
 		uint uidBytes = sizeof(UID);
 
 		//Your name
@@ -359,15 +385,27 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 		cursor += uidBytes;
 	}
 
-	//Save the stored hierarchy in a .meta file
-	App->fs->OpenWriteBuffer(file + ".meta", hierarchyBuffer, fileSize);
-
 	aiReleaseImport(scene);
 	delete buffer;
-	delete hierarchyBuffer;
+
+	for (int i = 0; i < ret.size(); ++i)
+	{
+		if (ret[i]->getType() == Resource::ResourceType::TEXTURE)
+		{
+			ResourceTexture* texture = (ResourceTexture*)ret[i];
+			std::string file = texture->getFile();
+			if (file.find("Exception/") != std::string::npos)
+			{
+				//We dont want to store the Exception/ inside the mesh in the fbx
+				file = file.replace(0, 10, "");
+				texture->setFile((char*)file.data());
+			}
+		}
+	}
 
 	return ret;
 }
+
 
 std::vector<const aiNode*> FBXExporter::decomposeAssimpHierarchy(const aiNode* rootNode) const
 {

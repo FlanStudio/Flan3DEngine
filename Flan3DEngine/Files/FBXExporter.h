@@ -38,6 +38,7 @@ public:
 
 public:
 	std::vector<Resource*> ExportFBX(const std::string& file) const;
+	std::vector<Resource*> ExportFBX(const std::string& file, char*& metaBuffer, uint& metaSize) const;
 
 private:
 	std::vector<const aiNode*> decomposeAssimpHierarchy(const aiNode* rootNode) const;
