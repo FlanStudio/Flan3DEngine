@@ -735,4 +735,10 @@ void GameObject::transformAABB()
 			updateAABBbuffers();
 		}
 	}
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->transformAABB();
+	}
+
 }
