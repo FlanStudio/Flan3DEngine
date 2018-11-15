@@ -94,7 +94,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 	{
 		GameObject* selected = App->scene->getSelectedGO();
 
-		if (selected && selected->boundingBox.IsFinite())//obj picked == true
+		if (selected && selected->boundingBox.IsFinite())
 		{
 			center = selected->boundingBox.CenterPoint();
 			float3 dir = (editorCamera->transform->position - center).Normalized();

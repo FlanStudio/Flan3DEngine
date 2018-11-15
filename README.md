@@ -40,7 +40,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 ### Game
  **Camera Movement**
 
-  * _**W, A, S, D, Q, E**_: Move **forward**, **left**, **backward**, **right**, **downwards** or **upwards**.
+  * _**UP, LEFT, DOWN, RIGHT, Y, H**_: Move **forward**, **left**, **backward**, **right**, **downwards** or **upwards**.
     
   * _**Mouse Scroll**_: Makes a **zoom-in**/**zoom-out**.
   
@@ -49,6 +49,10 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
   * _**Right Click + Mouse Movement**_: Camera rotates around itself.
   
   * _**F**_: Centers the view to the object.
+
+**Transformations**
+
+  * _**Q,W,E,R**_: **Pick object**, **Translate object**, **Rotate object**, **Scale object** (alseo, there's a button for each transformation and one for changing the transformation mode from "local" to "global" and vice versa).
   
  **Other functionalities**
   * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
