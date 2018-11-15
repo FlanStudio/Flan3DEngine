@@ -4,6 +4,7 @@
 #include "MathGeoLib_1.5/Math/float3x3.h"
 #include "Brofiler\Brofiler.h"
 #include "imgui/imgui.h"
+#include "ModuleScene.h"
 
 #include "ComponentCamera.h"
 #include "GameObject.h"
@@ -91,17 +92,34 @@ void ModuleCamera3D::CameraInputs(float dt)
 {
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
-		AABB bb = App->scene->getSceneAABB();
-		center = bb.CenterPoint();
+		GameObject* selected = App->scene->getSelectedGO();
 
-		float3 dir = (editorCamera->transform->position - center).Normalized();
+		if (selected && selected->boundingBox.IsFinite())//obj picked == true
+		{
+			center = selected->boundingBox.CenterPoint();
+			float3 dir = (editorCamera->transform->position - center).Normalized();
 
-		double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
-		orbitalRadius = ((bb.Size().MaxElement()) / sin);
+			double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+			orbitalRadius = ((selected->boundingBox.Size().MaxElement()) / sin);
 
-		editorCamera->transform->position = (center + dir * orbitalRadius);
+			editorCamera->transform->position = (center + dir * orbitalRadius);
+			LookAt(selected->boundingBox.CenterPoint());
+		}
+		else if (!selected && App->scene->getRootNode() != nullptr)
+		{
+			AABB sceneBB = App->scene->getRootNode()->getAABBChildsEnclosed();
+			if (sceneBB.IsFinite())
+			{
+				center = sceneBB.CenterPoint();
+				float3 dir = (editorCamera->transform->position - center).Normalized();
 
-		LookAt(center);
+				double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+				orbitalRadius = ((sceneBB.Size().MaxElement()) / sin);
+
+				editorCamera->transform->position = (center + dir * orbitalRadius);
+				LookAt(sceneBB.CenterPoint());
+			}
+		}
 	}
 
 

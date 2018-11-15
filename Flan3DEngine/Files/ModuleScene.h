@@ -41,6 +41,7 @@ public:
 	void selectGO(GameObject* toSelect);
 	void debugDraw();
 	GameObject* getRootNode()const { return gameObjects[0]; }
+	GameObject* getSelectedGO() const;
 
 	void Serialize() const;
 	void DeSerialize(std::string path, std::string extension);
@@ -60,7 +61,6 @@ public:
 
 private:
 	void PrintHierarchy(GameObject* go);
-	GameObject* getSelectedGO() const;
 	void DragDrop(GameObject* go);
 	void decomposeScene(std::vector<GameObject*>& gameObject_s = std::vector<GameObject*>(), std::vector<ComponentTransform*>&transforms = std::vector<ComponentTransform*>(), 
 		std::vector<ComponentMesh*>&meshes = std::vector<ComponentMesh*>(), std::vector<ComponentCamera*>&cameras = std::vector<ComponentCamera*>(), 
