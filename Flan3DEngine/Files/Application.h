@@ -128,6 +128,7 @@ public:
 
 public:
 	void SendEvent(Event event);
+	void SendEvents();
 	std::queue<Event> events;
 
 public:

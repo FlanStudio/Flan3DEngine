@@ -8,6 +8,43 @@ void Application::SendEvent(Event event)
 	events.push(event);
 }
 
+void Application::SendEvents()
+{
+	BROFILER_CATEGORY("Send Events", Profiler::Color::Red);
+	while (events.size() > 0)
+	{
+		Event event = events.front();
+
+		std::list<Module*>::iterator it;
+		for (it = list_modules.begin(); it != list_modules.end(); ++it)
+		{
+			(*it)->ReceiveEvent(event);
+		}
+
+		//Deallocate memory
+		switch (event.type)
+		{
+		case EventType::FILE_CREATED:
+		case EventType::FILE_DELETED:
+		{
+			if (event.fileEvent.file)
+				delete event.fileEvent.file;
+			break;
+		}
+		case EventType::FILE_MOVED:
+		{
+			if (event.fileEvent.file)
+				delete event.fileEvent.file;
+
+			if (event.fileEvent.oldLocation)
+				delete event.fileEvent.oldLocation;
+			break;
+		}
+		}
+		events.pop();
+	}
+}
+
 Application::Application()
 {
 	time = new ModuleTime();
@@ -143,36 +180,7 @@ update_status Application::Update()
 	std::list<Module*>::iterator it;
 
 	//Send last frame events before doing anything
-	while (events.size() > 0)
-	{
-		Event event = events.front();		
-		for (it = list_modules.begin(); it != list_modules.end(); ++it)
-		{
-			(*it)->ReceiveEvent(event);
-		}
-
-		//Deallocate memory
-		switch (event.type)
-		{
-			case EventType::FILE_CREATED:
-			case EventType::FILE_DELETED:
-			{
-				if(event.fileEvent.file)
-					delete event.fileEvent.file;
-				break;
-			}
-			case EventType::FILE_MOVED:
-			{
-				if (event.fileEvent.file)
-					delete event.fileEvent.file;
-
-				if (event.fileEvent.oldLocation)
-					delete event.fileEvent.oldLocation;
-				break;
-			}
-		}
-		events.pop();
-	}
+	SendEvents();
 	
 	for (it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; ++it)
 	{

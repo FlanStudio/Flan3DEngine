@@ -152,6 +152,7 @@ void ModuleScene::InitQuadtree()
 
 void ModuleScene::UpdateQuadtree()
 {
+	BROFILER_CATEGORY("Update Quadtree", Profiler::Color::BlanchedAlmond);
 	quadtree.Clear();
 	quadtree.Resize(gameObjects[0]->getAABBChildsEnclosed());
 
@@ -228,8 +229,6 @@ void ModuleScene::ReceiveEvent(Event event)
 				selectedGO = nullptr;
 
 			gameObjects[0]->ReceiveEvent(event);
-
-			quadtree.Remove(event.goEvent.gameObject);
 
 			break;
 		}
@@ -579,10 +578,6 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
-	
-	quadtree.Remove(gameObject_s);
-
-	App->renderer3D->ClearMeshes();
 
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
@@ -611,6 +606,8 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 			}
 		}
 	}
+
+	quadtree.Remove(gameObject_s);
 
 	uint numTransforms = 0u;
 	bytes = sizeof(uint);
@@ -743,16 +740,17 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		if (gameObject_s[i]->parent == nullptr)
 		{
 			roots.push_back(gameObject_s[i]);			
-		}
-		gameObject_s[i]->initAABB();
-		gameObject_s[i]->transformAABB();
+		}	
 	}
 
 	for (int i = 0; i < roots.size(); ++i)
 	{
 		AddGameObject(roots[i]);
+		roots[i]->initAABB();
+		roots[i]->transformAABB();
 	}
-	int hjjh = 9;
+
+	UpdateQuadtree();
 }
 
 void ModuleScene::TransformGUI()
