@@ -281,6 +281,8 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& m
 
 				myMesh->genBuffers();
 				myMesh->meshName = assimpMesh->mName.C_Str();
+				myMesh->setFile((char*)std::string(file + "/" + myMesh->meshName).data());
+				myMesh->setExportedFile((char*)std::string(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION).data());
 				ret.push_back(myMesh);
 				meshes.insert(std::pair<const aiMesh*, ResourceMesh*>(assimpMesh, myMesh));
 

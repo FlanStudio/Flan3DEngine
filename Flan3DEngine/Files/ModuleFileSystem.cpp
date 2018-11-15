@@ -290,6 +290,31 @@ bool ModuleFileSystem::CopyExternalFileInto(const std::string& file, const std::
 	return true;
 }
 
+bool ModuleFileSystem::MoveFileInto(const std::string& file, const std::string& newLocation)
+{
+	char* buffer;
+	int size;
+	if (!OpenRead(file, &buffer, size))
+	{
+		return false;
+	}
+
+	if (!OpenWriteBuffer(newLocation, buffer, size))
+	{
+		delete buffer;
+		return false;
+	}
+
+	if (!deleteFile(file))
+	{
+		delete buffer;
+		return false;
+	}
+
+	delete buffer;
+	return true;
+}
+
 char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
 {
 	std::string ascii(ascii_string);

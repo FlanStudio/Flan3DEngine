@@ -45,6 +45,7 @@ public:
 	bool OpenWriteBuffer(std::string file, void* buffer, uint size);
 	
 	bool CopyExternalFileInto(const std::string& file, const std::string& newLocation);
+	bool MoveFileInto(const std::string& file, const std::string& newLocation);
 
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);
@@ -73,7 +74,6 @@ public:
 
 	void UpdateAssetsDir();
 	void saveAssetsState();
-
 
 private:
 	//WARNING: Don't forget to delete the Directory file after use

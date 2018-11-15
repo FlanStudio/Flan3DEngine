@@ -3,6 +3,7 @@
 
 #include "Resource.h"
 #include "ResourceTexture.h"
+#include "ResourceMesh.h"
 
 #include "Brofiler/Brofiler.h"
 
@@ -10,6 +11,8 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
+
+
 
 ResourceManager::~ResourceManager()
 {
@@ -189,71 +192,74 @@ void ResourceManager::ReceiveEvent(Event event)
 		case EventType::FILE_DELETED:
 		{
 			std::string ext = App->fs->getExt(event.fileEvent.file);
+
+			//Get the .meta and check if the deleted file is a resource
+			
+			char* metaBuffer;
+			int size;
+			if (!App->fs->OpenRead(std::string(event.fileEvent.file) + ".meta", &metaBuffer, size))
+			{
+				//This file has not a .meta, so it is not a resource.
+				return;
+			}
+
 			if (ext == ".fbx" || ext == ".FBX")
 			{
 				//Delete all their meshes and the .meta
 
-				char* metaBuffer;
-				int size;
-				if (App->fs->OpenRead(std::string(event.fileEvent.file) + ".meta", &metaBuffer, size))
-				{
-					char* cursor = metaBuffer;
-					uint numGameObjects;
+				char* cursor = metaBuffer;
+				uint numGameObjects;
 					
-					uint bytes = sizeof(uint);
-					memcpy(&numGameObjects, cursor, bytes);
+				uint bytes = sizeof(uint);
+				memcpy(&numGameObjects, cursor, bytes);
+				cursor += bytes;
+
+				for (int i = 0; i < numGameObjects; ++i)
+				{
+					cursor += 100; //Skip the name
+					bytes = sizeof(UID);
+					cursor += bytes * 2; //Skip your and your parent's UID
+
+					bytes = sizeof(float3) * 2 + sizeof(Quat); 
+					cursor += bytes; //Skip the transformation
+
+					bytes = sizeof(UID);
+
+					uint meshUID;
+					memcpy(&meshUID, cursor, bytes); //Obtain your mesh UID
 					cursor += bytes;
 
-					for (int i = 0; i < numGameObjects; ++i)
-					{
-						cursor += 100; //Skip the name
-						bytes = sizeof(UID);
-						cursor += bytes * 2; //Skip your and your parent's UID
-
-						bytes = sizeof(float3) * 2 + sizeof(Quat); 
-						cursor += bytes; //Skip the transformation
-
-						bytes = sizeof(UID);
-
-						uint meshUID;
-						memcpy(&meshUID, cursor, bytes); //Obtain your mesh UID
-						cursor += bytes;
-
-						uint textureUID;
-						memcpy(&textureUID, cursor, bytes); //Obtain your texture UID
-						cursor += bytes;
+					uint textureUID;
+					memcpy(&textureUID, cursor, bytes); //Obtain your texture UID
+					cursor += bytes;
 						
-						if (meshUID != 0 && resources.find(meshUID) != resources.end()) //If this gameObject has a non-deleted mesh referenced
-						{						
-							//Delete the resource
-							App->fs->deleteFile(MESHES_LIBRARY_FOLDER + std::to_string(meshUID) + MESHES_EXTENSION);
-							Resource* meshResource = resources.at(meshUID);
-							resources.erase(meshUID);
-							delete meshResource;
+					if (meshUID != 0 && resources.find(meshUID) != resources.end()) //If this gameObject has a non-deleted mesh referenced
+					{						
+						//Delete the resource
+						App->fs->deleteFile(MESHES_LIBRARY_FOLDER + std::to_string(meshUID) + MESHES_EXTENSION);
+						Resource* meshResource = resources.at(meshUID);
+						resources.erase(meshUID);
+						delete meshResource;
 
-							//Alert all the references to stop usign this deleted resource
-							Event event;
-							event.resEvent.type = EventType::RESOURCE_DESTROYED;
-							event.resEvent.resource = meshResource;
-						}
-
-						//NOTE: Due to the way assimp manages fbx, their textures original files have to be always on disk, in order to detect file modification and being able of re-export the fbx. 
-						//We consider their relationship as a reference, so this .meta only says which texture are their gameObjects relating to. 
-						//As this texture is not part of this fbx, we won't delete it and will remain on disk.
-
-						/*if (textureUID != 0 && resources.find(textureUID) != resources.end()) //If this gameObject has a non-deleted texture referenced
-						{
-							//Delete the resource
-							App->fs->deleteFile(TEXTURES_LIBRARY_FOLDER + std::to_string(textureUID) + TEXTURES_EXTENSION);
-							Resource* textureResource = resources.at(textureUID);
-							resources.erase(textureUID);
-							delete textureResource;
-							//NOTE: If this fbx was dropped here
-						}*/		
+						//Alert all the references to stop usign this deleted resource
+						Event event;
+						event.resEvent.type = EventType::RESOURCE_DESTROYED;
+						event.resEvent.resource = meshResource;
 					}
 
-					delete metaBuffer;
-					App->fs->deleteFile(std::string(event.fileEvent.file) + ".meta");
+					//NOTE: Due to the way assimp manages fbx, their textures original files have to be always on disk, in order to detect file modification and being able of re-export the fbx. 
+					//We consider their relationship as a reference, so this .meta only says which texture are their gameObjects relating to. 
+					//As this texture is not part of this fbx, we won't delete it and will remain on disk.
+
+					/*if (textureUID != 0 && resources.find(textureUID) != resources.end()) //If this gameObject has a non-deleted texture referenced
+					{
+						//Delete the resource
+						App->fs->deleteFile(TEXTURES_LIBRARY_FOLDER + std::to_string(textureUID) + TEXTURES_EXTENSION);
+						Resource* textureResource = resources.at(textureUID);
+						resources.erase(textureUID);
+						delete textureResource;
+						//NOTE: If this fbx was dropped here
+					}*/		
 				}
 			}
 			else
@@ -308,14 +314,73 @@ void ResourceManager::ReceiveEvent(Event event)
 		}
 		case EventType::FILE_MOVED:
 		{
-			//TODO: DUPLICATE THE BEHAVIOR IN LIBRARY?
-			Resource* toUpdate = FindByFile((char*)event.fileEvent.oldLocation);
-			if(toUpdate)
-				toUpdate->setFile((char*)event.fileEvent.file);
+			//Get the .meta and move it to the new location. Also, get the moved resource and update its file address.
+			std::string oldLocation = event.fileEvent.oldLocation;
+			std::string newLocation = event.fileEvent.file;
+
+			std::string ext = App->fs->getExt(newLocation);
+
+			char* metaBuffer;
+			int size;
+
+			if (!App->fs->OpenRead(oldLocation + ".meta", &metaBuffer, size))
+			{
+				//Couldn't find the .meta
+				return;
+			}
+
+			if (ext == ".fbx" || ext == ".FBX")
+			{
+				//Get all the mesh resources contained in the fbx and relocate their filePaths
+
+				char* cursor = metaBuffer;
+				uint numGameObjects;
+
+				uint bytes = sizeof(uint);
+				memcpy(&numGameObjects, cursor, bytes);
+				cursor += bytes;
+
+				for (int i = 0; i < numGameObjects; ++i)
+				{
+					cursor += 100; //Skip the name
+					bytes = sizeof(UID);
+					cursor += bytes * 2; //Skip your and your parent's UID
+
+					bytes = sizeof(float3) * 2 + sizeof(Quat);
+					cursor += bytes; //Skip the transformation
+
+					bytes = sizeof(UID);
+
+					uint meshUID;
+					memcpy(&meshUID, cursor, bytes); //Obtain your mesh UID
+					cursor += bytes;
+
+					uint textureUID;
+					memcpy(&textureUID, cursor, bytes); //Obtain your texture UID
+					cursor += bytes;
+
+					if (meshUID != 0 && resources.find(meshUID) != resources.end()) //If this gameObject has a mesh referenced
+					{
+						ResourceMesh* meshRes = (ResourceMesh*)resources.at(meshUID);
+						meshRes->setFile((char*)std::string(newLocation + "/" + meshRes->meshName).data());
+					}
+				}
+			}
+			else if (App->textures->isSupported(ext))
+			{
+				ResourceTexture* textureRes = (ResourceTexture*)FindByFile((char*)oldLocation.data());
+				textureRes->setFile((char*)newLocation.data());
+			}
+			delete metaBuffer;
+			
+			//Move the .meta file
+			App->fs->MoveFileInto(oldLocation + ".meta", newLocation + ".meta");
+
 			break;
 		}
 		case EventType::FILE_MODIFIED:
 		{
+			//Rexport all the asociated resources
 			break;
 		}
 	}
