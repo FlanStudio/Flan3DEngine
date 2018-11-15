@@ -286,7 +286,24 @@ void ResourceManager::ReceiveEvent(Event event)
 		}
 		case EventType::FILE_CREATED:
 		{
-			//TODO: CHECK THE FORMAT AND EXPORT IN OUR BINARY ONE. STORE IT IN THE RESOURCES MAP.
+			//Check the format and export the file in our binary one. Store the loaded resources into the resources map.
+
+			std::string file = event.fileEvent.file;
+			std::string ext = App->fs->getExt(file);
+
+			if (ext == ".fbx" || ext == ".FBX")
+			{
+				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX(file);
+				for (int j = 0; j < exportedRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+				}
+			}
+			else if (App->textures->isSupported(ext))
+			{
+				ResourceTexture* textureRes = App->textures->ExportResource(file);
+				resources.insert(std::pair<UID, Resource*>(textureRes->getUUID(), textureRes));
+			}
 			break;
 		}
 		case EventType::FILE_MOVED:
