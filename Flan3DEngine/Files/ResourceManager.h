@@ -27,6 +27,7 @@ private:
 	void deleteEvent(Event event);
 	void createEvent(Event event);
 	void moveEvent(Event event);
+	void checkDroppedFiles();
 private:
 	std::map<UID, Resource*> resources;
 };

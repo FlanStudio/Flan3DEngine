@@ -84,9 +84,12 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 	ret = ExportFBX(file, metaBuffer, metaSize);
 
-	//Save the stored hierarchy in a .meta file
-	App->fs->OpenWriteBuffer(file + ".meta", metaBuffer, metaSize);
-	delete metaBuffer;
+	if (!ret.empty())
+	{
+		//Save the stored hierarchy in a .meta file
+		if (App->fs->OpenWriteBuffer(file + ".meta", metaBuffer, metaSize))
+			delete metaBuffer;
+	}
 
 	return ret;
 }
@@ -408,6 +411,75 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& m
 	return ret;
 }
 
+void FBXExporter::CopyFBXTexturesInto(const std::string& origin, const std::string& dest) const
+{
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead(origin, &buffer, size))
+	{
+		return;
+	}
+
+	const aiScene* scene = aiImportFileFromMemory(buffer, size, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+	if (!scene || !scene->HasMeshes())
+	{
+		delete buffer;
+		return;
+	}
+
+	if (scene->HasMaterials())
+	{
+		for (int i = 0; i < scene->mNumMaterials; ++i)
+		{
+			std::string texturePath;
+			aiMaterial* assimpMat = scene->mMaterials[i];
+			if (assimpMat)
+			{
+				aiString aiPath;
+				assimpMat->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &aiPath);
+				texturePath = aiPath.C_Str();
+			}
+			
+			if (!texturePath.empty())
+			{
+				//Normalize the path
+				while (texturePath.find_first_of("\\") != std::string::npos) /*First of \ */
+				{
+					uint pos = texturePath.find_first_of("\\");
+					texturePath.replace(pos, 1, "/");
+				}
+
+				//Manage ".."
+
+				uint lastPos = origin.find_last_of("/");
+				std::string path = origin.substr(0, lastPos + 1);
+
+				bool prevDirFound = texturePath.find("..") != std::string::npos;
+
+				if (prevDirFound)
+				{
+					//Delete "lastDir/" from the fbx path and "../" from the texturePath
+					uint lastSlashPos = path.find_last_of("/");
+					path.erase(lastSlashPos);
+					lastSlashPos = path.find_last_of("/");
+					path.replace(lastSlashPos + 1, std::string::npos, "");
+
+					uint texturePos = texturePath.find("..");
+					texturePath.replace(texturePos, 3, "");
+				}
+
+				texturePath.insert(0, path);
+			}
+			std::string fileName = texturePath.substr(texturePath.find_last_of("/") + 1);
+			//Check if the texture hasn´t been already added into the new location
+			if (!App->fs->Exists(dest + fileName))
+			{
+				App->fs->CopyExternalFileInto("Exception/" + fileName, dest);
+			}			
+			
+		}
+	}
+}
 
 std::vector<const aiNode*> FBXExporter::decomposeAssimpHierarchy(const aiNode* rootNode) const
 {

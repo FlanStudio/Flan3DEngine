@@ -24,7 +24,9 @@ bool ResourceManager::Start()
 
 	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
 	
-	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black)
+	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black);
+
+	//TODO: BEFORE EXPORTING FILES CHECK IF THERE IS ALREADY A .meta. IF SO, CREATE THE RESOURCE WITHOUT EXPORTING
 
 	std::vector<std::string> fullPaths;
 	App->fs->getFilesPath(fullPaths);
@@ -95,93 +97,7 @@ bool ResourceManager::CleanUp()
 
 update_status ResourceManager::PreUpdate()
 {
-	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
-	std::string dropped = App->input->getFileDropped();
-	if (!dropped.empty())
-	{
-		//Manage imports here, check if the file has already been imported	
-		std::string extension = App->fs->getExt(dropped);
-		if (!extension.empty())
-		{
-			if (extension == ".fbx" || extension == ".FBX")
-			{
-				uint fileNamePos = dropped.find_last_of("/");
-				std::string directory = dropped.substr(0, fileNamePos + 1);
-				std::string fileName = dropped.substr(fileNamePos + 1);
-
-				App->fs->UpdateAssetsDir();
-
-				std::vector<std::string> files;
-				App->fs->getFilesPath(files);
-
-				for (int i = 0; i < files.size(); ++i)
-				{
-					std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
-					if (assets_FileName == fileName)
-						return UPDATE_CONTINUE;
-				}
-
-				App->fs->BeginTempException(directory);
-				
-				char* metaBuffer;
-				uint metaSize;
-				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Exception/" + fileName, metaBuffer, metaSize);
-				for (int j = 0; j < exportedRes.size(); ++j)
-				{
-					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
-				}
-
-				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
-				
-				App->fs->OpenWriteBuffer("Assets/meshes/" + fileName + ".meta", metaBuffer, metaSize);
-
-				App->fs->EndTempException();
-			}
-			else
-			{
-				if(App->textures->isSupported(extension))
-				{				
-					//Check if this texture is already in Assets
-
-					uint fileNamePos = dropped.find_last_of("/");
-					std::string directory = dropped.substr(0, fileNamePos + 1);
-					std::string fileName = dropped.substr(fileNamePos + 1);
-
-					App->fs->UpdateAssetsDir();
-
-					std::vector<std::string> files;
-					App->fs->getFilesPath(files);
-
-					for (int i = 0; i < files.size(); ++i)
-					{
-						std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
-						if (assets_FileName == fileName)
-							return UPDATE_CONTINUE;
-					}
-
-					//If not, copy it and export
-
-					App->fs->BeginTempException(directory);
-					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");
-					App->fs->EndTempException();
-
-					ResourceTexture* texture = App->textures->ExportResource("Assets/textures/" + fileName);
-					
-					resources.insert(std::pair<UID, Resource*>(texture->getUUID(), texture));
-
-					char* buffer;
-					uint size = sizeof(uint);
-					buffer = new char[size];
-					UID textureUID = texture->getUUID();
-					memcpy(buffer, &textureUID, size);
-
-					App->fs->OpenWriteBuffer("Assets/textures/" + fileName + ".meta", buffer, size);
-
-				}
-			}
-		}
-	}
-	
+	checkDroppedFiles();	
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -553,6 +469,99 @@ void ResourceManager::moveEvent(Event event)
 
 	//Move the .meta file
 	App->fs->MoveFileInto(oldLocation + ".meta", newLocation + ".meta");
+}
+
+void ResourceManager::checkDroppedFiles()
+{
+	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
+	std::string dropped = App->input->getFileDropped();
+	if (!dropped.empty())
+	{
+		//Manage imports here, check if the file has already been imported	
+		std::string extension = App->fs->getExt(dropped);
+		if (!extension.empty())
+		{
+			if (extension == ".fbx" || extension == ".FBX")
+			{
+				//Check if the fbx has been already added to assets
+				uint fileNamePos = dropped.find_last_of("/");
+				std::string directory = dropped.substr(0, fileNamePos + 1);
+				std::string fileName = dropped.substr(fileNamePos + 1);
+
+				App->fs->UpdateAssetsDir();
+
+				std::vector<std::string> files;
+				App->fs->getFilesPath(files);
+
+				for (int i = 0; i < files.size(); ++i)
+				{
+					std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+					if (assets_FileName == fileName)
+						return;
+
+					//TODO: Maybe update the file if it is an updated version of the previous stored fbx?
+				}
+
+				App->fs->BeginTempException(directory);
+				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
+				App->fbxexporter->CopyFBXTexturesInto("Exception/" + fileName, "Assets/Textures/");
+				char* metaBuffer;
+				uint metaSize;
+				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Assets/meshes/" + fileName, metaBuffer, metaSize);
+				for (int j = 0; j < exportedRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+				}
+				App->fs->OpenWriteBuffer("Assets/meshes/" + fileName + ".meta", metaBuffer, metaSize);
+				delete metaBuffer;
+
+				App->fs->EndTempException();
+			}
+			else
+			{
+				if (App->textures->isSupported(extension))
+				{
+					//Check if this texture is already in Assets
+
+					uint fileNamePos = dropped.find_last_of("/");
+					std::string directory = dropped.substr(0, fileNamePos + 1);
+					std::string fileName = dropped.substr(fileNamePos + 1);
+
+					App->fs->UpdateAssetsDir();
+
+					std::vector<std::string> files;
+					App->fs->getFilesPath(files);
+
+					for (int i = 0; i < files.size(); ++i)
+					{
+						std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+						if (assets_FileName == fileName)
+							return;
+					}
+
+					//If not, copy it and export
+					//TODO: Maybe check if this is an updated version of the previously stored texture?
+
+					App->fs->BeginTempException(directory);
+					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");
+					App->fs->EndTempException();
+
+					ResourceTexture* texture = App->textures->ExportResource("Assets/textures/" + fileName);
+
+					resources.insert(std::pair<UID, Resource*>(texture->getUUID(), texture));
+
+					char* buffer;
+					uint size = sizeof(uint);
+					buffer = new char[size];
+					UID textureUID = texture->getUUID();
+					memcpy(buffer, &textureUID, size);
+
+					App->fs->OpenWriteBuffer("Assets/textures/" + fileName + ".meta", buffer, size);
+
+				}
+			}
+		}
+	}
 }
 
 uint Resource::amountReferences() const
