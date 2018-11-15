@@ -24,6 +24,10 @@ public:
 	void InstanciateFBX(const std::string& path) const;
 
 private:
+	void deleteEvent(Event event);
+	void createEvent(Event event);
+	void moveEvent(Event event);
+private:
 	std::map<UID, Resource*> resources;
 };
 #endif
