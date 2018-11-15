@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 class GameObject;
+class Resource;
 
 struct FileSystemEvent
 {
@@ -25,6 +26,13 @@ struct GameObjectEvent
 	GameObject* gameObject;
 };
 
+struct ResourceEvent
+{
+	uint32_t type;
+	Resource* resource;
+};
+
+
 enum EventType
 {
 	INVALID_TYPE = 0,
@@ -43,7 +51,10 @@ enum EventType
 	STEP,
 
 	//GameObject Events
-	GO_DESTROYED = 0x300
+	GO_DESTROYED = 0x300,
+
+	//Resources Events
+	RESOURCE_DESTROYED = 0x400
 };
 
 union Event
@@ -52,6 +63,7 @@ union Event
 	FileSystemEvent fileEvent;
 	TimeEvent timeEvent;
 	GameObjectEvent goEvent;
+	ResourceEvent resEvent;
 };
 
 

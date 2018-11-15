@@ -432,6 +432,11 @@ bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& e
 	return true;
 }
 
+bool ModuleFileSystem::deleteFile(const std::string& filePath) const
+{
+	return PHYSFS_delete(filePath.c_str()) != 0;
+}
+
 void ModuleFileSystem::BeginTempException(std::string directory)
 {
 	if (tempException.empty())

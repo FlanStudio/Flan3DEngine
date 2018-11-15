@@ -66,6 +66,7 @@ public:
 	bool deleteDirectory(const std::string& directory) const;
 	bool emptyDirectory(const std::string& directory) const;
 	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
+	bool deleteFile(const std::string& filePath) const;
 
 	void BeginTempException(std::string directory);
 	void EndTempException();
