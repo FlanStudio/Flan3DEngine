@@ -99,7 +99,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 			center = selected->boundingBox.CenterPoint();
 			float3 dir = (editorCamera->transform->position - center).Normalized();
 
-			double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+			double sin = Sin(min(editorCamComponent->width / editorCamComponent->height, editorCamComponent->horizontalFOV) * 0.5);
 			orbitalRadius = ((selected->boundingBox.Size().MaxElement()) / sin);
 
 			editorCamera->transform->position = (center + dir * orbitalRadius);
@@ -117,7 +117,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 				center = sceneBB.CenterPoint();
 				float3 dir = (editorCamera->transform->position - center).Normalized();
 
-				double sin = Sin(min(SCREEN_WIDTH / SCREEN_HEIGHT, 60.0f * DEGTORAD) * 0.5);
+				double sin = Sin(min(editorCamComponent->width / editorCamComponent->height, editorCamComponent->horizontalFOV) * 0.5);
 				orbitalRadius = ((sceneBB.Size().MaxElement()) / sin);
 
 				editorCamera->transform->position = (center + dir * orbitalRadius);
