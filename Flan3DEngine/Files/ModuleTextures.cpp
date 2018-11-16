@@ -165,8 +165,6 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 	text->setFile((char*) file.data());
 	text->data_rgba = new unsigned char[text->width * text->height * 4];
 	memcpy(text->data_rgba, ilGetData(), text->width * text->height * 4);
-
-	textures.push_back(text);
 	
 	ILuint savedSize;
 	ILubyte* savedBuffer = nullptr;

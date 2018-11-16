@@ -10,6 +10,52 @@ ResourceTexture::~ResourceTexture()
 	}
 }
 
+void ResourceTexture::SerializeToMeta(char*& cursor) const
+{
+	uint bytes = sizeof(UID);
+	memcpy(cursor, &uuid, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &width, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &height, bytes);
+	cursor += bytes;
+
+	bytes = width * height * 4;
+	memcpy(cursor, data_rgba, bytes);
+	cursor += bytes;
+}
+
+void ResourceTexture::DeSerializeFromMeta(char*& cursor)
+{
+	uint bytes = sizeof(UID);
+	memcpy(&uuid, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&width, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&height, cursor, bytes);
+	cursor += bytes;
+
+	bytes = width * height * 4;
+
+	if (data_rgba)
+		delete data_rgba;
+
+	data_rgba = new unsigned char[bytes];
+	memcpy(data_rgba, cursor, bytes);
+	cursor += bytes;
+}
+
+uint ResourceTexture::bytesToSerializeMeta() const
+{
+	return sizeof(UID) + sizeof(uint) * 2 + width * height * 4;
+}
+
 bool ResourceTexture::LoadToMemory()
 {
 	//Create an OpenGL texture and initialize it with the active Image data

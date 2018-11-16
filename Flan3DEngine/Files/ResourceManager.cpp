@@ -40,7 +40,7 @@ bool ResourceManager::Start()
 			continue;
 
 		//Check if a .meta already exist	
-		if(0/*App->fs->Exists(fullPaths[i] + ".meta")*/)
+		if(App->fs->Exists(fullPaths[i] + ".meta"))
 		{
 			char* metaBuffer;
 			int size;
@@ -48,15 +48,16 @@ bool ResourceManager::Start()
 			{
 				if(App->textures->isSupported(extension))
 				{
+					char* cursor = metaBuffer;
+
 					UID resourceUID;
 					memcpy(&resourceUID, metaBuffer, sizeof(UID));
 
 					ResourceTexture* textureRes = new ResourceTexture;
-					textureRes->setUID(resourceUID);
+					textureRes->DeSerializeFromMeta(cursor);
+					
 					textureRes->setFile((char*)fullPaths[i].data());
 					textureRes->setExportedFile((char*)std::string(TEXTURES_LIBRARY_FOLDER + std::string("/") + std::to_string(resourceUID) + TEXTURES_EXTENSION).data());
-
-					//TODO: SAVE THE DATA IN ORDER TO LOAD IT TO THE VRAM WHEN REQUIRED
 
 					resources.insert(std::pair<UID, Resource*>(resourceUID, textureRes));
 				}
@@ -79,13 +80,12 @@ bool ResourceManager::Start()
 
 					//Save a .meta to link both files through the UID
 					char* buffer;
-					uint size = 0;
-					size += sizeof(UID);
-
+					uint size = textureR->bytesToSerializeMeta();
+					
 					buffer = new char[size];
-					UID uid = textureR->getUUID();
-					memcpy(buffer, &uid, size);
+					char* cursor = buffer;
 
+					textureR->SerializeToMeta(cursor);
 					App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
 				}			
 			}
@@ -94,8 +94,7 @@ bool ResourceManager::Start()
 				continue; //Let the fbx to the end so all the other resources can be loaded first
 			}
 			//TODO: Materials, audio, animations, etc?
-		}
-		
+		}	
 	}
 
 	for (int i = 0; i < fullPaths.size(); ++i)

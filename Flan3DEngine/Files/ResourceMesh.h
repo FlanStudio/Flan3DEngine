@@ -18,7 +18,7 @@ public:
 	void drawNormals();
 
 	void Serialize(char*& cursor) const;
-	void DeSerialize(char*& cursor, uint normalLenght);
+	void DeSerialize(char*& cursor);
 
 	uint getBytes() const;
 

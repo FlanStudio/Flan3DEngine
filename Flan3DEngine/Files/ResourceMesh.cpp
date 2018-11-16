@@ -275,7 +275,7 @@ void ResourceMesh::Serialize(char*& cursor) const
 	}
 }
 
-void ResourceMesh::DeSerialize(char *& cursor, uint normalLenght)
+void ResourceMesh::DeSerialize(char *& cursor)
 {
 	uint bytes = sizeof(uint);
 

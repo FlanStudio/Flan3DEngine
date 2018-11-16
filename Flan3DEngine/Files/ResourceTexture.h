@@ -7,8 +7,16 @@ class ResourceTexture : public Resource
 {
 public:
 	ResourceTexture() : Resource(ResourceType::TEXTURE) {}
-	virtual ~ResourceTexture();
+	virtual ~ResourceTexture();	
 
+	void SerializeToMeta(char*& cursor) const;
+	void DeSerializeFromMeta(char*& cursor);
+	uint bytesToSerializeMeta() const;
+private:
+	bool LoadToMemory() override;
+	bool UnLoadFromMemory() override;
+
+public:
 	//OpenGL id
 	uint id = 0;
 
@@ -17,13 +25,7 @@ public:
 
 	unsigned char* data_rgba = nullptr;
 
-
-private:
-	bool LoadToMemory() override;
-	bool UnLoadFromMemory() override;
-
-private:
-
+private:	
 	uint getBytes() const;
 };
 
