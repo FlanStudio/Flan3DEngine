@@ -8,6 +8,12 @@ ResourceTexture::~ResourceTexture()
 	{
 		glDeleteTextures(1, &id);
 	}
+
+	if (data_rgba)
+	{
+		delete data_rgba;
+		data_rgba = nullptr;
+	}
 }
 
 void ResourceTexture::SerializeToMeta(char*& cursor) const
