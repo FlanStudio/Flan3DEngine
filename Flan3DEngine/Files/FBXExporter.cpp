@@ -410,20 +410,22 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& m
 	return ret;
 }
 
-void FBXExporter::CopyFBXTexturesInto(const std::string& origin, const std::string& dest) const
+std::vector<Resource*> FBXExporter::CopyAndExportFBXTexturesInto(const std::string& origin, const std::string& dest) const
 {
+	std::vector<Resource*> ret;
+
 	char* buffer;
 	int size;
 	if (!App->fs->OpenRead(origin, &buffer, size))
 	{
-		return;
+		return ret;
 	}
 
 	const aiScene* scene = aiImportFileFromMemory(buffer, size, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
 	if (!scene || !scene->HasMeshes())
 	{
 		delete buffer;
-		return;
+		return ret;
 	}
 
 	if (scene->HasMaterials())
@@ -474,10 +476,27 @@ void FBXExporter::CopyFBXTexturesInto(const std::string& origin, const std::stri
 			if (!App->fs->Exists(dest + fileName))
 			{
 				App->fs->CopyExternalFileInto("Exception/" + fileName, dest);
-			}			
-			
+
+				//Load the resource
+				ResourceTexture* texture = App->textures->ExportResource(dest + fileName);
+
+				//Export the resource
+				char* textureMeta;
+				uint textureMetaSize = texture->bytesToSerializeMeta();
+
+				textureMeta = new char[textureMetaSize];
+
+				char* cursor = textureMeta;
+				texture->SerializeToMeta(cursor);
+
+				App->fs->OpenWriteBuffer(dest + fileName + ".meta", textureMeta, textureMetaSize);
+
+				ret.push_back(texture);
+			}		
 		}
 	}
+
+	return ret;
 }
 
 std::vector<Resource*> FBXExporter::ImportFromMeta(char*& cursor) const

@@ -450,7 +450,12 @@ void ResourceManager::checkDroppedFiles()
 
 				App->fs->BeginTempException(directory);
 				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
-				App->fbxexporter->CopyFBXTexturesInto("Exception/" + fileName, "Assets/Textures/");
+				std::vector<Resource*> textureRes = App->fbxexporter->CopyAndExportFBXTexturesInto("Exception/" + fileName, "Assets/Textures/");
+				for (int j = 0; j < textureRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(textureRes[j]->getUUID(), textureRes[j]));
+				}
+
 				char* metaBuffer;
 				uint metaSize;
 				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Assets/meshes/" + fileName, metaBuffer, metaSize);
