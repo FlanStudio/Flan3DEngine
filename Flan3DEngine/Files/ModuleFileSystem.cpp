@@ -43,20 +43,36 @@ bool ModuleFileSystem::Init()
 
 	char* buffer;
 	int size;
-	if(OpenRead("Saves/lastAssetsState.fl", &buffer, size))
+
+	if (!Exists("Library/Meshes")) //If you have library empty then rexport everything
 	{
-		Directory newDirectory;
-		char* cursor = buffer;
-		AssetsDirSystem.DeSerialize(cursor);
+		std::string prevWriteDir = PHYSFS_getWriteDir();
 
-		newDirectory = getDirFiles("Assets");
+		std::string userPath = PHYSFS_getPrefDir(App->organization.data(), App->engineName.data());
+		setWriteDir((char*)userPath.data());
 
-		if (newDirectory != AssetsDirSystem)
+		deleteFile("lastAssetsState.fl");
+
+		setWriteDir((char*)prevWriteDir.data());
+	}		
+
+	if(Exists("Saves/lastAssetsState.fl"))	
+	{
+		if(OpenRead("Saves/lastAssetsState.fl", &buffer, size))
 		{
-			SendEvents(newDirectory);
-		}
+			Directory newDirectory;
+			char* cursor = buffer;
+			AssetsDirSystem.DeSerialize(cursor);
 
-		delete buffer;
+			newDirectory = getDirFiles("Assets");
+
+			if (newDirectory != AssetsDirSystem)
+			{
+				SendEvents(newDirectory);
+			}
+
+			delete buffer;
+		}		
 	}
 	else
 	{		

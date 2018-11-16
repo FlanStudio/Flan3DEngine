@@ -235,33 +235,36 @@ bool Application::LoadNow()
 
 	char* buf;
 	int size;
-	if (fs->OpenRead(SETTINGS_FOLDER + std::string("settings.json"), &buf, size))
+	if (App->fs->Exists(SETTINGS_FOLDER + std::string("settings.json"))) 
 	{
-		JSON_Value* root = json_parse_string(buf);
-		JSON_Object* rootObj = json_value_get_object(root);
-
-		JSON_Object* AppObj = json_object_get_object(rootObj, "Application");
-		if (AppObj)
+		if (fs->OpenRead(SETTINGS_FOLDER + std::string("settings.json"), &buf, size))
 		{
-			maxFPS = json_object_get_number(AppObj, "maxFPS");
-			engineName = json_object_get_string(AppObj, "engineName");
-			organization = json_object_get_string(AppObj, "organization");
-		}
-		else
-			ret = false;
+			JSON_Value* root = json_parse_string(buf);
+			JSON_Object* rootObj = json_value_get_object(root);
 
-		std::list<Module*>::iterator it;
-		for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
-		{
-			char* name = (char*)(*it)->getName();
-
-			JSON_Object* itObj = json_object_get_object(rootObj, name);
-			if (itObj)
-				(*it)->Load(itObj);
+			JSON_Object* AppObj = json_object_get_object(rootObj, "Application");
+			if (AppObj)
+			{
+				maxFPS = json_object_get_number(AppObj, "maxFPS");
+				engineName = json_object_get_string(AppObj, "engineName");
+				organization = json_object_get_string(AppObj, "organization");
+			}
 			else
 				ret = false;
-		}
-		delete[] buf;
+
+			std::list<Module*>::iterator it;
+			for (it = list_modules.begin(); it != list_modules.end() && ret; ++it)
+			{
+				char* name = (char*)(*it)->getName();
+
+				JSON_Object* itObj = json_object_get_object(rootObj, name);
+				if (itObj)
+					(*it)->Load(itObj);
+				else
+					ret = false;
+			}
+			delete[] buf;
+		}		
 	}
 	else
 	{
