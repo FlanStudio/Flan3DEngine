@@ -15,7 +15,15 @@ public:
 	uint width = 0;
 	uint height = 0;
 
+	unsigned char* data_rgba = nullptr;
+
+
 private:
+	bool LoadToMemory() override;
+	bool UnLoadFromMemory() override;
+
+private:
+
 	uint getBytes() const;
 };
 

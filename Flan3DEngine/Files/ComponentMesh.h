@@ -22,9 +22,6 @@ public:
 public:
 	void updateGameObjectAABB();
 
-	void genBuffers();
-	void destroyBuffers();
-
 	//Call mesh->drawNormals
 	void drawNormals();
 

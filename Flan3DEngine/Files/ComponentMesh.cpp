@@ -10,15 +10,8 @@
 
 ComponentMesh::~ComponentMesh()
 {
-}
-
-void ComponentMesh::genBuffers()
-{
-}
-
-void ComponentMesh::destroyBuffers()
-{
-	
+	if (mesh)
+		mesh->deReferenced();
 }
 
 void ComponentMesh::Draw()
@@ -225,4 +218,6 @@ void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 	cursor += bytes;
 
 	mesh = (ResourceMesh*)App->resources->Get(meshUID);
+	if (mesh)
+		mesh->Referenced();
 }

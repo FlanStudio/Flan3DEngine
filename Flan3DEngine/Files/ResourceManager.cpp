@@ -39,28 +39,63 @@ bool ResourceManager::Start()
 		if (extension.empty())
 			continue;
 
-		if (App->textures->isSupported(extension))
+		//Check if a .meta already exist	
+		if(0/*App->fs->Exists(fullPaths[i] + ".meta")*/)
 		{
-			//Its a texture. Call Texture Exporter and save a .dds file in library
-			ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
-			resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
+			char* metaBuffer;
+			int size;
+			if (App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, size))
+			{
+				if(App->textures->isSupported(extension))
+				{
+					UID resourceUID;
+					memcpy(&resourceUID, metaBuffer, sizeof(UID));
 
-			//Save a .meta to link both files through the UID
-			char* buffer;
-			uint size = 0;
-			size += sizeof(UID);
+					ResourceTexture* textureRes = new ResourceTexture;
+					textureRes->setUID(resourceUID);
+					textureRes->setFile((char*)fullPaths[i].data());
+					textureRes->setExportedFile((char*)std::string(TEXTURES_LIBRARY_FOLDER + std::string("/") + std::to_string(resourceUID) + TEXTURES_EXTENSION).data());
 
-			buffer = new char[size];
-			UID uid = textureR->getUUID();
-			memcpy(buffer, &uid, size);
+					//TODO: SAVE THE DATA IN ORDER TO LOAD IT TO THE VRAM WHEN REQUIRED
 
-			App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
+					resources.insert(std::pair<UID, Resource*>(resourceUID, textureRes));
+				}
+				else if (extension == ".fbx" || extension == ".FBX")
+				{
+
+				}
+				delete metaBuffer;
+			}
 		}
-		else if (extension == ".fbx" || extension == ".FBX")
+		else //Export the file
 		{
-			continue; //Let the fbx to the end so all the other resources can be loaded first
+			if (App->textures->isSupported(extension))
+			{
+				//Its a texture. Call Texture Exporter and save a .dds file in library
+				ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
+				if (textureR)
+				{
+					resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
+
+					//Save a .meta to link both files through the UID
+					char* buffer;
+					uint size = 0;
+					size += sizeof(UID);
+
+					buffer = new char[size];
+					UID uid = textureR->getUUID();
+					memcpy(buffer, &uid, size);
+
+					App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
+				}			
+			}
+			else if (extension == ".fbx" || extension == ".FBX")
+			{
+				continue; //Let the fbx to the end so all the other resources can be loaded first
+			}
+			//TODO: Materials, audio, animations, etc?
 		}
-		//TODO: Materials, audio, animations, etc?
+		
 	}
 
 	for (int i = 0; i < fullPaths.size(); ++i)
@@ -242,6 +277,8 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 		{
 			ComponentMesh* meshComp = (ComponentMesh*)gameObject->CreateComponent(ComponentType::MESH);
 			meshComp->mesh = (ResourceMesh*)resources.at(meshUID);
+			if (meshComp->mesh)
+				meshComp->mesh->Referenced();
 		}
 
 		UID textureUID = gos[j].textureUID;
@@ -249,6 +286,8 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 		{
 			ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
 			matComp->texture = (ResourceTexture*)resources.at(textureUID);
+			if (matComp->texture)
+				matComp->texture->Referenced();
 		}
 
 		gameObject->name = gos[j].name;
@@ -562,14 +601,4 @@ void ResourceManager::checkDroppedFiles()
 			}
 		}
 	}
-}
-
-uint Resource::amountReferences() const
-{
-	return 0;
-}
-
-bool Resource::LoadToMemory()
-{
-	return true;
 }

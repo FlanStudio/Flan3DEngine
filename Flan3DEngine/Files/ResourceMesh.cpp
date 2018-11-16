@@ -147,10 +147,6 @@ void ResourceMesh::drawNormals()
 	}
 }
 
-void ResourceMesh::updateGameObjectAABB()
-{
-}
-
 uint ResourceMesh::getBytes() const
 {
 	return sizeof(ResourceMesh);
@@ -205,6 +201,18 @@ void ResourceMesh::genNormalLines(uint lenght)
 		normalLines[i * 6 + 4] = normals[i * 3 + 1] * lenght + normalLines[i * 6 + 1];		//y
 		normalLines[i * 6 + 5] = normals[i * 3 + 2] * lenght + normalLines[i * 6 + 2];		//z
 	}
+}
+
+bool ResourceMesh::LoadToMemory()
+{
+	genBuffers();
+	return true;
+}
+
+bool ResourceMesh::UnLoadFromMemory()
+{
+	destroyBuffers();
+	return false;
 }
 
 void ResourceMesh::Serialize(char*& cursor) const
@@ -321,6 +329,4 @@ void ResourceMesh::DeSerialize(char *& cursor, uint normalLenght)
 		memcpy(textureCoords, cursor, bytes);
 		cursor += bytes;
 	}
-
-	genBuffers();
 }

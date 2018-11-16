@@ -352,6 +352,7 @@
     <ClCompile Include="Primitives\SpherePrim.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />

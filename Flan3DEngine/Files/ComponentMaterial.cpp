@@ -3,6 +3,12 @@
 #include "imgui/imgui_internal.h"
 #include "GameObject.h"
 
+ComponentMaterial::~ComponentMaterial()
+{
+	if (texture)
+		texture->deReferenced();
+}
+
 void ComponentMaterial::Serialize(char *& cursor) const
 {
 	uint bytes = sizeof(UID);
@@ -36,6 +42,9 @@ void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
 	cursor += bytes;
 
 	texture = (ResourceTexture*)App->resources->Get(textureUID);
+
+	if (texture)
+		texture->Referenced();
 
 	bytes = sizeof(ImVec4);
 	memcpy(&colorTint.x, cursor, bytes);
@@ -94,7 +103,8 @@ void ComponentMaterial::OnInspector()
 			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
 			if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
 			{
-				//TODO: Notify the resource that you don't need him anymore
+				if(texture)
+					texture->deReferenced();
 				texture = nullptr;
 				textureClicked = false;
 			}
@@ -116,7 +126,10 @@ void ComponentMaterial::OnInspector()
 					//Check for the mouse release and bind the resource here
 					if (ImGui::IsMouseReleased(0))
 					{
+						if (texture)
+							texture->deReferenced();
 						texture = (ResourceTexture*)resource;
+						texture->Referenced();
 					}
 				}
 			}
