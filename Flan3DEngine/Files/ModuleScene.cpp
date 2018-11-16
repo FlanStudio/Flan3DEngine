@@ -267,9 +267,12 @@ void ModuleScene::guiHierarchy()
 	ImGui::Dummy({ ImGui::GetWindowSize().x,  ImGui::GetWindowSize().y-40});
 	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 	{
-		GameObject* selected = getSelectedGO();
-		if (selected)
-			selected->selected = false;
+		if (selectedGO)
+		{
+			selectedGO->selected = false;
+			selectedGO = nullptr;
+		}
+			
 	}
 
 	//Drop on window to unparent a GameObject

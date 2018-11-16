@@ -480,6 +480,68 @@ void FBXExporter::CopyFBXTexturesInto(const std::string& origin, const std::stri
 	}
 }
 
+std::vector<Resource*> FBXExporter::ImportFromMeta(char*& cursor) const
+{
+	std::vector<Resource*> ret;
+
+	std::map<UID, Resource*> tempMap;
+
+	uint bytes = sizeof(uint);
+	uint numGameObjects;
+	memcpy(&numGameObjects, cursor, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numGameObjects; ++i)
+	{
+		cursor += 100; //Skip the name
+		cursor += sizeof(UID) * 2; //Skip your UID and your parent's one
+
+		cursor += sizeof(float3) * 2 + sizeof(Quat);
+
+		bytes = sizeof(UID);
+
+		UID meshUID, textureUID;
+
+		//Mesh / Texture UID
+		memcpy(&meshUID, cursor, bytes);
+		cursor += bytes;
+
+		memcpy(&textureUID, cursor, bytes);
+		cursor += bytes;
+
+		if (meshUID != 0)
+		{
+			if (tempMap.find(meshUID) == tempMap.end()) //This meshResource has not been created before
+			{
+				//Look for the mesh file
+				char* meshData;
+				int meshSize;
+				if(App->fs->OpenRead(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(meshUID) + MESHES_EXTENSION, &meshData, meshSize))
+				{
+					char* meshCursor = meshData;
+					ResourceMesh* meshRes = new ResourceMesh;
+					meshRes->DeSerialize(meshCursor);
+
+					tempMap.insert(std::pair<UID, Resource*>(meshUID, meshRes));
+					ret.push_back(meshRes);
+
+					meshRes->setExportedFile((char*)std::string(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(meshUID) + MESHES_EXTENSION).data());
+					meshRes->setFile((char*)std::string("LoadedFromMeta/" + meshRes->meshName).data());
+					meshRes->setUID(meshUID);
+
+					delete meshData;
+				}
+			}	
+		}
+		if(textureUID != 0)
+		{
+			//All the textures MUST be loaded before this call, so we skip this process
+		}
+	}
+
+	return ret;
+}
+
 std::vector<const aiNode*> FBXExporter::decomposeAssimpHierarchy(const aiNode* rootNode) const
 {
 	std::vector<const aiNode*> ret;

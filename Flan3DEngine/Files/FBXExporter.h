@@ -40,6 +40,7 @@ public:
 	std::vector<Resource*> ExportFBX(const std::string& file) const;
 	std::vector<Resource*> ExportFBX(const std::string& file, char*& metaBuffer, uint& metaSize) const;
 	void CopyFBXTexturesInto(const std::string& origin, const std::string& dest) const;
+	std::vector<Resource*> ImportFromMeta(char*& cursor) const;
 
 private:
 	std::vector<const aiNode*> decomposeAssimpHierarchy(const aiNode* rootNode) const;
