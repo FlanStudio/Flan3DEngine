@@ -105,7 +105,11 @@ void ModuleCamera3D::CameraInputs(float dt)
 			editorCamera->transform->position = (center + dir * orbitalRadius);
 			LookAt(selected->boundingBox.CenterPoint());
 		}
-		else if (!selected && App->scene->getRootNode() != nullptr)
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN)
+	{
+		if (App->scene->getRootNode() != nullptr)
 		{
 			AABB sceneBB = App->scene->getRootNode()->getAABBChildsEnclosed();
 			if (sceneBB.IsFinite())
@@ -121,7 +125,6 @@ void ModuleCamera3D::CameraInputs(float dt)
 			}
 		}
 	}
-
 
 	float speed = SPEED * dt;
 
