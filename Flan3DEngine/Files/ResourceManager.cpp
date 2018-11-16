@@ -24,66 +24,10 @@ bool ResourceManager::Start()
 
 	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
 	
-	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black)
+	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black);
 
-	std::vector<std::string> fullPaths;
-	App->fs->getFilesPath(fullPaths);
+	LoadResources();
 
-	for (int i = 0; i < fullPaths.size(); ++i)
-	{
-		//Detect the extension and call the right exporter
-		std::string extension = App->fs->getExt(fullPaths[i]);
-
-		if (extension.empty())
-			continue;
-
-		if (App->textures->isSupported(extension))
-		{
-			//Its a texture. Call Texture Exporter and save a .dds file in library
-			ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
-			resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
-
-			//Save a .meta to link both files through the UID
-			char* buffer;
-			uint size = 0;
-			size += sizeof(UID);
-
-			buffer = new char[size];
-			UID uid = textureR->getUUID();
-			memcpy(buffer, &uid, size);
-
-			App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
-		}
-		else if (extension == ".fbx" || extension == ".FBX")
-		{
-			continue; //Let the fbx to the end so all the other resources can be loaded first
-		}
-		//TODO: Materials, audio, animations, etc?
-	}
-
-	for (int i = 0; i < fullPaths.size(); ++i)
-	{
-		//Detect the extension and call the right exporter
-		std::string extension = App->fs->getExt(fullPaths[i]);
-
-		if (extension.empty())
-			continue;
-
-		if (extension == ".fbx" || extension == ".FBX")
-		{
-			//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
-			//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
-
-			//TODO: ANOTHER FBX USING THE SAME RESOURCES?
-
-			std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX(fullPaths[i]);
-			for (int j = 0; j < exportedRes.size(); ++j)
-			{
-				resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
-			}
-		}
-		//TODO: Materials, audio, animations, etc?
-	}
 	return true;
 }
 
@@ -95,93 +39,7 @@ bool ResourceManager::CleanUp()
 
 update_status ResourceManager::PreUpdate()
 {
-	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
-	std::string dropped = App->input->getFileDropped();
-	if (!dropped.empty())
-	{
-		//Manage imports here, check if the file has already been imported	
-		std::string extension = App->fs->getExt(dropped);
-		if (!extension.empty())
-		{
-			if (extension == ".fbx" || extension == ".FBX")
-			{
-				uint fileNamePos = dropped.find_last_of("/");
-				std::string directory = dropped.substr(0, fileNamePos + 1);
-				std::string fileName = dropped.substr(fileNamePos + 1);
-
-				App->fs->UpdateAssetsDir();
-
-				std::vector<std::string> files;
-				App->fs->getFilesPath(files);
-
-				for (int i = 0; i < files.size(); ++i)
-				{
-					std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
-					if (assets_FileName == fileName)
-						return UPDATE_CONTINUE;
-				}
-
-				App->fs->BeginTempException(directory);
-				
-				char* metaBuffer;
-				uint metaSize;
-				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Exception/" + fileName, metaBuffer, metaSize);
-				for (int j = 0; j < exportedRes.size(); ++j)
-				{
-					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
-				}
-
-				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
-				
-				App->fs->OpenWriteBuffer("Assets/meshes/" + fileName + ".meta", metaBuffer, metaSize);
-
-				App->fs->EndTempException();
-			}
-			else
-			{
-				if(App->textures->isSupported(extension))
-				{				
-					//Check if this texture is already in Assets
-
-					uint fileNamePos = dropped.find_last_of("/");
-					std::string directory = dropped.substr(0, fileNamePos + 1);
-					std::string fileName = dropped.substr(fileNamePos + 1);
-
-					App->fs->UpdateAssetsDir();
-
-					std::vector<std::string> files;
-					App->fs->getFilesPath(files);
-
-					for (int i = 0; i < files.size(); ++i)
-					{
-						std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
-						if (assets_FileName == fileName)
-							return UPDATE_CONTINUE;
-					}
-
-					//If not, copy it and export
-
-					App->fs->BeginTempException(directory);
-					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");
-					App->fs->EndTempException();
-
-					ResourceTexture* texture = App->textures->ExportResource("Assets/textures/" + fileName);
-					
-					resources.insert(std::pair<UID, Resource*>(texture->getUUID(), texture));
-
-					char* buffer;
-					uint size = sizeof(uint);
-					buffer = new char[size];
-					UID textureUID = texture->getUUID();
-					memcpy(buffer, &textureUID, size);
-
-					App->fs->OpenWriteBuffer("Assets/textures/" + fileName + ".meta", buffer, size);
-
-				}
-			}
-		}
-	}
-	
+	checkDroppedFiles();	
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -326,6 +184,8 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 		{
 			ComponentMesh* meshComp = (ComponentMesh*)gameObject->CreateComponent(ComponentType::MESH);
 			meshComp->mesh = (ResourceMesh*)resources.at(meshUID);
+			if (meshComp->mesh)
+				meshComp->mesh->Referenced();
 		}
 
 		UID textureUID = gos[j].textureUID;
@@ -333,6 +193,8 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 		{
 			ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
 			matComp->texture = (ResourceTexture*)resources.at(textureUID);
+			if (matComp->texture)
+				matComp->texture->Referenced();
 		}
 
 		gameObject->name = gos[j].name;
@@ -555,12 +417,209 @@ void ResourceManager::moveEvent(Event event)
 	App->fs->MoveFileInto(oldLocation + ".meta", newLocation + ".meta");
 }
 
-uint Resource::amountReferences() const
+void ResourceManager::checkDroppedFiles()
 {
-	return 0;
+	//Receive Drop events, create a resources copy in assets and library, then link both. Check for deletion or modifying. FBX = scene + few files, manage the fbx deletion and linking
+	std::string dropped = App->input->getFileDropped();
+	if (!dropped.empty())
+	{
+		//Manage imports here, check if the file has already been imported	
+		std::string extension = App->fs->getExt(dropped);
+		if (!extension.empty())
+		{
+			if (extension == ".fbx" || extension == ".FBX")
+			{
+				//Check if the fbx has been already added to assets
+				uint fileNamePos = dropped.find_last_of("/");
+				std::string directory = dropped.substr(0, fileNamePos + 1);
+				std::string fileName = dropped.substr(fileNamePos + 1);
+
+				App->fs->UpdateAssetsDir();
+
+				std::vector<std::string> files;
+				App->fs->getFilesPath(files);
+
+				for (int i = 0; i < files.size(); ++i)
+				{
+					std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+					if (assets_FileName == fileName)
+						return;
+
+					//TODO: Maybe update the file if it is an updated version of the previous stored fbx?
+				}
+
+				App->fs->BeginTempException(directory);
+				App->fs->CopyExternalFileInto(dropped, "Assets/meshes/");
+				App->fbxexporter->CopyFBXTexturesInto("Exception/" + fileName, "Assets/Textures/");
+				char* metaBuffer;
+				uint metaSize;
+				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX("Assets/meshes/" + fileName, metaBuffer, metaSize);
+				for (int j = 0; j < exportedRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+				}
+				App->fs->OpenWriteBuffer("Assets/meshes/" + fileName + ".meta", metaBuffer, metaSize);
+				delete metaBuffer;
+
+				App->fs->EndTempException();
+			}
+			else
+			{
+				if (App->textures->isSupported(extension))
+				{
+					//Check if this texture is already in Assets
+
+					uint fileNamePos = dropped.find_last_of("/");
+					std::string directory = dropped.substr(0, fileNamePos + 1);
+					std::string fileName = dropped.substr(fileNamePos + 1);
+
+					App->fs->UpdateAssetsDir();
+
+					std::vector<std::string> files;
+					App->fs->getFilesPath(files);
+
+					for (int i = 0; i < files.size(); ++i)
+					{
+						std::string assets_FileName = files[i].substr(files[i].find_last_of("/") + 1);
+						if (assets_FileName == fileName)
+							return;
+					}
+
+					//If not, copy it and export
+					//TODO: Maybe check if this is an updated version of the previously stored texture?
+
+					App->fs->BeginTempException(directory);
+					App->fs->CopyExternalFileInto(dropped, "Assets/textures/");
+					App->fs->EndTempException();
+
+					ResourceTexture* texture = App->textures->ExportResource("Assets/textures/" + fileName);
+
+					resources.insert(std::pair<UID, Resource*>(texture->getUUID(), texture));
+
+					char* buffer;
+					uint size = sizeof(uint);
+					buffer = new char[size];
+					UID textureUID = texture->getUUID();
+					memcpy(buffer, &textureUID, size);
+
+					App->fs->OpenWriteBuffer("Assets/textures/" + fileName + ".meta", buffer, size);
+
+				}
+			}
+		}
+	}
 }
 
-bool Resource::LoadToMemory()
+void ResourceManager::LoadResources()
 {
-	return true;
+	std::vector<std::string> fullPaths;
+	App->fs->getFilesPath(fullPaths);
+
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+
+		if (extension.empty())
+			continue;
+
+		//Check if a .meta already exist	
+		if (App->fs->Exists(fullPaths[i] + ".meta"))
+		{
+			char* metaBuffer;
+			int size;
+			if (App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, size))
+			{
+				if (App->textures->isSupported(extension))
+				{
+					char* cursor = metaBuffer;
+
+					UID resourceUID;
+					memcpy(&resourceUID, metaBuffer, sizeof(UID));
+
+					ResourceTexture* textureRes = new ResourceTexture;
+					textureRes->DeSerializeFromMeta(cursor);
+
+					textureRes->setFile((char*)fullPaths[i].data());
+					textureRes->setExportedFile((char*)std::string(TEXTURES_LIBRARY_FOLDER + std::string("/") + std::to_string(resourceUID) + TEXTURES_EXTENSION).data());
+
+					resources.insert(std::pair<UID, Resource*>(resourceUID, textureRes));
+				}
+				delete metaBuffer;
+			}
+		}
+		else //Export the file
+		{
+			if (App->textures->isSupported(extension))
+			{
+				//Its a texture. Call Texture Exporter and save a .dds file in library
+				ResourceTexture* textureR = App->textures->ExportResource(fullPaths[i]);
+				if (textureR)
+				{
+					resources.insert(std::pair<UID, Resource*>(textureR->getUUID(), textureR));
+
+					//Save a .meta to link both files through the UID
+					char* buffer;
+					uint size = textureR->bytesToSerializeMeta();
+
+					buffer = new char[size];
+					char* cursor = buffer;
+
+					textureR->SerializeToMeta(cursor);
+					App->fs->OpenWriteBuffer(fullPaths[i] + std::string(".meta"), buffer, size);
+				}
+			}
+			else if (extension == ".fbx" || extension == ".FBX")
+			{
+				continue; //Let the fbx to the end so all the other resources can be loaded first
+			}
+			//TODO: Materials, audio, animations, etc?
+		}
+	}
+
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+
+		if (extension.empty())
+			continue;
+
+		if (extension == ".fbx" || extension == ".FBX")
+		{
+			if (App->fs->Exists(fullPaths[i] + ".meta"))
+			{
+				//This fbx has already been exported. Only load the resources without exporting again.
+
+				char* metaBuffer;
+				int size;
+				if (App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, size))
+				{
+					char* cursor = metaBuffer;
+
+					std::vector<Resource*> importedRes = App->fbxexporter->ImportFromMeta(cursor);
+					for (int j = 0; j < importedRes.size(); ++j)
+					{
+						resources.insert(std::pair<UID, Resource*>(importedRes[j]->getUUID(), importedRes[j]));
+					}
+
+					delete metaBuffer;
+				}
+			}
+			else
+			{
+				//A lot of stuff here. Extract textures, meshes and gameObjects hierarchy, save the possible stuff in Library 
+				//and link the fbx with their separate files with a .meta file. After that manage the drag and drop into our hierarchy.
+
+				//TODO: ANOTHER FBX USING THE SAME RESOURCES?
+
+				std::vector<Resource*> exportedRes = App->fbxexporter->ExportFBX(fullPaths[i]);
+				for (int j = 0; j < exportedRes.size(); ++j)
+				{
+					resources.insert(std::pair<UID, Resource*>(exportedRes[j]->getUUID(), exportedRes[j]));
+				}
+			}
+		}
+		//TODO: Materials, audio, animations, etc?
+	}
 }

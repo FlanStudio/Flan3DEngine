@@ -17,16 +17,18 @@ public:
 	void UpdateNormalsLenght(uint lenght);
 	void drawNormals();
 
-	void updateGameObjectAABB();
-
 	void Serialize(char*& cursor) const;
-	void DeSerialize(char*& cursor, uint normalLenght);
+	void DeSerialize(char*& cursor);
 
 	uint getBytes() const;
 
 	uint bytesToSerialize()const;
 
 	void genNormalLines(uint lenght);
+
+private:
+	bool LoadToMemory() override;
+	bool UnLoadFromMemory() override;
 
 public:
 

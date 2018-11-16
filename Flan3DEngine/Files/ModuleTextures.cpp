@@ -158,29 +158,13 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 		return nullptr;
 	}
 	
-	//Create an OpenGL texture and initialize it with the active Image data
-	uint openGLID = 0;
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &openGLID);
-	glBindTexture(GL_TEXTURE_2D, openGLID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-		0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	//Create our local storage of the texture
 	ResourceTexture* text = new ResourceTexture();
-	text->id = openGLID;
 	text->width = ilGetInteger(IL_IMAGE_WIDTH);
 	text->height = ilGetInteger(IL_IMAGE_HEIGHT);
 	text->setFile((char*) file.data());
-
-	textures.push_back(text);
+	text->data_rgba = new unsigned char[text->width * text->height * 4];
+	memcpy(text->data_rgba, ilGetData(), text->width * text->height * 4);
 	
 	ILuint savedSize;
 	ILubyte* savedBuffer = nullptr;
@@ -204,7 +188,7 @@ ResourceTexture* ModuleTextures::ExportResource(std::string file)
 
 	text->setExportedFile((char*)resourcePath.data());
 
-	//delete the buffer obtained from fileSystem and the unnecessary DevIL image
+	//delete the buffers obtained from fileSystem and the unnecessary DevIL image
 	if (buffer)
 		delete buffer;
 

@@ -84,9 +84,12 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string& file) const
 
 	ret = ExportFBX(file, metaBuffer, metaSize);
 
-	//Save the stored hierarchy in a .meta file
-	App->fs->OpenWriteBuffer(file + ".meta", metaBuffer, metaSize);
-	delete metaBuffer;
+	if (!ret.empty())
+	{
+		//Save the stored hierarchy in a .meta file
+		if (App->fs->OpenWriteBuffer(file + ".meta", metaBuffer, metaSize))
+			delete metaBuffer;
+	}
 
 	return ret;
 }
@@ -279,7 +282,6 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& m
 					}
 				}
 
-				myMesh->genBuffers();
 				myMesh->meshName = assimpMesh->mName.C_Str();
 				myMesh->setFile((char*)std::string(file + "/" + myMesh->meshName).data());
 				myMesh->setExportedFile((char*)std::string(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(myMesh->getUUID()) + MESHES_EXTENSION).data());
@@ -408,6 +410,137 @@ std::vector<Resource*> FBXExporter::ExportFBX(const std::string & file, char*& m
 	return ret;
 }
 
+void FBXExporter::CopyFBXTexturesInto(const std::string& origin, const std::string& dest) const
+{
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead(origin, &buffer, size))
+	{
+		return;
+	}
+
+	const aiScene* scene = aiImportFileFromMemory(buffer, size, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+	if (!scene || !scene->HasMeshes())
+	{
+		delete buffer;
+		return;
+	}
+
+	if (scene->HasMaterials())
+	{
+		for (int i = 0; i < scene->mNumMaterials; ++i)
+		{
+			std::string texturePath;
+			aiMaterial* assimpMat = scene->mMaterials[i];
+			if (assimpMat)
+			{
+				aiString aiPath;
+				assimpMat->GetTexture(aiTextureType::aiTextureType_DIFFUSE, 0, &aiPath);
+				texturePath = aiPath.C_Str();
+			}
+			
+			if (!texturePath.empty())
+			{
+				//Normalize the path
+				while (texturePath.find_first_of("\\") != std::string::npos) /*First of \ */
+				{
+					uint pos = texturePath.find_first_of("\\");
+					texturePath.replace(pos, 1, "/");
+				}
+
+				//Manage ".."
+
+				uint lastPos = origin.find_last_of("/");
+				std::string path = origin.substr(0, lastPos + 1);
+
+				bool prevDirFound = texturePath.find("..") != std::string::npos;
+
+				if (prevDirFound)
+				{
+					//Delete "lastDir/" from the fbx path and "../" from the texturePath
+					uint lastSlashPos = path.find_last_of("/");
+					path.erase(lastSlashPos);
+					lastSlashPos = path.find_last_of("/");
+					path.replace(lastSlashPos + 1, std::string::npos, "");
+
+					uint texturePos = texturePath.find("..");
+					texturePath.replace(texturePos, 3, "");
+				}
+
+				texturePath.insert(0, path);
+			}
+			std::string fileName = texturePath.substr(texturePath.find_last_of("/") + 1);
+			//Check if the texture hasn´t been already added into the new location
+			if (!App->fs->Exists(dest + fileName))
+			{
+				App->fs->CopyExternalFileInto("Exception/" + fileName, dest);
+			}			
+			
+		}
+	}
+}
+
+std::vector<Resource*> FBXExporter::ImportFromMeta(char*& cursor) const
+{
+	std::vector<Resource*> ret;
+
+	std::map<UID, Resource*> tempMap;
+
+	uint bytes = sizeof(uint);
+	uint numGameObjects;
+	memcpy(&numGameObjects, cursor, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numGameObjects; ++i)
+	{
+		cursor += 100; //Skip the name
+		cursor += sizeof(UID) * 2; //Skip your UID and your parent's one
+
+		cursor += sizeof(float3) * 2 + sizeof(Quat);
+
+		bytes = sizeof(UID);
+
+		UID meshUID, textureUID;
+
+		//Mesh / Texture UID
+		memcpy(&meshUID, cursor, bytes);
+		cursor += bytes;
+
+		memcpy(&textureUID, cursor, bytes);
+		cursor += bytes;
+
+		if (meshUID != 0)
+		{
+			if (tempMap.find(meshUID) == tempMap.end()) //This meshResource has not been created before
+			{
+				//Look for the mesh file
+				char* meshData;
+				int meshSize;
+				if(App->fs->OpenRead(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(meshUID) + MESHES_EXTENSION, &meshData, meshSize))
+				{
+					char* meshCursor = meshData;
+					ResourceMesh* meshRes = new ResourceMesh;
+					meshRes->DeSerialize(meshCursor);
+
+					tempMap.insert(std::pair<UID, Resource*>(meshUID, meshRes));
+					ret.push_back(meshRes);
+
+					meshRes->setExportedFile((char*)std::string(MESHES_LIBRARY_FOLDER + std::string("/") + std::to_string(meshUID) + MESHES_EXTENSION).data());
+					meshRes->setFile((char*)std::string("LoadedFromMeta/" + meshRes->meshName).data());
+					meshRes->setUID(meshUID);
+
+					delete meshData;
+				}
+			}	
+		}
+		if(textureUID != 0)
+		{
+			//All the textures MUST be loaded before this call, so we skip this process
+		}
+	}
+
+	return ret;
+}
 
 std::vector<const aiNode*> FBXExporter::decomposeAssimpHierarchy(const aiNode* rootNode) const
 {

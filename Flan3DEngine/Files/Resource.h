@@ -32,21 +32,28 @@ public:
 	inline void setFile(char* newLocation) { file = std::string(newLocation); }
 	inline void setExportedFile(char* newLocation) { exportedFile = std::string(newLocation); }
 	inline const char* getExportedFile() const { return exportedFile.data(); }
-	inline bool isLoadedToMemory() const { return amountLoaded > 0; }
+	inline bool isLoadedToMemory() const { return timesReferenced > 0; }
+	inline void setUID(UID uid) { uuid = uid; }
 
-	uint amountReferences() const;
-
-	bool LoadToMemory();
-
+	uint amountReferences() const { return timesReferenced; }
+	
 	virtual uint getBytes() const = 0;
+	
+	void Referenced();
+	void deReferenced();
 
 protected:
+	virtual bool LoadToMemory() = 0;
+	virtual bool UnLoadFromMemory() = 0;
+
+protected:
+
 	UID uuid = 0u;
 	std::string file;
 	std::string exportedFile;
 
 	ResourceType type = ResourceType::UNKNOWN;
-	uint amountLoaded = 0u;
+	uint timesReferenced = 0u;
 };
 
 #endif

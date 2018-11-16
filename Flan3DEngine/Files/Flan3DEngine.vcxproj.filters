@@ -911,6 +911,9 @@
     <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib_1.5\Math\Matrix.inl">

@@ -7,6 +7,7 @@ class ComponentMaterial : public Component
 {
 public:
 	ComponentMaterial(GameObject* gameObject, bool active = true) : Component(ComponentType::MATERIAL, gameObject, active) {}
+	virtual ~ComponentMaterial();
 
 public:
 	inline static uint bytesToSerialize() { return sizeof(UID) * 3 + sizeof(ImVec4); } //Your uid, your gameObject uid, your Texture uid, your tint color
