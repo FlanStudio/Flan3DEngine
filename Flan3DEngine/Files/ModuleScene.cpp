@@ -113,8 +113,13 @@ update_status ModuleScene::PostUpdate()
 	{
 		if (selectedGO)
 		{			
+			Event event;
+			event.goEvent.type = EventType::GO_DESTROYED;
+			event.goEvent.gameObject = selectedGO;
+			gameObjects[0]->ReceiveEvent(event);
+
 			delete selectedGO;
-			selectedGO = nullptr;			
+			selectedGO = nullptr;	
 		}
 	}
 
