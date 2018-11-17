@@ -192,7 +192,10 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 		if (textureUID != 0)
 		{
 			ComponentMaterial* matComp = (ComponentMaterial*)gameObject->CreateComponent(ComponentType::MATERIAL);
-			matComp->texture = (ResourceTexture*)resources.at(textureUID);
+			if (resources.find(textureUID) != resources.end())
+			{
+				matComp->texture = (ResourceTexture*)resources.at(textureUID);
+			}			
 			if (matComp->texture)
 				matComp->texture->Referenced();
 		}
