@@ -480,18 +480,21 @@ std::vector<Resource*> FBXExporter::CopyAndExportFBXTexturesInto(const std::stri
 				//Load the resource
 				ResourceTexture* texture = App->textures->ExportResource(dest + fileName);
 
-				//Export the resource
-				char* textureMeta;
-				uint textureMetaSize = texture->bytesToSerializeMeta();
+				if (texture)
+				{
+					//Export the resource
+					char* textureMeta;
+					uint textureMetaSize = texture->bytesToSerializeMeta();
 
-				textureMeta = new char[textureMetaSize];
+					textureMeta = new char[textureMetaSize];
 
-				char* cursor = textureMeta;
-				texture->SerializeToMeta(cursor);
+					char* cursor = textureMeta;
+					texture->SerializeToMeta(cursor);
 
-				App->fs->OpenWriteBuffer(dest + fileName + ".meta", textureMeta, textureMetaSize);
+					App->fs->OpenWriteBuffer(dest + fileName + ".meta", textureMeta, textureMetaSize);
 
-				ret.push_back(texture);
+					ret.push_back(texture);
+				}			
 			}		
 		}
 	}
