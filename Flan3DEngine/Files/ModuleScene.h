@@ -86,7 +86,6 @@ private:
 
 	float quadTreeUpdateRate = 2.0f;
 
-	EulerAxis euler;
 	GridPrim grid;
 
 	std::string currentSceneName = "defaultScene";

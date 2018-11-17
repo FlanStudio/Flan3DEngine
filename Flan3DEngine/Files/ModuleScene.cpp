@@ -49,7 +49,6 @@ bool ModuleScene::Start()
 	//----------------------INITIAL GRID------------------------
 	grid.Init();
 	grid.setColor(255, 255, 255, 0);
-	euler.Init();
 
 	return ret;
 }
@@ -138,7 +137,6 @@ update_status ModuleScene::PostUpdate()
 	}
 
 	//-------------------INITIAL GRID---------------------
-	euler.Render();
 	grid.Render();
 
 	return update_status::UPDATE_CONTINUE;
