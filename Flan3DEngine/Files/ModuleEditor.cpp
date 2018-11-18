@@ -343,7 +343,7 @@ update_status ModuleEditor::PreUpdate()
 	{
 		ImGui::SetNextWindowPos(ImVec2(0, 23), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 * 3 - 23), ImGuiCond_FirstUseEver);
-		if(ImGui::Begin("Hierarchy", &hierarchy))
+		if(ImGui::Begin("Hierarchy", &hierarchy, ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			App->scene->guiHierarchy();
 		}
@@ -354,7 +354,7 @@ update_status ModuleEditor::PreUpdate()
 	{
 		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 4 * 3, 23), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT - 23), ImGuiCond_FirstUseEver);
-		if (ImGui::Begin("Inspector", &inspector))
+		if (ImGui::Begin("Inspector", &inspector, ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			App->scene->guiInspector();
 		}
@@ -455,7 +455,7 @@ update_status ModuleEditor::PostUpdate()
 		ImGui::SetNextWindowPos(ImVec2(0, SCREEN_HEIGHT / 4 * 3), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4), ImGuiCond_FirstUseEver);
 
-		ImGui::Begin("FileSystem", &fileSystem);
+		ImGui::Begin("FileSystem", &fileSystem, ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar);
 
 		App->fs->fileSystemGUI();
 
