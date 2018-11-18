@@ -15,7 +15,17 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**Quit**_: Quit the engine.
 
+* _**Rename loaded scene**_: Allows You to rename the current scene.
+
+* _**Save scene**_: Saves current scene.
+
  **View** (All windows can be closed pressing **ESC**).
+
+* _**Inspector**_: Shows all GameObject components and allows You to add more.
+
+* _**Hierarchy**_: Shows all GameObjects of the scene and allows you to create more (try to Right Click on the window).
+
+* _**FileSystem**_: Shows the Assets folder (inside it you can find different scenes, meshes, textures...).
 
 * _**Demo Window**_: Opens the ImGui demo window.
 
@@ -25,7 +35,7 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
 * _**Config**_
 
-     _Application_: Shows Engine **name, Organization, Max FPS, current FPS** and **last ms**.
+     _Application_: Shows Engine **name, Organization, Max FPS, Game Scale, current FPS** and **last ms**.
 
      _Window_: Shows Refresh Rate and allows to change config values (**Brightness, Width, Height, Fullscreen, Fullscreen Desktop, Borderless and Resizable**).
 
@@ -49,10 +59,22 @@ Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
   * _**Right Click + Mouse Movement**_: Camera rotates around itself.
   
   * _**F**_: Centers the view to the object.
+  
+  * _**A**_: Centers the view to the scene.
 
 **Transformations**
 
-  * _**Q,W,E,R**_: **Pick object**, **Translate object**, **Rotate object**, **Scale object** (alseo, there's a button for each transformation and one for changing the transformation mode from "local" to "global" and vice versa).
+  * _**Q,W,E,R**_: **Pick object**, **Translate object**, **Rotate object**, **Scale object** (also, there's a button for each transformation and one for changing the transformation mode from "local" to "global" and vice versa).
+  
+**Time**
+
+  * _**Play**_: Puts the scene in playmode using an scalated dt and showing the view of the main camera.
+   
+  * _**Stop**_: Returns to the Editor mode and discards all the changes maked in the Play mode.
+  
+  * _**Pause**_: Pauses the scene (puts dt to 0) when you are in the Play mode (press it again for resuming).
+  
+  * _**Step**_: Makes one loop and pauses again.
   
  **Other functionalities**
   * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
