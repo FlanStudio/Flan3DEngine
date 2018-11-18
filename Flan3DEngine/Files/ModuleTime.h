@@ -23,7 +23,7 @@ public:
 	float dt = 0.0f;
 	float playDt = 0.0f;
 	float gameTime = 0.0f;
-	float timeScale = 1.0f; //Must be between 0.0f and 2.0f
+	float timeScale = 1.0f; //Must be between 0.0f and 4.0f
 	float timer = 0.0f;
 
 	Uint32 frameCount = 0;
@@ -38,8 +38,6 @@ private:
 	
 	bool paused = false;
 	bool steped = false;
-
-	int h = 0;//delete
 };
 
 #endif //__MODULE_TIME_H__

@@ -319,12 +319,6 @@ void GameObject::OnInspector()
 
 	//-----------------------------Components----------------------------
 
-	//for (int i = 0; i < components.size(); i++)
-	//{
-	//	names[i] = (char*)components[i]->type;
-	//	toggles[i] = false;
-	//}
-
 	// Showing a menu with toggles
 	if (ImGui::Button("Add/Clear Component:"))
 		ImGui::OpenPopup("toggle");
@@ -361,7 +355,7 @@ void GameObject::OnInspector()
 
 		if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
 		{
-			ComponentMesh* Transform = new ComponentMesh(parent, true); //When we delete this?
+			ComponentMesh* Transform = new ComponentMesh(parent, true);
 			AddComponent(Transform);
 		}
 

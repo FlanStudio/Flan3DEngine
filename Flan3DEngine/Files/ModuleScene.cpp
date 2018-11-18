@@ -130,7 +130,6 @@ update_status ModuleScene::PostUpdate()
 	if (deserialize)
 	{
 		deserialize = false;
-		//deserialize
 		DeSerializeFromBuffer(tempSceneBuffer);
 		delete tempSceneBuffer;
 		tempSceneBuffer = nullptr;

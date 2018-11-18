@@ -336,8 +336,6 @@ update_status ModuleEditor::PreUpdate()
 
 		ImGui::Begin("Properties",&propWindow);
 
-		//TODO: SHOW HERE ALL THE RESOURCES LOADED? 
-
 		ImGui::End();
 	}
 

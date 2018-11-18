@@ -8,6 +8,8 @@
 
 #include "MathGeoLib_1.5/Math/float3x3.h"
 
+#define NUM_COMPONENTS 4
+
 class GameObject
 {
 public:
@@ -100,8 +102,8 @@ private:
 	uint bufferIndex = 0u;
 
 	//Components
-	char* names[4] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
-	bool toggles[4] = { true,false,false,false };					//Grow when we have more components
+	char* names[NUM_COMPONENTS] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
+	bool toggles[NUM_COMPONENTS] = { true,false,false,false };					//Grow when we have more components
 };
 
 //Manually changing a gameObject's name to 'default' when name is empty
