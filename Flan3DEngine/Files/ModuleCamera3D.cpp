@@ -115,12 +115,7 @@ void ModuleCamera3D::CameraInputs(float dt)
 			if (sceneBB.IsFinite())
 			{
 				center = sceneBB.CenterPoint();
-				float3 dir = (editorCamera->transform->position - center).Normalized();
-
-				double sin = Sin(min(editorCamComponent->width / editorCamComponent->height, editorCamComponent->horizontalFOV) * 0.5);
-				orbitalRadius = ((sceneBB.Size().MaxElement()) / sin);
-
-				editorCamera->transform->position = (center + dir * orbitalRadius);
+				editorCamera->transform->position = { sceneBB.MinX()*3.0f,sceneBB.MaxY()*3.0f,sceneBB.MinZ()*3.0f };
 				LookAt(sceneBB.CenterPoint());
 			}
 		}
