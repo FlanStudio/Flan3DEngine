@@ -666,6 +666,7 @@
     <ClInclude Include="ResourceMesh.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -961,5 +962,11 @@
     <None Include="DevIL\include\stamp-h.in">
       <Filter>Sources\Tools\DevIL</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Flan3DEngine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
 </Project>
