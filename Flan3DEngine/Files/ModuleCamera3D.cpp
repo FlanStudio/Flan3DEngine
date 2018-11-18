@@ -363,7 +363,11 @@ void ModuleCamera3D::rotateAroundCenter(float dt)
 	int dx = -App->input->GetMouseXMotion();
 	int dy = -App->input->GetMouseYMotion();
 
-	float Sensitivity = 1;
+	GameObject* selected = App->scene->getSelectedGO();
+	if (selected)
+	{
+		center = selected->boundingBox.CenterPoint();
+	}
 
 	if (dy != 0)
 	{
