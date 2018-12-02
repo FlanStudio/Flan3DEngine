@@ -25,6 +25,8 @@ public:
 	ComponentScript* CreateScript(std::string csPath);
 	bool DestroyScript(ComponentScript* script);
 
+	void CreateScriptingProject();
+
 private:
 	std::vector<ComponentScript*> scripts;
 };

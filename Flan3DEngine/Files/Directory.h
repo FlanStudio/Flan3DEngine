@@ -6,7 +6,9 @@
 
 struct File
 {
+	//FileName + extension, not full path
 	std::string name;
+
 	int64_t lastModTime = 0.0f;
 
 	uint bytesToSerialize() const

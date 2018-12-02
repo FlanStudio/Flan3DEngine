@@ -46,6 +46,7 @@ public:
 	
 	bool CopyExternalFileInto(const std::string& file, const std::string& newLocation);
 	bool MoveFileInto(const std::string& file, const std::string& newLocation);
+	bool CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot = true);
 
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);
@@ -58,7 +59,7 @@ public:
 	bool Exists(std::string file) const;
 
 	//Fill a vector with all the files in Assets, with their respective path
-	void getFilesPath(std::vector<std::string>& files) const;
+	void getAssetsFilesPath(std::vector<std::string>& files) const;
 
 	//Extracts the extension from a string. 
 	// return "" if not founded
@@ -75,10 +76,9 @@ public:
 	void UpdateAssetsDir();
 	void saveAssetsState();
 
-private:
-	//WARNING: Don't forget to delete the Directory file after use
+private:	
+	//Get a directory structure from a root directory in the search path.
 	Directory getDirFiles(char* dir) const;
-
 	void recursiveDirectory(Directory& directory);
 	void SendEvents(const Directory& newAssetsDir);
 

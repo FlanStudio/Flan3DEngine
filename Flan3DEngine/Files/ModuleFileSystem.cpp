@@ -31,7 +31,7 @@ bool ModuleFileSystem::Init()
 	AddPath("./Library/", "Library");
 	AddPath("./Settings/", "Settings");
 
-	//Internal Directory: Engine textures
+	//Internal Directory: Engine stuff
 	AddPath("./internal.f", "Internal");
 
 	//User-Dependent Directory
@@ -331,6 +331,47 @@ bool ModuleFileSystem::MoveFileInto(const std::string& file, const std::string& 
 	return true;
 }
 
+bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot)
+{
+	Directory originDir = getDirFiles((char*)origin.data());
+
+	for (int i = 0; i < originDir.files.size(); ++i)
+	{
+		std::string file = originDir.files[i].name;
+
+		char* buffer;
+		int size;
+
+		if (!OpenRead(origin + "/" + file, &buffer, size))
+		{
+			return false;
+		}
+
+		std::string destinationWithRoot = destination + "/" + file;
+		
+		std::string destinationWithoutRoot = destinationWithRoot.at(0) == '/' ? destinationWithRoot.substr(1) : destinationWithRoot;
+		destinationWithoutRoot = destinationWithoutRoot.substr(destinationWithoutRoot.find_first_of("/") + 1);
+
+		std::string realDestination = keepRoot ? destinationWithRoot : destinationWithoutRoot;
+		if (!OpenWriteBuffer(realDestination, buffer, size))
+		{
+			delete buffer;
+			return false;
+		}
+		
+		delete buffer;
+	}
+
+	for (int i = 0; i < originDir.directories.size(); ++i)
+	{
+		bool success = CopyDirectoryAndContentsInto(originDir.directories[i].fullPath, destination + "/" + originDir.name, keepRoot);
+		if (!success)
+			return false;		
+	}
+
+	return true;
+}
+
 char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
 {
 	std::string ascii(ascii_string);
@@ -436,7 +477,7 @@ bool ModuleFileSystem::Exists(std::string file) const
 	return PHYSFS_exists(file.data());
 }
 
-void ModuleFileSystem::getFilesPath(std::vector<std::string>& files) const
+void ModuleFileSystem::getAssetsFilesPath(std::vector<std::string>& files) const
 {
 	AssetsDirSystem.getFullPaths(files);
 }

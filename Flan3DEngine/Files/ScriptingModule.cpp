@@ -8,6 +8,14 @@ update_status ScriptingModule::PreUpdate()
 
 update_status ScriptingModule::Update()
 {
+	//Temporal for testing
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		CreateScriptingProject();
+	}
+
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -76,4 +84,12 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	}
 
 	return false;
+}
+
+void ScriptingModule::CreateScriptingProject()
+{
+	if (App->fs->Exists("ScriptingProject.sln"))
+		return;
+
+	App->fs->CopyDirectoryAndContentsInto("Internal/ScriptingProject", "", false);
 }

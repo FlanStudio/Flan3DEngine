@@ -440,7 +440,7 @@ void ResourceManager::checkDroppedFiles()
 				App->fs->UpdateAssetsDir();
 
 				std::vector<std::string> files;
-				App->fs->getFilesPath(files);
+				App->fs->getAssetsFilesPath(files);
 
 				for (int i = 0; i < files.size(); ++i)
 				{
@@ -484,7 +484,7 @@ void ResourceManager::checkDroppedFiles()
 					App->fs->UpdateAssetsDir();
 
 					std::vector<std::string> files;
-					App->fs->getFilesPath(files);
+					App->fs->getAssetsFilesPath(files);
 
 					for (int i = 0; i < files.size(); ++i)
 					{
@@ -521,7 +521,7 @@ void ResourceManager::checkDroppedFiles()
 void ResourceManager::LoadResources()
 {
 	std::vector<std::string> fullPaths;
-	App->fs->getFilesPath(fullPaths);
+	App->fs->getAssetsFilesPath(fullPaths);
 
 	for (int i = 0; i < fullPaths.size(); ++i)
 	{
