@@ -392,6 +392,15 @@ void GameObject::ReceiveEvent(Event event)
 	}
 }
 
+void GameObject::SetActive(bool boolean)
+{
+	if (active == !boolean)
+	{
+		active = boolean;
+		//TODO: Some event throwing here if we are in playMode, in order to notify the components, specially Scripts.
+	}
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);

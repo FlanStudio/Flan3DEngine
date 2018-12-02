@@ -14,6 +14,7 @@ enum class ComponentType
 	MESH,
 	MATERIAL,
 	CAMERA,
+	SCRIPT,
 	MAX_TYPE
 };
 

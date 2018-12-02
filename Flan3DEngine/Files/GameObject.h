@@ -23,6 +23,7 @@ public:
 	virtual bool Update(float dt);
 
 public:
+
 	//Child-related methods
 	void AddChild(GameObject* child);
 	void InsertChild(GameObject* child, int pos);
@@ -45,6 +46,7 @@ public:
 	//Other methods
 	void OnInspector();
 	void ReceiveEvent(Event event);
+	void SetActive(bool boolean);
 	
 	//AABB drawing data-----------------
 	void drawAABB()const;
@@ -68,6 +70,7 @@ public:
 	//Makes his AABB enclose its ComponentMesh vertex, transformed
 	void transformAABB();
 
+	//Gen the UUID
 	void genUUID()
 	{
 		uuid = FLAN::randomUINT32_Range();

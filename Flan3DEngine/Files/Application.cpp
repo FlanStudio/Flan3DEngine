@@ -59,6 +59,7 @@ Application::Application()
 	fbxexporter = new FBXExporter();
 	textures = new ModuleTextures();
 	resources = new ResourceManager();
+	scripting = new ScriptingModule();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -74,9 +75,12 @@ Application::Application()
 	AddModule(camera);
 	AddModule(fbxexporter);
 	AddModule(resources);
+	AddModule(scripting);
+
 	// Scenes
 	AddModule(scene);
 
+	//Editor
 	AddModule(editor);
 	
 	// Renderer last!

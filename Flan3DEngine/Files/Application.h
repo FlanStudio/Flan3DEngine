@@ -16,6 +16,7 @@
 #include "FBXExporter.h"
 #include "ModuleTextures.h"
 #include "ResourceManager.h"
+#include "ScriptingModule.h"
 
 #include "Parson/parson.h"
 
@@ -107,6 +108,7 @@ public:
 	FBXExporter* fbxexporter;
 	ModuleTextures* textures;
 	ResourceManager* resources;
+	ScriptingModule* scripting;
 
 private:
 	std::list<Module*> list_modules;
