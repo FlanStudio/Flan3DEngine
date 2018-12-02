@@ -4,7 +4,6 @@
 #include "Application.h"
 #include "pcg-c-basic-0.9/pcg_basic.h"
 
-
 class GameObject;
 
 enum class ComponentType
@@ -17,6 +16,8 @@ enum class ComponentType
 	SCRIPT,
 	MAX_TYPE
 };
+
+char* ComponentType_toString(ComponentType type);
 
 class Component
 {

@@ -316,59 +316,6 @@ void GameObject::OnInspector()
 		InsertComponent(compToReorder, postoreorder);
 		ClearComponentAt(postoreorder > compToReorderIndex ? compToReorderIndex : compToReorderIndex +1);
 	}
-
-	//-----------------------------Components----------------------------
-
-	// Showing a menu with toggles
-	if (ImGui::Button("Add/Clear Component:"))
-		ImGui::OpenPopup("toggle");
-	if (ImGui::BeginPopup("toggle"))
-	{
-		for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-		{
-			if (getComponentByType((ComponentType)i) != nullptr)
-			{
-				toggles[i] = true;
-			}
-			ImGui::MenuItem(names[i], "", &toggles[i]);
-		}
-
-		if (toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) == nullptr)
-		{
-			CreateComponent(ComponentType::MESH);
-		}
-		else if(!toggles[(int)ComponentType::MESH] && getComponentByType(ComponentType::MESH) != nullptr)
-		{
-			deleteComponent(getComponentByType(ComponentType::MESH));
-			initAABB();
-			transformAABB();
-		}
-
-		if (toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) == nullptr)
-		{
-			CreateComponent(ComponentType::CAMERA);
-		}
-		else if (!toggles[(int)ComponentType::CAMERA] && getComponentByType(ComponentType::CAMERA) != nullptr)
-		{
-			deleteComponent(getComponentByType(ComponentType::CAMERA));
-		}
-
-		if (toggles[(int)ComponentType::TRANSFORM] && getComponentByType(ComponentType::TRANSFORM) == nullptr)
-		{
-			ComponentMesh* Transform = new ComponentMesh(parent, true);
-			AddComponent(Transform);
-		}
-
-		if (toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) == nullptr)
-		{
-			CreateComponent(ComponentType::MATERIAL);
-		}
-		else if (!toggles[(int)ComponentType::MATERIAL] && getComponentByType(ComponentType::MATERIAL) != nullptr)
-		{
-			deleteComponent(getComponentByType(ComponentType::MATERIAL));
-		}
-		ImGui::EndPopup();
-	}
 }
 
 void GameObject::ReceiveEvent(Event event)

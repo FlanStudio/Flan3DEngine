@@ -321,7 +321,6 @@ void ModuleScene::guiHierarchy()
 		ImGui::EndPopup();
 	}
 
-
 	//Dropping FBX (prefabs when implemented)
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -338,8 +337,6 @@ void ModuleScene::guiHierarchy()
 		}
 		ImGui::EndDragDropTarget();
 	}
-
-
 }
 
 void ModuleScene::PrintHierarchy(GameObject* go)
@@ -416,8 +413,8 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 		{
 			for (int i = 0; i < go->childs.size(); ++i)
 			{
-				PrintHierarchy(go->childs[i]);		
-			}					
+PrintHierarchy(go->childs[i]);
+			}
 		}
 	}
 }
@@ -438,8 +435,94 @@ void ModuleScene::guiInspector()
 	{
 		ImGui::Text("No GameObjects selected");
 		return;
-	}	
+	}
 	selected->OnInspector();
+
+	AddComponentGUI();
+}
+
+void ModuleScene::AddComponentGUI()
+{
+	bool addingScript = false;
+
+	ImGui::SetCursorScreenPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 100, ImGui::GetCursorScreenPos().y });
+	if (ImGui::Button("Add Component", { 200,30 }))
+	{
+		ImGui::OpenPopup("AddComponent");
+	}
+
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 100, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ 200, 160 });
+	if (ImGui::BeginPopup("AddComponent"))
+	{
+		for (int i = 0; i < (int)ComponentType::MAX_TYPE; ++i)
+		{
+			char* Text = ComponentType_toString((ComponentType)i);
+
+			bool canAddThisComponent = false;
+
+			switch (i)
+			{
+			case (int)ComponentType::MESH:
+			case (int)ComponentType::MATERIAL:
+			case (int)ComponentType::CAMERA:
+			{
+				Component* component = selectedGO->getComponentByType((ComponentType)i);
+				if (!component)
+					canAddThisComponent = true;
+				break;
+			}
+			case (int)ComponentType::SCRIPT:
+				canAddThisComponent = true;
+				break;
+			}
+
+			if (canAddThisComponent)
+			{
+				if (ImGui::MenuItem(Text))
+				{
+					switch (i)
+					{
+						case (int)ComponentType::MESH:
+						case (int)ComponentType::MATERIAL:
+						case (int)ComponentType::CAMERA:
+							selectedGO->CreateComponent((ComponentType)i);
+							break;
+						case (int)ComponentType::SCRIPT:
+						{
+							//I have to create the PopUp here in the scene. 
+							//This is weird, but I need the PopUp to be in an Update, so I can't do this on an static method in the ComponentScript class to keep it more organized.	
+							//The boolean is because I want to create another different PopUp non related to this one.
+							addingScript = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (addingScript)
+		ImGui::OpenPopup("AddingScript");
+
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 350 / 2, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ 350, 55 });
+	if (ImGui::BeginPopup("AddingScript"))
+	{
+		static std::string scriptName;
+		if(ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			Debug.Log("New Script Created: %s", scriptName.data());
+			
+			//TODO: ASK THE SCRIPTINGMODULE TO CREATE A NEW SCRIPT. NO SPACES, CLASS INHERITING FROM THE BASE CLASS, SAME NAMED AS THE FILE.
+
+			scriptName = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 GameObject* ModuleScene::getSelectedGO() const

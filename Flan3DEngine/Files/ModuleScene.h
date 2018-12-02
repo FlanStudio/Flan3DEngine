@@ -38,6 +38,7 @@ public:
 	void ClearGameObjects();
 	void guiHierarchy();
 	void guiInspector();
+	void AddComponentGUI();
 	void selectGO(GameObject* toSelect);
 	void debugDraw();
 	GameObject* getRootNode()const { return gameObjects[0]; }

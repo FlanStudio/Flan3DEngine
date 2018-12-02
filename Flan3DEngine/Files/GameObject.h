@@ -104,9 +104,6 @@ private:
 	uint numAABBvertex = 0u;
 	uint bufferIndex = 0u;
 
-	//Components
-	char* names[NUM_COMPONENTS] = { "Transform","Mesh","Material","Camera" };	//Grow when we have more components
-	bool toggles[NUM_COMPONENTS] = { true,false,false,false };					//Grow when we have more components
 };
 
 //Manually changing a gameObject's name to 'default' when name is empty

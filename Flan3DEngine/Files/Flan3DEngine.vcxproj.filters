@@ -929,6 +929,8 @@
     <ClCompile Include="ScriptingModule.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib_1.5\Math\Matrix.inl">
