@@ -31,9 +31,6 @@ public:
 	void Draw();
 	void UpdateNormalsLenght(uint newLenght);
 
-private:
-	void genNormalLines();
-
 public:
 	ResourceMesh* mesh = nullptr;
 

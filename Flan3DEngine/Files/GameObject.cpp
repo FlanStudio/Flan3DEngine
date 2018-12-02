@@ -459,7 +459,7 @@ Component* GameObject::getComponentByType(ComponentType type) const
 	return nullptr;
 }
 
-void GameObject::deleteComponent(Component * component)
+void GameObject::deleteComponent(Component* component)
 {
 	for (int i = 0; i < components.size(); ++i)
 	{

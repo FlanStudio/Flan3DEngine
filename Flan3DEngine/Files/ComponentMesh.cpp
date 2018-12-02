@@ -49,11 +49,6 @@ void ComponentMesh::UpdateNormalsLenght(uint newLenght)
 		mesh->UpdateNormalsLenght(newLenght);
 }
 
-void ComponentMesh::genNormalLines()
-{
-	
-}
-
 void ComponentMesh::drawNormals()
 {
 	if (mesh)
@@ -64,6 +59,27 @@ void ComponentMesh::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
+
+	if (ImGui::IsItemClicked(1))
+	{
+		ImGui::OpenPopup("RightClickMeshMenu");
+	}
+
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 150 / 2, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ 150, 45 });
+
+	ImGuiWindowFlags wflags = 0;
+	wflags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+
+	if (ImGui::BeginPopup("RightClickMeshMenu", wflags))
+	{
+		if (ImGui::MenuItem("Delete Component"))
+		{
+			gameObject->deleteComponent(this);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 	ImGuiDragDropFlags flags = 0;
 	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;

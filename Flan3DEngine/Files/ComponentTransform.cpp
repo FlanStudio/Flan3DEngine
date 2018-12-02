@@ -50,7 +50,7 @@ void ComponentTransform::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Transform"); ImGui::SameLine();
-
+	   	 
 	ImGuiDragDropFlags flags = 0;
 	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
 	if(ImGui::BeginDragDropSource(flags))

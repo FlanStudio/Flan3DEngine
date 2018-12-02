@@ -222,6 +222,27 @@ void ComponentCamera::OnInspector()
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Camera"); ImGui::SameLine();
 
+	if (ImGui::IsItemClicked(1))
+	{
+		ImGui::OpenPopup("RightClickMaterialMenu");
+	}
+
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 150 / 2, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ 150, 45 });
+
+	ImGuiWindowFlags wflags = 0;
+	wflags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+
+	if (ImGui::BeginPopup("RightClickMaterialMenu", wflags))
+	{
+		if (ImGui::MenuItem("Delete Component"))
+		{
+			gameObject->deleteComponent(this);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
 	ImGuiDragDropFlags flags = 0;
 	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
 	if (ImGui::BeginDragDropSource(flags))
