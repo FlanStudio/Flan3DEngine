@@ -383,22 +383,43 @@ Directory ModuleFileSystem::getDirFiles(char* dir) const
 	for (int i = 0; files[i] != nullptr; ++i)
 	{
 		std::string fulldir(dir + std::string("/") + std::string(files[i]));
-		std::string file(files[i]);
-		if(file.find(".") == std::string::npos) //Is a directory, have not extension
-		{							
+
+		//First, check if PHYSFS can recognize this file as a real file or a directory. If a UNKNOWN_TYPE is thrown, then search the extension and use it to detect. This may fail sometimes.
+		PHYSFS_Stat stats;
+		PHYSFS_stat(fulldir.data(), &stats);
+
+		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_OTHER)
+		{
+			//Here use the extension as recognition-method.
+			Debug.LogWarning("Physfs could not recognize if \"%s\" is a file or a directory. Using the extension as recognition-method. Weird behaviors may happen.", files[i]);
+
+			std::string file(files[i]);
+			if (file.find(".") == std::string::npos) //It's a directory, have not extension
+			{
+				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY;
+				Debug.LogWarning("File \"%s\" was recognized as a directory", files[i]);
+			}
+			else
+			{
+				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR;
+				Debug.LogWarning("File \"%s\" was recognized as a regular file", files[i]);
+			}
+		}
+
+		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY)
+		{			
 			Directory child = getDirFiles((char*)fulldir.data());
 			child.fullPath = fulldir;
-			ret.directories.push_back(child);
-		}
-		else
-		{
-			PHYSFS_Stat stats;
-			PHYSFS_stat(fulldir.data(), &stats);
+			ret.directories.push_back(child);		
+		}		
+		else if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR)
+		{			
 			File file;
 			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
 			file.name = files[i];
 			ret.files.push_back(file);
 		}
+		
 	}
 	PHYSFS_freeList(files);
 

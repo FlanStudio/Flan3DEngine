@@ -70,6 +70,9 @@
     <Filter Include="Sources\Resources">
       <UniqueIdentifier>{9660219d-828d-456d-8562-26dcdac6c65f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\icon-Stuff">
+      <UniqueIdentifier>{dc1b795f-701d-469f-9e1f-16190c11f6ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -666,7 +669,9 @@
     <ClInclude Include="ResourceMesh.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h" />
+    <ClInclude Include="resource1.h">
+      <Filter>Sources\icon-Stuff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -964,9 +969,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Flan3DEngine.rc" />
+    <Image Include="icon1.ico">
+      <Filter>Sources\icon-Stuff</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
+    <ResourceCompile Include="Flan3DEngine.rc">
+      <Filter>Sources\icon-Stuff</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
