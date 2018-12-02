@@ -61,7 +61,6 @@ void ComponentMaterial::OnInspector()
 		ImGui::OpenPopup("RightClickMaterialMenu");
 	}
 
-	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 150 / 2, ImGui::GetCursorScreenPos().y });
 	ImGui::SetNextWindowSize({ 150, 45 });
 
 	ImGuiWindowFlags wflags = 0;
@@ -71,7 +70,10 @@ void ComponentMaterial::OnInspector()
 	{
 		if (ImGui::MenuItem("Delete Component"))
 		{
-			gameObject->deleteComponent(this);
+			Event event;
+			event.type = EventType::COMPONENT_DESTROYED;
+			event.compEvent.component = this;
+			App->SendEvent(event);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

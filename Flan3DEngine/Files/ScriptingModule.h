@@ -22,7 +22,7 @@ public:
 	void ReceiveEvent(Event event);
 
 public:
-	ComponentScript* CreateScript(std::string csPath);
+	ComponentScript* CreateScript(std::string scriptName);
 	bool DestroyScript(ComponentScript* script);
 
 	void CreateScriptingProject();

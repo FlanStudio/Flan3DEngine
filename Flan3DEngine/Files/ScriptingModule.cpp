@@ -64,9 +64,14 @@ void ScriptingModule::ReceiveEvent(Event event)
 	}
 }
 
-ComponentScript* ScriptingModule::CreateScript(std::string csPath)
+ComponentScript* ScriptingModule::CreateScript(std::string scriptName)
 {
-	ComponentScript* script = new ComponentScript(csPath);
+	while (scriptName.find(" ") != std::string::npos)
+	{
+		scriptName = scriptName.replace(scriptName.find(" "), 1, "");
+	}
+
+	ComponentScript* script = new ComponentScript(scriptName);
 	scripts.push_back(script);
 	return script;
 }

@@ -336,6 +336,15 @@ void GameObject::ReceiveEvent(Event event)
 			}
 			break;
 		}
+		case EventType::COMPONENT_DESTROYED:
+		{
+			deleteComponent(event.compEvent.component);
+			for (int i = 0; i < childs.size(); ++i)
+			{
+				childs[i]->ReceiveEvent(event);
+			}
+			break;
+		}
 	}
 }
 
@@ -469,6 +478,10 @@ void GameObject::deleteComponent(Component* component)
 			{
 			case ComponentType::MESH:
 				App->renderer3D->ClearMesh((ComponentMesh*)component);
+				components.erase(components.begin() + i);
+				break;
+			case ComponentType::SCRIPT:
+				App->scripting->DestroyScript((ComponentScript*)component);
 				components.erase(components.begin() + i);
 				break;
 			default:

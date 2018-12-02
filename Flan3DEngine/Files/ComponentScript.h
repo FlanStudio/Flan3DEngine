@@ -4,8 +4,11 @@
 class ComponentScript : public Component
 {
 public:
-	ComponentScript(std::string csPath, GameObject* gameObject = nullptr) : csPath(csPath), Component(ComponentType::SCRIPT, gameObject, true) { }
+	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr) : scriptName(scriptName), Component(ComponentType::SCRIPT, gameObject, true) { }
+
+	void OnInspector();
 
 public:
+	std::string scriptName;
 	std::string csPath;
 };

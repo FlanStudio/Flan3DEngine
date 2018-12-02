@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 class GameObject;
+class Component;
 class Resource;
 
 struct FileSystemEvent
@@ -24,6 +25,12 @@ struct GameObjectEvent
 {
 	uint32_t type;
 	GameObject* gameObject;
+};
+
+struct ComponentEvent
+{
+	uint32_t type;
+	Component* component;
 };
 
 struct ResourceEvent
@@ -53,8 +60,11 @@ enum EventType
 	//GameObject Events
 	GO_DESTROYED = 0x300,
 
+	//Component Events
+	COMPONENT_DESTROYED = 0x400,
+
 	//Resources Events
-	RESOURCE_DESTROYED = 0x400
+	RESOURCE_DESTROYED = 0x500
 };
 
 union Event
@@ -63,6 +73,7 @@ union Event
 	FileSystemEvent fileEvent;
 	TimeEvent timeEvent;
 	GameObjectEvent goEvent;
+	ComponentEvent compEvent;
 	ResourceEvent resEvent;
 };
 

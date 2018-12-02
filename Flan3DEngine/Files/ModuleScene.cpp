@@ -13,14 +13,14 @@
 #include "ComponentMesh.h"
 #include "Component.h"
 #include "ComponentMaterial.h"
+#include "ComponentScript.h"
+
 #include "Quadtree.h"
 
 #include <bitset>
 
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_stl.h"
-
-
 
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
@@ -232,6 +232,11 @@ void ModuleScene::ReceiveEvent(Event event)
 
 			gameObjects[0]->ReceiveEvent(event);
 
+			break;
+		}
+		case EventType::COMPONENT_DESTROYED:
+		{
+			gameObjects[0]->ReceiveEvent(event);
 			break;
 		}
 	}
@@ -515,8 +520,9 @@ void ModuleScene::AddComponentGUI()
 		if(ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
 		{
 			Debug.Log("New Script Created: %s", scriptName.data());
-			
-			//TODO: ASK THE SCRIPTINGMODULE TO CREATE A NEW SCRIPT. NO SPACES, CLASS INHERITING FROM THE BASE CLASS, SAME NAMED AS THE FILE.
+					
+			ComponentScript* script = App->scripting->CreateScript(scriptName);
+			selectedGO->AddComponent(script);
 
 			scriptName = "";
 			ImGui::CloseCurrentPopup();
