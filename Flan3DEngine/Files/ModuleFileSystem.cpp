@@ -347,7 +347,7 @@ bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, c
 			return false;
 		}
 
-		std::string destinationWithRoot = destination + "/" + file;
+		std::string destinationWithRoot = destination + "/" + originDir.name + "/" + file;
 		
 		std::string destinationWithoutRoot = destinationWithRoot.at(0) == '/' ? destinationWithRoot.substr(1) : destinationWithRoot;
 		destinationWithoutRoot = destinationWithoutRoot.substr(destinationWithoutRoot.find_first_of("/") + 1);
