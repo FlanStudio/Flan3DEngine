@@ -14,6 +14,7 @@ public:
 	ScriptingModule(bool start_enabled = true) : Module("ScriptingModule", start_enabled){}
 	~ScriptingModule() {}
 
+	bool Start();
 	update_status PreUpdate();
 	update_status Update();
 	update_status PostUpdate();
@@ -28,6 +29,8 @@ public:
 	bool alreadyCreated(std::string scriptName);
 
 	void CreateScriptingProject();
+	void ExecuteScriptingProject();
+	void IncludecsFiles();
 
 	std::string clearSpaces(std::string& scriptName = std::string());
 

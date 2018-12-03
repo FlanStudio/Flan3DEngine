@@ -76,9 +76,10 @@ public:
 	void UpdateAssetsDir();
 	void saveAssetsState();
 
-private:	
 	//Get a directory structure from a root directory in the search path.
 	Directory getDirFiles(char* dir) const;
+
+private:	
 	void recursiveDirectory(Directory& directory);
 	void SendEvents(const Directory& newAssetsDir);
 

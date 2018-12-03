@@ -267,6 +267,8 @@
     <ClInclude Include="Primitives\RayPrim.h" />
     <ClInclude Include="Primitives\SpherePrim.h" />
     <ClInclude Include="ModuleTextures.h" />
+    <ClInclude Include="pugui\pugiconfig.hpp" />
+    <ClInclude Include="pugui\pugixml.hpp" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="resource1.h" />
@@ -356,6 +358,7 @@
     <ClCompile Include="Primitives\RayPrim.cpp" />
     <ClCompile Include="Primitives\SpherePrim.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
+    <ClCompile Include="pugui\pugixml.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

@@ -73,6 +73,9 @@
     <Filter Include="Sources\icon-Stuff">
       <UniqueIdentifier>{dc1b795f-701d-469f-9e1f-16190c11f6ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\Pugui">
+      <UniqueIdentifier>{9df41843-67c1-4262-b66f-8000bee5fc12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -678,6 +681,12 @@
     <ClInclude Include="ComponentScript.h">
       <Filter>Sources\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="pugui\pugiconfig.hpp">
+      <Filter>Sources\Tools\Pugui</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugixml.hpp">
+      <Filter>Sources\Tools\Pugui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -934,6 +943,9 @@
     </ClCompile>
     <ClCompile Include="ComponentScript.cpp">
       <Filter>Sources\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="pugui\pugixml.cpp">
+      <Filter>Sources\Tools\Pugui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
