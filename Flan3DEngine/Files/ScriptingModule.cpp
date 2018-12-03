@@ -91,10 +91,32 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	return false;
 }
 
+bool ScriptingModule::alreadyCreated(std::string scriptName)
+{
+	clearSpaces(scriptName);
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		if (scriptName == scripts[i]->scriptName)
+			return true;
+	}
+
+	return false;
+}
+
 void ScriptingModule::CreateScriptingProject()
 {
 	if (App->fs->Exists("ScriptingProject.sln"))
 		return;
 
 	App->fs->CopyDirectoryAndContentsInto("Internal/ScriptingProject", "", false);
+}
+
+std::string ScriptingModule::clearSpaces(std::string& scriptName)
+{
+	while (scriptName.find(" ") != std::string::npos)
+	{
+		scriptName = scriptName.replace(scriptName.find(" "), 1, "");
+	}
+	return scriptName;
 }

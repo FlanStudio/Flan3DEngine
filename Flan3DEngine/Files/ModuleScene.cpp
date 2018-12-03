@@ -518,11 +518,21 @@ void ModuleScene::AddComponentGUI()
 	{
 		static std::string scriptName;
 		if(ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
-		{
-			Debug.Log("New Script Created: %s", scriptName.data());
-					
-			ComponentScript* script = App->scripting->CreateScript(scriptName);
-			selectedGO->AddComponent(script);
+		{					
+			App->scripting->clearSpaces(scriptName);
+
+			bool alreadyCreated = App->scripting->alreadyCreated(scriptName);
+			
+			if (!alreadyCreated)
+			{
+				Debug.Log("New Script Created: %s", scriptName.data());				
+				ComponentScript* script = App->scripting->CreateScript(scriptName);
+				selectedGO->AddComponent(script);
+			}
+			else
+			{
+				Debug.LogError("Error creating the script \"%s\": Scripts must have different names", scriptName.data());
+			}
 
 			scriptName = "";
 			ImGui::CloseCurrentPopup();

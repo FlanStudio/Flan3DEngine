@@ -25,7 +25,12 @@ public:
 	ComponentScript* CreateScript(std::string scriptName);
 	bool DestroyScript(ComponentScript* script);
 
+	bool alreadyCreated(std::string scriptName);
+
 	void CreateScriptingProject();
+
+	std::string clearSpaces(std::string& scriptName = std::string());
+
 
 private:
 	std::vector<ComponentScript*> scripts;
