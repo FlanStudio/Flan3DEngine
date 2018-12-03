@@ -46,7 +46,7 @@ void ComponentScript::OnInspector()
 	if (opened)
 	{
 		ImGui::NewLine();
-		ImGui::Text("Texture:  "); ImGui::SameLine();
+		ImGui::Text(".cs File:  "); ImGui::SameLine();
 
 		ImVec2 drawingPos = ImGui::GetCursorScreenPos();
 		drawingPos = { drawingPos.x - 10, drawingPos.y };

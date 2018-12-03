@@ -22,7 +22,7 @@ bool ResourceManager::Start()
 {
 	//OPTIONAL TODO: Omit that step and make it an export button, then clear the library and export all the saved files. Exporting big textures takes a while.
 
-	//Scan assets and make a resource copy in Library. They both have to be linked and stored in the map
+	//Scan assets and make a resource copy in Library of all files without .meta. They both have to be linked and stored in the map
 	
 	BROFILER_CATEGORY("ResourceManager_Start", Profiler::Color::Black);
 
@@ -33,7 +33,6 @@ bool ResourceManager::Start()
 
 bool ResourceManager::CleanUp()
 {
-
 	return true;
 }
 
@@ -90,6 +89,9 @@ Resource* ResourceManager::FindByFile(char* file)
 	char* buffer = nullptr;
 	int size;
 
+	if (!App->fs->Exists(file + std::string(".meta")))
+		return nullptr;
+
 	App->fs->OpenRead(file + std::string(".meta"), &buffer, size);
 
 	if (!buffer)
@@ -107,6 +109,10 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 {
 	char* metaBuffer = nullptr;
 	int metaBufferSize;
+
+	if (!App->fs->Exists(path + ".meta"))
+		return;
+
 	App->fs->OpenRead(path + ".meta", &metaBuffer, metaBufferSize);
 
 	if (!metaBuffer)
@@ -241,11 +247,13 @@ void ResourceManager::deleteEvent(Event event)
 
 	char* metaBuffer;
 	int size;
-	if (!App->fs->OpenRead(std::string(event.fileEvent.file) + ".meta", &metaBuffer, size))
+	if (!App->fs->Exists(std::string(event.fileEvent.file) + ".meta") || !App->fs->OpenRead(std::string(event.fileEvent.file) + ".meta", &metaBuffer, size))
 	{
 		//This file has not a .meta, so it is not a resource.
 		return;
 	}
+
+
 
 	if (ext == ".fbx" || ext == ".FBX")
 	{
