@@ -333,7 +333,9 @@ ASALocalRun/
 [Ll]ibrary/
 [Ss]ettings/
 [Ii]nternal/
+
 *.sln
 *.csproj
+
 
 
