@@ -72,6 +72,23 @@ ComponentScript* ScriptingModule::CreateScript(std::string scriptName)
 	}
 
 	ComponentScript* script = new ComponentScript(scriptName);
+	char* buffer;
+	int size;
+
+	App->fs->OpenRead("Internal/SampleScript/SampleScript.cs", &buffer, size);
+
+	std::string scriptStream = buffer;
+	scriptStream.resize(size);
+
+	while (scriptStream.find("SampleScript") != std::string::npos)
+	{
+		scriptStream = scriptStream.replace(scriptStream.find("SampleScript"), 12, scriptName);
+	}
+
+	App->fs->OpenWriteBuffer("Assets/Script/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
+
+	delete buffer;
+
 	scripts.push_back(script);
 	return script;
 }

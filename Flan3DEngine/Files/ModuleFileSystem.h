@@ -39,7 +39,7 @@ public:
 	bool setWriteDir(char* path);
 
 	//WARNING: Don't forget to delete the buffer
-	bool OpenRead(std::string file, char** buffer, int& size) const;
+	bool OpenRead(std::string file, char** buffer, int& size, bool enableSuccessLog = true) const;
 	
 	bool OpenWrite(std::string file, char* buffer);
 	bool OpenWriteBuffer(std::string file, void* buffer, uint size);

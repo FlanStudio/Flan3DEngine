@@ -165,7 +165,7 @@ bool ModuleFileSystem::setWriteDir(char* path)
 	return ret;
 }
 
-bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) const
+bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size, bool enableSuccessLog) const
 {
 	bool ret = true;
 	PHYSFS_File* FSfile = PHYSFS_openRead(file.c_str());
@@ -185,7 +185,7 @@ bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) cons
 
 		else
 		{
-			*buffer = new char[size];
+			*buffer = new char[size+1]; // '\0' ending
 			int readed = PHYSFS_readBytes(FSfile, *buffer, size);
 			if (readed == -1)
 			{
@@ -203,7 +203,7 @@ bool ModuleFileSystem::OpenRead(std::string file, char** buffer, int& size) cons
 		}
 	}
 
-	if (ret)
+	if (ret && enableSuccessLog)
 		Debug.Log("FILESYSTEM: \"%s\" succesfully read", file.c_str());
 
 	return ret;
