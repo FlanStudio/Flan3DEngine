@@ -332,5 +332,8 @@ ASALocalRun/
 #Custom Folders and formats
 [Ll]ibrary/
 [Ss]ettings/
+[Ii]nternal/
+*.sln
+*.csproj
 
 
