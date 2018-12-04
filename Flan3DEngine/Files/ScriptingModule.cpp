@@ -3,6 +3,17 @@
 
 #include "pugui/pugixml.hpp"
 
+#include <mono/metadata/assembly.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/mono-config.h>
+
+bool ScriptingModule::Init()
+{
+	//Locate the lib and etc folders in the mono installation
+	mono_set_dirs(MONO_LIB, MONO_ETC);
+	return true;
+}
+
 bool ScriptingModule::Start()
 {
 	CreateScriptingProject();
@@ -11,6 +22,12 @@ bool ScriptingModule::Start()
 
 update_status ScriptingModule::PreUpdate()
 {
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Awake();
+		scripts[i]->printHelloWorld();
+	}
+
 	return UPDATE_CONTINUE;
 }
 

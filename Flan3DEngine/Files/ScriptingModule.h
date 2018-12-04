@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+#define MONO_LIB "C:\\Program Files (x86)\\Mono\\lib"
+#define MONO_ETC "C:\\Program Files (x86)\\Mono\\etc"
+
 class ComponentScript;
 
 class ScriptingModule : public Module
@@ -14,6 +17,7 @@ public:
 	ScriptingModule(bool start_enabled = true) : Module("ScriptingModule", start_enabled){}
 	~ScriptingModule() {}
 
+	bool Init();
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();

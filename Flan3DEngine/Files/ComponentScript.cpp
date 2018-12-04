@@ -1,6 +1,50 @@
 #include "ComponentScript.h"
 #include "imgui/imgui_internal.h"
 
+#include <mono/metadata/assembly.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/mono-config.h>
+
+#include <windows.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+#include <cstdlib>
+#include <string>
+#include <iostream>
+
+void ComponentScript::Awake()
+{
+	std::string scriptPath(R"(C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Game\Assets\Scripts\Logger.cs)");
+	std::string command = "mcs " + scriptPath + " -target:library";
+
+	//Compile the script
+	system("cd\\");
+	system("cd \"C:\\Program Files\\Mono\\bin\"");
+	system("mcs /target:library \"C:\\Users\\Jony635\\Desktop\\Proyectos 3o\\GitHub\\Flan3DEngine\\Flan3DEngine\\Game\\Assets\\Scripts\\Logger.cs\" -r:\"C:\\Users\\Jony635\\Desktop\\Proyectos 3o\\GitHub\\Flan3DEngine\\Flan3DEngine\\Game\\internal\\FlanScript.dll\"");
+}
+
+void ComponentScript::printHelloWorld()
+{
+	MonoDomain* domain = mono_jit_init("CompilingScript");
+	if (!domain)
+		return;
+
+	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll");
+	if (!assembly)
+		return;
+
+	MonoImage* image = mono_assembly_get_image(assembly);
+	if (!image)
+		return;
+
+	MonoClass* monoClass = mono_class_from_name(image, nullptr, "Logger");
+	MonoMethod* method = mono_class_get_method_from_name(monoClass, "printHelloWorld", 0);
+
+	//This method is static, takes no params, and doesnt return any exception. We invoke it 2 times.
+	mono_runtime_invoke(method, NULL, NULL, NULL);
+}
+
 void ComponentScript::OnInspector()
 {
 	float PosX = ImGui::GetCursorPosX();
