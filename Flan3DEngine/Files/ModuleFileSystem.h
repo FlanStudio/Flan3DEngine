@@ -48,6 +48,8 @@ public:
 	bool MoveFileInto(const std::string& file, const std::string& newLocation);
 	bool CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot = true);
 
+	std::string getAppPath() const;
+
 	//WARNING: Don't forget to delete the buffer
 	char* ASCII_TO_BINARY(char* ascii_string);
 

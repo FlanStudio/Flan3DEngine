@@ -372,6 +372,11 @@ bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, c
 	return true;
 }
 
+std::string ModuleFileSystem::getAppPath() const
+{
+	return PHYSFS_getRealDir("");
+}
+
 char* ModuleFileSystem::ASCII_TO_BINARY(char* ascii_string)
 {
 	std::string ascii(ascii_string);

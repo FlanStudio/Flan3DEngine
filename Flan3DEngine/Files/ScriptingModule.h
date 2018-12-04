@@ -10,6 +10,10 @@
 #define MONO_ETC "C:\\Program Files (x86)\\Mono\\etc"
 
 class ComponentScript;
+struct _MonoDomain;
+struct _MonoAssembly;
+
+bool exec(const char* cmd, std::string& error = std::string());
 
 class ScriptingModule : public Module
 {
@@ -36,8 +40,15 @@ public:
 	void ExecuteScriptingProject();
 	void IncludecsFiles();
 
+	void CreateInternalCSProject();
+
+	std::string getReferencePath()const;
+	
 	std::string clearSpaces(std::string& scriptName = std::string());
 
+public:
+	_MonoDomain* domain = nullptr;
+	_MonoAssembly* internalAssembly = nullptr;
 
 private:
 	std::vector<ComponentScript*> scripts;

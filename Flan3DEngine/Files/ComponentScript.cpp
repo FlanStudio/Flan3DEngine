@@ -1,36 +1,47 @@
 #include "ComponentScript.h"
+
 #include "imgui/imgui_internal.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
-
-#include <windows.h>
-#include <mono/jit/jit.h>
-#include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
-#include <cstdlib>
-#include <string>
-#include <iostream>
+
+#include <array>
 
 void ComponentScript::Awake()
 {
-	std::string scriptPath(R"(C:\Users\Jony635\Desktop\Proyectos 3o\GitHub\Flan3DEngine\Flan3DEngine\Game\Assets\Scripts\Logger.cs)");
-	std::string command = "mcs " + scriptPath + " -target:library";
+	if (initialized)
+		return;
 
-	//Compile the script
-	system("cd\\");
-	system("cd \"C:\\Program Files\\Mono\\bin\"");
-	system("mcs /target:library \"C:\\Users\\Jony635\\Desktop\\Proyectos 3o\\GitHub\\Flan3DEngine\\Flan3DEngine\\Game\\Assets\\Scripts\\Logger.cs\" -r:\"C:\\Users\\Jony635\\Desktop\\Proyectos 3o\\GitHub\\Flan3DEngine\\Flan3DEngine\\Game\\internal\\FlanScript.dll\"");
+	initialized = true;
+
+	std::string goRoot(R"(cd\ )");
+	std::string goMonoBin(R"( cd "C:\Program Files\Mono\bin" )");
+
+	std::string compileCommand(" mcs -target:library ");
+	std::string path = std::string("\"" + std::string(SDL_GetBasePath())) + "Assets\\Scripts\\" + scriptName + ".cs\" ";
+
+	std::string error;
+	
+	std::string temp (goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath());
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath()).data(), error))
+	{
+		if (!error.empty())
+			Debug.LogError("Error compiling the script %s. Error: %s", (scriptName + ".cs").data(), error.data());
+		else
+			Debug.LogError("Error compiling the script %s.");
+	}
 }
 
 void ComponentScript::printHelloWorld()
 {
-	MonoDomain* domain = mono_jit_init("CompilingScript");
+	MonoDomain* domain = App->scripting->domain;
+
 	if (!domain)
 		return;
 
-	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll");
+	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll"/*"Library\\Scripts\\Assembly-CSharp.dll"*/);
 	if (!assembly)
 		return;
 
@@ -38,11 +49,18 @@ void ComponentScript::printHelloWorld()
 	if (!image)
 		return;
 
-	MonoClass* monoClass = mono_class_from_name(image, nullptr, "Logger");
-	MonoMethod* method = mono_class_get_method_from_name(monoClass, "printHelloWorld", 0);
+	MonoClass* monoClass = mono_class_from_name(image, "", "Logger");
+	if (!monoClass)
+		return;
+
+	MonoMethod* method = mono_class_get_method_from_name(monoClass, "Awake", 0);
+	if (!method)
+		return;
+
+	MonoObject* logger = mono_object_new(domain, monoClass);
 
 	//This method is static, takes no params, and doesnt return any exception. We invoke it 2 times.
-	mono_runtime_invoke(method, NULL, NULL, NULL);
+	mono_runtime_invoke(method, logger, NULL, NULL);
 }
 
 void ComponentScript::OnInspector()

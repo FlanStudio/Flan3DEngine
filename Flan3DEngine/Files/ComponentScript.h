@@ -13,6 +13,7 @@ public:
 	void OnInspector();
 
 public:
+	bool initialized = false;
 	std::string scriptName;
 	std::string csPath;
 };

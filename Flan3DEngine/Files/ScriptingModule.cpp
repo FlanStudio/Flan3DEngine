@@ -7,10 +7,53 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
 
+#include <array>
+
+bool exec(const char* cmd, std::string& error)
+{
+	std::array<char, 128> buffer;
+	bool result;
+	auto pipe = _popen(cmd, "r");
+
+	if (!pipe) throw std::runtime_error("popen() failed!");
+
+	while (!feof(pipe))
+	{
+		if (fgets(buffer.data(), 128, pipe) != nullptr)
+			error += buffer.data();
+	}
+
+	auto rc = _pclose(pipe);
+
+	if (rc == EXIT_SUCCESS)
+	{
+		std::cout << "SUCCESS\n";
+		result = true;
+	}
+	else
+	{
+		std::cout << "FAILED\n";
+		result = false;
+	}
+
+	return result;
+}
+
 bool ScriptingModule::Init()
 {
 	//Locate the lib and etc folders in the mono installation
 	mono_set_dirs(MONO_LIB, MONO_ETC);
+
+	//Initialize the mono domain
+	domain = mono_jit_init("Scripting");
+	if (!domain)
+		return false;
+
+	//Reference the internal compiled project
+	internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
+	if (!internalAssembly)
+		return false;
+
 	return true;
 }
 
@@ -22,6 +65,9 @@ bool ScriptingModule::Start()
 
 update_status ScriptingModule::PreUpdate()
 {
+	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+		CreateInternalCSProject();
+
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->Awake();
@@ -63,6 +109,10 @@ bool ScriptingModule::CleanUp()
 		delete scripts[i];
 	}
 	scripts.clear();
+
+	mono_jit_cleanup(domain);
+	domain = nullptr;
+
 	return true;
 }
 
@@ -238,6 +288,19 @@ void ScriptingModule::IncludecsFiles()
 	std::ostringstream stream;
 	configFile.save(stream, "\r\n");
 	App->fs->OpenWriteBuffer("Assembly-CSharp.csproj", (char*)stream.str().data(), stream.str().size());	
+}
+
+void ScriptingModule::CreateInternalCSProject()
+{
+	if (App->fs->Exists("FlanCS"))
+		return;
+
+	App->fs->CopyDirectoryAndContentsInto("Internal/FlanCS", "", true);
+}
+
+std::string ScriptingModule::getReferencePath() const
+{
+	return std::string("-r:") + std::string("\"") + SDL_GetBasePath() + std::string("FlanCS.dll\" ");
 }
 
 std::string ScriptingModule::clearSpaces(std::string& scriptName)
