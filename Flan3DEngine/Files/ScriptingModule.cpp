@@ -300,7 +300,7 @@ void ScriptingModule::CreateInternalCSProject()
 
 std::string ScriptingModule::getReferencePath() const
 {
-	return std::string("-r:") + std::string("\"") + SDL_GetBasePath() + std::string("FlanCS.dll\" ");
+	return std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("FlanCS.dll\" ");
 }
 
 std::string ScriptingModule::clearSpaces(std::string& scriptName)

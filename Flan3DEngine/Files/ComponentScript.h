@@ -13,6 +13,11 @@ public:
 	void OnInspector();
 
 public:
+
+	//Return false if the cs file has errors
+	bool CompileCSFile();
+
+public:
 	bool initialized = false;
 	std::string scriptName;
 	std::string csPath;

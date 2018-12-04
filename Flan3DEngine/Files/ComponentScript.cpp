@@ -14,34 +14,24 @@ void ComponentScript::Awake()
 	if (initialized)
 		return;
 
-	initialized = true;
-
-	std::string goRoot(R"(cd\ )");
-	std::string goMonoBin(R"( cd "C:\Program Files\Mono\bin" )");
-
-	std::string compileCommand(" mcs -target:library ");
-	std::string path = std::string("\"" + std::string(SDL_GetBasePath())) + "Assets\\Scripts\\" + scriptName + ".cs\" ";
-
-	std::string error;
-	
-	std::string temp (goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath());
-	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath()).data(), error))
+	//This will not be here
+	if (!CompileCSFile())
 	{
-		if (!error.empty())
-			Debug.LogError("Error compiling the script %s. Error: %s", (scriptName + ".cs").data(), error.data());
-		else
-			Debug.LogError("Error compiling the script %s.");
-	}
+		initialized = false;
+		return;
+	}	
+
+	initialized = true;
 }
 
 void ComponentScript::printHelloWorld()
 {
-	MonoDomain* domain = App->scripting->domain;
+	/*MonoDomain* domain = App->scripting->domain;
 
 	if (!domain)
 		return;
 
-	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll"/*"Library\\Scripts\\Assembly-CSharp.dll"*/);
+	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll");
 	if (!assembly)
 		return;
 
@@ -60,7 +50,7 @@ void ComponentScript::printHelloWorld()
 	MonoObject* logger = mono_object_new(domain, monoClass);
 
 	//This method is static, takes no params, and doesnt return any exception. We invoke it 2 times.
-	mono_runtime_invoke(method, logger, NULL, NULL);
+	mono_runtime_invoke(method, logger, NULL, NULL); */
 }
 
 void ComponentScript::OnInspector()
@@ -157,4 +147,29 @@ void ComponentScript::OnInspector()
 		ImGui::NewLine();
 	}
 
+}
+
+bool ComponentScript::CompileCSFile()
+{
+	bool ret = true;
+
+	std::string goRoot(R"(cd\ )");
+	std::string goMonoBin(R"( cd "C:\Program Files\Mono\bin" )");
+
+	std::string compileCommand(" mcs -target:library ");
+	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + "Assets\\Scripts\\" + scriptName + ".cs\" ";
+
+	std::string error;
+
+	std::string temp(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath());
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath()).data(), error))
+	{
+		ret = false;
+		if (!error.empty())
+			Debug.LogError("Error compiling the script %s. Error: %s", (scriptName + ".cs").data(), error.data());
+		else
+			Debug.LogError("Error compiling the script %s.");
+	}
+
+	return ret;
 }
