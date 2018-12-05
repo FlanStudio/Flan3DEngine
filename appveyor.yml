@@ -11,6 +11,11 @@ branches:
   only:
     - releases
     - master
+
+before_build:
+  
+  - 7z x "Mono.zip" -oc:\"%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\Mono\
+
 for:
 -
   branches:
