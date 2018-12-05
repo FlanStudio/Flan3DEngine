@@ -185,6 +185,8 @@ void GameObject::ClearChild(GameObject* child)
 
 void GameObject::OnInspector()
 {	
+	ImVec2 pos = ImGui::GetCursorPos();
+
 	ImGuiInputTextFlags flags = 0;
 	flags |= ImGuiInputTextFlags_AutoSelectAll;
 	flags |= ImGuiInputTextFlags_AllowTabInput;
@@ -316,6 +318,35 @@ void GameObject::OnInspector()
 		InsertComponent(compToReorder, postoreorder);
 		ClearComponentAt(postoreorder > compToReorderIndex ? compToReorderIndex : compToReorderIndex +1);
 	}
+
+	ImVec2 normalPos = ImGui::GetCursorPos();
+
+	ImGui::SetCursorPos({ pos.x - 15, pos.y });
+	ImGui::Dummy({ ImGui::GetWindowSize().x,  ImGui::GetWindowSize().y - 40 });
+
+	//Dropping scripts
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingCS", flags);
+		if (payload)
+		{
+			char* path = (char*)payload->Data;
+			if (path != nullptr)
+			{
+				//Create the script component with this cs path
+				std::string scriptName(path);
+				scriptName = scriptName.substr(scriptName.find_last_of("/")+1);
+				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
+
+				Component* script = (Component*)App->scripting->CreateScript(scriptName, false);
+				App->scene->getSelectedGO()->AddComponent(script);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+	ImGui::SetCursorPos(normalPos);
 }
 
 void GameObject::ReceiveEvent(Event event)

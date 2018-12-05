@@ -80,7 +80,7 @@ void ModuleTime::OnTimeGUI()
 		{
 			IN_GAME = true;
 			Event event;
-			event.timeEvent.type = EventType::PLAY;
+			event.type = EventType::PLAY;
 			App->SendEvent(event);
 		}
 	}
@@ -91,7 +91,7 @@ void ModuleTime::OnTimeGUI()
 			IN_GAME = false;
 			paused = false;
 			Event event;
-			event.timeEvent.type = EventType::STOP;
+			event.type = EventType::STOP;
 			App->SendEvent(event);
 		}
 	}
@@ -103,7 +103,7 @@ void ModuleTime::OnTimeGUI()
 		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.345f,0.0f }, { 0.655f,-0.47f }) && IN_GAME)//pause
 		{
 			Event event;
-			event.timeEvent.type = EventType::PAUSE;
+			event.type = EventType::PAUSE;
 			App->SendEvent(event);
 			paused = true;
 		}
@@ -114,7 +114,7 @@ void ModuleTime::OnTimeGUI()
 		if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.345f,0.0f }, { 0.655f,-0.47f }, -1, { 0.0f,0.0f,0.0f,0.0f }, {0.8f,0.3f,0.3f,1.0f}))//resume
 		{
 			Event event;
-			event.timeEvent.type = EventType::RESUME;
+			event.type = EventType::RESUME;
 			App->SendEvent(event);
 			paused = false;
 		}
@@ -125,7 +125,7 @@ void ModuleTime::OnTimeGUI()
 	if (ImGui::ImageButton((GLuint*)TimeAtlasID, { 25,25 }, { 0.69f,0.0f }, { 1.0f,0.47f }) && paused)//step
 	{
 		Event event;
-		event.timeEvent.type = EventType::STEP;
+		event.type = EventType::STEP;
 		App->SendEvent(event);
 		steped = true;
 		paused = false;

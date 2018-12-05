@@ -71,7 +71,6 @@ update_status ScriptingModule::PreUpdate()
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->Awake();
-		scripts[i]->printHelloWorld();
 	}
 
 	return UPDATE_CONTINUE;
@@ -79,19 +78,25 @@ update_status ScriptingModule::PreUpdate()
 
 update_status ScriptingModule::Update()
 {
-	//static float timeLapsed = 0.0f;
-	//timeLapsed += App->time->dt;
-
-	//if (timeLapsed >= .5)
-	//{
-	//	timeLapsed == 0;
-	//	//IncludecsFiles();
-	//}
-
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		CreateScriptingProject();
 		IncludecsFiles();
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		//Here we need to recompile somehow the loaded assemblies
+
+		/*for (int i = 0; i < scripts.size(); ++i)
+		{
+			scripts[i]->CompileCSFile();
+		}*/
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Update();
 	}
 
 	return UPDATE_CONTINUE;
@@ -146,7 +151,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 	}
 }
 
-ComponentScript* ScriptingModule::CreateScript(std::string scriptName)
+ComponentScript* ScriptingModule::CreateScript(std::string scriptName, bool createCS)
 {
 	while (scriptName.find(" ") != std::string::npos)
 	{
@@ -157,23 +162,29 @@ ComponentScript* ScriptingModule::CreateScript(std::string scriptName)
 	char* buffer;
 	int size;
 
-	App->fs->OpenRead("Internal/SampleScript/SampleScript.cs", &buffer, size);
-
-	std::string scriptStream = buffer;
-	scriptStream.resize(size);
-
-	while (scriptStream.find("SampleScript") != std::string::npos)
+	if (createCS)
 	{
-		scriptStream = scriptStream.replace(scriptStream.find("SampleScript"), 12, scriptName);
+		App->fs->OpenRead("Internal/SampleScript/SampleScript.cs", &buffer, size);
+
+		std::string scriptStream = buffer;
+		scriptStream.resize(size);
+
+		while (scriptStream.find("SampleScript") != std::string::npos)
+		{
+			scriptStream = scriptStream.replace(scriptStream.find("SampleScript"), 12, scriptName);
+		}
+
+		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
+
+		delete buffer;
 	}
-
-	App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
-
-	delete buffer;
 
 	script->csPath = "Assets/Scripts/" + scriptName + ".cs";
 
 	scripts.push_back(script);
+
+	scripts[scripts.size() - 1]->Awake();
+
 	return script;
 }
 

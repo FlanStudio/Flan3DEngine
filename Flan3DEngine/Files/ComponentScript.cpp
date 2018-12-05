@@ -20,37 +20,44 @@ void ComponentScript::Awake()
 		initialized = false;
 		return;
 	}	
-
 	initialized = true;
+
+	if (awakeMethod)
+	{		
+		mono_runtime_invoke(awakeMethod, classInstance, NULL, NULL);
+	}
 }
 
-void ComponentScript::printHelloWorld()
+void ComponentScript::Start()
 {
-	/*MonoDomain* domain = App->scripting->domain;
+	if (startMethod)
+	{
+		mono_runtime_invoke(startMethod, classInstance, NULL, NULL);
+	}
+}
 
-	if (!domain)
-		return;
+void ComponentScript::PreUpdate()
+{
+	if (preUpdateMethod)
+	{
+		mono_runtime_invoke(preUpdateMethod, classInstance, NULL, NULL);
+	}
+}
 
-	MonoAssembly* assembly = mono_domain_assembly_open(domain, "Assets\\Scripts\\Logger.dll");
-	if (!assembly)
-		return;
+void ComponentScript::Update()
+{
+	if (updateMethod)
+	{
+		mono_runtime_invoke(updateMethod, classInstance, NULL, NULL);
+	}
+}
 
-	MonoImage* image = mono_assembly_get_image(assembly);
-	if (!image)
-		return;
-
-	MonoClass* monoClass = mono_class_from_name(image, "", "Logger");
-	if (!monoClass)
-		return;
-
-	MonoMethod* method = mono_class_get_method_from_name(monoClass, "Awake", 0);
-	if (!method)
-		return;
-
-	MonoObject* logger = mono_object_new(domain, monoClass);
-
-	//This method is static, takes no params, and doesnt return any exception. We invoke it 2 times.
-	mono_runtime_invoke(method, logger, NULL, NULL); */
+void ComponentScript::PostUpdate()
+{
+	if (postUpdateMethod)
+	{
+		mono_runtime_invoke(postUpdateMethod, classInstance, NULL, NULL);
+	}
 }
 
 void ComponentScript::OnInspector()
@@ -153,6 +160,16 @@ bool ComponentScript::CompileCSFile()
 {
 	bool ret = true;
 
+	if (assembly)
+	{
+		return true;
+		mono_image_close(image);
+		image = nullptr;
+		mono_assembly_close(assembly);
+		assembly = nullptr;
+	}
+		
+
 	std::string goRoot(R"(cd\ )");
 	std::string goMonoBin(R"( cd "C:\Program Files\Mono\bin" )");
 
@@ -161,7 +178,6 @@ bool ComponentScript::CompileCSFile()
 
 	std::string error;
 
-	std::string temp(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath());
 	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath()).data(), error))
 	{
 		ret = false;
@@ -169,6 +185,47 @@ bool ComponentScript::CompileCSFile()
 			Debug.LogError("Error compiling the script %s. Error: %s", (scriptName + ".cs").data(), error.data());
 		else
 			Debug.LogError("Error compiling the script %s.");
+	}
+
+	if (ret)
+	{
+		//TODO: Move the dll to the Library folder.
+
+		//Reference the methods
+		assembly = mono_domain_assembly_open(App->scripting->domain, std::string("Assets\\Scripts\\" + scriptName + ".dll").data());
+		if (!assembly)
+		{
+			//Somehow the .dll could not be found.
+			return false;
+		}
+
+		image = mono_assembly_get_image(assembly);
+		if (!image)
+			return ret;
+
+		MonoClass* klass = mono_class_from_name(image, "", scriptName.data());
+		classInstance = mono_object_new(App->scripting->domain, klass);
+		mono_runtime_object_init(classInstance);
+
+		MonoMethodDesc* desc = mono_method_desc_new(std::string(scriptName + ":Awake()").data(), false);
+		awakeMethod = mono_method_desc_search_in_image(desc, image);
+		mono_method_desc_free(desc);
+
+		desc = mono_method_desc_new(std::string(scriptName + ":Start()").data(), false);
+		startMethod = mono_method_desc_search_in_image(desc, image);
+		mono_method_desc_free(desc);
+
+		desc = mono_method_desc_new(std::string(scriptName + ":PreUpdate()").data(), false);
+		preUpdateMethod = mono_method_desc_search_in_image(desc, image);
+		mono_method_desc_free(desc);
+
+		desc = mono_method_desc_new(std::string(scriptName + ":Update()").data(), false);
+		updateMethod = mono_method_desc_search_in_image(desc, image);
+		mono_method_desc_free(desc);
+
+		desc = mono_method_desc_new(std::string(scriptName + ":PostUpdate()").data(), false);
+		postUpdateMethod = mono_method_desc_search_in_image(desc, image);
+		mono_method_desc_free(desc);
 	}
 
 	return ret;

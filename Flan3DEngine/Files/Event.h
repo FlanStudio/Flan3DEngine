@@ -16,11 +16,6 @@ struct FileSystemEvent
 	const char* oldLocation;
 };
 
-struct TimeEvent
-{
-	uint32_t type;
-};
-
 struct GameObjectEvent
 {
 	uint32_t type;
@@ -38,7 +33,6 @@ struct ResourceEvent
 	uint32_t type;
 	Resource* resource;
 };
-
 
 enum EventType
 {
@@ -64,14 +58,13 @@ enum EventType
 	COMPONENT_DESTROYED = 0x400,
 
 	//Resources Events
-	RESOURCE_DESTROYED = 0x500
+	RESOURCE_DESTROYED = 0x500,
 };
 
 union Event
 {
 	uint32_t type;
 	FileSystemEvent fileEvent;
-	TimeEvent timeEvent;
 	GameObjectEvent goEvent;
 	ComponentEvent compEvent;
 	ResourceEvent resEvent;

@@ -687,6 +687,15 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 					ImGui::Text(directory.files[i].name.data());
 					ImGui::EndTooltip();
 				}
+				else if (ext == ".cs")
+				{
+					//Manage scripts drag and drop here
+					std::string fullAddress = directory.fullPath + "/" + directory.files[i].name;
+					ImGui::SetDragDropPayload("DraggingCS", (char*)fullAddress.c_str(), fullAddress.size() + 1);
+					ImGui::BeginTooltip();
+					ImGui::Text(directory.files[i].name.data());
+					ImGui::EndTooltip();
+				}
 				ImGui::EndDragDropSource();
 			}
 

@@ -31,7 +31,7 @@ public:
 	void ReceiveEvent(Event event);
 
 public:
-	ComponentScript* CreateScript(std::string scriptName);
+	ComponentScript* CreateScript(std::string scriptName, bool createCS = true);
 	bool DestroyScript(ComponentScript* script);
 
 	bool alreadyCreated(std::string scriptName);

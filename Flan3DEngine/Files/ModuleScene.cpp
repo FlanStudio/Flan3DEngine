@@ -418,7 +418,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 		{
 			for (int i = 0; i < go->childs.size(); ++i)
 			{
-PrintHierarchy(go->childs[i]);
+				PrintHierarchy(go->childs[i]);
 			}
 		}
 	}
