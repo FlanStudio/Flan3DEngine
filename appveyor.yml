@@ -14,7 +14,7 @@ branches:
 
 before_build:
   
-  - 7z x "Mono.zip" -oc:\"%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\Mono\
+  - 7z x "Mono.zip" -o"%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\Mono\
 
 for:
 -
