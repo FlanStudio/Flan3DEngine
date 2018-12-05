@@ -34,8 +34,7 @@ for:
   deploy:
   - provider: GitHub
     release: "Flan3DEngine-Release-v$(appveyor_build_version)"
-    artifact: "Flan3DEngine.zip"
-    artifact: "Mono.zip"
+    artifact: "Flan3DEngine.zip", "Mono.zip" 
     auth_token:
       secure: mpvv4JtzhxltjCtSxrbMFASqOmfq91aRldyjg+pOeUsbbuVwv6cWGvGuX6TAz9e+
     draft: false
