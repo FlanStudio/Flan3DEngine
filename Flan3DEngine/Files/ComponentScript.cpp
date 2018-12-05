@@ -171,7 +171,7 @@ bool ComponentScript::CompileCSFile()
 		
 
 	std::string goRoot(R"(cd\ )");
-	std::string goMonoBin(R"( cd "C:\Program Files\Mono\bin" )");
+	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
 
 	std::string compileCommand(" mcs -target:library ");
 	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + "Assets\\Scripts\\" + scriptName + ".cs\" ";
