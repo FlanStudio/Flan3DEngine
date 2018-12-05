@@ -17,6 +17,7 @@ public:
 		SCENE,
 		BONE,
 		ANIMATION,
+		SCRIPT
 	};
 
 	Resource(ResourceType type) : type(type) 

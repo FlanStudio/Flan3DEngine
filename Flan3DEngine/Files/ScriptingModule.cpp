@@ -54,7 +54,21 @@ bool ScriptingModule::Init()
 		return false;
 
 	//Reference the internal compiled project
-	internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
+	//internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
+
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size))
+		return false;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
+
+	internalAssembly = mono_assembly_load_from(image, "InternalAssembly", &status);
+
+	delete buffer;
+
 	if (!internalAssembly)
 		return false;
 

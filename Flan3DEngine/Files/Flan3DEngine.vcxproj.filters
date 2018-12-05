@@ -687,6 +687,9 @@
     <ClInclude Include="pugui\pugixml.hpp">
       <Filter>Sources\Tools\Pugui</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceScript.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -946,6 +949,9 @@
     </ClCompile>
     <ClCompile Include="pugui\pugixml.cpp">
       <Filter>Sources\Tools\Pugui</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

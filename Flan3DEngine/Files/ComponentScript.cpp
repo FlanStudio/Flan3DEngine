@@ -192,7 +192,23 @@ bool ComponentScript::CompileCSFile()
 		//TODO: Move the dll to the Library folder.
 
 		//Reference the methods
-		assembly = mono_domain_assembly_open(App->scripting->domain, std::string("Assets\\Scripts\\" + scriptName + ".dll").data());
+		//assembly = mono_domain_assembly_open(App->scripting->domain, std::string("Assets\\Scripts\\" + scriptName + ".dll").data());
+
+		//Referencing the assembly from memory
+		char* buffer;
+		int size;
+		if (!App->fs->OpenRead(std::string("Assets/Scripts/" + scriptName + ".dll"), &buffer, size))
+			return false;
+
+		//Loading assemblies from data instead of from file
+		MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+		MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
+
+		assembly = mono_assembly_load_from(image, (std::string("assembly") + std::to_string(UUID)).data(), &status);
+
+		delete buffer;
+
+
 		if (!assembly)
 		{
 			//Somehow the .dll could not be found.
