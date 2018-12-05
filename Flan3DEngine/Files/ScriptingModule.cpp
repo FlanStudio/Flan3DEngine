@@ -42,7 +42,11 @@ bool exec(const char* cmd, std::string& error)
 bool ScriptingModule::Init()
 {
 	//Locate the lib and etc folders in the mono installation
-	mono_set_dirs(MONO_LIB, MONO_ETC);
+	std::string MonoLib, MonoEtc, gamePath = App->fs->getAppPath();
+	MonoLib = gamePath + "Mono\\lib";
+	MonoEtc = gamePath + "Mono\\etc";
+
+	mono_set_dirs(MonoLib.data(), MonoEtc.data());
 
 	//Initialize the mono domain
 	domain = mono_jit_init("Scripting");

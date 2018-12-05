@@ -6,9 +6,6 @@
 #include <string>
 #include <vector>
 
-#define MONO_LIB "C:\\Program Files (x86)\\Mono\\lib"
-#define MONO_ETC "C:\\Program Files (x86)\\Mono\\etc"
-
 class ComponentScript;
 struct _MonoDomain;
 struct _MonoAssembly;
