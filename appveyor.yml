@@ -29,7 +29,7 @@ for:
     
   artifacts:  
   - path: "Flan3DEngine.zip"
-  - path  "Mono.zip"
+  - path: "Mono.zip"
 
   deploy:
   - provider: GitHub
