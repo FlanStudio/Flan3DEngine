@@ -14,7 +14,7 @@ branches:
 
 before_build:
   
-  - 7z x "Mono.zip" -o"%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\Mono\
+  - 7z x "Mono.zip" -o"%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\
 
 for:
 -
@@ -26,7 +26,7 @@ for:
   after_build:
     - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
     - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
-    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine /EXCLUDE:gameExcluded.md
     - cmd: copy "%APPVEYOR_BUILD_FOLDER%\Flan3DEngine\Release\Flan3DEngine.exe" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
     - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
     - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\Flan3DEngine
