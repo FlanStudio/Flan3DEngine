@@ -8,6 +8,12 @@ Link to [**Jonathan Molina** Github](https://github.com/Jony635)
 
 Link to [**Oriol de Dios** Github](https://github.com/orioldedios)
 
+## Execution Instructions:
+Extract the "Mono.zip" content into the "Game" folder and execute "Flan3DEngine.exe".  
+You have all the required files in the Github Releases page.  
+
+Let's build some games!
+
 ## Game Engine Instructions:
 
 ### Main Menu Bar
