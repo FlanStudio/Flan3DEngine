@@ -3,6 +3,10 @@
 
 #include "Resource.h"
 
+struct _MonoMethod;
+struct _MonoImage;
+struct _MonoAssembly;
+
 class ResourceScript : public Resource
 {
 public:
@@ -19,12 +23,33 @@ public:
 	ResourceScript() : Resource(ResourceType::SCRIPT) {}
 	virtual ~ResourceScript();
 
+	bool LoadToMemory() { return true; }
+	bool UnLoadFromMemory() { return true; };
+
+public:
 	void SerializeToMeta(char*& cursor) const;
 	void DeSerializeFromMeta(char*& cursor);
 	uint bytesToSerializeMeta() const;
 
+	bool Compile();
+
+private:
+	std::string pathToWindowsNotation(const std::string& path) const;
+
 public:
-	bool compilednoerrors = true;
+
+	std::string scriptName;
+
+	//Callback methods references
+	_MonoMethod* awakeMethod = nullptr;
+	_MonoMethod* startMethod = nullptr;
+	_MonoMethod* preUpdateMethod = nullptr;
+	_MonoMethod* updateMethod = nullptr;
+	_MonoMethod* postUpdateMethod = nullptr;
+
+	//The assembly and image containing all the .cs code
+	_MonoAssembly* assembly = nullptr;
+	_MonoImage* image = nullptr;
 
 private:
 	uint getBytes() const;

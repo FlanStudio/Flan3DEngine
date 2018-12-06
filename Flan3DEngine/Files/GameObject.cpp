@@ -340,7 +340,7 @@ void GameObject::OnInspector()
 				scriptName = scriptName.substr(scriptName.find_last_of("/")+1);
 				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
-				Component* script = (Component*)App->scripting->CreateScript(scriptName, false);
+				Component* script = (Component*)App->scripting->CreateScriptComponent(scriptName, false);
 				App->scene->getSelectedGO()->AddComponent(script);
 			}
 		}

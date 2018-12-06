@@ -29,10 +29,10 @@ public:
 public:
 	inline ResourceType getType() const { return type; }
 	inline UID getUUID() const { return uuid; }
-	inline const char* getFile() const { return file.data(); }
-	inline void setFile(char* newLocation) { file = std::string(newLocation); }
-	inline void setExportedFile(char* newLocation) { exportedFile = std::string(newLocation); }
-	inline const char* getExportedFile() const { return exportedFile.data(); }
+	inline std::string getFile() const { return file.data(); }
+	inline void setFile(std::string newLocation) { file = newLocation; }
+	inline void setExportedFile(std::string newLocation) { exportedFile = newLocation; }
+	inline std::string getExportedFile() const { return exportedFile; }
 	inline bool isLoadedToMemory() const { return timesReferenced > 0; }
 	inline void setUID(UID uid) { uuid = uid; }
 

@@ -675,7 +675,7 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 				{
 					ImGui::SetDragDropPayload("DraggingResources", &resource, resource->getBytes());
 					ImGui::BeginTooltip();
-					ImGui::Text(resource->getFile());
+					ImGui::Text(resource->getFile().data());
 					ImGui::EndTooltip();
 				}			
 				else if(ext == ".FBX" || ext == ".fbx")

@@ -1,4 +1,5 @@
 #include "ComponentScript.h"
+#include "ResourceScript.h"
 
 #include "imgui/imgui_internal.h"
 
@@ -7,57 +8,61 @@
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/debug-helpers.h>
 
-#include <array>
 
 void ComponentScript::Awake()
 {
-	if (initialized)
+	if (awaked)
 		return;
+	awaked = true;
 
 	//This will not be here
-	if (!CompileCSFile())
+	if (scriptRes)
+		scriptRes->Compile();
+
+	//This will not be here
+	/*if (!CompileCSFile())
 	{
 		initialized = false;
 		return;
 	}	
-	initialized = true;
+	initialized = true;*/
 
-	if (awakeMethod)
+	/*if (awakeMethod)
 	{		
 		mono_runtime_invoke(awakeMethod, classInstance, NULL, NULL);
-	}
+	}*/
 }
 
 void ComponentScript::Start()
 {
-	if (startMethod)
+	/*if (startMethod)
 	{
 		mono_runtime_invoke(startMethod, classInstance, NULL, NULL);
-	}
+	}*/
 }
 
 void ComponentScript::PreUpdate()
 {
-	if (preUpdateMethod)
+	/*if (preUpdateMethod)
 	{
 		mono_runtime_invoke(preUpdateMethod, classInstance, NULL, NULL);
-	}
+	}*/
 }
 
 void ComponentScript::Update()
 {
-	if (updateMethod)
+	if (scriptRes && scriptRes->updateMethod)
 	{
-		mono_runtime_invoke(updateMethod, classInstance, NULL, NULL);
+		mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, NULL);
 	}
 }
 
 void ComponentScript::PostUpdate()
 {
-	if (postUpdateMethod)
+	/*if (postUpdateMethod)
 	{
 		mono_runtime_invoke(postUpdateMethod, classInstance, NULL, NULL);
-	}
+	}*/
 }
 
 void ComponentScript::OnInspector()
@@ -129,14 +134,14 @@ void ComponentScript::OnInspector()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", csPath.data());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->getFile().data());
 			ImGui::EndTooltip();
 		}		
 
 		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
 
 		//Calculate the text fitting the button rect
-		std::string originalText = csPath;
+		std::string originalText = scriptRes ? scriptRes->getFile().data() : "";
 		std::string clampedText;
 
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
@@ -156,93 +161,12 @@ void ComponentScript::OnInspector()
 
 }
 
-bool ComponentScript::CompileCSFile()
+void ComponentScript::InstanceClass()
 {
-	bool ret = true;
+	if (!scriptRes)
+		return;
 
-	if (assembly)
-	{
-		return true;
-		mono_image_close(image);
-		image = nullptr;
-		mono_assembly_close(assembly);
-		assembly = nullptr;
-	}
-		
-
-	std::string goRoot(R"(cd\ )");
-	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
-
-	std::string compileCommand(" mcs -target:library ");
-	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + "Assets\\Scripts\\" + scriptName + ".cs\" ";
-
-	std::string error;
-
-	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + App->scripting->getReferencePath()).data(), error))
-	{
-		ret = false;
-		if (!error.empty())
-			Debug.LogError("Error compiling the script %s. Error: %s", (scriptName + ".cs").data(), error.data());
-		else
-			Debug.LogError("Error compiling the script %s.");
-	}
-
-	if (ret)
-	{
-		//TODO: Move the dll to the Library folder.
-
-		//Reference the methods
-		//assembly = mono_domain_assembly_open(App->scripting->domain, std::string("Assets\\Scripts\\" + scriptName + ".dll").data());
-
-		//Referencing the assembly from memory
-		char* buffer;
-		int size;
-		if (!App->fs->OpenRead(std::string("Assets/Scripts/" + scriptName + ".dll"), &buffer, size))
-			return false;
-
-		//Loading assemblies from data instead of from file
-		MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
-		MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
-
-		assembly = mono_assembly_load_from(image, (std::string("assembly") + std::to_string(UUID)).data(), &status);
-
-		delete buffer;
-
-
-		if (!assembly)
-		{
-			//Somehow the .dll could not be found.
-			return false;
-		}
-
-		image = mono_assembly_get_image(assembly);
-		if (!image)
-			return ret;
-
-		MonoClass* klass = mono_class_from_name(image, "", scriptName.data());
-		classInstance = mono_object_new(App->scripting->domain, klass);
-		mono_runtime_object_init(classInstance);
-
-		MonoMethodDesc* desc = mono_method_desc_new(std::string(scriptName + ":Awake()").data(), false);
-		awakeMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new(std::string(scriptName + ":Start()").data(), false);
-		startMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new(std::string(scriptName + ":PreUpdate()").data(), false);
-		preUpdateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new(std::string(scriptName + ":Update()").data(), false);
-		updateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new(std::string(scriptName + ":PostUpdate()").data(), false);
-		postUpdateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-	}
-
-	return ret;
+	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
+	classInstance = mono_object_new(App->scripting->domain, klass);
+	mono_runtime_object_init(classInstance);
 }

@@ -4,6 +4,7 @@
 #include "Resource.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
+#include "ResourceScript.h"
 
 #include "Brofiler/Brofiler.h"
 
@@ -237,6 +238,26 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 	}
 
 	App->scene->AddGameObject(root);
+}
+
+void ResourceManager::PushResourceScript(ResourceScript* script)
+{
+	resources.insert(std::pair<UID, Resource*>(script->getUUID(), script));
+}
+
+ResourceScript * ResourceManager::getResourceScriptbyName(std::string scriptName)
+{
+	std::map<UID, Resource*>::iterator it;
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->getType() == Resource::ResourceType::SCRIPT)
+		{
+			ResourceScript* script = (ResourceScript*)it->second;
+			if (script->scriptName == scriptName)			
+				return script;
+		}
+	}
+	return nullptr;
 }
 
 void ResourceManager::deleteEvent(Event event)

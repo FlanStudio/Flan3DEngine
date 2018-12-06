@@ -1,9 +1,8 @@
 #include "Component.h"
 #include "GameObject.h"
 
-struct _MonoMethod;
 struct _MonoObject;
-struct _MonoImage;
+class ResourceScript;
 
 class ComponentScript : public Component
 {
@@ -19,24 +18,14 @@ public:
 	void OnInspector();
 
 public:
-
-	//Return false if the cs file has errors
-	bool CompileCSFile();
+	void InstanceClass();
 
 public:
-	bool initialized = false;
+	bool awaked = false;
 	std::string scriptName;
-	std::string csPath;
 
+	ResourceScript* scriptRes = nullptr;
+	
 private:
-	_MonoMethod* awakeMethod = nullptr;
-	_MonoMethod* startMethod = nullptr;
-	_MonoMethod* preUpdateMethod = nullptr;
-	_MonoMethod* updateMethod = nullptr;
-	_MonoMethod* postUpdateMethod = nullptr;
-
-	_MonoAssembly* assembly = nullptr;
-	_MonoImage* image = nullptr;
-
 	_MonoObject* classInstance = nullptr;
 };

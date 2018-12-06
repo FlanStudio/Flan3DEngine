@@ -9,7 +9,8 @@ public class Hola : FlanScript
     }
 
     public void Update()
-    {      
+    {
+        System.Console.Clear();
         System.Console.WriteLine("IM UPDATING BRUUUUUUUH!!!!!");
     }
 }

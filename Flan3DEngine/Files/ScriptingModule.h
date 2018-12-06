@@ -9,6 +9,7 @@
 class ComponentScript;
 struct _MonoDomain;
 struct _MonoAssembly;
+class ResourceScript;
 
 bool exec(const char* cmd, std::string& error = std::string());
 
@@ -28,7 +29,7 @@ public:
 	void ReceiveEvent(Event event);
 
 public:
-	ComponentScript* CreateScript(std::string scriptName, bool createCS = true);
+	ComponentScript* CreateScriptComponent(std::string scriptName, bool createCS = true);
 	bool DestroyScript(ComponentScript* script);
 
 	bool alreadyCreated(std::string scriptName);

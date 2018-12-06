@@ -1,5 +1,6 @@
 #include "ScriptingModule.h"
 #include "ComponentScript.h"
+#include "ResourceScript.h"
 
 #include "pugui/pugixml.hpp"
 
@@ -78,6 +79,7 @@ bool ScriptingModule::Init()
 bool ScriptingModule::Start()
 {
 	CreateScriptingProject();
+	IncludecsFiles();
 	return true;
 }
 
@@ -169,7 +171,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 	}
 }
 
-ComponentScript* ScriptingModule::CreateScript(std::string scriptName, bool createCS)
+ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, bool createCS)
 {
 	while (scriptName.find(" ") != std::string::npos)
 	{
@@ -197,11 +199,25 @@ ComponentScript* ScriptingModule::CreateScript(std::string scriptName, bool crea
 		delete buffer;
 	}
 
-	script->csPath = "Assets/Scripts/" + scriptName + ".cs";
+	ResourceScript* scriptRes = App->resources->getResourceScriptbyName(scriptName);
+	if (!scriptRes)
+	{
+		//Here we have to reference a new ResourceScript with the .cs we have created, but the ResourceManager will still be sending file created events, and we would have data duplication.
+		//We disable this behavior and control the script creation only with this method, so we do not care for external files out-of-engine created.
+		scriptRes = new ResourceScript();
+		scriptRes->setFile("Assets/Scripts/" + scriptName + ".cs");
+		scriptRes->scriptName = scriptName;
+		scriptRes->Compile();
+		App->resources->PushResourceScript(scriptRes);
+	}
+
+	script->scriptRes = scriptRes;
+
+	script->InstanceClass();
 
 	scripts.push_back(script);
 
-	scripts[scripts.size() - 1]->Awake();
+	script->Awake();
 
 	return script;
 }

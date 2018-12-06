@@ -5,6 +5,7 @@
 #include <map>
 
 class Resource;
+class ResourceScript;
 
 class ResourceManager : public Module
 {
@@ -22,6 +23,9 @@ public:
 	Resource* FindByFile(char* file);
 
 	void InstanciateFBX(const std::string& path) const;
+
+	void PushResourceScript(ResourceScript* script);
+	ResourceScript* getResourceScriptbyName(std::string scriptName);
 
 private:
 	void deleteEvent(Event event);
