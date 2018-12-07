@@ -71,6 +71,8 @@ bool ScriptingModule::Init()
 
 	internalAssembly = mono_assembly_load_from(image, "InternalAssembly", &status);
 
+	
+
 	char* args[1];
 	args[0] == "InternalAssembly";
 	mono_jit_exec(domain, internalAssembly, 1, args);
@@ -164,13 +166,19 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{		
 			for (int i = 0; i < scripts.size(); ++i)
 			{
+				bool somethingDestroyed = false;
 				if (scripts[i]->scriptRes == event.resEvent.resource)
 				{
+					somethingDestroyed = true;
 					scripts[i]->gameObject->ClearComponent(scripts[i]);
 					delete scripts[i];
 					scripts.erase(scripts.begin() + i);
 
 					i--;
+				}
+				if (somethingDestroyed)
+				{
+					IncludecsFiles();
 				}
 			}			
 		}
@@ -382,6 +390,55 @@ std::string ScriptingModule::clearSpaces(std::string& scriptName)
 	return scriptName;
 }
 
+void ScriptingModule::ReInstance()
+{
+	for (int i = 0; i < scripts.size(); ++i)
+	{	
+		scripts[i]->InstanceClass();
+	}
+}
+
+void DebugLogTranslator(MonoString* msg)
+{
+	MonoError error;
+	char* string = mono_string_to_utf8_checked(msg, &error);
+
+	if (!mono_error_ok(&error))
+		return;
+
+	Debug.Log(string);
+
+	mono_free(string);
+}
+
+void DebugLogWarningTranslator(MonoString* msg)
+{
+	MonoError error;
+	char* string = mono_string_to_utf8_checked(msg, &error);
+
+	if (!mono_error_ok(&error))
+		return;
+
+	Debug.LogWarning(string);
+
+	mono_free(string);
+}
+
+void DebugLogErrorTranslator(MonoString* msg)
+{
+	MonoError error;
+	char* string = mono_string_to_utf8_checked(msg, &error);
+
+	if (!mono_error_ok(&error))
+		return;
+
+	Debug.LogError(string);
+
+	mono_free(string);
+}
+
+void ClearConsole() { Debug.Clear(); }
+
 void ScriptingModule::CreateDomain()
 {
 	static bool firstDomain = true;
@@ -399,12 +456,10 @@ void ScriptingModule::CreateDomain()
 
 	domain = nextDom;
 	firstDomain = false;
-}
 
-void ScriptingModule::ReInstance()
-{
-	for (int i = 0; i < scripts.size(); ++i)
-	{	
-		scripts[i]->InstanceClass();
-	}
+	//SetUp Internal Calls
+	mono_add_internal_call("FlanEngine.Debug::Log", (const void*)&DebugLogTranslator);
+	mono_add_internal_call("FlanEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
+	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
+	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
 }
