@@ -367,6 +367,9 @@ void ModuleCamera3D::rotateAroundCenter(float dt)
 	if (selected)
 	{
 		center = selected->boundingBox.CenterPoint();
+
+		if (!selected->boundingBox.IsFinite())
+			center = selected->transform->position;
 	}
 
 	if (dy != 0)

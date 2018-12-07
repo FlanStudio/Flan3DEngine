@@ -368,7 +368,7 @@ void ModuleRenderer3D::DrawMeshes() const
 		for (int i = 0; i < intersected.size(); ++i)
 		{
 			ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
-			if (mesh)
+			if (mesh && mesh->gameObject->isActive() && mesh->isActive())
 			{
 				mesh->Draw();
 				if (drawNormals)
@@ -381,10 +381,13 @@ void ModuleRenderer3D::DrawMeshes() const
 	{
 		for (int i = 0; i < meshes.size(); ++i)
 		{
-			meshes[i]->Draw();
+			if (meshes[i]->gameObject->isActive() && meshes[i]->isActive())
+			{
+				meshes[i]->Draw();
 
-			if (drawNormals)
-				meshes[i]->drawNormals();
+				if (drawNormals)
+					meshes[i]->drawNormals();
+			}
 		}
 	}
 }
