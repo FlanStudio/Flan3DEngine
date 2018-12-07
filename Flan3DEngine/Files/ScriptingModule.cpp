@@ -160,6 +160,21 @@ void ScriptingModule::ReceiveEvent(Event event)
 			break;
 		}
 
+		case EventType::RESOURCE_DESTROYED:
+		{		
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->scriptRes == event.resEvent.resource)
+				{
+					scripts[i]->gameObject->ClearComponent(scripts[i]);
+					delete scripts[i];
+					scripts.erase(scripts.begin() + i);
+
+					i--;
+				}
+			}			
+		}
+
 		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
 	}
 }
@@ -188,6 +203,8 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		}
 
 		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
+
+		IncludecsFiles();
 
 		delete buffer;
 	}

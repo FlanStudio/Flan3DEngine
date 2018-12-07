@@ -352,6 +352,29 @@ void ResourceManager::deleteEvent(Event event)
 			}*/
 		}
 	}
+	else if (ext == ".cs")
+	{
+		UID uid;
+		memcpy(&uid, metaBuffer, sizeof(UID));
+
+		if (resources.find(uid) != resources.end())
+		{
+			ResourceScript* res = (ResourceScript*)resources.at(uid);
+
+			App->fs->deleteFile("Library/Scripts/" + res->scriptName + ".dll");
+				
+			App->fs->deleteFile(std::string(event.fileEvent.file) + ".meta");
+
+			resources.erase(uid);
+
+			//Alert all the references to stop usign this deleted resource		
+			Event event;
+			event.resEvent.type = EventType::RESOURCE_DESTROYED;
+			event.resEvent.resource = res;
+			App->SendEvent(event);
+			delete res;				
+		}
+	}
 	else
 	{
 		Resource* toDelete = FindByFile((char*)event.fileEvent.file);
@@ -367,16 +390,18 @@ void ResourceManager::deleteEvent(Event event)
 			//Delete the resource from library and from memory
 			switch (toDelete->getType())
 			{
-			case Resource::ResourceType::TEXTURE:
-			{
-				App->fs->deleteFile(std::string(event.fileEvent.file) + ".meta");
-				resources.erase(toDelete->getUUID());
-				delete toDelete;
-				break;
-			}
+				case Resource::ResourceType::TEXTURE:
+				{
+					App->fs->deleteFile(std::string(event.fileEvent.file) + ".meta");
+					resources.erase(toDelete->getUUID());
+					delete toDelete;
+					break;
+				}
 			}
 		}
 	}
+
+	delete metaBuffer;
 }
 
 void ResourceManager::createEvent(Event event)
