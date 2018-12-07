@@ -59,6 +59,7 @@ enum EventType
 
 	//Resources Events
 	RESOURCE_DESTROYED = 0x500,
+	RESOURCE_MODIFIED
 };
 
 union Event

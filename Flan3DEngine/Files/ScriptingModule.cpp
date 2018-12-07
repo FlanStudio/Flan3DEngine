@@ -48,11 +48,14 @@ bool ScriptingModule::Init()
 	MonoEtc = gamePath + "Mono\\etc";
 
 	mono_set_dirs(MonoLib.data(), MonoEtc.data());
+	mono_config_parse(NULL);
 
 	//Initialize the mono domain
 	domain = mono_jit_init("Scripting");
 	if (!domain)
 		return false;
+
+	CreateDomain();
 
 	//Reference the internal compiled project
 	//internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
@@ -67,6 +70,10 @@ bool ScriptingModule::Init()
 	MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
 
 	internalAssembly = mono_assembly_load_from(image, "InternalAssembly", &status);
+
+	char* args[1];
+	args[0] == "InternalAssembly";
+	mono_jit_exec(domain, internalAssembly, 1, args);
 
 	delete buffer;
 
@@ -104,16 +111,6 @@ update_status ScriptingModule::Update()
 		IncludecsFiles();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		//Here we need to recompile somehow the loaded assemblies
-
-		/*for (int i = 0; i < scripts.size(); ++i)
-		{
-			scripts[i]->CompileCSFile();
-		}*/
-	}
-
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->Update();
@@ -147,27 +144,23 @@ void ScriptingModule::ReceiveEvent(Event event)
 	{
 		case EventType::PLAY:
 		{
-			//Call the Script Awake if both script and gameObject are active. If not, we must call it during runtime if it becomes active.
-			for (int i = 0; i < scripts.size(); ++i)
-			{
-				GameObject* gameObject = scripts[i]->gameObject;
-				if (!gameObject)
-					continue;
+			//Check if some files have compile errors and don't let the user hit the play.
 
-			
-			}
-
-			//Call the Script Start if both script and gameObject are active.
-			for (int i = 0; i < scripts.size(); ++i)
-			{
-				GameObject* gameObject = scripts[i]->gameObject;
-				if (!gameObject)
-					continue;
-
-
-
-			}
+			//Call the Awake and Start for all the Enabled script in the Play instant.
+			break;
 		}
+		case EventType::PAUSE:
+		{
+			//Stop calling the PreUpdate, Update, PostUpdate methods in the active ComponentScripts.
+			break;
+		}
+		case EventType::STOP:
+		{
+			//Call the CleanUp method for all the scripts which where enabled at this point.
+			break;
+		}
+
+		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
 	}
 }
 
@@ -199,7 +192,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		delete buffer;
 	}
 
-	ResourceScript* scriptRes = App->resources->getResourceScriptbyName(scriptName);
+	ResourceScript* scriptRes = (ResourceScript*)App->resources->FindByFile("Assets/Scripts/" + scriptName + ".cs");
 	if (!scriptRes)
 	{
 		//Here we have to reference a new ResourceScript with the .cs we have created, but the ResourceManager will still be sending file created events, and we would have data duplication.
@@ -207,6 +200,17 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		scriptRes = new ResourceScript();
 		scriptRes->setFile("Assets/Scripts/" + scriptName + ".cs");
 		scriptRes->scriptName = scriptName;
+
+		//Create the .meta, to make faster the search in the map storing the uid.
+		uint bytes = sizeof(UID);
+		char* buffer = new char[bytes];
+		UID uid = scriptRes->getUUID();
+		memcpy(buffer, &uid, bytes);
+
+		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
+
+		delete buffer;
+
 		scriptRes->Compile();
 		App->resources->PushResourceScript(scriptRes);
 	}
@@ -217,6 +221,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 	scripts.push_back(script);
 
+	//TODO: MOVE IT TO THE PLAY AND ENABLED EVENTS
 	script->Awake();
 
 	return script;
@@ -327,6 +332,9 @@ void ScriptingModule::IncludecsFiles()
 
 	for (int i = 0; i < scripts.files.size(); ++i)
 	{	
+		if (App->fs->getExt(scripts.files[i].name) != ".cs")
+			continue;
+
 		itemGroup.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + scripts.files[i].name).data());
 	}
 
@@ -355,4 +363,31 @@ std::string ScriptingModule::clearSpaces(std::string& scriptName)
 		scriptName = scriptName.replace(scriptName.find(" "), 1, "");
 	}
 	return scriptName;
+}
+
+void ScriptingModule::CreateDomain()
+{
+	static bool firstDomain = true;
+
+	MonoDomain* nextDom = mono_domain_create_appdomain("The reloaded domain", NULL);
+	if (!nextDom)
+		return;
+
+	if (!mono_domain_set(nextDom, false))
+		return;
+	
+	//Make sure we do not delete the main domain
+	if (!firstDomain)
+		mono_domain_unload(domain);
+
+	domain = nextDom;
+	firstDomain = false;
+}
+
+void ScriptingModule::ReInstance()
+{
+	for (int i = 0; i < scripts.size(); ++i)
+	{	
+		scripts[i]->InstanceClass();
+	}
 }

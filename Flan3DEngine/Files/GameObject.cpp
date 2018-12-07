@@ -342,6 +342,7 @@ void GameObject::OnInspector()
 
 				Component* script = (Component*)App->scripting->CreateScriptComponent(scriptName, false);
 				App->scene->getSelectedGO()->AddComponent(script);
+				script->gameObject = App->scene->getSelectedGO();
 			}
 		}
 		ImGui::EndDragDropTarget();

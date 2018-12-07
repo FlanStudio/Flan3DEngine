@@ -20,12 +20,11 @@ public:
 
 public:
 	Resource* Get(UID uuid) const;
-	Resource* FindByFile(char* file);
+	Resource* FindByFile(const std::string& file);
 
 	void InstanciateFBX(const std::string& path) const;
 
 	void PushResourceScript(ResourceScript* script);
-	ResourceScript* getResourceScriptbyName(std::string scriptName);
 
 private:
 	void deleteEvent(Event event);

@@ -43,18 +43,55 @@ uint ResourceScript::getBytes() const
 	return sizeof(ResourceScript);
 }
 
+bool ResourceScript::preCompileErrors()
+{
+	std::string goRoot(R"(cd\ )");
+	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
+
+	std::string compileCommand(" mcs -target:library ");
+
+	std::string fileName = file.substr(file.find_last_of("/") + 1);
+	std::string windowsFormattedPath = pathToWindowsNotation(file);
+
+	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + windowsFormattedPath + "\"";
+
+	std::string redirectOutput(" 1> \"" + pathToWindowsNotation(App->fs->getAppPath()) + "LogError.txt\"" + std::string(" 2>&1"));
+
+	std::string error;
+
+	std::string temp(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput);
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput).data(), error))
+	{
+		Debug.LogError("Error compiling the script %s:", fileName.data());
+
+		char* buffer; int size;
+		App->fs->OpenRead("LogError.txt", &buffer, size, false);
+
+		std::string outPut(buffer);
+		outPut.resize(size);
+
+		Debug.LogError(outPut.data());
+
+		delete buffer;
+
+		state = ScriptState::COMPILED_WITH_ERRORS;
+
+		//Deleting the .dll
+		std::string pathNoExt = file.substr(0, file.find_last_of("."));
+		App->fs->deleteFile(pathNoExt + ".dll");
+
+		return true;
+	}
+
+	//Deleting the .dll
+	std::string pathNoExt = file.substr(0, file.find_last_of("."));
+	App->fs->deleteFile(pathNoExt + ".dll");
+	return false;
+}
+
 bool ResourceScript::Compile()
 {
 	bool ret = true;
-
-	if (assembly)
-	{
-		return true;
-		mono_image_close(image);
-		image = nullptr;
-		mono_assembly_close(assembly);
-		assembly = nullptr;
-	}
 
 	std::string goRoot(R"(cd\ )");
 	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
@@ -66,19 +103,38 @@ bool ResourceScript::Compile()
 
 	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + windowsFormattedPath + "\"";
 
+	std::string redirectOutput(" 1> \"" + pathToWindowsNotation(App->fs->getAppPath()) + "LogError.txt\"" + std::string(" 2>&1"));
+
 	std::string error;
 
-	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath()).data(), error))
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput).data(), error))
 	{
+		//When you create the script it's compiled. When you modify the script this is being precompiled first, and already logged errors, so we don't log them again.
+		if (firstCompiled)
+		{
+			firstCompiled = false;
+			
+			Debug.LogError("Error compiling the script %s:", fileName.data());
+
+			char* buffer; int size;
+			App->fs->OpenRead("LogError.txt", &buffer, size, false);
+
+			std::string outPut(buffer);
+			outPut.resize(size);
+
+			Debug.LogError(outPut.data());
+
+			delete buffer;
+		}
+
 		ret = false;
-		if (!error.empty())
-			Debug.LogError("Error compiling the script %s. Error: %s", fileName, error.data());
-		else
-			Debug.LogError("Error compiling the script %s.");
+		state = ScriptState::COMPILED_WITH_ERRORS;
 	}
 
 	if (ret)
 	{
+		state = ScriptState::COMPILED_FINE;
+
 		//Move the dll to the Library folder.
 		std::string dllPath = file;
 		dllPath = dllPath.substr(0, dllPath.find_last_of("."));
@@ -87,7 +143,7 @@ bool ResourceScript::Compile()
 		std::string fileNameNoExt = file.substr(file.find_last_of("/") + 1);
 		fileNameNoExt = fileNameNoExt.substr(0, fileNameNoExt.find("."));
 
-		if (!App->fs->MoveFileInto(dllPath, ("Library/Scripts/" + fileNameNoExt + ".dll").data()))
+		if (!App->fs->MoveFileInto(dllPath, ("Library/Scripts/" + fileNameNoExt + ".dll").data(), false))
 			return false;
 		
 		exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
@@ -95,14 +151,14 @@ bool ResourceScript::Compile()
 		//Referencing the assembly from memory
 		char* buffer;
 		int size;
-		if (!App->fs->OpenRead(exportedFile, &buffer, size))
+		if (!App->fs->OpenRead(exportedFile, &buffer, size, false))
 			return false;
 
 		//Loading assemblies from data instead of from file
 		MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
 		image = mono_image_open_from_data(buffer, size, 1, &status);
 
-		assembly = mono_assembly_load_from(image, (std::string("assembly") + std::to_string(uuid)).data(), &status);
+		assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(uuid)).data(), &status, false);
 
 		delete buffer;
 

@@ -117,12 +117,15 @@ update_status ModuleFileSystem::PreUpdate()
 	return update_status::UPDATE_CONTINUE;
 }
 
-bool ModuleFileSystem::AddPath(char* path, char* mount)
+bool ModuleFileSystem::AddPath(char* path, char* mount, bool enableSuccessLog)
 {
 	bool ret = true;
 
 	if (PHYSFS_mount(path, mount, 1) != 0)
 	{
+		if (!enableSuccessLog)
+			return true;
+
 		Debug.Log("FILESYSTEM: Added \"%s\" to the search path", path);
 		if (mount != "")
 			Debug.Log("FILESYSTEM: Mounted \"%s\" into \"%s\"", path, mount);
@@ -306,26 +309,32 @@ bool ModuleFileSystem::CopyExternalFileInto(const std::string& file, const std::
 	return true;
 }
 
-bool ModuleFileSystem::MoveFileInto(const std::string& file, const std::string& newLocation)
+bool ModuleFileSystem::MoveFileInto(const std::string& file, const std::string& newLocation, bool enableSuccessLog)
 {
 	char* buffer;
 	int size;
-	if (!OpenRead(file, &buffer, size))
+	if (!OpenRead(file, &buffer, size, false))
 	{
+		Debug.LogError("Couldn't move the file");
 		return false;
 	}
 
 	if (!OpenWriteBuffer(newLocation, buffer, size))
 	{
+		Debug.LogError("Couldn't move the file");
 		delete buffer;
 		return false;
 	}
 
 	if (!deleteFile(file))
 	{
+		Debug.LogError("Couldn't move the file");
 		delete buffer;
 		return false;
 	}
+
+	if(enableSuccessLog)
+		Debug.Log("File %s moved succesfully to %s.", file.data(), newLocation.data());
 
 	delete buffer;
 	return true;
@@ -378,7 +387,7 @@ std::string ModuleFileSystem::getAppPath()
 
 	PHYSFS_unmount(".");
 
-	AddPath((char*)baseDir.data());
+	AddPath((char*)baseDir.data(), "", false);
 
 	if (Exists("physfs.dll"))
 	{
@@ -398,7 +407,7 @@ std::string ModuleFileSystem::getAppPath()
 			
 		baseDir += "\\Game\\";
 
-		AddPath((char*)baseDir.data());
+		AddPath((char*)baseDir.data(), "", false);
 
 		std::string moretemp = baseDir + "physfs.dll";
 
@@ -671,7 +680,7 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 			{
 				Resource* resource = App->resources->FindByFile((char*)std::string(directory.fullPath + "/" + directory.files[i].name).data());	
 				std::string ext = getExt(directory.files[i].name);
-				if (resource)
+				if (resource && ext != ".cs")
 				{
 					ImGui::SetDragDropPayload("DraggingResources", &resource, resource->getBytes());
 					ImGui::BeginTooltip();

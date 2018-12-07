@@ -35,7 +35,7 @@ public:
 	update_status PreUpdate();
 	bool CleanUp();
 
-	bool AddPath(char* path, char* mount = "");
+	bool AddPath(char* path, char* mount = "", bool enableSuccessLog = true);
 	bool setWriteDir(char* path);
 
 	//WARNING: Don't forget to delete the buffer
@@ -45,7 +45,7 @@ public:
 	bool OpenWriteBuffer(std::string file, void* buffer, uint size);
 	
 	bool CopyExternalFileInto(const std::string& file, const std::string& newLocation);
-	bool MoveFileInto(const std::string& file, const std::string& newLocation);
+	bool MoveFileInto(const std::string& file, const std::string& newLocation, bool enableSuccessLog = true);
 	bool CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot = true);
 
 	std::string getAppPath();

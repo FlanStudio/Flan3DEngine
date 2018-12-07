@@ -11,7 +11,8 @@ public class Hola : FlanScript
     public void Update()
     {
         System.Console.Clear();
-        System.Console.WriteLine("IM UPDATING BRUUUUUUUH!!!!!");
+        //System.Console.WriteLine("PUES HOTRELOADING HECHO CHAVALEH");
+        //System.Console.WriteLine("JEJEJEJEJEJEJEJEJEJE I WIN");
     }
 }
 

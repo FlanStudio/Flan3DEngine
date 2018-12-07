@@ -64,9 +64,43 @@ void ResourceManager::ReceiveEvent(Event event)
 		}
 		case EventType::FILE_MODIFIED:
 		{
-			//Rexport all the asociated resources
-			deleteEvent(event);
-			createEvent(event);
+			std::string ext = App->fs->getExt(event.fileEvent.file);
+			if (ext == ".cs")
+			{
+				if (!App->fs->Exists((std::string(event.fileEvent.file) + ".meta").data()))
+					return;
+
+				char* metaBuffer = nullptr;
+				int size;
+				App->fs->OpenRead((std::string(event.fileEvent.file) + ".meta").data(), &metaBuffer, size, false);
+				
+				UID uid;
+				memcpy(&uid, metaBuffer, sizeof(UID));
+
+				if (resources.find(uid) == resources.end())
+					return;
+
+				Resource* res = resources.at(uid);
+				if (res)
+				{
+					ResourceScript* script = (ResourceScript*)res;
+					if (script->preCompileErrors())
+						return;
+
+					App->scripting->CreateDomain();				
+					script->Compile();					
+					App->scripting->ReInstance();
+				}
+
+				delete metaBuffer;
+			}
+			else
+			{
+				//Rexport all the asociated resources
+				deleteEvent(event);
+				createEvent(event);
+			}
+			
 			break;
 		}
 	}
@@ -85,7 +119,7 @@ Resource* ResourceManager::Get(UID uuid) const
 	return ret;
 }
 
-Resource* ResourceManager::FindByFile(char* file)
+Resource* ResourceManager::FindByFile(const std::string& file)
 {
 	char* buffer = nullptr;
 	int size;
@@ -93,7 +127,7 @@ Resource* ResourceManager::FindByFile(char* file)
 	if (!App->fs->Exists(file + std::string(".meta")))
 		return nullptr;
 
-	App->fs->OpenRead(file + std::string(".meta"), &buffer, size);
+	App->fs->OpenRead(file + std::string(".meta"), &buffer, size, false);
 
 	if (!buffer)
 		return nullptr;
@@ -245,21 +279,6 @@ void ResourceManager::PushResourceScript(ResourceScript* script)
 	resources.insert(std::pair<UID, Resource*>(script->getUUID(), script));
 }
 
-ResourceScript * ResourceManager::getResourceScriptbyName(std::string scriptName)
-{
-	std::map<UID, Resource*>::iterator it;
-	for (it = resources.begin(); it != resources.end(); ++it)
-	{
-		if (it->second->getType() == Resource::ResourceType::SCRIPT)
-		{
-			ResourceScript* script = (ResourceScript*)it->second;
-			if (script->scriptName == scriptName)			
-				return script;
-		}
-	}
-	return nullptr;
-}
-
 void ResourceManager::deleteEvent(Event event)
 {
 	std::string ext = App->fs->getExt(event.fileEvent.file);
@@ -273,8 +292,6 @@ void ResourceManager::deleteEvent(Event event)
 		//This file has not a .meta, so it is not a resource.
 		return;
 	}
-
-
 
 	if (ext == ".fbx" || ext == ".FBX")
 	{

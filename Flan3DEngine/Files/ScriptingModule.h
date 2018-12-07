@@ -44,7 +44,11 @@ public:
 	
 	std::string clearSpaces(std::string& scriptName = std::string());
 
+	void CreateDomain();
+	void ReInstance();
+
 public:
+	_MonoDomain* unTouchableDomain = nullptr;
 	_MonoDomain* domain = nullptr;
 	_MonoAssembly* internalAssembly = nullptr;
 

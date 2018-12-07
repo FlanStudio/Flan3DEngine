@@ -335,5 +335,6 @@ ASALocalRun/
 [Ii]nternal/
 **/[Mm]ono/
 
+**/Game/LogError.txt
 *.sln
 *.csproj

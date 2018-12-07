@@ -16,8 +16,6 @@ void ComponentScript::Awake()
 	awaked = true;
 
 	//This will not be here
-	if (scriptRes)
-		scriptRes->Compile();
 
 	//This will not be here
 	/*if (!CompileCSFile())
@@ -158,15 +156,15 @@ void ComponentScript::OnInspector()
 		ImGui::Text(clampedText.data());
 		ImGui::NewLine();
 	}
-
 }
 
 void ComponentScript::InstanceClass()
 {
-	if (!scriptRes)
+	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
 		return;
 
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
 	classInstance = mono_object_new(App->scripting->domain, klass);
+	
 	mono_runtime_object_init(classInstance);
 }

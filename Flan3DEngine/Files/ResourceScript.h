@@ -31,6 +31,7 @@ public:
 	void DeSerializeFromMeta(char*& cursor);
 	uint bytesToSerializeMeta() const;
 
+	bool preCompileErrors();
 	bool Compile();
 
 private:
@@ -52,6 +53,7 @@ public:
 	_MonoImage* image = nullptr;
 
 private:
+	bool firstCompiled = true;
 	uint getBytes() const;
 };
 
