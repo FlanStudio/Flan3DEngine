@@ -12,25 +12,52 @@
 void ComponentScript::Awake()
 {
 	if (scriptRes && scriptRes->awakeMethod)
-	{		
-		mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, NULL);
+	{
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
+		if (exc)
+		{
+			//TODO: PAUSE THE ENGINE HERE
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
+		}
 	}
 }
 
 void ComponentScript::Start()
 {
-	/*if (startMethod)
+	if (scriptRes && scriptRes->startMethod)
 	{
-		mono_runtime_invoke(startMethod, classInstance, NULL, NULL);
-	}*/
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
+		if (exc)
+		{
+			//TODO: PAUSE THE ENGINE HERE
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
+		}
+	}
 }
 
 void ComponentScript::PreUpdate()
 {
-	/*if (preUpdateMethod)
+	if (scriptRes && scriptRes->preUpdateMethod)
 	{
-		mono_runtime_invoke(preUpdateMethod, classInstance, NULL, NULL);
-	}*/
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
+		if (exc)
+		{
+			//TODO: PAUSE THE ENGINE HERE
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
+		}
+	}
 }
 
 void ComponentScript::Update()
@@ -52,10 +79,19 @@ void ComponentScript::Update()
 
 void ComponentScript::PostUpdate()
 {
-	/*if (postUpdateMethod)
+	if (scriptRes && scriptRes->postUpdateMethod)
 	{
-		mono_runtime_invoke(postUpdateMethod, classInstance, NULL, NULL);
-	}*/
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
+		if (exc)
+		{
+			//TODO: PAUSE THE ENGINE HERE
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
+		}
+	}
 }
 
 void ComponentScript::OnInspector()
