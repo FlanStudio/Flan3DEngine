@@ -683,7 +683,7 @@ AABB GameObject::getAABBChildsEnclosed()
 
 void GameObject::debugDraw() const
 {
-	if(drawAABBs && this != App->scene->getRootNode())
+	if(drawAABBs && this != App->scene->getRootNode() && isActive())
 		drawAABB();
 
 	for (int i = 0; i < components.size(); ++i)

@@ -47,7 +47,7 @@ public:
 	void OnInspector();
 	void ReceiveEvent(Event event);
 	void SetActive(bool boolean);
-	bool isActive(){ return active; }
+	bool isActive()const{ return active; }
 
 	//AABB drawing data-----------------
 	void drawAABB()const;

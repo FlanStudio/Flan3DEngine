@@ -26,7 +26,7 @@ update_status ModuleTime::PreUpdate()
 		{
 			playDt = 0.0f;
 		}
-		if (steped)
+		else if (steped)//if steped ignore playDt = 0.0f during 1 frame
 		{
 			paused = true;
 			steped = false;
