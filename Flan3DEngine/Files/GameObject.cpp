@@ -412,6 +412,22 @@ void GameObject::SetActive(bool boolean)
 	}
 }
 
+bool GameObject::areParentsActives() const
+{
+	while (parent)
+	{
+		if (isActive())
+		{
+			return parent->areParentsActives();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return isActive();
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
@@ -683,7 +699,7 @@ AABB GameObject::getAABBChildsEnclosed()
 
 void GameObject::debugDraw() const
 {
-	if(drawAABBs && this != App->scene->getRootNode() && isActive())
+	if(drawAABBs && this != App->scene->getRootNode() && isActive() && areParentsActives())
 		drawAABB();
 
 	for (int i = 0; i < components.size(); ++i)

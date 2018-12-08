@@ -48,6 +48,7 @@ public:
 	void ReceiveEvent(Event event);
 	void SetActive(bool boolean);
 	bool isActive()const{ return active; }
+	bool areParentsActives()const;
 
 	//AABB drawing data-----------------
 	void drawAABB()const;
