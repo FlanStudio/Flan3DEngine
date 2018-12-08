@@ -416,7 +416,7 @@ bool GameObject::areParentsActives() const
 {
 	while (parent)
 	{
-		if (isActive())
+		if (parent->isActive())
 		{
 			return parent->areParentsActives();
 		}
@@ -704,7 +704,8 @@ void GameObject::debugDraw() const
 
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->debugDraw();
+		if(components[i]->isActive() && components[i]->gameObject->areParentsActives() && components[i]->gameObject->isActive())
+			components[i]->debugDraw();
 	}
 }
 
