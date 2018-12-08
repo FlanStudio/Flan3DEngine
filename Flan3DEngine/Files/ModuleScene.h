@@ -34,6 +34,7 @@ public:
 
 public:
 	GameObject* CreateGameObject(GameObject* parent);
+	void DestroyGameObject(GameObject* gameObject);
 	void AddGameObject(GameObject* gameObject);
 	void ClearGameObjects();
 	void guiHierarchy();

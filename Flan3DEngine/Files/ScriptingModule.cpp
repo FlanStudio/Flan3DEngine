@@ -512,6 +512,30 @@ _MonoObject* InstantiateGameObject()
 	return monoInstance;
 }
 
+void DestroyObj(MonoObject* obj)
+{
+	bool found = false;
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		if (obj == App->scripting->gameObjectsMap[i].second)
+		{
+			found = true;
+
+			MonoClass* monoClass = mono_object_get_class(obj);
+			MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
+			mono_field_set_value(obj, destroyed, &found);
+
+			GameObject* toDelete = App->scripting->gameObjectsMap[i].first;
+
+			App->scripting->gameObjectsMap.erase(App->scripting->gameObjectsMap.begin() + i);
+
+			App->scene->DestroyGameObject(toDelete);
+
+			break;
+		}
+	}
+}
+
 void ScriptingModule::CreateDomain()
 {
 	static bool firstDomain = true;
@@ -555,6 +579,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
+	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
 
 	firstDomain = false;
 }

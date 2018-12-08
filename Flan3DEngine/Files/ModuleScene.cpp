@@ -260,6 +260,20 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	return ret;
 }
 
+void ModuleScene::DestroyGameObject(GameObject* gameObject)
+{
+	if (selectedGO == gameObject)
+		selectedGO = nullptr;
+
+	Event event;
+	event.goEvent.type = EventType::GO_DESTROYED;
+	event.goEvent.gameObject = gameObject;
+	gameObjects[0]->ReceiveEvent(event);
+
+	delete gameObject;
+	gameObject = nullptr;
+}
+
 void ModuleScene::AddGameObject(GameObject* gameObject)
 {
 	gameObjects[0]->AddChild(gameObject);

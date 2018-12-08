@@ -18,7 +18,7 @@ public class TestScript : FlanScript
     {
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            Debug.Log("Hey! I have pressed " + KeyCode.KEY_1.ToString() + " key!");
+            Debug.Log("Instantiating GameObject");
             GameObject instance = GameObject.Instantiate();
             childs.Add(instance);
             instance.name = "Child: " + childs.Count.ToString();
@@ -26,7 +26,13 @@ public class TestScript : FlanScript
 
         if (Input.GetKeyDown(KeyCode.KEY_2))
         {
-            Debug.Log("Hey! I have pressed " + KeyCode.KEY_2.ToString() + " key!");
+            Debug.Log("Deleting GameObject");
+            if(childs.Count != 0)
+            {
+                GameObject toDelete = childs[childs.Count-1];              
+                Destroy(toDelete);
+                childs.Remove(toDelete);
+            }
         }
         if(Input.GetKey(KeyCode.KEY_A))
         {
