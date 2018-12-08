@@ -4,6 +4,7 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentScript.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -133,6 +134,12 @@ void GameObject::ClearComponents()
 				ClearComponent(components[0]);
 				delete transform;
 				transform = nullptr;
+				break;
+			}
+			case ComponentType::SCRIPT:
+			{
+				App->scripting->DestroyScript((ComponentScript*)components[0]);
+				ClearComponent(components[0]);
 				break;
 			}
 			default:
@@ -348,9 +355,11 @@ void GameObject::OnInspector()
 				scriptName = scriptName.substr(scriptName.find_last_of("/")+1);
 				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
-				Component* script = (Component*)App->scripting->CreateScriptComponent(scriptName, false);
+				ComponentScript* script = (ComponentScript*)App->scripting->CreateScriptComponent(scriptName, false);
 				App->scene->getSelectedGO()->AddComponent(script);
 				script->gameObject = App->scene->getSelectedGO();
+
+				script->InstanceClass();
 			}
 		}
 		ImGui::EndDragDropTarget();
