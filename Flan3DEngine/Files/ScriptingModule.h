@@ -5,13 +5,17 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 class ComponentScript;
 struct _MonoDomain;
 struct _MonoAssembly;
 class ResourceScript;
+struct _MonoObject;
+struct _MonoImage;
 
 bool exec(const char* cmd, std::string& error = std::string());
+_MonoObject* InstantiateGameObject();
 
 class ScriptingModule : public Module
 {
@@ -47,10 +51,16 @@ public:
 	void CreateDomain();
 	void ReInstance();
 
+	void GameObjectChanged(GameObject* gameObject);
+	void MonoObjectChanged(_MonoObject* monoObject);
+
 public:
-	_MonoDomain* unTouchableDomain = nullptr;
 	_MonoDomain* domain = nullptr;
 	_MonoAssembly* internalAssembly = nullptr;
+	_MonoImage* internalImage = nullptr;
+
+	//The relationship between the actual GameObjects and their CSharp representation
+	std::vector<std::pair<GameObject*, _MonoObject*>> gameObjectsMap;
 
 private:
 	std::vector<ComponentScript*> scripts;

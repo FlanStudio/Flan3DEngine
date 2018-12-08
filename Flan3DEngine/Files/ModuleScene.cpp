@@ -528,6 +528,7 @@ void ModuleScene::AddComponentGUI()
 				Debug.Log("New Script Created: %s", scriptName.data());				
 				ComponentScript* script = App->scripting->CreateScriptComponent(scriptName);
 				selectedGO->AddComponent(script);
+				script->InstanceClass();
 			}
 			else
 			{

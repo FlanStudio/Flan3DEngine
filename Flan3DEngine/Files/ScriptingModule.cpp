@@ -67,11 +67,9 @@ bool ScriptingModule::Init()
 
 	//Loading assemblies from data instead of from file
 	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
-	MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
+	internalImage = mono_image_open_from_data(buffer, size, 1, &status);
 
-	internalAssembly = mono_assembly_load_from(image, "InternalAssembly", &status);
-
-	
+	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
 
 	char* args[1];
 	args[0] == "InternalAssembly";
@@ -97,11 +95,6 @@ update_status ScriptingModule::PreUpdate()
 	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		CreateInternalCSProject();
 
-	for (int i = 0; i < scripts.size(); ++i)
-	{
-		scripts[i]->Awake();
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -113,9 +106,19 @@ update_status ScriptingModule::Update()
 		IncludecsFiles();
 	}
 
-	for (int i = 0; i < scripts.size(); ++i)
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
 	{
+		GameObjectChanged(gameObjectsMap[i].first);
+	}
+	
+	for (int i = 0; i < scripts.size(); ++i)
+	{	
 		scripts[i]->Update();
+	}
+
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		MonoObjectChanged(gameObjectsMap[i].second);
 	}
 
 	return UPDATE_CONTINUE;
@@ -183,6 +186,25 @@ void ScriptingModule::ReceiveEvent(Event event)
 			}			
 		}
 
+		case EventType::GO_DESTROYED:
+		{
+			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			{
+				if (gameObjectsMap[i].first == event.goEvent.gameObject)
+				{
+					MonoClass* monoObjectClass = mono_object_get_class(gameObjectsMap[i].second);
+					MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
+
+					bool temp = true;
+					mono_field_set_value(gameObjectsMap[i].second, deletedField, &temp);
+
+					gameObjectsMap.erase(gameObjectsMap.begin() + i);
+					i--;
+				}
+			}
+			
+		}
+
 		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
 	}
 }
@@ -242,12 +264,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 	script->scriptRes = scriptRes;
 
-	script->InstanceClass();
-
 	scripts.push_back(script);
-
-	//TODO: MOVE IT TO THE PLAY AND ENABLED EVENTS
-	script->Awake();
 
 	return script;
 }
@@ -392,9 +409,59 @@ std::string ScriptingModule::clearSpaces(std::string& scriptName)
 
 void ScriptingModule::ReInstance()
 {
+	gameObjectsMap.clear();
+
 	for (int i = 0; i < scripts.size(); ++i)
 	{	
 		scripts[i]->InstanceClass();
+	}
+}
+
+void ScriptingModule::GameObjectChanged(GameObject* gameObject)
+{
+	MonoObject* monoObject = nullptr;
+	//Find for a pair coincidence in the map
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].first == gameObject)
+		{
+			monoObject = gameObjectsMap[i].second;
+
+			//SetUp all the GameObject* fields to the MonoObject
+
+			MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+
+			//SetUp the name
+			MonoClassField* name = mono_class_get_field_from_name(gameObjectClass, "name");
+			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->name.data());
+			mono_field_set_value(monoObject, name, (void*)nameCS);
+
+			//TODO: CONTINUE UPDATING THINGS
+		}
+	}
+
+}
+
+void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
+{
+	//Find for a coincidence in the map.
+
+	GameObject* gameObject = nullptr;
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].second == monoObject)
+		{
+			gameObject = gameObjectsMap[i].first;
+
+			//SetUp the name
+			MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
+			MonoClassField* nameCS = mono_class_get_field_from_name(gameObjectClass, "name");
+			MonoString* name = (MonoString*)mono_field_get_value_object(domain, nameCS, monoObject);
+			char* newName = mono_string_to_utf8(name);
+			gameObject->name = newName;
+
+			//TODO: CONTINUE UPDATING THINGS
+		}
 	}
 }
 
@@ -439,6 +506,21 @@ void DebugLogErrorTranslator(MonoString* msg)
 
 void ClearConsole() { Debug.Clear(); }
 
+_MonoObject* InstantiateGameObject()
+{
+	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode());
+
+	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+	mono_runtime_object_init(monoInstance);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, _MonoObject*>(instance, monoInstance));
+	
+	App->scripting->GameObjectChanged(instance);
+
+	return monoInstance;
+}
+
 void ScriptingModule::CreateDomain()
 {
 	static bool firstDomain = true;
@@ -462,4 +544,5 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
 	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
+	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 }

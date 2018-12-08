@@ -8,6 +8,7 @@ class ComponentScript : public Component
 {
 public:
 	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr) : scriptName(scriptName), Component(ComponentType::SCRIPT, gameObject, true) { }
+	~ComponentScript() { scriptRes = nullptr; }
 
 	void Awake();
 	void Start();
@@ -25,7 +26,8 @@ public:
 	std::string scriptName;
 
 	ResourceScript* scriptRes = nullptr;
-	
-private:
 	_MonoObject* classInstance = nullptr;
+
+private:
+	
 };

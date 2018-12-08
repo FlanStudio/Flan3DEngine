@@ -11,24 +11,10 @@
 
 void ComponentScript::Awake()
 {
-	if (awaked)
-		return;
-	awaked = true;
-
-	//This will not be here
-
-	//This will not be here
-	/*if (!CompileCSFile())
-	{
-		initialized = false;
-		return;
-	}	
-	initialized = true;*/
-
-	/*if (awakeMethod)
+	if (scriptRes && scriptRes->awakeMethod)
 	{		
-		mono_runtime_invoke(awakeMethod, classInstance, NULL, NULL);
-	}*/
+		mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, NULL);
+	}
 }
 
 void ComponentScript::Start()
@@ -167,4 +153,14 @@ void ComponentScript::InstanceClass()
 	classInstance = mono_object_new(App->scripting->domain, klass);
 	
 	mono_runtime_object_init(classInstance);
+
+	//Create the monoObject and store it in the map
+	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+	MonoObject* monoGO = mono_object_new(App->scripting->domain, gameObjectClass);
+
+	//SetUp this monoGO inside the class Instance
+	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");
+	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, MonoObject*>(gameObject, monoGO));
 }
