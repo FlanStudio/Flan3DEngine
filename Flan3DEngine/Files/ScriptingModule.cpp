@@ -57,25 +57,9 @@ bool ScriptingModule::Init()
 
 	CreateDomain();
 
-	//Reference the internal compiled project
-	//internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
-
-	char* buffer;
-	int size;
-	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size))
-		return false;
-
-	//Loading assemblies from data instead of from file
-	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
-	internalImage = mono_image_open_from_data(buffer, size, 1, &status);
-
-	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
-
 	char* args[1];
 	args[0] == "InternalAssembly";
 	mono_jit_exec(domain, internalAssembly, 1, args);
-
-	delete buffer;
 
 	if (!internalAssembly)
 		return false;
@@ -94,6 +78,12 @@ update_status ScriptingModule::PreUpdate()
 {
 	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		CreateInternalCSProject();
+
+	//Update Time.deltaTime and Time.realDeltaTime values
+	mono_field_static_set_value(timeVTable, deltaTime, &App->time->playDt);
+	mono_field_static_set_value(timeVTable, realDeltaTime, &App->time->dt);
+	mono_field_static_set_value(timeVTable, time, &App->time->gameTime);
+	mono_field_static_set_value(timeVTable, realTime, &App->time->timer);
 
 	return UPDATE_CONTINUE;
 }
@@ -120,6 +110,8 @@ update_status ScriptingModule::Update()
 	{
 		MonoObjectChanged(gameObjectsMap[i].second);
 	}
+
+	//TODO: PREUPDATE AND POSTUPDATE FOR LOOPS WILL BE IN THIS UPDATE TOO.
 
 	return UPDATE_CONTINUE;
 }
@@ -537,7 +529,25 @@ void ScriptingModule::CreateDomain()
 		mono_domain_unload(domain);
 
 	domain = nextDom;
-	firstDomain = false;
+
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size))
+		return;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	internalImage = mono_image_open_from_data(buffer, size, 1, &status);
+	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
+
+	delete buffer;
+
+	timeClass = mono_class_from_name(internalImage, "FlanEngine", "Time");
+	deltaTime = mono_class_get_field_from_name(timeClass, "deltaTime");
+	realDeltaTime = mono_class_get_field_from_name(timeClass, "realDeltaTime");
+	time = mono_class_get_field_from_name(timeClass, "time");
+	realTime = mono_class_get_field_from_name(timeClass, "realTime");
+	timeVTable = mono_class_vtable(domain, timeClass);
 
 	//SetUp Internal Calls
 	mono_add_internal_call("FlanEngine.Debug::Log", (const void*)&DebugLogTranslator);
@@ -545,4 +555,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
+
+
+	firstDomain = false;
 }

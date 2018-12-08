@@ -13,6 +13,9 @@ struct _MonoAssembly;
 class ResourceScript;
 struct _MonoObject;
 struct _MonoImage;
+struct _MonoClass;
+struct _MonoClassField;
+struct MonoVTable;
 
 bool exec(const char* cmd, std::string& error = std::string());
 _MonoObject* InstantiateGameObject();
@@ -64,6 +67,13 @@ public:
 
 private:
 	std::vector<ComponentScript*> scripts;
+
+	MonoVTable* timeVTable = nullptr;
+	_MonoClassField* deltaTime = nullptr;
+	_MonoClassField* realDeltaTime = nullptr;
+	_MonoClassField* time = nullptr;
+	_MonoClassField* realTime = nullptr;
+	_MonoClass* timeClass = nullptr;
 };
 
 #endif
