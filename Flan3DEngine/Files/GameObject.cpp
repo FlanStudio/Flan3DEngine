@@ -230,6 +230,12 @@ void GameObject::OnInspector()
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);
 	ImGui::Checkbox("##DrawAABBs", &drawAABBs);	
+	if (ImGui::IsItemHovered() && !ImGui::IsItemEdited())
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("This option can only be changed in the root parent object");
+		ImGui::EndTooltip();
+	}
 	ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
 	ImGui::Text("DrawAABBs");
