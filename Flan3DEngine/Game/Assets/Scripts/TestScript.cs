@@ -16,21 +16,21 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
-        if(Input.GetKeyDown(Input.KeyCode.KEY_1))
+        if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_1.ToString() + " key!");
+            Debug.Log("Hey! I have pressed " + KeyCode.KEY_1.ToString() + " key!");
             GameObject instance = GameObject.Instantiate();
             childs.Add(instance);
             instance.name = "Child: " + childs.Count.ToString();
         }
 
-        if (Input.GetKeyDown(Input.KeyCode.KEY_2))
+        if (Input.GetKeyDown(KeyCode.KEY_2))
         {
-            Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_2.ToString() + " key!");
+            Debug.Log("Hey! I have pressed " + KeyCode.KEY_2.ToString() + " key!");
         }
-        if(Input.GetKey(Input.KeyCode.KEY_A))
+        if(Input.GetKey(KeyCode.KEY_A))
         {
-            Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_A.ToString() + " key!");
+            Debug.Log("Hey! I have pressed " + KeyCode.KEY_A.ToString() + " key!");
         }
 
 
