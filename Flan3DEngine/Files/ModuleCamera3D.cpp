@@ -263,7 +263,9 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 	{
 		case EventType::PLAY:
 		{
-			if (gameCamComponent && gameCamera)
+			if (gameCamComponent && gameCamera && gameCamComponent->isActive() 
+				&& gameCamComponent->gameObject->isActive()
+				&& gameCamComponent->gameObject->areParentsActives())
 			{
 				activeCamComponent = gameCamComponent;
 				activeCamera = gameCamera;

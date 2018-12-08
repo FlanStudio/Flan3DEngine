@@ -361,7 +361,9 @@ void ModuleRenderer3D::UpdateNormalsLenght(uint normalsLenght)
 
 void ModuleRenderer3D::DrawMeshes() const
 {
-	if (App->camera->gameCamComponent)
+	if (App->camera->gameCamComponent && App->camera->gameCamComponent->isActive() 
+		&& App->camera->gameCamComponent->gameObject->isActive() 
+		&& App->camera->gameCamComponent->gameObject->areParentsActives())
 	{
 		std::vector<GameObject*> intersected;
 		App->scene->quadtree.Intersect(intersected, App->camera->gameCamComponent->getFrustum()); //TODO: NON-STATIC OBJECTS?
