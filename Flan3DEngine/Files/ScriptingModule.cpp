@@ -7,6 +7,7 @@
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/class.h>
 
 #include <array>
 
@@ -90,12 +91,6 @@ update_status ScriptingModule::PreUpdate()
 
 update_status ScriptingModule::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		CreateScriptingProject();
-		IncludecsFiles();
-	}
-
 	for (int i = 0; i < gameObjectsMap.size(); ++i)
 	{
 		GameObjectChanged(gameObjectsMap[i].first);
@@ -498,6 +493,11 @@ void DebugLogErrorTranslator(MonoString* msg)
 
 void ClearConsole() { Debug.Clear(); }
 
+int32_t GetKeyStateCS(int32_t key)
+{
+	return App->input->GetKey(key);
+}
+
 _MonoObject* InstantiateGameObject()
 {
 	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode());
@@ -532,7 +532,7 @@ void ScriptingModule::CreateDomain()
 
 	char* buffer;
 	int size;
-	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size))
+	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size, false))
 		return;
 
 	//Loading assemblies from data instead of from file
@@ -555,7 +555,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
-
+	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 
 	firstDomain = false;
 }
