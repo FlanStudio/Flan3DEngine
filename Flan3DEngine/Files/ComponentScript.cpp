@@ -36,8 +36,17 @@ void ComponentScript::PreUpdate()
 void ComponentScript::Update()
 {
 	if (scriptRes && scriptRes->updateMethod)
-	{
-		mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, NULL);
+	{			
+		MonoObject* exc = nullptr;
+		mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);	
+		if (exc)
+		{
+			//TODO: PAUSE THE ENGINE HERE
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
+		}
 	}
 }
 

@@ -7,7 +7,6 @@
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
-#include <mono/metadata/class.h>
 
 #include <array>
 

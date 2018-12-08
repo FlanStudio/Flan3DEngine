@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using FlanEngine;
 
 public class TestScript : FlanScript
 {
     bool firstTime = true;
-    GameObject instance;
+    List<GameObject> childs = new List<GameObject>();
+
     //Use this method for initialization
     public override void Awake()
     {
@@ -17,7 +19,11 @@ public class TestScript : FlanScript
         if(Input.GetKeyDown(Input.KeyCode.KEY_1))
         {
             Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_1.ToString() + " key!");
+            GameObject instance = GameObject.Instantiate();
+            childs.Add(instance);
+            instance.name = "Child: " + childs.Count.ToString();
         }
+
         if (Input.GetKeyDown(Input.KeyCode.KEY_2))
         {
             Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_2.ToString() + " key!");
@@ -26,6 +32,8 @@ public class TestScript : FlanScript
         {
             Debug.Log("Hey! I have pressed " + Input.KeyCode.KEY_A.ToString() + " key!");
         }
+
+
     }
 }
 
