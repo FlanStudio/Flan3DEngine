@@ -28,7 +28,7 @@ _MonoObject* InstantiateGameObject();
 class ScriptingModule : public Module
 {
 public:
-	ScriptingModule(bool start_enabled = true) : Module("ScriptingModule", start_enabled){}
+	ScriptingModule(bool start_enabled = true) : Module("ScriptingModule", start_enabled) {}
 	~ScriptingModule() {}
 
 	bool Init();
@@ -43,11 +43,10 @@ public:
 public:
 	ComponentScript* CreateScriptComponent(std::string scriptName, bool createCS = true);
 	bool DestroyScript(ComponentScript* script);
+	inline void AddScriptComponent(ComponentScript* script){scripts.push_back(script);}
 
 	bool alreadyCreated(std::string scriptName);
 
-	void LoadResources();
-	void LoadResources(const Directory& dir);
 	void CreateScriptingProject();
 	void ExecuteScriptingProject();
 	void IncludeCSFiles();
@@ -64,6 +63,9 @@ public:
 
 	void GameObjectChanged(GameObject* gameObject);
 	void MonoObjectChanged(_MonoObject* monoObject);
+
+private:
+	void UpdateMethods();
 
 public:
 	_MonoDomain* domain = nullptr;

@@ -31,12 +31,13 @@ public:
 
 	Timer dtTimer;
 
+	bool paused = false;
+
 private:
 	Uint32 lastSecFramesCounter = 0;
 
 	uint TimeAtlasID = 0;
-	
-	bool paused = false;
+
 	bool steped = false;
 };
 

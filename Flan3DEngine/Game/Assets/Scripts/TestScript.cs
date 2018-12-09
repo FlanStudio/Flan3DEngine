@@ -25,21 +25,20 @@ public class TestScript : FlanScript
         }
 
         if (Input.GetKeyDown(KeyCode.KEY_2))
-        {
-            Debug.Log("Deleting GameObject");
+        {        
             if(childs.Count != 0)
             {
+                Debug.Log("Deleting GameObject");
                 GameObject toDelete = childs[childs.Count-1];              
                 Destroy(toDelete);
                 childs.Remove(toDelete);
             }
         }
-        if(Input.GetKey(KeyCode.KEY_A))
+
+        if (Input.GetKey(KeyCode.KEY_A))
         {
             Debug.Log("Hey! I have pressed " + KeyCode.KEY_A.ToString() + " key!");
         }
-
-
     }
 }
 

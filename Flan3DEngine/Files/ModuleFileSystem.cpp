@@ -714,7 +714,10 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 				std::string extension = directory.files[i].name.substr(pos);
 				if (extension == SCENES_EXTENSION)
 				{				
-					ImGui::OpenPopup("CAUTION");
+					if (!IN_GAME)
+						ImGui::OpenPopup("CAUTION");
+					else
+						Debug.LogWarning("Exit Play Mode before loading a new scene!");
 				}
 			}
 			//TODO: Rename files and folders from assets window?

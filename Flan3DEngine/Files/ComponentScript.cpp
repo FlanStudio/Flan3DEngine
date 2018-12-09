@@ -189,6 +189,44 @@ void ComponentScript::OnInspector()
 	}
 }
 
+void ComponentScript::Serialize(char*& cursor) const
+{
+	uint bytes = sizeof(UID);
+	memcpy(cursor, &gameObject->uuid, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+
+	UID resUID = scriptRes ? scriptRes->getUUID() : 0;
+	memcpy(cursor, &resUID, bytes);
+	cursor += bytes;
+}
+
+void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
+{
+	uint bytes = sizeof(UID);
+	memcpy(&goUUID, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+
+	UID resUID;
+	memcpy(&resUID, cursor, bytes);
+	cursor += bytes;
+
+	//Reference the ScriptResource
+	scriptRes = (ResourceScript*)App->resources->Get(resUID);
+
+	if (scriptRes)
+	{
+		scriptName = scriptRes->scriptName;
+	}		
+	else
+		Debug.LogError("A ComponentScript lost his ResourceScript reference!");
+}
+
 void ComponentScript::InstanceClass()
 {
 	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)

@@ -69,7 +69,6 @@ bool ScriptingModule::Start()
 {
 	CreateScriptingProject();
 	IncludeCSFiles();
-	LoadResources();
 	return true;
 }
 
@@ -89,22 +88,10 @@ update_status ScriptingModule::PreUpdate()
 
 update_status ScriptingModule::Update()
 {
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	if (IN_GAME && !App->time->paused)
 	{
-		GameObjectChanged(gameObjectsMap[i].first);
+		UpdateMethods();
 	}
-	
-	for (int i = 0; i < scripts.size(); ++i)
-	{	
-		scripts[i]->Update();
-	}
-
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		MonoObjectChanged(gameObjectsMap[i].second);
-	}
-
-	//TODO: PREUPDATE AND POSTUPDATE FOR LOOPS WILL BE IN THIS UPDATE TOO.
 
 	return UPDATE_CONTINUE;
 }
@@ -147,6 +134,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 		case EventType::STOP:
 		{
 			//Call the CleanUp method for all the scripts which where enabled at this point.
+
 			break;
 		}
 
@@ -233,10 +221,10 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		scriptRes->scriptName = scriptName;
 
 		//Create the .meta, to make faster the search in the map storing the uid.
-		uint bytes = sizeof(UID);
+		uint bytes = scriptRes->bytesToSerializeMeta();
 		char* buffer = new char[bytes];
-		UID uid = scriptRes->getUUID();
-		memcpy(buffer, &uid, bytes);
+		char* cursor = buffer;
+		scriptRes->SerializeToMeta(cursor);
 
 		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
@@ -279,48 +267,6 @@ bool ScriptingModule::alreadyCreated(std::string scriptName)
 	}
 
 	return false;
-}
-
-void ScriptingModule::LoadResources()
-{
-	Directory scriptsDir = App->fs->getDirFiles("Assets/Scripts");
-	LoadResources(scriptsDir);
-}
-
-void ScriptingModule::LoadResources(const Directory& dir)
-{
-	for (int i = 0; i < dir.files.size(); ++i)
-	{
-		if (App->fs->getExt(dir.files[i].name) != ".cs")
-			continue;
-
-		std::string scriptName = dir.files[i].name;
-		scriptName = scriptName.substr(0, scriptName.find_last_of("."));
-
-		std::string filePath = dir.fullPath + dir.files[i].name;
-
-		ResourceScript* scriptRes = new ResourceScript();
-		scriptRes->setFile(filePath);
-		scriptRes->scriptName = scriptName;
-
-		uint bytes = sizeof(UID);
-		char* buffer = new char[bytes];
-		UID uid = scriptRes->getUUID();
-		memcpy(buffer, &uid, bytes);
-
-		App->fs->OpenWriteBuffer(filePath + ".meta", buffer, bytes);
-
-		delete buffer;
-
-		scriptRes->Compile();
-
-		App->resources->PushResourceScript(scriptRes);
-	}
-
-	for (int i = 0; i < dir.directories.size(); ++i)
-	{
-		LoadResources(dir.directories[i]);
-	}
 }
 
 void ScriptingModule::CreateScriptingProject()
@@ -498,6 +444,48 @@ void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
 
 			//TODO: CONTINUE UPDATING THINGS
 		}
+	}
+}
+
+void ScriptingModule::UpdateMethods()
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		GameObjectChanged(gameObjectsMap[i].first);
+	}
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->PreUpdate();
+	}
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		MonoObjectChanged(gameObjectsMap[i].second);
+	}
+
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		GameObjectChanged(gameObjectsMap[i].first);
+	}
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Update();
+	}
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		MonoObjectChanged(gameObjectsMap[i].second);
+	}
+
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		GameObjectChanged(gameObjectsMap[i].first);
+	}
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->PostUpdate();
+	}
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		MonoObjectChanged(gameObjectsMap[i].second);
 	}
 }
 

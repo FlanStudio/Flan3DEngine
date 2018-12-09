@@ -373,7 +373,12 @@ update_status ModuleEditor::PreUpdate()
 			}
 			
 			if (ImGui::MenuItem("Save Scene", "Ctrl + S"))
-				App->scene->Serialize();
+			{
+				if (!IN_GAME)
+					App->scene->Serialize();
+				else
+					Debug.LogWarning("Exit PlayMode before saving new Scenes!");
+			}				
 
 			if (ImGui::MenuItem("Quit"))
 				return update_status::UPDATE_STOP;
@@ -422,7 +427,10 @@ update_status ModuleEditor::PreUpdate()
 	//Menu ShortCuts:
 	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
-		App->scene->Serialize();
+		if (!IN_GAME)
+			App->scene->Serialize();
+		else
+			Debug.LogWarning("Exit PlayMode before saving new Scenes!");
 	}
 	
 	return UPDATE_CONTINUE;

@@ -20,6 +20,14 @@ void ResourceScript::SerializeToMeta(char*& cursor) const
 	bytes = sizeof(ScriptState);
 	memcpy(cursor, &state, bytes);
 	cursor += bytes;
+
+	uint nameSize = scriptName.size();
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, scriptName.c_str(), nameSize);
+	cursor += nameSize;
 }
 
 void ResourceScript::DeSerializeFromMeta(char*& cursor)
@@ -31,11 +39,21 @@ void ResourceScript::DeSerializeFromMeta(char*& cursor)
 	bytes = sizeof(ScriptState);
 	memcpy(&state, cursor, bytes);
 	cursor += bytes;
+
+	uint nameSize;
+	bytes = sizeof(uint);
+	memcpy(&nameSize, cursor, bytes);
+	cursor += bytes;
+
+	scriptName.resize(nameSize);
+
+	memcpy((void*)scriptName.c_str(), cursor, nameSize);
+	cursor += nameSize;
 }
 
 uint ResourceScript::bytesToSerializeMeta() const
 {
-	return sizeof(UID) + sizeof(ScriptState);
+	return sizeof(UID) + sizeof(ScriptState) + sizeof(uint) + scriptName.size();
 }
 
 uint ResourceScript::getBytes() const

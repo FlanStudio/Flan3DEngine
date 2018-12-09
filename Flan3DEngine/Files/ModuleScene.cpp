@@ -37,13 +37,8 @@ bool ModuleScene::Start()
 
 	TransformAtlasID = App->textures->getInternalTextureID("transBtnTex.dds");
 
-	//Temp
-	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
-	camera->CreateComponent(ComponentType::TRANSFORM);
-	ComponentCamera* camcomp = (ComponentCamera*)camera->CreateComponent(ComponentType::CAMERA);
-	camcomp->setMainCamera();
-	camera->name = "MainCamera";
-	gameObjects[0]->AddChild(camera);
+	//TODO: LOAD THE SCENE LOADED WHEN THE ENGINE CLOSED
+	DeSerialize("Assets/Scenes/defaultScene", ".flanScene");
 
 
 	//----------------------INITIAL GRID------------------------
@@ -621,7 +616,9 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
-		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size();
+		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size() +
+		sizeof(uint) + ComponentScript::bytesToSerialize() * scripts.size();
+
 
 	buffer = new char[size];
 	char* cursor = buffer;
@@ -680,6 +677,16 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		materials[i]->Serialize(cursor);
 	}
 
+	uint numScripts = scripts.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numScripts, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Serialize(cursor);
+	}
 }
 
 void ModuleScene::DeSerializeFromBuffer(char*& buffer)
@@ -691,6 +698,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
 
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
@@ -843,6 +851,36 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 			{
 				materials[i]->gameObject = gameObject_s[j];
 				gameObject_s[j]->AddComponent(materials[i]);
+			}
+		}
+	}
+
+	uint numScripts = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numScripts, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numScripts; ++i)
+	{
+		ComponentScript* newScript = new ComponentScript("");
+		uint32_t goUUID;
+		newScript->deSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		scripts.push_back(newScript);
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				scripts[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(scripts[i]);
+				App->scripting->AddScriptComponent(scripts[i]);
+				scripts[i]->InstanceClass();
 			}
 		}
 	}

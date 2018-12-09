@@ -18,6 +18,10 @@ public:
 
 	void OnInspector();
 
+	static uint bytesToSerialize() { return sizeof(UID) * 3; }
+	void Serialize(char*& cursor) const;
+	void deSerialize(char*& cursor, uint32_t& goUUID);
+
 public:
 	void InstanceClass();
 

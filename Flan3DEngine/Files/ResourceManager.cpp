@@ -643,6 +643,18 @@ void ResourceManager::LoadResources()
 
 					resources.insert(std::pair<UID, Resource*>(resourceUID, textureRes));
 				}
+				else if (extension == ".cs")
+				{
+					char* cursor = metaBuffer;
+
+					//Loading script resource from .meta
+					ResourceScript* scriptRes = new ResourceScript();
+					scriptRes->DeSerializeFromMeta(cursor);
+
+					scriptRes->setFile((char*)fullPaths[i].data());
+					scriptRes->Compile();
+					resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
+				}
 				delete metaBuffer;
 			}
 		}
@@ -670,6 +682,29 @@ void ResourceManager::LoadResources()
 			else if (extension == ".fbx" || extension == ".FBX")
 			{
 				continue; //Let the fbx to the end so all the other resources can be loaded first
+			}
+			else if (extension == ".cs")
+			{
+				std::string scriptName = fullPaths[i].substr(fullPaths[i].find_last_of("/")+1);
+				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
+
+				//Creating script resource and .meta
+				ResourceScript* scriptRes = new ResourceScript();
+				scriptRes->scriptName = scriptName;
+				scriptRes->setFile(fullPaths[i]);
+
+				//Create the .meta
+				uint bytes = scriptRes->bytesToSerializeMeta();
+				char* buffer = new char[bytes];
+				char* cursor = buffer;
+				scriptRes->SerializeToMeta(cursor);
+
+				App->fs->OpenWriteBuffer(fullPaths[i] + ".meta", buffer, bytes);
+
+				delete buffer;
+
+				scriptRes->Compile();
+				resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
 			}
 			//TODO: Materials, audio, animations, etc?
 		}
