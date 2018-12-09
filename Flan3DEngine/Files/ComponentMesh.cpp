@@ -220,6 +220,10 @@ void ComponentMesh::Serialize(char*& cursor) const
 	UID meshUID = mesh ? mesh->getUUID() : 0;
 	memcpy(cursor, &meshUID, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -238,4 +242,8 @@ void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 	mesh = (ResourceMesh*)App->resources->Get(meshUID);
 	if (mesh)
 		mesh->Referenced();
+
+	bytes = sizeof(bool);
+	memcpy(&active,cursor, bytes);
+	cursor += bytes;
 }

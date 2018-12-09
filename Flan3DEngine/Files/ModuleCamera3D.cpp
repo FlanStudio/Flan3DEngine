@@ -263,7 +263,9 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 	{
 		case EventType::PLAY:
 		{
-			if (gameCamComponent && gameCamera)
+			if (gameCamComponent && gameCamera && gameCamComponent->isActive() 
+				&& gameCamComponent->gameObject->isActive()
+				&& gameCamComponent->gameObject->areParentsActives())
 			{
 				activeCamComponent = gameCamComponent;
 				activeCamera = gameCamera;
@@ -367,6 +369,9 @@ void ModuleCamera3D::rotateAroundCenter(float dt)
 	if (selected)
 	{
 		center = selected->boundingBox.CenterPoint();
+
+		if (!selected->boundingBox.IsFinite())
+			center = selected->transform->position;
 	}
 
 	if (dy != 0)

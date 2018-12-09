@@ -17,7 +17,7 @@ public:
 	{
 		boundingBox.SetNegativeInfinity();
 		initialAABB.SetNegativeInfinity();
-		genUUID();	
+		genUUID();
 	}
 	virtual ~GameObject();
 	virtual bool Update(float dt);
@@ -34,9 +34,9 @@ public:
 
 	//Component-related methods
 	Component* CreateComponent(ComponentType type);
-	void AddComponent(Component* component);	
+	void AddComponent(Component* component);
 	void InsertComponent(Component* component, int pos);
-	Component* getComponentByType(ComponentType type) const;	
+	Component* getComponentByType(ComponentType type) const;
 	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
 	void ClearComponentAt(int i);
@@ -47,7 +47,9 @@ public:
 	void OnInspector();
 	void ReceiveEvent(Event event);
 	void SetActive(bool boolean);
-	
+	bool isActive()const{ return active; }
+	bool areParentsActives()const;
+
 	//AABB drawing data-----------------
 	void drawAABB()const;
 	void updateAABBbuffers();	
@@ -60,7 +62,7 @@ public:
 	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
-	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char); };
+	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char) + (sizeof(bool)); };
 	void Serialize(char*& cursor);
 	void DeSerialize(char*& cursor, uint32_t& parentUUID);
 	void ReorderComponents();

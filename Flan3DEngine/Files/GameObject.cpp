@@ -30,11 +30,18 @@ bool GameObject::Update(float dt)
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		childs[i]->Update(dt);
+		if (childs[i]->isActive())
+			childs[i]->Update(dt);
+		//else
+		//	for each (Component* component in childs[i]->components)
+		//	{
+		//		component->Disable();
+		//		int j = 98;
+		//	}
 	}
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->Update(dt);
+ 			components[i]->Update(dt);
 	}
 	return true;
 }
@@ -216,15 +223,22 @@ void GameObject::OnInspector()
 		ImGui::EndTooltip();
 	}
 
-	ImGui::SameLine(); ImGui::Text("active"); ImGui::SameLine(); ImGui::Checkbox("##ACTIVE", &active);
+	if (ImGui::Checkbox("##ACTIVE", &active)); ImGui::SameLine(); ImGui::Text("Active");
 
-	ImGui::NewLine();
+	//ImGui::NewLine();
 
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);
-	ImGui::Text("DrawAABBs"); ImGui::SameLine();
+	ImGui::Checkbox("##DrawAABBs", &drawAABBs);	
+	if (ImGui::IsItemHovered() && !ImGui::IsItemEdited())
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("This option can only be changed in the root parent object");
+		ImGui::EndTooltip();
+	}
+	ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
-	ImGui::Checkbox("##DrawAABBs", &drawAABBs);
+	ImGui::Text("DrawAABBs");
 
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
@@ -398,6 +412,22 @@ void GameObject::SetActive(bool boolean)
 	}
 }
 
+bool GameObject::areParentsActives() const
+{
+	while (parent)
+	{
+		if (parent->isActive())
+		{
+			return parent->areParentsActives();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return isActive();
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
@@ -454,6 +484,10 @@ void GameObject::Serialize(char*& cursor)
 	bytes = nameLenght;
 	memcpy(cursor, name.c_str(), bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
@@ -472,6 +506,10 @@ void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
 	
 	bytes = nameLenght;
 	name.assign(cursor, cursor + bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
 	cursor += bytes;
 }
 
@@ -669,12 +707,13 @@ AABB GameObject::getAABBChildsEnclosed()
 
 void GameObject::debugDraw() const
 {
-	if(drawAABBs && this != App->scene->getRootNode())
+	if(drawAABBs && this != App->scene->getRootNode() && isActive() && areParentsActives())
 		drawAABB();
 
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->debugDraw();
+		if(components[i]->isActive() && components[i]->gameObject->areParentsActives() && components[i]->gameObject->isActive())
+			components[i]->debugDraw();
 	}
 }
 

@@ -27,7 +27,7 @@ public:
 
 	void Serialize(char*& cursor) const override;
 	void DeSerialize(char*& cursor, uint32_t& goUUID);
-	inline static uint bytesToSerialize() { return sizeof(UID) * 3; } //Your uid, your gameObject uid, your Mesh uid
+	inline static uint bytesToSerialize() { return (sizeof(UID) * 3) + (sizeof(bool)); } //Your uid, your gameObject uid, your Mesh uid
 	void Draw();
 	void UpdateNormalsLenght(uint newLenght);
 
