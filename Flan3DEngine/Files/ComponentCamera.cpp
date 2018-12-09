@@ -156,6 +156,10 @@ void ComponentCamera::Serialize(char*& cursor) const
 	bytes = sizeof(bool);
 	memcpy(cursor, &isMainCamera, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -192,6 +196,10 @@ void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
 
 	bytes = sizeof(bool);
 	memcpy(&isMainCamera, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
 	cursor += bytes;
 }
 

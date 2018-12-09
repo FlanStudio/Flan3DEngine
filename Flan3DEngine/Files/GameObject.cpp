@@ -484,6 +484,10 @@ void GameObject::Serialize(char*& cursor)
 	bytes = nameLenght;
 	memcpy(cursor, name.c_str(), bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
@@ -502,6 +506,10 @@ void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
 	
 	bytes = nameLenght;
 	name.assign(cursor, cursor + bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
 	cursor += bytes;
 }
 

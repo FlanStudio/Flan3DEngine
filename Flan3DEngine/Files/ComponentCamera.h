@@ -17,7 +17,7 @@ public:
 	float4x4 getProjMatrix();
 	void updateFrustum();
 	void calculateVerticalFOV();
-	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool); }
+	static uint bytesToSerialize() { return sizeof(uint32_t) + sizeof(ImVec4) + sizeof(float) * 7 + sizeof(bool) + (sizeof(bool)); }
 	void Serialize(char*& cursor) const;
 	void DeSerialize(char*& cursor, uint32_t& goUUID);
 	inline const Frustum& getFrustum() const { return frustum; }

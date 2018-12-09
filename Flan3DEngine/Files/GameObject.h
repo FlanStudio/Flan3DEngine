@@ -62,7 +62,7 @@ public:
 	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
-	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char); };
+	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char) + (sizeof(bool)); };
 	void Serialize(char*& cursor);
 	void DeSerialize(char*& cursor, uint32_t& parentUUID);
 	void ReorderComponents();

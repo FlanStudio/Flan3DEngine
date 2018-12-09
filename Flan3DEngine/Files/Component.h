@@ -37,7 +37,7 @@ public:
 	virtual void debugDraw() {}
 	virtual void Enable() {}
 	virtual void Disable() {}
-	virtual bool isActive() { return active; }
+	virtual bool isActive()const { return active; }
 	virtual void Serialize(char*& cursor) const {}
 
 public:
