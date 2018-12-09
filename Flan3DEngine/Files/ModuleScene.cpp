@@ -114,6 +114,8 @@ update_status ModuleScene::PostUpdate()
 
 			delete selectedGO;
 			selectedGO = nullptr;	
+
+			UpdateQuadtree();
 		}
 	}
 

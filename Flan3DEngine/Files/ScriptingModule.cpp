@@ -1,6 +1,7 @@
 #include "ScriptingModule.h"
 #include "ComponentScript.h"
 #include "ResourceScript.h"
+#include "ComponentTransform.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -418,7 +419,53 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->name.data());
 			mono_field_set_value(monoObject, name, (void*)nameCS);
 
+			//SetUp the transform
+			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
+			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
+
+			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
+			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
+			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
+
+			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
+			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
+			
+			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
+			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
+			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
+
+			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
+			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
+			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
+			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
+
+			MonoObject* positionOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			mono_field_set_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
+			mono_field_set_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
+			mono_field_set_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
+
+			MonoObject* rotationOBJ = mono_object_new(App->scripting->domain, quaternionClass);
+			mono_field_set_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
+			mono_field_set_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
+			mono_field_set_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
+			mono_field_set_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
+
+			MonoObject* scaleOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			mono_field_set_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
+			mono_field_set_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
+			mono_field_set_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
+
+
+			MonoObject* transformOBJ = mono_object_new(App->scripting->domain, transformClass);
+
+			mono_field_set_value(transformOBJ, positionField, positionOBJ);
+			mono_field_set_value(transformOBJ, rotationField, rotationOBJ);
+			mono_field_set_value(transformOBJ, scaleField, scaleOBJ);
+
+			mono_field_set_value(monoObject, transformField, transformOBJ);
+
 			//TODO: CONTINUE UPDATING THINGS
+			break;
 		}
 	}
 
@@ -442,6 +489,51 @@ void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
 			char* newName = mono_string_to_utf8(name);
 			gameObject->name = newName;
 
+			//SetUp the transform
+			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
+			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
+
+			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
+			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
+			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
+
+			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
+			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
+
+			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
+			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
+			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
+
+			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
+			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
+			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
+			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
+
+			MonoObject* transformOBJ = mono_object_new(App->scripting->domain, transformClass);
+			mono_field_get_value(monoObject, transformField, &transformOBJ);
+
+			MonoObject* positionOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			mono_field_get_value(transformOBJ, positionField, &positionOBJ);
+
+			mono_field_get_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
+			mono_field_get_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
+			mono_field_get_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
+
+			MonoObject* rotationOBJ = mono_object_new(App->scripting->domain, quaternionClass);
+			mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
+
+			mono_field_get_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
+			mono_field_get_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
+			mono_field_get_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
+			mono_field_get_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
+
+			MonoObject* scaleOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
+
+			mono_field_get_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
+			mono_field_get_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
+			mono_field_get_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
+
 			//TODO: CONTINUE UPDATING THINGS
 		}
 	}
@@ -457,32 +549,17 @@ void ScriptingModule::UpdateMethods()
 	{
 		scripts[i]->PreUpdate();
 	}
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		MonoObjectChanged(gameObjectsMap[i].second);
-	}
-
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		GameObjectChanged(gameObjectsMap[i].first);
-	}
+	
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->Update();
 	}
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		MonoObjectChanged(gameObjectsMap[i].second);
-	}
 
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		GameObjectChanged(gameObjectsMap[i].first);
-	}
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->PostUpdate();
 	}
+
 	for (int i = 0; i < gameObjectsMap.size(); ++i)
 	{
 		MonoObjectChanged(gameObjectsMap[i].second);

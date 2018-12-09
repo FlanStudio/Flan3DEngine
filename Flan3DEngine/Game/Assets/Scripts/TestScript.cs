@@ -35,9 +35,21 @@ public class TestScript : FlanScript
             }
         }
 
+        if (Input.GetKey(KeyCode.KEY_W))
+        {
+            gameObject.transform.position.x -= 50 * Time.deltaTime;
+        }
         if (Input.GetKey(KeyCode.KEY_A))
         {
-            Debug.Log("Hey! I have pressed " + KeyCode.KEY_A.ToString() + " key!");
+            gameObject.transform.position.z += 50 * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.KEY_S))
+        {
+            gameObject.transform.position.x += 50 * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.KEY_D))
+        {
+            gameObject.transform.position.z -= 50 * Time.deltaTime;
         }
     }
 }
