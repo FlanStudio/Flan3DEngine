@@ -18,6 +18,7 @@ class ComponentTransform;
 class ComponentMesh;
 class ComponentCamera;
 class ComponentMaterial;
+class ComponentScript;
 
 class ModuleScene : public Module
 {
@@ -66,7 +67,7 @@ private:
 	void DragDrop(GameObject* go);
 	void decomposeScene(std::vector<GameObject*>& gameObject_s = std::vector<GameObject*>(), std::vector<ComponentTransform*>&transforms = std::vector<ComponentTransform*>(), 
 		std::vector<ComponentMesh*>&meshes = std::vector<ComponentMesh*>(), std::vector<ComponentCamera*>&cameras = std::vector<ComponentCamera*>(), 
-		std::vector<ComponentMaterial*>&materials = std::vector<ComponentMaterial*>()) const;
+		std::vector<ComponentMaterial*>&materials = std::vector<ComponentMaterial*>(), std::vector<ComponentScript*>& scripts = std::vector<ComponentScript*>()) const;
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);

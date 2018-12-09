@@ -279,6 +279,25 @@ void ResourceManager::PushResourceScript(ResourceScript* script)
 	resources.insert(std::pair<UID, Resource*>(script->getUUID(), script));
 }
 
+ResourceScript* ResourceManager::findScriptByName(const std::string& scriptName) const
+{
+	std::map<UID, Resource*>::const_iterator it;
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* res = it->second;
+		if (res->getType() == Resource::ResourceType::SCRIPT)
+		{
+			ResourceScript* script = (ResourceScript*)res;
+			if (script->scriptName == scriptName)
+			{
+				return script;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 void ResourceManager::deleteEvent(Event event)
 {
 	std::string ext = App->fs->getExt(event.fileEvent.file);

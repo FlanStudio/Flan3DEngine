@@ -7,6 +7,9 @@
 #include <vector>
 #include <map>
 
+#include "pugui/pugixml.hpp"
+
+
 class ComponentScript;
 struct _MonoDomain;
 struct _MonoAssembly;
@@ -16,6 +19,8 @@ struct _MonoImage;
 struct _MonoClass;
 struct _MonoClassField;
 struct MonoVTable;
+struct Directory;
+
 
 bool exec(const char* cmd, std::string& error = std::string());
 _MonoObject* InstantiateGameObject();
@@ -41,9 +46,12 @@ public:
 
 	bool alreadyCreated(std::string scriptName);
 
+	void LoadResources();
+	void LoadResources(const Directory& dir);
 	void CreateScriptingProject();
 	void ExecuteScriptingProject();
-	void IncludecsFiles();
+	void IncludeCSFiles();
+	void IncludeCSFiles(pugi::xml_node& nodeToAppend, const Directory& dir);
 
 	void CreateInternalCSProject();
 

@@ -535,19 +535,12 @@ void ModuleScene::AddComponentGUI()
 		{					
 			App->scripting->clearSpaces(scriptName);
 
-			bool alreadyCreated = App->scripting->alreadyCreated(scriptName);
-			
-			if (!alreadyCreated)
-			{
-				Debug.Log("New Script Created: %s", scriptName.data());				
-				ComponentScript* script = App->scripting->CreateScriptComponent(scriptName);
-				selectedGO->AddComponent(script);
-				script->InstanceClass();
-			}
-			else
-			{
-				Debug.LogError("Error creating the script \"%s\": Scripts must have different names", scriptName.data());
-			}
+			ResourceScript* res = App->resources->findScriptByName(scriptName);
+						
+			Debug.Log("New Script Created: %s", scriptName.data());
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
+			selectedGO->AddComponent(script);
+			script->InstanceClass();		
 
 			scriptName = "";
 			ImGui::CloseCurrentPopup();
@@ -614,8 +607,9 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
 
-	decomposeScene(gameObject_s, transforms, meshes, cameras, materials);
+	decomposeScene(gameObject_s, transforms, meshes, cameras, materials, scripts);
 
 	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
@@ -1016,9 +1010,9 @@ void ModuleScene::DragDrop(GameObject* go)
 }
 
 void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
-								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials) const
+								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials, std::vector<ComponentScript*>&scripts) const
 {
-	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials);
+	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials, scripts);
 }
 
 void ModuleScene::_ReorderGameObject_Pre(GameObject* go)

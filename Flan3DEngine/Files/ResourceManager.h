@@ -25,6 +25,7 @@ public:
 	void InstanciateFBX(const std::string& path) const;
 
 	void PushResourceScript(ResourceScript* script);
+	ResourceScript* findScriptByName(const std::string& scriptName) const;
 
 private:
 	void deleteEvent(Event event);

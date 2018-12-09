@@ -2,8 +2,6 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
 
-#include "pugui/pugixml.hpp"
-
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
@@ -70,7 +68,8 @@ bool ScriptingModule::Init()
 bool ScriptingModule::Start()
 {
 	CreateScriptingProject();
-	IncludecsFiles();
+	IncludeCSFiles();
+	LoadResources();
 	return true;
 }
 
@@ -167,7 +166,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 				}
 				if (somethingDestroyed)
 				{
-					IncludecsFiles();
+					IncludeCSFiles();
 				}
 			}			
 		}
@@ -187,8 +186,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 					gameObjectsMap.erase(gameObjectsMap.begin() + i);
 					i--;
 				}
-			}
-			
+			}			
 		}
 
 		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
@@ -220,7 +218,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
 
-		IncludecsFiles();
+		IncludeCSFiles();
 
 		delete buffer;
 	}
@@ -283,6 +281,48 @@ bool ScriptingModule::alreadyCreated(std::string scriptName)
 	return false;
 }
 
+void ScriptingModule::LoadResources()
+{
+	Directory scriptsDir = App->fs->getDirFiles("Assets/Scripts");
+	LoadResources(scriptsDir);
+}
+
+void ScriptingModule::LoadResources(const Directory& dir)
+{
+	for (int i = 0; i < dir.files.size(); ++i)
+	{
+		if (App->fs->getExt(dir.files[i].name) != ".cs")
+			continue;
+
+		std::string scriptName = dir.files[i].name;
+		scriptName = scriptName.substr(0, scriptName.find_last_of("."));
+
+		std::string filePath = dir.fullPath + dir.files[i].name;
+
+		ResourceScript* scriptRes = new ResourceScript();
+		scriptRes->setFile(filePath);
+		scriptRes->scriptName = scriptName;
+
+		uint bytes = sizeof(UID);
+		char* buffer = new char[bytes];
+		UID uid = scriptRes->getUUID();
+		memcpy(buffer, &uid, bytes);
+
+		App->fs->OpenWriteBuffer(filePath + ".meta", buffer, bytes);
+
+		delete buffer;
+
+		scriptRes->Compile();
+
+		App->resources->PushResourceScript(scriptRes);
+	}
+
+	for (int i = 0; i < dir.directories.size(); ++i)
+	{
+		LoadResources(dir.directories[i]);
+	}
+}
+
 void ScriptingModule::CreateScriptingProject()
 {
 	if (App->fs->Exists("ScriptingProject.sln"))
@@ -327,7 +367,7 @@ void ScriptingModule::ExecuteScriptingProject()
 #endif
 }
 
-void ScriptingModule::IncludecsFiles()
+void ScriptingModule::IncludeCSFiles()
 {
 	Directory scripts = App->fs->getDirFiles("Assets/Scripts");
 
@@ -358,17 +398,27 @@ void ScriptingModule::IncludecsFiles()
 		compile = next;
 	}
 
-	for (int i = 0; i < scripts.files.size(); ++i)
-	{	
-		if (App->fs->getExt(scripts.files[i].name) != ".cs")
-			continue;
-
-		itemGroup.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + scripts.files[i].name).data());
-	}
+	IncludeCSFiles(itemGroup, scripts);
 
 	std::ostringstream stream;
 	configFile.save(stream, "\r\n");
 	App->fs->OpenWriteBuffer("Assembly-CSharp.csproj", (char*)stream.str().data(), stream.str().size());	
+}
+
+void ScriptingModule::IncludeCSFiles(pugi::xml_node& nodeToAppend, const Directory& dir)
+{
+	for (int i = 0; i < dir.files.size(); ++i)
+	{
+		if (App->fs->getExt(dir.files[i].name) != ".cs")
+			continue;
+
+		nodeToAppend.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + dir.files[i].name).data());
+	}
+
+	for (int i = 0; i < dir.directories.size(); ++i)
+	{
+		IncludeCSFiles(nodeToAppend, dir.directories[i]);
+	}
 }
 
 void ScriptingModule::CreateInternalCSProject()
