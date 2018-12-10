@@ -566,6 +566,8 @@ void ScriptingModule::UpdateMethods()
 	}
 }
 
+//-----------------------------
+
 void DebugLogTranslator(MonoString* msg)
 {
 	MonoError error;
@@ -654,6 +656,8 @@ void DestroyObj(MonoObject* obj)
 		}
 	}
 }
+
+//---------------------------------
 
 void ScriptingModule::CreateDomain()
 {
