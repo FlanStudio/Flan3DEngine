@@ -16,6 +16,11 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
+        if (Input.GetKeyDown(KeyCode.KEY_Q))
+        {
+            Debug.Log("My GameObject's name is " + gameObject.name);
+        }
+        
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
             Debug.Log("Instantiating GameObject");

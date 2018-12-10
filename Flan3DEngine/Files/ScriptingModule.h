@@ -62,7 +62,7 @@ public:
 	void ReInstance();
 
 	void GameObjectChanged(GameObject* gameObject);
-	void MonoObjectChanged(_MonoObject* monoObject);
+	void MonoObjectChanged(uint32_t handleID);
 
 private:
 	void UpdateMethods();
@@ -73,7 +73,7 @@ public:
 	_MonoImage* internalImage = nullptr;
 
 	//The relationship between the actual GameObjects and their CSharp representation
-	std::vector<std::pair<GameObject*, _MonoObject*>> gameObjectsMap;
+	std::vector<std::pair<GameObject*, uint32_t>> gameObjectsMap;
 
 private:
 	std::vector<ComponentScript*> scripts;

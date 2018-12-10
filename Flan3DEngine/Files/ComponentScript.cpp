@@ -251,6 +251,12 @@ void ComponentScript::InstanceClass()
 	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
 		return;
 
+	if (handleID != 0)
+	{
+		mono_gchandle_free(handleID);
+		handleID = 0;
+	}
+
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
 	classInstance = mono_object_new(App->scripting->domain, klass);
 	
@@ -260,9 +266,20 @@ void ComponentScript::InstanceClass()
 	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
 	MonoObject* monoGO = mono_object_new(App->scripting->domain, gameObjectClass);
 
+	MonoMethodDesc* desc = mono_method_desc_new("FlanEngine.GameObject:.ctor", true); 
+	MonoMethod* constructor = mono_method_desc_search_in_class(desc, gameObjectClass); 
+	mono_method_desc_free(desc);
+
+	mono_runtime_invoke(constructor, monoGO, NULL, NULL);
+
 	//SetUp this monoGO inside the class Instance
 	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");
 	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
 
-	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, MonoObject*>(gameObject, monoGO));
+	//Create the handle storage to make sure the garbage collector doesn't delete the classInstance
+	handleID = mono_gchandle_new(classInstance, true);
+
+	uint32_t handleID_monoObject = mono_gchandle_new(monoGO, true);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID_monoObject));
 }

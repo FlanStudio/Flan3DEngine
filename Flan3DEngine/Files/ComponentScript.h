@@ -30,6 +30,8 @@ public:
 	std::string scriptName;
 
 	ResourceScript* scriptRes = nullptr;
+
+	uint32_t handleID = 0;
 	_MonoObject* classInstance = nullptr;
 
 private:

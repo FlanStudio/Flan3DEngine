@@ -166,11 +166,15 @@ void ScriptingModule::ReceiveEvent(Event event)
 			{
 				if (gameObjectsMap[i].first == event.goEvent.gameObject)
 				{
-					MonoClass* monoObjectClass = mono_object_get_class(gameObjectsMap[i].second);
+					MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
+					MonoClass* monoObjectClass = mono_object_get_class(monoObject);
+
 					MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
 
 					bool temp = true;
-					mono_field_set_value(gameObjectsMap[i].second, deletedField, &temp);
+					mono_field_set_value(monoObject, deletedField, &temp);
+
+					mono_gchandle_free(gameObjectsMap[i].second);
 
 					gameObjectsMap.erase(gameObjectsMap.begin() + i);
 					i--;
@@ -408,7 +412,7 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 	{
 		if (gameObjectsMap[i].first == gameObject)
 		{
-			monoObject = gameObjectsMap[i].second;
+			monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
 
 			//SetUp all the GameObject* fields to the MonoObject
 
@@ -439,30 +443,24 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
 			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
 
-			MonoObject* positionOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			MonoObject* transformOBJ;
+			mono_field_get_value(monoObject, transformField, &transformOBJ);
+
+			MonoObject* positionOBJ; mono_field_get_value(transformOBJ, positionField, &positionOBJ);
 			mono_field_set_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
 			mono_field_set_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
 			mono_field_set_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
 
-			MonoObject* rotationOBJ = mono_object_new(App->scripting->domain, quaternionClass);
+			MonoObject* rotationOBJ; mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
 			mono_field_set_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
 			mono_field_set_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
 			mono_field_set_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
 			mono_field_set_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
 
-			MonoObject* scaleOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			MonoObject* scaleOBJ; mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
 			mono_field_set_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
 			mono_field_set_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
 			mono_field_set_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
-
-
-			MonoObject* transformOBJ = mono_object_new(App->scripting->domain, transformClass);
-
-			mono_field_set_value(transformOBJ, positionField, positionOBJ);
-			mono_field_set_value(transformOBJ, rotationField, rotationOBJ);
-			mono_field_set_value(transformOBJ, scaleField, scaleOBJ);
-
-			mono_field_set_value(monoObject, transformField, transformOBJ);
 
 			//TODO: CONTINUE UPDATING THINGS
 			break;
@@ -471,20 +469,22 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 
 }
 
-void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
+void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 {
 	//Find for a coincidence in the map.
 
 	GameObject* gameObject = nullptr;
 	for (int i = 0; i < gameObjectsMap.size(); ++i)
 	{
-		if (gameObjectsMap[i].second == monoObject)
+		if (gameObjectsMap[i].second == handleID)
 		{
+			MonoObject* monoObject = mono_gchandle_get_target(handleID);
 			gameObject = gameObjectsMap[i].first;
 
 			//SetUp the name
 			MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
 			MonoClassField* nameCS = mono_class_get_field_from_name(gameObjectClass, "name");
+
 			MonoString* name = (MonoString*)mono_field_get_value_object(domain, nameCS, monoObject);
 			char* newName = mono_string_to_utf8(name);
 			gameObject->name = newName;
@@ -509,17 +509,17 @@ void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
 			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
 			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
 
-			MonoObject* transformOBJ = mono_object_new(App->scripting->domain, transformClass);
+			MonoObject* transformOBJ; 
 			mono_field_get_value(monoObject, transformField, &transformOBJ);
 
-			MonoObject* positionOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			MonoObject* positionOBJ;
 			mono_field_get_value(transformOBJ, positionField, &positionOBJ);
 
 			mono_field_get_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
 			mono_field_get_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
 			mono_field_get_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
 
-			MonoObject* rotationOBJ = mono_object_new(App->scripting->domain, quaternionClass);
+			MonoObject* rotationOBJ;
 			mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
 
 			mono_field_get_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
@@ -527,7 +527,7 @@ void ScriptingModule::MonoObjectChanged(_MonoObject* monoObject)
 			mono_field_get_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
 			mono_field_get_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
 
-			MonoObject* scaleOBJ = mono_object_new(App->scripting->domain, vector3Class);
+			MonoObject* scaleOBJ;
 			mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
 
 			mono_field_get_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
@@ -620,7 +620,9 @@ _MonoObject* InstantiateGameObject()
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 	mono_runtime_object_init(monoInstance);
 
-	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, _MonoObject*>(instance, monoInstance));
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
 	
 	App->scripting->GameObjectChanged(instance);
 
@@ -632,7 +634,7 @@ void DestroyObj(MonoObject* obj)
 	bool found = false;
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
-		if (obj == App->scripting->gameObjectsMap[i].second)
+		if (obj == mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second))
 		{
 			found = true;
 
@@ -641,6 +643,8 @@ void DestroyObj(MonoObject* obj)
 			mono_field_set_value(obj, destroyed, &found);
 
 			GameObject* toDelete = App->scripting->gameObjectsMap[i].first;
+
+			mono_gchandle_free(App->scripting->gameObjectsMap[i].second);
 
 			App->scripting->gameObjectsMap.erase(App->scripting->gameObjectsMap.begin() + i);
 
