@@ -124,14 +124,30 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{
 			//Check if some files have compile errors and don't let the user hit the play.
 
+			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			{
+				GameObjectChanged(gameObjectsMap[i].first);
+			}
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				scripts[i]->Awake();
+			}
+
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				scripts[i]->Start();
+			}
+		
+			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			{
+				MonoObjectChanged(gameObjectsMap[i].second);
+			}
+
+
 			//Call the Awake and Start for all the Enabled script in the Play instant.
 			break;
 		}
-		case EventType::PAUSE:
-		{
-			//Stop calling the PreUpdate, Update, PostUpdate methods in the active ComponentScripts.
-			break;
-		}
+	
 		case EventType::STOP:
 		{
 			//Call the CleanUp method for all the scripts which where enabled at this point.
