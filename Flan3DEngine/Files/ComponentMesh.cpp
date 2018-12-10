@@ -26,7 +26,7 @@ void ComponentMesh::Draw()
 	glMultMatrixf(myMatrix.ptr());
 
 	ComponentMaterial* material = (ComponentMaterial*)gameObject->getComponentByType(ComponentType::MATERIAL);
-	if (material)
+	if (material && material->isActive())
 	{
 		if (material->texture && mesh->textureCoords_ID == 0)
 		{
@@ -57,6 +57,8 @@ void ComponentMesh::drawNormals()
 
 void ComponentMesh::OnInspector()
 {
+	ImGui::Checkbox(("###ACTIVE_MESH" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
+
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
 

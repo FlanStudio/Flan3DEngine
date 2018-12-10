@@ -26,6 +26,9 @@ void ComponentMaterial::Serialize(char *& cursor) const
 	memcpy(cursor, &colorTint.x, bytes);
 	cursor += bytes;
 
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -49,10 +52,15 @@ void ComponentMaterial::DeSerialize(char*& cursor, uint32_t& goUUID)
 	bytes = sizeof(ImVec4);
 	memcpy(&colorTint.x, cursor, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
+	cursor += bytes;
 }
 
 void ComponentMaterial::OnInspector()
 {
+	ImGui::Checkbox(("###ACTIVE_MATERIAL" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Material"); ImGui::SameLine();
 

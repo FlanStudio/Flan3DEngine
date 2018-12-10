@@ -48,14 +48,17 @@ void ComponentScript::PreUpdate()
 	if (scriptRes && scriptRes->preUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
-		if (exc)
+		if (isActive())
 		{
-			//TODO: PAUSE THE ENGINE HERE
-			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
-			mono_free(toLogMessage);
+			mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				//TODO: PAUSE THE ENGINE HERE
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
 		}
 	}
 }
@@ -63,16 +66,19 @@ void ComponentScript::PreUpdate()
 void ComponentScript::Update()
 {
 	if (scriptRes && scriptRes->updateMethod)
-	{			
+	{
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);	
-		if (exc)
+		if (isActive())
 		{
-			//TODO: PAUSE THE ENGINE HERE
-			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
-			mono_free(toLogMessage);
+			mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				//TODO: PAUSE THE ENGINE HERE
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
 		}
 	}
 }
@@ -82,20 +88,25 @@ void ComponentScript::PostUpdate()
 	if (scriptRes && scriptRes->postUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
-		if (exc)
+		if (isActive())
 		{
-			//TODO: PAUSE THE ENGINE HERE
-			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
-			mono_free(toLogMessage);
+			mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				//TODO: PAUSE THE ENGINE HERE
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
 		}
 	}
 }
 
 void ComponentScript::OnInspector()
 {
+	ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
+
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();
 
@@ -201,6 +212,10 @@ void ComponentScript::Serialize(char*& cursor) const
 	UID resUID = scriptRes ? scriptRes->getUUID() : 0;
 	memcpy(cursor, &resUID, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
@@ -214,6 +229,10 @@ void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
 
 	UID resUID;
 	memcpy(&resUID, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
 	cursor += bytes;
 
 	//Reference the ScriptResource

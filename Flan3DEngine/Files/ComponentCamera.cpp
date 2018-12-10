@@ -227,7 +227,7 @@ void ComponentCamera::debugDraw()
 
 void ComponentCamera::OnInspector()
 {
-	ImGui::Checkbox("###ACTIVE", &this->active); ImGui::SameLine();
+	ImGui::Checkbox(("###ACTIVE_CAMERA" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Camera"); ImGui::SameLine();
 

@@ -10,7 +10,7 @@ public:
 	virtual ~ComponentMaterial();
 
 public:
-	inline static uint bytesToSerialize() { return sizeof(UID) * 3 + sizeof(ImVec4); } //Your uid, your gameObject uid, your Texture uid, your tint color
+	inline static uint bytesToSerialize() { return sizeof(UID) * 3 + sizeof(ImVec4) + (sizeof(bool)); } //Your uid, your gameObject uid, your Texture uid, your tint color
 	void Serialize(char*& cursor) const;
 	void DeSerialize(char*& cursor, uint32_t& goUUID);
 
