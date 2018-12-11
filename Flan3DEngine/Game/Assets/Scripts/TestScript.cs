@@ -18,6 +18,7 @@ public class TestScript : FlanScript
     {
         Debug.ClearConsole();
         Debug.Log("My forward direction is: " + transform.forward.ToString());
+        Debug.Log("My Euler angles are: " + transform.rotation.ToEuler().ToString());
 
         if (Input.GetKeyDown(KeyCode.KEY_Q))
         {
@@ -45,19 +46,19 @@ public class TestScript : FlanScript
 
         if (Input.GetKey(KeyCode.KEY_W))
         {
-            gameObject.transform.position.x -= 50 * Time.deltaTime;
+            transform.position += transform.forward * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_A))
         {
-            gameObject.transform.position.z += 50 * Time.deltaTime;
+            transform.position += transform.right * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_S))
         {
-            gameObject.transform.position.x += 50 * Time.deltaTime;
+            transform.position -= transform.forward * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_D))
         {
-            gameObject.transform.position.z -= 50 * Time.deltaTime;
+            transform.position -= transform.right * 50 * Time.deltaTime;
         }
     }
 }

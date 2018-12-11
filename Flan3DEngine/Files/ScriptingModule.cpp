@@ -693,6 +693,24 @@ MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
 	return ret;
 }
 
+MonoArray* ToEuler(MonoArray* quat)
+{
+	Quat _q(mono_array_get(quat, float, 0), mono_array_get(quat, float, 1), mono_array_get(quat, float, 2), mono_array_get(quat, float, 3));
+
+	float3 axis;
+	float angle;
+	_q.ToAxisAngle(axis, angle);
+
+	float3 euler = axis * RadToDeg(angle);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, euler.x);
+	mono_array_set(ret, float, 1, euler.y);
+	mono_array_set(ret, float, 2, euler.z);
+
+	return ret;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -741,6 +759,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
 	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
+	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
 
 	firstDomain = false;
 }
