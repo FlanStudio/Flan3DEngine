@@ -16,6 +16,9 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
+        Debug.ClearConsole();
+        Debug.Log("My forward direction is: " + transform.forward.ToString());
+
         if (Input.GetKeyDown(KeyCode.KEY_Q))
         {
             Debug.Log("My GameObject's name is " + gameObject.name);

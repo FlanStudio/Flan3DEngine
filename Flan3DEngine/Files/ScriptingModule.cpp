@@ -657,6 +657,42 @@ void DestroyObj(MonoObject* obj)
 	}
 }
 
+MonoArray* QuatMult(MonoArray* q1, MonoArray* q2)
+{
+	Quat _q1(mono_array_get(q1, float, 0), mono_array_get(q1, float, 1), mono_array_get(q1, float, 2), mono_array_get(q1, float, 3));
+	Quat _q2(mono_array_get(q2, float, 0), mono_array_get(q2, float, 1), mono_array_get(q2, float, 2), mono_array_get(q2, float, 3));
+
+	_q1.Normalize();
+	_q2.Normalize();
+
+	Quat result = _q1 * _q2;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, result.x);
+	mono_array_set(ret, float, 1, result.y);
+	mono_array_set(ret, float, 2, result.z);
+	mono_array_set(ret, float, 3, result.w);
+
+	return ret;
+}
+
+MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
+{
+	Quat _q(mono_array_get(q, float, 0), mono_array_get(q, float, 1), mono_array_get(q, float, 2), mono_array_get(q, float, 3));
+	_q.Normalize();
+
+	float3 _vec(mono_array_get(vec, float, 0), mono_array_get(vec, float, 1), mono_array_get(vec, float, 2));
+
+	float3 res = _q * _vec;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, res.x);
+	mono_array_set(ret, float, 1, res.y);
+	mono_array_set(ret, float, 2, res.z);
+
+	return ret;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -703,6 +739,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
+	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
+	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
 
 	firstDomain = false;
 }
