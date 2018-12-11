@@ -277,6 +277,57 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	return false;
 }
 
+MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
+{
+	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+	mono_runtime_object_init(monoInstance);
+
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
+
+	App->scripting->GameObjectChanged(gameObject);
+
+	return monoInstance;
+}
+
+void ScriptingModule::GameCameraChanged()
+{
+	GameObject* mainCamera = App->camera->gameCamera;
+	if (mainCamera == nullptr)
+	{
+		MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+		MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+		MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+		mono_field_static_set_value(cameraClassvTable, mainCamField, NULL);
+		return;
+	}
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		if (App->scripting->gameObjectsMap[i].first == mainCamera)
+		{
+			MonoObject* monoObject = mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second);
+
+			MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+			MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+			MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+
+			mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+
+			return;
+		}
+	}
+
+	//This gameObject is not saved in the map
+	MonoObject* monoObject = MonoObjectFrom(mainCamera);
+	MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+	MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+	MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+	mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+}
+
 bool ScriptingModule::alreadyCreated(std::string scriptName)
 {
 	clearSpaces(scriptName);
@@ -632,7 +683,7 @@ int32_t GetKeyStateCS(int32_t key)
 
 _MonoObject* InstantiateGameObject()
 {
-	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode());
+	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
 
 	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
@@ -671,6 +722,60 @@ void DestroyObj(MonoObject* obj)
 			break;
 		}
 	}
+}
+
+MonoArray* QuatMult(MonoArray* q1, MonoArray* q2)
+{
+	Quat _q1(mono_array_get(q1, float, 0), mono_array_get(q1, float, 1), mono_array_get(q1, float, 2), mono_array_get(q1, float, 3));
+	Quat _q2(mono_array_get(q2, float, 0), mono_array_get(q2, float, 1), mono_array_get(q2, float, 2), mono_array_get(q2, float, 3));
+
+	_q1.Normalize();
+	_q2.Normalize();
+
+	Quat result = _q1 * _q2;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, result.x);
+	mono_array_set(ret, float, 1, result.y);
+	mono_array_set(ret, float, 2, result.z);
+	mono_array_set(ret, float, 3, result.w);
+
+	return ret;
+}
+
+MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
+{
+	Quat _q(mono_array_get(q, float, 0), mono_array_get(q, float, 1), mono_array_get(q, float, 2), mono_array_get(q, float, 3));
+	_q.Normalize();
+
+	float3 _vec(mono_array_get(vec, float, 0), mono_array_get(vec, float, 1), mono_array_get(vec, float, 2));
+
+	float3 res = _q * _vec;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, res.x);
+	mono_array_set(ret, float, 1, res.y);
+	mono_array_set(ret, float, 2, res.z);
+
+	return ret;
+}
+
+MonoArray* ToEuler(MonoArray* quat)
+{
+	Quat _q(mono_array_get(quat, float, 0), mono_array_get(quat, float, 1), mono_array_get(quat, float, 2), mono_array_get(quat, float, 3));
+
+	float3 axis;
+	float angle;
+	_q.ToAxisAngle(axis, angle);
+
+	float3 euler = axis * RadToDeg(angle);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, euler.x);
+	mono_array_set(ret, float, 1, euler.y);
+	mono_array_set(ret, float, 2, euler.z);
+
+	return ret;
 }
 
 //---------------------------------
@@ -719,6 +824,9 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
+	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
+	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
+	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
 
 	firstDomain = false;
 }

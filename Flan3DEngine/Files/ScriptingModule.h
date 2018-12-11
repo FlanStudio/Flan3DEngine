@@ -44,6 +44,9 @@ public:
 	ComponentScript* CreateScriptComponent(std::string scriptName, bool createCS = true);
 	bool DestroyScript(ComponentScript* script);
 	inline void AddScriptComponent(ComponentScript* script){scripts.push_back(script);}
+	_MonoObject* MonoObjectFrom(GameObject* gameObject);
+	void GameCameraChanged();
+
 
 	bool alreadyCreated(std::string scriptName);
 

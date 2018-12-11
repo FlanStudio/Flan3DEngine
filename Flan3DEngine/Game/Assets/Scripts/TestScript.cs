@@ -16,6 +16,16 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
+        Debug.ClearConsole();
+        if(Camera.main != null)
+        {
+            Debug.Log("Hey! There is a camera!");
+        }
+        else
+        {
+            Debug.Log("Oooooh... There is not a camera :c");
+        }
+
         if (Input.GetKeyDown(KeyCode.KEY_Q))
         {
             Debug.Log("My GameObject's name is " + gameObject.name);
@@ -42,19 +52,19 @@ public class TestScript : FlanScript
 
         if (Input.GetKey(KeyCode.KEY_W))
         {
-            gameObject.transform.position.x -= 50 * Time.deltaTime;
+            transform.position += transform.forward * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_A))
         {
-            gameObject.transform.position.z += 50 * Time.deltaTime;
+            transform.position += transform.right * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_S))
         {
-            gameObject.transform.position.x += 50 * Time.deltaTime;
+            transform.position -= transform.forward * 50 * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_D))
         {
-            gameObject.transform.position.z -= 50 * Time.deltaTime;
+            transform.position -= transform.right * 50 * Time.deltaTime;
         }
     }
 }
