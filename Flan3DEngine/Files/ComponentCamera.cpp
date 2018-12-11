@@ -317,6 +317,7 @@ void ComponentCamera::OnInspector()
 			{
 				App->camera->setGameCamera(nullptr);
 			}
+			App->scripting->GameCameraChanged();
 		}
 
 		ImGui::ColorEdit3("Background Color", &backgroundColor.x, 0);

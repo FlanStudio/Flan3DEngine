@@ -239,7 +239,7 @@ void ModuleScene::ReceiveEvent(Event event)
 	}
 }
 
-GameObject* ModuleScene::CreateGameObject(GameObject* parent)
+GameObject* ModuleScene::CreateGameObject(GameObject* parent, bool createMonoObject)
 {
 	GameObject* ret = new GameObject(parent);
 
@@ -253,6 +253,11 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	ret->initAABB();
 	ret->transformAABB();
 	ret->updateAABBbuffers();
+
+	if (createMonoObject)
+	{
+		App->scripting->MonoObjectFrom(ret);
+	}
 
 	return ret;
 }
@@ -331,6 +336,7 @@ void ModuleScene::guiHierarchy()
 				GameObject* gameObject = CreateGameObject(gameObjects[0]);
 				gameObject->name = "Camera";
 				gameObject->CreateComponent(ComponentType::CAMERA);
+
 			}
 			ImGui::EndMenu();
 		}
@@ -828,6 +834,11 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	}
 
 	App->camera->setGameCamera(mainCamera);
+
+	if(mainCamera)
+		App->scripting->MonoObjectFrom(mainCamera->gameObject);
+
+	App->scripting->GameCameraChanged();
 
 	uint numMaterials = 0u;
 	bytes = sizeof(uint);

@@ -261,6 +261,57 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	return false;
 }
 
+MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
+{
+	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+	mono_runtime_object_init(monoInstance);
+
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
+
+	App->scripting->GameObjectChanged(gameObject);
+
+	return monoInstance;
+}
+
+void ScriptingModule::GameCameraChanged()
+{
+	GameObject* mainCamera = App->camera->gameCamera;
+	if (mainCamera == nullptr)
+	{
+		MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+		MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+		MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+		mono_field_static_set_value(cameraClassvTable, mainCamField, NULL);
+		return;
+	}
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		if (App->scripting->gameObjectsMap[i].first == mainCamera)
+		{
+			MonoObject* monoObject = mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second);
+
+			MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+			MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+			MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+
+			mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+
+			return;
+		}
+	}
+
+	//This gameObject is not saved in the map
+	MonoObject* monoObject = MonoObjectFrom(mainCamera);
+	MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+	MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+	MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+	mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+}
+
 bool ScriptingModule::alreadyCreated(std::string scriptName)
 {
 	clearSpaces(scriptName);
@@ -616,7 +667,7 @@ int32_t GetKeyStateCS(int32_t key)
 
 _MonoObject* InstantiateGameObject()
 {
-	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode());
+	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
 
 	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);

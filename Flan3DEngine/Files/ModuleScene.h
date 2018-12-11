@@ -34,7 +34,7 @@ public:
 	bool CleanUp();
 
 public:
-	GameObject* CreateGameObject(GameObject* parent);
+	GameObject* CreateGameObject(GameObject* parent, bool createMonoObject = true);
 	void DestroyGameObject(GameObject* gameObject);
 	void AddGameObject(GameObject* gameObject);
 	void ClearGameObjects();

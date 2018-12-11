@@ -17,8 +17,14 @@ public class TestScript : FlanScript
     public override void Update()
     {
         Debug.ClearConsole();
-        Debug.Log("My forward direction is: " + transform.forward.ToString());
-        Debug.Log("My Euler angles are: " + transform.rotation.ToEuler().ToString());
+        if(Camera.main != null)
+        {
+            Debug.Log("Hey! There is a camera!");
+        }
+        else
+        {
+            Debug.Log("Oooooh... There is not a camera :c");
+        }
 
         if (Input.GetKeyDown(KeyCode.KEY_Q))
         {
