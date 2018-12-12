@@ -4,7 +4,7 @@ using FlanEngine;
 
 public class TestScript : FlanScript
 {
-    public bool firstTime = true;
+    bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
 
     public float rotSpeed = 150f;
@@ -13,15 +13,11 @@ public class TestScript : FlanScript
     //Use this method for initialization
     public override void Awake()
     {
-         
     }
 
     //Called every frame
     public override void Update()
     {
-
-        System.Reflection.FieldAttributes fieldAttributes;
-
         if(Input.GetKey(KeyCode.KEY_E))
         {
             transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);
@@ -66,19 +62,6 @@ public class TestScript : FlanScript
         if (Input.GetKey(KeyCode.KEY_D))
         {
             transform.position -= transform.right * movSpeed * Time.deltaTime;
-        }
-
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
-        {
-            Debug.Log("LEFT");
-        }
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_MID))
-        {
-            Debug.Log("mit");
-        }
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
-        {
-            Debug.Log("RIGTH");
         }
     }
 }

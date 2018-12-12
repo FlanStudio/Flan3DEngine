@@ -2,6 +2,7 @@
 #include "ResourceScript.h"
 
 #include "imgui/imgui_internal.h"
+#include "imgui/imgui_stl.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -227,12 +228,77 @@ void ComponentScript::OnInspector()
 				else if (typeName == "single") //this is a float, idk
 				{					
 					float varState; mono_field_get_value(classInstance, field, &varState);
-					Debug.Log("Float value set to %.2f", varState);
 					if (ImGui::InputFloat(mono_field_get_name(field), &varState))
 					{
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}
+				else if (typeName == "double")
+				{
+					double varState;
+				}
+				else if (typeName == "System.Decimal")
+				{
+					//We cant convert System.Decimal, since we do not have this decimal precision in any C++ type.
+				}
+				else if (typeName == "sbyte")
+				{
+					int8_t varState;
+				}
+				else if (typeName == "byte")
+				{
+					uint8_t varState;
+
+				}			
+				else if (typeName == "int16")
+				{
+					int16_t varState;
+				}
+				else if (typeName == "uint16")
+				{
+					uint16_t varState;
+				}
+				else if (typeName == "int")
+				{
+					int32_t varState;
+				}
+				else if (typeName == "uint")
+				{
+					uint32_t varState;
+				}
+				else if (typeName == "long")
+				{
+					int64_t varState;
+				}
+				else if (typeName == "ulong")
+				{
+					uint64_t varState;
+				}
+				
+				else if (typeName == "char")
+				{
+					//Characters in C# are 2 bytes, while they are only 1 in C++. We may be losing some data here, since C# chars suppport Unicode and we only support ASCII.
+					char varState;
+					mono_field_get_value(classInstance, field, &varState);
+
+				}
+				else if (typeName == "string")
+				{
+					MonoString* varState;
+					mono_field_get_value(classInstance, field, &varState);
+
+					char* convertedString = mono_string_to_utf8(varState);
+
+					std::string stringToModify = convertedString;
+					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
+					{
+						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
+						mono_field_set_value(classInstance, field, newString);
+					}
+
+					mono_free(convertedString);
+				}
+				
 
 			}
 
