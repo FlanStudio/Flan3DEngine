@@ -681,6 +681,11 @@ int32_t GetKeyStateCS(int32_t key)
 	return App->input->GetKey(key);
 }
 
+int32_t GetMouseStateCS(int32_t button)
+{
+	return App->input->GetMouseButton(button);
+}
+
 _MonoObject* InstantiateGameObject()
 {
 	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
@@ -823,6 +828,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
+	mono_add_internal_call("FlanEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
 	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
