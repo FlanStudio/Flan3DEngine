@@ -15,17 +15,7 @@ public class TestScript : FlanScript
 
     //Called every frame
     public override void Update()
-    {
-        Debug.ClearConsole();
-        if(Camera.main != null)
-        {
-            Debug.Log("Hey! There is a camera!");
-        }
-        else
-        {
-            Debug.Log("Oooooh... There is not a camera :c");
-        }
-
+    {    
         if (Input.GetKeyDown(KeyCode.KEY_Q))
         {
             Debug.Log("My GameObject's name is " + gameObject.name);

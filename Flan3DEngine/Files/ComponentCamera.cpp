@@ -4,9 +4,6 @@
 
 ComponentCamera::ComponentCamera(GameObject* gameObject, bool active) : Component(ComponentType::CAMERA, gameObject, active)
 {
-	if (!gameObject)
-		Debug.LogWarning("No gameObject attached to this camera component");
-
 	width = height = 50.0f;
 	aspectRatio = width / height;
 	horizontalFOV = DegToRad(60);
