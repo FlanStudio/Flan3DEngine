@@ -200,8 +200,7 @@ void ComponentScript::OnInspector()
 		ImGui::Text(clampedText.data());
 		ImGui::NewLine();
 
-		//Script variables
-
+		//Script fields
 		Debug.Clear();
 		void* iterator = 0;
 		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
