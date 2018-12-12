@@ -208,8 +208,9 @@ void ComponentScript::OnInspector()
 		while (field != nullptr)
 		{
 			MonoType* type = mono_field_get_type(field);
-						
-			if (mono_field_get_flags(field) & MONO_FIELD_ATTR_PUBLIC)
+
+			uint32_t flags = mono_field_get_flags(field);
+			if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 			{
 				Debug.Log("This field is public: %s", mono_field_get_name(field));
 
