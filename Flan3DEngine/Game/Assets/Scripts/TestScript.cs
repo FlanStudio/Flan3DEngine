@@ -7,6 +7,9 @@ public class TestScript : FlanScript
     public bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
 
+    public float rotSpeed = 150f;
+    public float movSpeed = 50f;
+
     //Use this method for initialization
     public override void Awake()
     {
@@ -21,12 +24,12 @@ public class TestScript : FlanScript
 
         if(Input.GetKey(KeyCode.KEY_E))
         {
-            transform.rotation.Rotate(Vector3.up, -150 * Time.deltaTime);
+            transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.KEY_Q))
         {
-            transform.rotation.Rotate(Vector3.up, +150 * Time.deltaTime);
+            transform.rotation.Rotate(Vector3.up, +rotSpeed * Time.deltaTime);
         }
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
@@ -50,19 +53,19 @@ public class TestScript : FlanScript
 
         if (Input.GetKey(KeyCode.KEY_W))
         {
-            transform.position += transform.forward * 50 * Time.deltaTime;
+            transform.position += transform.forward * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_A))
         {
-            transform.position += transform.right * 50 * Time.deltaTime;
+            transform.position += transform.right * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_S))
         {
-            transform.position -= transform.forward * 50 * Time.deltaTime;
+            transform.position -= transform.forward * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_D))
         {
-            transform.position -= transform.right * 50 * Time.deltaTime;
+            transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
     }
 }

@@ -224,9 +224,14 @@ void ComponentScript::OnInspector()
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}
-				else if (typeName == "X")
-				{
-					//Continue checking types
+				else if (typeName == "single") //this is a float, idk
+				{					
+					float varState; mono_field_get_value(classInstance, field, &varState);
+					Debug.Log("Float value set to %.2f", varState);
+					if (ImGui::InputFloat(mono_field_get_name(field), &varState))
+					{
+						mono_field_set_value(classInstance, field, &varState);
+					}
 				}
 
 			}
