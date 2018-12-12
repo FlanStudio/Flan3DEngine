@@ -27,7 +27,7 @@ public class TestScript : FlanScript
         {
             transform.rotation.Rotate(Vector3.up, +rotSpeed * Time.deltaTime);
         }
-        
+
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
             Debug.Log("Instantiating GameObject");
@@ -37,11 +37,11 @@ public class TestScript : FlanScript
         }
 
         if (Input.GetKeyDown(KeyCode.KEY_2))
-        {        
+        {
             if(childs.Count != 0)
             {
                 Debug.Log("Deleting GameObject");
-                GameObject toDelete = childs[childs.Count-1];              
+                GameObject toDelete = childs[childs.Count-1];
                 Destroy(toDelete);
                 childs.Remove(toDelete);
             }
@@ -63,6 +63,27 @@ public class TestScript : FlanScript
         {
             transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
+
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
+        {
+            Debug.Log("MOUSE_LEFT");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_MID))
+        {
+            Debug.Log("MOUSE_MID");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+        {
+            Debug.Log("RIGTH");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_X1))
+        {
+            Debug.Log("MOUSE_X1");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_X2))
+        {
+            Debug.Log("MOUSE_X2");
+        }
+
     }
 }
-
