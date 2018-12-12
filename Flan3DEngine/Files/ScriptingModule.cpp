@@ -762,6 +762,23 @@ MonoArray* ToEuler(MonoArray* quat)
 	return ret;
 }
 
+MonoArray* RotateAxisAngle(MonoArray* axis, float deg)
+{
+	float3 _axis({ mono_array_get(axis, float, 0), mono_array_get(axis, float, 1), mono_array_get(axis, float, 2)});
+
+	float rad = DegToRad(deg);
+
+	Quat rotation = Quat::RotateAxisAngle(_axis, rad);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, rotation.x);
+	mono_array_set(ret, float, 1, rotation.y);
+	mono_array_set(ret, float, 2, rotation.z);
+	mono_array_set(ret, float, 3, rotation.w);
+
+	return ret;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -811,6 +828,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
 	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
+	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
 
 	firstDomain = false;
 }

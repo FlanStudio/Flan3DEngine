@@ -16,9 +16,14 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {    
-        if (Input.GetKeyDown(KeyCode.KEY_Q))
+        if(Input.GetKey(KeyCode.KEY_E))
         {
-            Debug.Log("My GameObject's name is " + gameObject.name);
+            transform.rotation.Rotate(Vector3.up, -150 * Time.deltaTime);
+        }
+
+        if (Input.GetKey(KeyCode.KEY_Q))
+        {
+            transform.rotation.Rotate(Vector3.up, +150 * Time.deltaTime);
         }
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
