@@ -8,6 +8,8 @@
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/debug-helpers.h>
 
+#include <mono/metadata/attrdefs.h>
+
 
 void ComponentScript::Awake()
 {
@@ -197,6 +199,45 @@ void ComponentScript::OnInspector()
 
 		ImGui::Text(clampedText.data());
 		ImGui::NewLine();
+
+		//Script fields
+		Debug.Clear();
+		void* iterator = 0;
+		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+		while (field != nullptr)
+		{
+			uint32_t flags = mono_field_get_flags(field);
+			if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+			{
+				//This field is public and not static.
+				//Show the field, check the type and adapt the gui to it.
+				MonoType* type = mono_field_get_type(field);
+				
+				std::string typeName = mono_type_full_name(type);
+
+				if (typeName == "bool")
+				{
+					bool varState; mono_field_get_value(classInstance, field, &varState);
+					if(ImGui::Checkbox(mono_field_get_name(field), &varState))
+					{
+						mono_field_set_value(classInstance, field, &varState);
+					}
+				}
+				else if (typeName == "single") //this is a float, idk
+				{					
+					float varState; mono_field_get_value(classInstance, field, &varState);
+					Debug.Log("Float value set to %.2f", varState);
+					if (ImGui::InputFloat(mono_field_get_name(field), &varState))
+					{
+						mono_field_set_value(classInstance, field, &varState);
+					}
+				}
+
+			}
+
+			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+		}
 	}
 }
 

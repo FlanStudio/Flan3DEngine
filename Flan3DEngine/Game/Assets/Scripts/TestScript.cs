@@ -4,8 +4,11 @@ using FlanEngine;
 
 public class TestScript : FlanScript
 {
-    bool firstTime = true;
+    public bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
+
+    public float rotSpeed = 150f;
+    public float movSpeed = 50f;
 
     //Use this method for initialization
     public override void Awake()
@@ -16,19 +19,17 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
-        Debug.ClearConsole();
-        if(Camera.main != null)
+
+        System.Reflection.FieldAttributes fieldAttributes;
+
+        if(Input.GetKey(KeyCode.KEY_E))
         {
-            Debug.Log("Hey! There is a camera!");
-        }
-        else
-        {
-            Debug.Log("Oooooh... There is not a camera :c");
+            transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);
         }
 
-        if (Input.GetKeyDown(KeyCode.KEY_Q))
+        if (Input.GetKey(KeyCode.KEY_Q))
         {
-            Debug.Log("My GameObject's name is " + gameObject.name);
+            transform.rotation.Rotate(Vector3.up, +rotSpeed * Time.deltaTime);
         }
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
@@ -52,19 +53,19 @@ public class TestScript : FlanScript
 
         if (Input.GetKey(KeyCode.KEY_W))
         {
-            transform.position += transform.forward * 50 * Time.deltaTime;
+            transform.position += transform.forward * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_A))
         {
-            transform.position += transform.right * 50 * Time.deltaTime;
+            transform.position += transform.right * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_S))
         {
-            transform.position -= transform.forward * 50 * Time.deltaTime;
+            transform.position -= transform.forward * movSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.KEY_D))
         {
-            transform.position -= transform.right * 50 * Time.deltaTime;
+            transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
 
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
