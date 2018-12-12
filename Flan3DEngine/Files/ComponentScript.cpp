@@ -8,6 +8,8 @@
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/debug-helpers.h>
 
+#include <mono/metadata/attrdefs.h>
+
 
 void ComponentScript::Awake()
 {
@@ -197,6 +199,29 @@ void ComponentScript::OnInspector()
 
 		ImGui::Text(clampedText.data());
 		ImGui::NewLine();
+
+		//Script variables
+
+		Debug.Clear();
+		void* iterator = 0;
+		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+		while (field != nullptr)
+		{
+			MonoType* type = mono_field_get_type(field);
+						
+			if (mono_field_get_flags(field) & MONO_FIELD_ATTR_PUBLIC)
+			{
+				Debug.Log("This field is public: %s", mono_field_get_name(field));
+
+				//Show the field, check the type and adapt the gui to it.
+
+
+
+			}
+
+			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+		}
 	}
 }
 

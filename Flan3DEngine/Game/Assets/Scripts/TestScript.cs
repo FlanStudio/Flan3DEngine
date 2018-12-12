@@ -4,7 +4,7 @@ using FlanEngine;
 
 public class TestScript : FlanScript
 {
-    bool firstTime = true;
+    public bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
 
     //Use this method for initialization
@@ -15,7 +15,10 @@ public class TestScript : FlanScript
 
     //Called every frame
     public override void Update()
-    {    
+    {
+
+        System.Reflection.FieldAttributes fieldAttributes;
+
         if(Input.GetKey(KeyCode.KEY_E))
         {
             transform.rotation.Rotate(Vector3.up, -150 * Time.deltaTime);
