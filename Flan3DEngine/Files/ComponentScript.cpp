@@ -298,6 +298,41 @@ void ComponentScript::OnInspector()
 
 					mono_free(convertedString);
 				}
+
+				else if (typeName == "FlanEngine.GameObject")
+				{
+					ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+					/*drawingPos = { drawingPos.x - 10, drawingPos.y };
+					ImGui::SetCursorScreenPos(drawingPos);*/
+
+					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
+					ImGui::ButtonEx(std::string("##gameObjectReceiver" + std::to_string(UUID)).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+					if (ImGui::IsItemClicked(0))
+					{
+						ImDrawList* drawList = ImGui::GetWindowDrawList();
+						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+						{
+							/*if (texture)
+								texture->deReferenced();
+							texture = nullptr;
+							textureClicked = false;*/
+						}
+					}					
+					else if (ImGui::IsItemHovered())
+					{
+						ImDrawList* drawList = ImGui::GetWindowDrawList();
+						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+					}
+
+					ImGui::NewLine();
+
+
+
+				}
+
+
 				
 
 			}

@@ -10,6 +10,8 @@ public class TestScript : FlanScript
     public float rotSpeed = 150f;
     public float movSpeed = 50f;
 
+    public GameObject instance;
+
     //Use this method for initialization
     public override void Awake()
     {
