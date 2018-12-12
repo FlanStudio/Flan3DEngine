@@ -66,19 +66,6 @@ public class TestScript : FlanScript
         {
             transform.position -= transform.right * 50 * Time.deltaTime;
         }
-
-        if(Input.GetMouseButton(MouseKeyCode.BTN_LEFT))
-        {
-            Debug.Log("LEFT");
-        }
-        if (Input.GetMouseButton(MouseKeyCode.BTN_MID))
-        {
-            Debug.Log("mit");
-        }
-        if (Input.GetMouseButton(MouseKeyCode.BTN_RIGHT))
-        {
-            Debug.Log("RIGTH");
-        }
     }
 }
 
