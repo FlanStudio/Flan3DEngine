@@ -207,16 +207,27 @@ void ComponentScript::OnInspector()
 
 		while (field != nullptr)
 		{
-			MonoType* type = mono_field_get_type(field);
-
 			uint32_t flags = mono_field_get_flags(field);
 			if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 			{
-				Debug.Log("This field is public: %s", mono_field_get_name(field));
-
+				//This field is public and not static.
 				//Show the field, check the type and adapt the gui to it.
+				MonoType* type = mono_field_get_type(field);
+				
+				std::string typeName = mono_type_full_name(type);
 
-
+				if (typeName == "bool")
+				{
+					bool varState; mono_field_get_value(classInstance, field, &varState);
+					if(ImGui::Checkbox(mono_field_get_name(field), &varState))
+					{
+						mono_field_set_value(classInstance, field, &varState);
+					}
+				}
+				else if (typeName == "X")
+				{
+					//Continue checking types
+				}
 
 			}
 
