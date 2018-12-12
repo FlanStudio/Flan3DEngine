@@ -14,11 +14,6 @@
 
 GameObject::~GameObject()
 {
-	Event event;
-	event.goEvent.type = EventType::GO_DESTROYED;
-	event.goEvent.gameObject = this;
-	App->SendEvent(event);
-
 	destroyAABBbuffers();
 	ClearChilds();
 	ClearComponents();
@@ -383,6 +378,7 @@ void GameObject::ReceiveEvent(Event event)
 			{
 				if (childs[i] == event.goEvent.gameObject)
 				{
+					childs[i]->parent = nullptr;
 					childs.erase(childs.begin() + i);
 					i--;
 				}
@@ -414,18 +410,20 @@ void GameObject::SetActive(bool boolean)
 
 bool GameObject::areParentsActives() const
 {
-	while (parent)
+	bool ret = true;
+
+	GameObject* go = (GameObject*)this;
+	while (go)
 	{
-		if (parent->isActive())
+		if (!go->isActive())
 		{
-			return parent->areParentsActives();
+			ret = false;
+			break;
 		}
-		else
-		{
-			return false;
-		}
+		go = go->parent;
 	}
-	return isActive();
+
+	return ret;
 }
 
 void GameObject::InsertChild(GameObject* child, int pos)

@@ -111,9 +111,8 @@ update_status ModuleScene::PostUpdate()
 			event.goEvent.type = EventType::GO_DESTROYED;
 			event.goEvent.gameObject = selectedGO;
 			gameObjects[0]->ReceiveEvent(event);
-
-			delete selectedGO;
-			selectedGO = nullptr;	
+			
+			App->SendEvent(event);
 
 			UpdateQuadtree();
 		}
@@ -386,7 +385,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			_ReorderGameObject_Pre(go);
 			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
 		
-			if (ImGui::IsItemClicked(0) && !go->selected)
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && !go->selected)
 				App->scene->selectGO(go);
 
 			if (!opened)
@@ -415,7 +414,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
 			
-			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && !go->selected)
 				App->scene->selectGO(go);
 			
 			DragDrop(go);
@@ -767,8 +766,13 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		}
 	}
 
-	delete gameObjects[0];
+	Event event;
+	event.goEvent.type = EventType::GO_DESTROYED;
+	event.goEvent.gameObject = gameObjects[0];
+	App->SendEvent(event);
+
 	gameObjects.clear();
+
 	CreateGameObject(nullptr);
 
 	uint numMeshes = 0u;

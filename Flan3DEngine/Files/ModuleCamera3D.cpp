@@ -290,8 +290,20 @@ void ModuleCamera3D::ReceiveEvent(Event event)
 
 		case EventType::GO_DESTROYED:
 		{
-			if (event.goEvent.gameObject == gameCamera)
+			bool cameraDestroyed = false;
+			GameObject* parent = gameCamera ? gameCamera : nullptr;
+			while (parent)
+			{
+				if (event.goEvent.gameObject == parent)
+				{
+					cameraDestroyed = true;
+				}
+				parent = parent->parent;
+			}
+
+			if (cameraDestroyed)
 				setGameCamera(nullptr);
+
 			break;
 		}
 	}

@@ -306,39 +306,88 @@ void ComponentScript::OnInspector()
 					ImGui::SetCursorScreenPos(drawingPos);*/
 
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
-					ImGui::ButtonEx(std::string("##gameObjectReceiver" + std::to_string(UUID)).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+					ImGui::ButtonEx(std::string("##" + std::string(mono_field_get_name(field))).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						if (payload)
+						{
+							GameObject* go = *(GameObject**)payload->Data;
+							
+							if (ImGui::IsMouseReleased(0))
+							{
+								MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+								mono_field_set_value(classInstance, field, monoObject);
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
 
 					if (ImGui::IsItemClicked(0))
 					{
 						ImDrawList* drawList = ImGui::GetWindowDrawList();
 						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
-						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
-						{
-							/*if (texture)
-								texture->deReferenced();
-							texture = nullptr;
-							textureClicked = false;*/
-						}
-					}					
-					else if (ImGui::IsItemHovered())
+					}
+					else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 					{
 						ImDrawList* drawList = ImGui::GetWindowDrawList();
 						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+
+						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+						{
+							mono_field_set_value(classInstance, field, NULL);
+						}
 					}
 
-					ImGui::NewLine();
+					ImGui::SetCursorScreenPos({ drawingPos.x+5, drawingPos.y+3});
+
+					MonoObject* monoObject;
+					mono_field_get_value(classInstance, field, &monoObject);
+
+					std::string text;
+
+					if (monoObject)
+					{
+						bool destroyed;
+						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
+
+						if (!destroyed)
+						{
+							MonoString* goName;
+							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
+
+							char* nameCpp = mono_string_to_utf8(goName);
+
+							text = nameCpp + std::string(" (GameObject)");
+
+							mono_free(nameCpp);
+						}
+						else
+						{
+							mono_field_set_value(classInstance, field, NULL);
+						}					
+					}
+					else
+					{
+						text = "NULL (GameObject)";
+					}
 
 
 
+					ImGui::Text(text.data());
+
+					ImGui::SameLine();
+					
+					ImGui::SetCursorScreenPos({drawingPos.x + buttonWidth + 5, drawingPos.y+3});
+					ImGui::Text(mono_field_get_name(field));
 				}
-
-
-				
-
 			}
 
 			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 		}
+
+		ImGui::NewLine();
 	}
 }
 

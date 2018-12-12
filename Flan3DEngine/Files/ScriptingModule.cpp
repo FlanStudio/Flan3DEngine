@@ -180,7 +180,19 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{
 			for (int i = 0; i < gameObjectsMap.size(); ++i)
 			{
-				if (gameObjectsMap[i].first == event.goEvent.gameObject)
+				GameObject* gameObject = gameObjectsMap[i].first;
+				bool destroyed = false;
+				while (gameObject)
+				{
+					if (gameObject == event.goEvent.gameObject)
+					{
+						destroyed = true;
+						break;
+					}
+					gameObject = gameObject->parent;
+				}
+
+				if (destroyed)				
 				{
 					MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
 					MonoClass* monoObjectClass = mono_object_get_class(monoObject);
@@ -279,6 +291,16 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 {
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].first == gameObject)
+		{
+			MonoObject* ret = mono_gchandle_get_target(gameObjectsMap[i].second);
+			GameObjectChanged(gameObject);
+			return ret;
+		}
+	}
+
 	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 	mono_runtime_object_init(monoInstance);
