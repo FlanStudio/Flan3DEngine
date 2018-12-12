@@ -70,15 +70,23 @@ public class TestScript : FlanScript
 
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
         {
-            Debug.Log("LEFT");
+            Debug.Log("MOUSE_LEFT");
         }
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_MID))
         {
-            Debug.Log("mit");
+            Debug.Log("MOUSE_MID");
         }
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
         {
             Debug.Log("RIGTH");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_X1))
+        {
+            Debug.Log("MOUSE_X1");
+        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_X2))
+        {
+            Debug.Log("MOUSE_X2");
         }
     }
 }
