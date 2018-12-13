@@ -4,7 +4,7 @@ using FlanEngine;
 
 public class TestScript : FlanScript
 {
-    bool firstTime = true;
+    public bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
 
     public float rotSpeed = 150f;
@@ -12,6 +12,8 @@ public class TestScript : FlanScript
 
     public GameObject instance;
     public GameObject instance2;
+
+    public Transform transformTest;
 
     //Use this method for initialization
     public override void Awake()
@@ -22,6 +24,13 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
+        if(transformTest != null)
+        {
+            Debug.ClearConsole();
+            Debug.Log("My transformTest's name is " + transformTest.gameObject.name);
+            Debug.Log("My transformTest's position is " + transformTest.position.ToString());
+        }
+
         if(Input.GetKey(KeyCode.KEY_E))
         {
             transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);

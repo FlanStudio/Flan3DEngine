@@ -20,7 +20,11 @@ void ComponentScript::Awake()
 		mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
 		if (exc)
 		{
-			//TODO: PAUSE THE ENGINE HERE
+			Event event;
+			event.type = EventType::PAUSE;
+			App->SendEvent(event);
+			App->time->paused = true;
+
 			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
 			Debug.LogError(toLogMessage);
@@ -37,7 +41,11 @@ void ComponentScript::Start()
 		mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
 		if (exc)
 		{
-			//TODO: PAUSE THE ENGINE HERE
+			Event event;
+			event.type = EventType::PAUSE;
+			App->SendEvent(event);
+			App->time->paused = true;
+
 			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
 			Debug.LogError(toLogMessage);
@@ -56,7 +64,11 @@ void ComponentScript::PreUpdate()
 			mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				//TODO: PAUSE THE ENGINE HERE
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
 				Debug.LogError(toLogMessage);
@@ -76,7 +88,11 @@ void ComponentScript::Update()
 			mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				//TODO: PAUSE THE ENGINE HERE
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
 				Debug.LogError(toLogMessage);
@@ -96,7 +112,11 @@ void ComponentScript::PostUpdate()
 			mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				//TODO: PAUSE THE ENGINE HERE
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
 				Debug.LogError(toLogMessage);
@@ -203,7 +223,6 @@ void ComponentScript::OnInspector()
 		ImGui::NewLine();
 
 		//Script fields
-		Debug.Clear();
 		void* iterator = 0;
 		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
@@ -218,10 +237,21 @@ void ComponentScript::OnInspector()
 				
 				std::string typeName = mono_type_full_name(type);
 
+				std::string fieldName = mono_field_get_name(field);
+
 				if (typeName == "bool")
 				{
 					bool varState; mono_field_get_value(classInstance, field, &varState);
-					if(ImGui::Checkbox(mono_field_get_name(field), &varState))
+					
+					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({cursorPos.x, cursorPos.y + 5});
+
+					ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y -5 });
+
+					if(ImGui::Checkbox(("##" + fieldName).data(), &varState))
 					{
 						mono_field_set_value(classInstance, field, &varState);
 					}
@@ -229,7 +259,16 @@ void ComponentScript::OnInspector()
 				else if (typeName == "single") //this is a float, idk
 				{					
 					float varState; mono_field_get_value(classInstance, field, &varState);
-					if (ImGui::InputFloat(mono_field_get_name(field), &varState))
+
+					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+					ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+					if (ImGui::InputFloat(("##" + fieldName).data(), &varState))
 					{
 						mono_field_set_value(classInstance, field, &varState);
 					}
@@ -302,12 +341,21 @@ void ComponentScript::OnInspector()
 
 				else if (typeName == "FlanEngine.GameObject")
 				{
-					ImVec2 drawingPos = ImGui::GetCursorScreenPos();
-					/*drawingPos = { drawingPos.x - 10, drawingPos.y };
-					ImGui::SetCursorScreenPos(drawingPos);*/
-
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
-					ImGui::ButtonEx(std::string("##" + std::string(mono_field_get_name(field))).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+					float varState; mono_field_get_value(classInstance, field, &varState);
+
+					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+					ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+					cursorPos = { cursorPos.x, cursorPos.y - 5 };
+
+					ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
 
 					if (ImGui::BeginDragDropTarget())
 					{
@@ -328,12 +376,12 @@ void ComponentScript::OnInspector()
 					if (ImGui::IsItemClicked(0))
 					{
 						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
 					}
 					else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 					{
 						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
 
 						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
 						{
@@ -341,8 +389,7 @@ void ComponentScript::OnInspector()
 						}
 					}
 
-					ImGui::SetCursorScreenPos({ drawingPos.x+5, drawingPos.y+3});
-
+					//Button text
 					MonoObject* monoObject;
 					mono_field_get_value(classInstance, field, &monoObject);
 
@@ -367,24 +414,117 @@ void ComponentScript::OnInspector()
 						else
 						{
 							mono_field_set_value(classInstance, field, NULL);
-						}					
+						}
 					}
 					else
 					{
 						text = "NULL (GameObject)";
 					}
 
+					ImGui::SetCursorScreenPos({ cursorPos.x+5, cursorPos.y+3});
 
+					ImGui::Text(text.data());	
+
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
+				}
+
+				else if (typeName == "FlanEngine.Transform")
+				{
+					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
+
+					float varState; mono_field_get_value(classInstance, field, &varState);
+
+					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+					ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+					cursorPos = { cursorPos.x, cursorPos.y - 5 };
+
+					ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						if (payload)
+						{
+							GameObject* go = *(GameObject**)payload->Data;
+
+							if (ImGui::IsMouseReleased(0))
+							{
+								MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+
+								MonoObject* monoTransform; 
+								mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "transform"), &monoTransform);
+
+								mono_field_set_value(classInstance, field, monoTransform);
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
+
+					if (ImGui::IsItemClicked(0))
+					{
+						ImDrawList* drawList = ImGui::GetWindowDrawList();
+						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+					}
+					else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+					{
+						ImDrawList* drawList = ImGui::GetWindowDrawList();
+						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+
+						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+						{
+							mono_field_set_value(classInstance, field, NULL);
+						}
+					}
+
+					//Button text
+					MonoObject* monoTransform;
+					mono_field_get_value(classInstance, field, &monoTransform);
+
+					MonoObject* monoObject;
+					if(monoTransform)
+						mono_field_get_value(monoTransform, mono_class_get_field_from_name(mono_object_get_class(monoTransform), "gameObject"), &monoObject);
+
+					std::string text;
+
+					if (monoTransform)
+					{
+						bool destroyed;
+						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
+
+						if (!destroyed)
+						{
+							MonoString* goName;
+							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
+
+							char* nameCpp = mono_string_to_utf8(goName);
+
+							text = nameCpp + std::string(" (Transform)");
+
+							mono_free(nameCpp);
+						}
+						else
+						{
+							mono_field_set_value(classInstance, field, NULL);
+						}
+					}
+					else
+					{
+						text = "NULL (Transform)";
+					}
+
+					ImGui::SetCursorScreenPos({ cursorPos.x + 5, cursorPos.y + 3 });
 
 					ImGui::Text(text.data());
 
-					ImGui::SameLine();
-					
-					ImGui::SetCursorScreenPos({drawingPos.x + buttonWidth + 5, drawingPos.y+3});
-					ImGui::Text(mono_field_get_name(field));
-
-					drawingPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ drawingPos.x, drawingPos.y+4});
+					cursorPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
 				}
 			}
 

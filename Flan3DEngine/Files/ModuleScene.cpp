@@ -223,8 +223,18 @@ void ModuleScene::ReceiveEvent(Event event)
 		}
 		case EventType::GO_DESTROYED:
 		{
-			if (event.goEvent.gameObject == selectedGO)
-				selectedGO = nullptr;
+			bool selectedDestroyed = false;
+			GameObject* gameObject = selectedGO;
+			while (gameObject)
+			{
+				if (event.goEvent.gameObject == gameObject)
+				{
+					selectedGO = nullptr;
+					break;
+				}
+					
+				gameObject = gameObject->parent;
+			}
 
 			gameObjects[0]->ReceiveEvent(event);
 
