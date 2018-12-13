@@ -11,10 +11,12 @@ public class TestScript : FlanScript
     public float movSpeed = 50f;
 
     public GameObject instance;
+    public GameObject instance2;
 
     //Use this method for initialization
     public override void Awake()
     {
+
     }
 
     //Called every frame
