@@ -199,6 +199,7 @@ void ComponentScript::OnInspector()
 			clampedText = originalText;
 
 		ImGui::Text(clampedText.data());
+
 		ImGui::NewLine();
 
 		//Script fields
@@ -381,12 +382,14 @@ void ComponentScript::OnInspector()
 					
 					ImGui::SetCursorScreenPos({drawingPos.x + buttonWidth + 5, drawingPos.y+3});
 					ImGui::Text(mono_field_get_name(field));
+
+					drawingPos = ImGui::GetCursorScreenPos();
+					ImGui::SetCursorScreenPos({ drawingPos.x, drawingPos.y+4});
 				}
 			}
 
 			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 		}
-
 		ImGui::NewLine();
 	}
 }

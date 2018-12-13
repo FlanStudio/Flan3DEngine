@@ -16,6 +16,7 @@ public class TestScript : FlanScript
     //Use this method for initialization
     public override void Awake()
     {
+
     }
 
     //Called every frame
