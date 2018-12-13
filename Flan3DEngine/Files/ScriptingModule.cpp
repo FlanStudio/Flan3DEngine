@@ -2,6 +2,7 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
+#include "ModuleInput.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -719,6 +720,15 @@ MonoArray* GetMousePosCS()
 	return ret;
 }
 
+MonoArray* GetMouseDeltaPosCS()
+{
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 2);
+	mono_array_set(ret, float, 0, App->input->GetMouseXMotion());
+	mono_array_set(ret, float, 1, App->input->GetMouseYMotion());
+
+	return ret;
+}
+
 _MonoObject* InstantiateGameObject()
 {
 	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
@@ -879,7 +889,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 	mono_add_internal_call("FlanEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
-	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS);
+	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS); 
+	mono_add_internal_call("FlanEngine.Input::GetMouseDeltaPos", (const void*)&GetMouseDeltaPosCS);
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
 	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);

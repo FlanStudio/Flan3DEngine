@@ -51,7 +51,7 @@ void ComponentScript::PreUpdate()
 	if (scriptRes && scriptRes->preUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive())
+		if (isActive() && gameObject->areParentsActives())
 		{
 			mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -71,7 +71,7 @@ void ComponentScript::Update()
 	if (scriptRes && scriptRes->updateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive())
+		if (isActive() && gameObject->areParentsActives())
 		{
 			mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -91,7 +91,7 @@ void ComponentScript::PostUpdate()
 	if (scriptRes && scriptRes->postUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive())
+		if (isActive() && gameObject->areParentsActives())
 		{
 			mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
 			if (exc)

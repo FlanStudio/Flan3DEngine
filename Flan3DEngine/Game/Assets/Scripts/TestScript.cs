@@ -68,6 +68,6 @@ public class TestScript : FlanScript
             transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
 
-        Debug.Log(Input.GetMousePosition().ToString());
+        Debug.Log(Input.GetMouseDeltaPosition().ToString());
     }
 }
