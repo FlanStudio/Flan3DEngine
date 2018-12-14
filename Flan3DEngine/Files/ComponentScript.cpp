@@ -222,6 +222,13 @@ void ComponentScript::OnInspector()
 
 		ImGui::NewLine();
 
+
+		if (!classInstance)
+		{
+			ImGui::TextColored({ .5,0,0,1 }, "SCRIPT WITH ERRORS, CHECK IT");
+			return;
+		}
+
 		//Script fields
 		void* iterator = 0;
 		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
