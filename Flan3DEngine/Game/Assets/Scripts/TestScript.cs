@@ -4,7 +4,7 @@ using FlanEngine;
 
 public class TestScript : FlanScript
 {
-    public bool firstTime = true;
+    bool firstTime = true;
     List<GameObject> childs = new List<GameObject>();
 
     public float rotSpeed = 150f;
