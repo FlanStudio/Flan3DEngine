@@ -729,6 +729,11 @@ MonoArray* GetMouseDeltaPosCS()
 	return ret;
 }
 
+int  GetWheelMovementCS()
+{
+	return App->input->GetMouseZ();
+}
+
 _MonoObject* InstantiateGameObject()
 {
 	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
@@ -889,7 +894,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 	mono_add_internal_call("FlanEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
-	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS); 
+	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS);
+	mono_add_internal_call("FlanEngine.Input::GetWheelMovement", (const void*)&GetWheelMovementCS);
 	mono_add_internal_call("FlanEngine.Input::GetMouseDeltaPos", (const void*)&GetMouseDeltaPosCS);
 	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
 	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
