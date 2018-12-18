@@ -87,8 +87,20 @@ void ResourceManager::ReceiveEvent(Event event)
 					if (script->preCompileErrors())
 						return;
 
-					App->scripting->CreateDomain();				
-					script->Compile();					
+					App->scripting->CreateDomain();		
+
+					std::map<UID, Resource*>::iterator it;
+					for (it = resources.begin(); it != resources.end(); ++it)
+					{
+						res = it->second;
+						if (res->getType() == Resource::ResourceType::SCRIPT)
+						{
+							ResourceScript* toRecompile = (ResourceScript*)res;
+							toRecompile->Compile();
+						}
+					}
+
+					//script->Compile();					
 					App->scripting->ReInstance();
 				}
 
