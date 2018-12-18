@@ -48,6 +48,15 @@ public:
 
 	void Serialize() const;
 	void DeSerialize(std::string path, std::string extension);
+
+	//Generic method for serializing Scenes/Prefabs. Use this one as much as posible instead of others, they will be deleted in a future
+	void SerializeToBuffer(GameObject* gameObject, char*& buffer, uint& size, bool includeRoot = false) const;
+
+	//Generic method for deserializing Scenes/Prefabs. Use this one as much as posible instead of others, they will be deleted in a future
+	//  //* root is filled and allocated as a tree containing the hierarchy. 
+	//  //* this method does not include the loaded gameObject in the Engine's hierarchy
+	void DeSerializeFromBuffer(GameObject*& root, char*& buffer);
+
 	void SerializeToBuffer(char*& buffer, uint& size) const;
 	void DeSerializeFromBuffer(char*& buffer);
 

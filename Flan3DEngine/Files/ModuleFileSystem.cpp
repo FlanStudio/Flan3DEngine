@@ -525,7 +525,38 @@ Directory ModuleFileSystem::getDirFiles(char* dir) const
 
 void ModuleFileSystem::fileSystemGUI()
 {
+	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+
+	ImGui::SetCursorScreenPos(windowPos);
+	ImGui::Dummy(ImGui::GetWindowSize());
+	
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", flags);
+		if (payload)
+		{
+			GameObject* gameObject = *(GameObject**)payload->Data;
+
+			//Save this gameObject into a binary format prefab
+
+			int a = 2;
+
+		}
+
+
+
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(drawingPos);
+	
 	recursiveDirectory(AssetsDirSystem);
+
+	
 }
 
 bool ModuleFileSystem::Exists(std::string file) const

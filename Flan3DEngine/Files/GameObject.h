@@ -59,7 +59,8 @@ public:
 	AABB getAABBChildsEnclosed();
 
 	//----------Serializing methods------------
-	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&, std::vector<ComponentScript*>&);
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, 
+		std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&, std::vector<ComponentScript*>&, bool);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
 	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char) + (sizeof(bool)); };

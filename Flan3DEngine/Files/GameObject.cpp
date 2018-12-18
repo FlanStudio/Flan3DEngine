@@ -441,30 +441,34 @@ int GameObject::getChildPos(const GameObject* child) const
 }
 
 void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
-						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials, std::vector<ComponentScript*>& scripts)
+						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials, std::vector<ComponentScript*>& scripts, bool includeRoot)
 {	
-	transforms.push_back(transform);
+	if (includeRoot)
+	{
+		gameObjects.push_back(this);
 
-	ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
-	if (mesh)
-		meshes.push_back(mesh);
+		transforms.push_back(transform);
 
-	ComponentCamera* camera = (ComponentCamera*)getComponentByType(ComponentType::CAMERA);
-	if (camera)
-		cameras.push_back(camera);
+		ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+		if (mesh)
+			meshes.push_back(mesh);
 
-	ComponentMaterial* material = (ComponentMaterial*)getComponentByType(ComponentType::MATERIAL);
-	if (material)
-		materials.push_back(material);
+		ComponentCamera* camera = (ComponentCamera*)getComponentByType(ComponentType::CAMERA);
+		if (camera)
+			cameras.push_back(camera);
 
-	ComponentScript* script = (ComponentScript*)getComponentByType(ComponentType::SCRIPT);
-	if (script)
-		scripts.push_back(script);
+		ComponentMaterial* material = (ComponentMaterial*)getComponentByType(ComponentType::MATERIAL);
+		if (material)
+			materials.push_back(material);
+
+		ComponentScript* script = (ComponentScript*)getComponentByType(ComponentType::SCRIPT);
+		if (script)
+			scripts.push_back(script);
+	}
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		gameObjects.push_back(childs[i]);
-		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials, scripts);
+		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials, scripts, true);
 	}
 }
 
