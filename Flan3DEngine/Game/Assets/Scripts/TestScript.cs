@@ -21,16 +21,6 @@ public class TestScript : FlanScript
 
     }
 
-    public override void OnDisable()
-    {
-        Debug.Log("patata");
-    }
-
-    public override void OnEnable()
-    {
-        Debug.Log("patata uiui");
-    }
-
     //Called every frame
     public override void Update()
     {
@@ -64,7 +54,7 @@ public class TestScript : FlanScript
             if(childs.Count != 0)
             {
                 Debug.Log("Deleting GameObject");
-                GameObject toDelete = childs[childs.Count-1];
+                GameObject toDelete = childs[childs.Count - 1];
                 Destroy(toDelete);
                 childs.Remove(toDelete);
             }

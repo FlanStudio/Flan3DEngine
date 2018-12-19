@@ -169,21 +169,18 @@ void ComponentScript::OnDisable()
 	if (scriptRes && scriptRes->disableMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (gameObject->areParentsActives())
+		mono_runtime_invoke(scriptRes->disableMethod, classInstance, NULL, &exc);
+		if (exc)
 		{
-			mono_runtime_invoke(scriptRes->disableMethod, classInstance, NULL, &exc);
-			if (exc)
-			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+			Event event;
+			event.type = EventType::PAUSE;
+			App->SendEvent(event);
+			App->time->paused = true;
 
-				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
-				mono_free(toLogMessage);
-			}
+			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+			Debug.LogError(toLogMessage);
+			mono_free(toLogMessage);
 		}
 	}
 }
@@ -228,11 +225,13 @@ void ComponentScript::OnInspector()
 	{
 		if (this->isActive())
 		{
-			this->OnEnable();
+			if (IN_GAME)
+				this->OnEnable();
 		}
 		else
 		{
-			this->OnDisable();
+			if (IN_GAME)
+				this->OnDisable();
 		}
 	}
 	ImGui::SameLine();

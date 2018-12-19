@@ -222,11 +222,25 @@ void GameObject::OnInspector()
 	{
 		if (this->isActive())
 		{
-			onEnableChilds();
+			if (IN_GAME)
+			{
+				onEnableChilds();
+				for (int i = 0; i < components.size(); ++i)
+				{
+					components[i]->onEnable();
+				}
+			}
 		}
 		else
 		{
-			onDisableChilds();
+			if (IN_GAME)
+			{
+				onDisableChilds();
+				for (int i = 0; i < components.size(); ++i)
+				{
+					components[i]->onDisable();
+				}
+			}
 		}
 	}
 	
@@ -500,10 +514,6 @@ void GameObject::onEnableChilds()
 			childs[i]->components[j]->onEnable();
 		}
 	}
-	for (int i = 0; i < components.size(); ++i)
-	{
-		components[i]->onEnable();
-	}
 }
 
 void GameObject::onDisableChilds()
@@ -516,10 +526,6 @@ void GameObject::onDisableChilds()
 		{
 			childs[i]->components[j]->onDisable();
 		}
-	}
-	for (int i = 0; i < components.size(); ++i)
-	{
-		components[i]->onDisable();
 	}
 }
 

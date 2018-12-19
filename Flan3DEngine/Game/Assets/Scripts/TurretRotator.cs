@@ -18,6 +18,5 @@ public class TurretRotator : FlanScript
             transform.rotation.Rotate(Vector3.up, 20 * Time.deltaTime * -mouseDX);
         }
     }
-
 }
 
