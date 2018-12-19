@@ -734,21 +734,63 @@ int  GetWheelMovementCS()
 	return App->input->GetMouseZ();
 }
 
-_MonoObject* InstantiateGameObject()
+MonoObject* InstantiateGameObject(MonoObject* templateMO)
 {
-	GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
+	if (!templateMO)
+	{
+		//Instantiate an empty GameObject and returns the MonoObject
 
-	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
-	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
-	mono_runtime_object_init(monoInstance);
+		GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
 
-	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+		mono_runtime_object_init(monoInstance);
 
-	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
-	
-	App->scripting->GameObjectChanged(instance);
+		uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
-	return monoInstance;
+		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
+
+		App->scripting->GameObjectChanged(instance);
+
+		return monoInstance;
+	}
+
+	else
+	{
+		//Search for the monoTemplate and his GameObject representation in the map, create 2 new copies,
+		//add the GameObject to the Scene Hierarchy and returns the monoObject. Store this new Instantiated objects in the map.
+
+		GameObject* templateGO = nullptr;
+
+		for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+		{
+			uint32_t handleID = App->scripting->gameObjectsMap[i].second;
+			MonoObject* temp = mono_gchandle_get_target(handleID);
+
+			if (temp == templateMO)
+			{
+				templateGO == App->scripting->gameObjectsMap[i].first;
+				break;
+			}
+		}
+
+		if (!templateGO)
+		{
+			//The user may be trying to instantiate a GameObject created through script. 
+			//This feature is not implemented for now.
+			Debug.LogError(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
+							"Instantiating from a GameObject created through script is not supported for now.\n");
+			return nullptr;
+		}
+
+		GameObject* goInstance = App->scene->CreateGameObject(App->scene->getRootNode());
+		*goInstance = *templateGO;
+		goInstance->ReRandomizeUIDs();
+
+		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
+
+		return moInstance;
+	}
 }
 
 void DestroyObj(MonoObject* obj)

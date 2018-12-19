@@ -49,6 +49,7 @@ public:
 	void SetActive(bool boolean);
 	bool isActive()const{ return active; }
 	bool areParentsActives()const;
+	void ReRandomizeUIDs();
 
 	//AABB drawing data-----------------
 	void drawAABB()const;

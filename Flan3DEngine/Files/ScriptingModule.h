@@ -23,7 +23,6 @@ struct Directory;
 
 
 bool exec(const char* cmd, std::string& error = std::string());
-_MonoObject* InstantiateGameObject();
 
 class ScriptingModule : public Module
 {

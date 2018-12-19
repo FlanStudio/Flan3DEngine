@@ -426,6 +426,21 @@ bool GameObject::areParentsActives() const
 	return ret;
 }
 
+void GameObject::ReRandomizeUIDs()
+{
+	uuid = FLAN::randomUINT32_Range();
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->UUID = FLAN::randomUINT32_Range();
+	}
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->ReRandomizeUIDs();
+	}
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
