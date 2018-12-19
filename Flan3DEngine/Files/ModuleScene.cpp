@@ -808,8 +808,6 @@ void ModuleScene::DeSerializeFromBuffer(GameObject*& root, char*& buffer)
 	cursor += bytes;
 	goUUIDs.clear();
 
-	ComponentCamera* mainCamera = nullptr;
-
 	for (int i = 0; i < numCameras; ++i)
 	{
 		ComponentCamera* newCamera = new ComponentCamera(nullptr);

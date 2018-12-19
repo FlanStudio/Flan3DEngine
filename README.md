@@ -92,6 +92,7 @@ Let's build some games!
 - **LogWindow** using and modifying [this](https://github.com/ocornut/imgui/issues/300) example the creator of ImGui posted in an issue.
 - **Serializing in Binary Files**
 - **Materials tinting plain colors and textures**
+- **HotReloading Scripts**
 
 ## Assets
 
