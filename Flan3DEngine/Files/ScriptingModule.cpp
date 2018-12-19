@@ -138,7 +138,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
-				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives() && !scripts[i]->awaked)
 					scripts[i]->Awake();
 			}
 
@@ -160,8 +160,24 @@ void ScriptingModule::ReceiveEvent(Event event)
 	
 		case EventType::STOP:
 		{
-			//Call the CleanUp method for all the scripts which where enabled at this point.
+			for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+			{
+				App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
+			}
 
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
+				{
+					scripts[i]->OnStop();
+					scripts[i]->awaked = true;
+				}
+			}
+
+			for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+			{
+				App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
+			}
 			break;
 		}
 
