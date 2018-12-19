@@ -500,6 +500,10 @@ void GameObject::onEnableChilds()
 			childs[i]->components[j]->onEnable();
 		}
 	}
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->onEnable();
+	}
 }
 
 void GameObject::onDisableChilds()
@@ -512,6 +516,10 @@ void GameObject::onDisableChilds()
 		{
 			childs[i]->components[j]->onDisable();
 		}
+	}
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->onDisable();
 	}
 }
 
