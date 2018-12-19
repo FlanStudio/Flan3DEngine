@@ -47,6 +47,9 @@ public:
 	_MonoMethod* preUpdateMethod = nullptr;
 	_MonoMethod* updateMethod = nullptr;
 	_MonoMethod* postUpdateMethod = nullptr;
+	_MonoMethod* enableMethod = nullptr;
+	_MonoMethod* disableMethod = nullptr;
+	_MonoMethod* stopMethod = nullptr;
 
 	//The assembly and image containing all the .cs code
 	_MonoAssembly* assembly = nullptr;

@@ -21,6 +21,16 @@ public class TestScript : FlanScript
 
     }
 
+    public override void OnDisable()
+    {
+        Debug.Log("patata");
+    }
+
+    public override void OnEnable()
+    {
+        Debug.Log("patata uiui");
+    }
+
     //Called every frame
     public override void Update()
     {

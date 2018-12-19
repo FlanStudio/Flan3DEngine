@@ -218,7 +218,19 @@ void GameObject::OnInspector()
 		ImGui::EndTooltip();
 	}
 
-	if (ImGui::Checkbox("##ACTIVE", &active)); ImGui::SameLine(); ImGui::Text("Active");
+	if (ImGui::Checkbox("##ACTIVE", &active))
+	{
+		if (this->isActive())
+		{
+			onEnableChilds();
+		}
+		else
+		{
+			onDisableChilds();
+		}
+	}
+	
+	ImGui::SameLine(); ImGui::Text("Active");
 
 	//ImGui::NewLine();
 
@@ -471,10 +483,35 @@ void GameObject::InstantiateEvents()
 			}
 		}
 	}
-
 	for (int i = 0; i < childs.size(); ++i)
 	{
 		childs[i]->InstantiateEvents();
+	}
+}
+
+void GameObject::onEnableChilds()
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->onEnableChilds();
+
+		for (int j = 0; j < childs[i]->components.size(); ++j)
+		{
+			childs[i]->components[j]->onEnable();
+		}
+	}
+}
+
+void GameObject::onDisableChilds()
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->onDisableChilds();
+
+		for (int j = 0; j < childs[i]->components.size(); ++j)
+		{
+			childs[i]->components[j]->onDisable();
+		}
 	}
 }
 

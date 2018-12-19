@@ -51,6 +51,8 @@ public:
 	bool areParentsActives()const;
 	void ReRandomizeUIDs();
 	void InstantiateEvents();
+	void onEnableChilds();
+	void onDisableChilds();
 
 	//AABB drawing data-----------------
 	void drawAABB()const;
