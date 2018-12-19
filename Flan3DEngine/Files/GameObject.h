@@ -50,8 +50,6 @@ public:
 	bool isActive()const{ return active; }
 	bool areParentsActives()const;
 	void ReRandomizeUIDs();
-	void onEnableChilds();
-	void onDisableChilds();
 
 	//AABB drawing data-----------------
 	void drawAABB()const;

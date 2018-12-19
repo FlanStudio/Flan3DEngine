@@ -129,23 +129,14 @@ void ScriptingModule::ReceiveEvent(Event event)
 			{
 				GameObjectChanged(gameObjectsMap[i].first);
 			}
-
 			for (int i = 0; i < scripts.size(); ++i)
 			{
-				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-					scripts[i]->OnEnable();
+				scripts[i]->Awake();
 			}
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
-				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-					scripts[i]->Awake();
-			}
-
-			for (int i = 0; i < scripts.size(); ++i)
-			{
-				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-					scripts[i]->Start();
+				scripts[i]->Start();
 			}
 		
 			for (int i = 0; i < gameObjectsMap.size(); ++i)
@@ -221,7 +212,6 @@ void ScriptingModule::ReceiveEvent(Event event)
 		}
 
 		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
-
 	}
 }
 

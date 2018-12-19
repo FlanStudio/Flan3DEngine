@@ -206,18 +206,6 @@ bool ResourceScript::Compile()
 		desc = mono_method_desc_new ((scriptName + ":PostUpdate()").data(), false);
 		postUpdateMethod = mono_method_desc_search_in_image(desc, image);
 		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnEnable()").data(), false);
-		enableMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnDisable()").data(), false);
-		disableMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnStop()").data(), false);
-		stopMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
 	}
 
 	return ret;

@@ -21,16 +21,6 @@ public class TestScript : FlanScript
 
     }
 
-    public override void OnDisable()
-    {
-        Debug.Log("lakslkaklaklsaklsaklsa");
-    }
-
-    public override void OnEnable()
-    {
-        Debug.Log("lakslkaklaklsaklsaklsa");
-    }
-
     //Called every frame
     public override void Update()
     {

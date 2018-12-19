@@ -15,11 +15,6 @@ public:
 	void PreUpdate();
 	void Update();
 	void PostUpdate();
-	void OnEnable();
-	void OnDisable();
-	void OnStop();
-	void onEnable()override;
-	void onDisable()override;
 
 	void OnInspector();
 
