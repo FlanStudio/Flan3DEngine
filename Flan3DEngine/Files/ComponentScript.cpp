@@ -17,18 +17,21 @@ void ComponentScript::Awake()
 	if (scriptRes && scriptRes->awakeMethod)
 	{
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
-		if (exc)
+		if (isActive() && gameObject->areParentsActives())
 		{
-			Event event;
-			event.type = EventType::PAUSE;
-			App->SendEvent(event);
-			App->time->paused = true;
+			mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
 
-			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
-			mono_free(toLogMessage);
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
 		}
 	}
 }
@@ -38,18 +41,21 @@ void ComponentScript::Start()
 	if (scriptRes && scriptRes->startMethod)
 	{
 		MonoObject* exc = nullptr;
-		mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
-		if (exc)
+		if (isActive() && gameObject->areParentsActives())
 		{
-			Event event;
-			event.type = EventType::PAUSE;
-			App->SendEvent(event);
-			App->time->paused = true;
+			mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
 
-			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
-			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
-			mono_free(toLogMessage);
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
 		}
 	}
 }
@@ -126,9 +132,102 @@ void ComponentScript::PostUpdate()
 	}
 }
 
+void ComponentScript::OnEnable()
+{
+	if (scriptRes && scriptRes->enableMethod)
+	{
+		MonoObject* exc = nullptr;
+		if (isActive() && gameObject->areParentsActives())
+		{
+			mono_runtime_invoke(scriptRes->enableMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
+		}
+	}
+}
+
+void ComponentScript::OnDisable()
+{
+	if (scriptRes && scriptRes->disableMethod)
+	{
+		MonoObject* exc = nullptr;
+		if (gameObject->areParentsActives())
+		{
+			mono_runtime_invoke(scriptRes->disableMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
+		}
+	}
+}
+
+void ComponentScript::OnStop()
+{
+	if (scriptRes && scriptRes->stopMethod)
+	{
+		MonoObject* exc = nullptr;
+		if (isActive() && gameObject->areParentsActives())
+		{
+			mono_runtime_invoke(scriptRes->stopMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				Event event;
+				event.type = EventType::PAUSE;
+				App->SendEvent(event);
+				App->time->paused = true;
+
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				Debug.LogError(toLogMessage);
+				mono_free(toLogMessage);
+			}
+		}
+	}
+}
+
+void ComponentScript::onEnable()
+{
+	OnEnable();
+}
+
+void ComponentScript::onDisable()
+{
+	OnDisable();
+}
+
 void ComponentScript::OnInspector()
 {
-	ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
+	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &this->active))
+	{
+		if (this->isActive())
+		{
+			this->OnEnable();
+		}
+		else
+		{
+			this->OnDisable();
+		}
+	}
+	ImGui::SameLine();
 
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();
