@@ -13,6 +13,7 @@ public class TestScript : FlanScript
     public GameObject instance;
     public GameObject instance2;
 
+
     public Transform transformTest;
 
     //Use this method for initialization
@@ -76,5 +77,19 @@ public class TestScript : FlanScript
         {
             transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
+    }
+
+    public override void OnEnable()
+    {
+        Debug.Log("Instantiating GameObject");
+        GameObject instance = GameObject.Instantiate();
+        instance.name = "OnEnable " + childs.Count.ToString();
+    }
+
+    public override void OnDisable()
+    {
+        Debug.Log("Instantiating GameObject");
+        GameObject instance = GameObject.Instantiate();
+        instance.name = "OnDisable " + childs.Count.ToString();
     }
 }

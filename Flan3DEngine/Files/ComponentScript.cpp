@@ -142,6 +142,11 @@ void ComponentScript::PostUpdate()
 
 void ComponentScript::OnEnable()
 {
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
+	}
+
 	if (scriptRes && scriptRes->enableMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -162,10 +167,20 @@ void ComponentScript::OnEnable()
 			}
 		}
 	}
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
+	}
 }
 
 void ComponentScript::OnDisable()
 {
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
+	}
+
 	if (scriptRes && scriptRes->disableMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -182,6 +197,11 @@ void ComponentScript::OnDisable()
 			Debug.LogError(toLogMessage);
 			mono_free(toLogMessage);
 		}
+	}
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
 	}
 }
 
