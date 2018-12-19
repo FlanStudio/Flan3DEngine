@@ -100,7 +100,7 @@ void ResourceManager::ReceiveEvent(Event event)
 						}
 					}
 
-					//script->Compile();					
+					//script->Compile();			
 					App->scripting->ReInstance();
 				}
 

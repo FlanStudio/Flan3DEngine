@@ -306,7 +306,7 @@ MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 	mono_runtime_object_init(monoInstance);
 
-	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+	uint32_t handleID = mono_gchandle_new(monoInstance, false);
 
 	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
 
@@ -486,8 +486,6 @@ std::string ScriptingModule::clearSpaces(std::string& scriptName)
 
 void ScriptingModule::ReInstance()
 {
-	gameObjectsMap.clear();
-
 	for (int i = 0; i < scripts.size(); ++i)
 	{	
 		scripts[i]->InstanceClass();
@@ -556,7 +554,6 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 			break;
 		}
 	}
-
 }
 
 void ScriptingModule::MonoObjectChanged(uint32_t handleID)
@@ -746,7 +743,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 		mono_runtime_object_init(monoInstance);
 
-		uint32_t handleID = mono_gchandle_new(monoInstance, true);
+		uint32_t handleID = mono_gchandle_new(monoInstance, false);
 
 		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
 
@@ -947,6 +944,13 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
 	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
 	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
+
+	//Empty the GameObjects map
+	for(int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		mono_gchandle_free(gameObjectsMap[i].second);
+	}
+	gameObjectsMap.clear();
 
 	firstDomain = false;
 }

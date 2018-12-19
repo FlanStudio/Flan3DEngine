@@ -52,7 +52,7 @@ bool ModuleScene::Init()
 {
 	if (gameObjects.size() == 0)
 	{
-		GameObject* root = CreateGameObject(nullptr);
+		GameObject* root = CreateGameObject(nullptr, false);
 		root->name = "RootNode";
 	}
 	return true;
@@ -1081,7 +1081,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 
 	gameObjects.clear();
 
-	CreateGameObject(nullptr);
+	CreateGameObject(nullptr, false);
 
 	uint numMeshes = 0u;
 	bytes = sizeof(uint);
