@@ -441,6 +441,43 @@ void GameObject::ReRandomizeUIDs()
 	}
 }
 
+void GameObject::InstantiateEvents()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		switch (components[i]->type)
+		{
+			case ComponentType::MESH:
+			{
+				ComponentMesh* meshcomp = (ComponentMesh*)components[i];
+				App->renderer3D->AddMesh(meshcomp);
+				break;
+			}
+			case ComponentType::CAMERA:
+			{
+				ComponentCamera* camcomp = (ComponentCamera*)components[i];
+				if (camcomp->isMainCamera)
+				{
+					App->camera->setGameCamera(camcomp);
+				}
+				break;
+			}
+			case ComponentType::SCRIPT:
+			{
+				ComponentScript* scriptComp = (ComponentScript*)components[i];
+				App->scripting->AddScriptComponent(scriptComp);
+				scriptComp->InstanceClass();
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->InstantiateEvents();
+	}
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);

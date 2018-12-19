@@ -690,6 +690,9 @@
     <ClInclude Include="ResourceScript.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ResourcePrefab.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -951,6 +954,9 @@
       <Filter>Sources\Tools\Pugui</Filter>
     </ClCompile>
     <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcePrefab.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>

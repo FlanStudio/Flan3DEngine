@@ -14,7 +14,7 @@ public:
 		TEXTURE,
 		MESH,
 		AUDIO,
-		SCENE,
+		PREFAB,
 		BONE,
 		ANIMATION,
 		SCRIPT

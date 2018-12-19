@@ -52,7 +52,7 @@ bool ModuleScene::Init()
 {
 	if (gameObjects.size() == 0)
 	{
-		GameObject* root = CreateGameObject(nullptr);
+		GameObject* root = CreateGameObject(nullptr, false);
 		root->name = "RootNode";
 	}
 	return true;
@@ -808,8 +808,6 @@ void ModuleScene::DeSerializeFromBuffer(GameObject*& root, char*& buffer)
 	cursor += bytes;
 	goUUIDs.clear();
 
-	ComponentCamera* mainCamera = nullptr;
-
 	for (int i = 0; i < numCameras; ++i)
 	{
 		ComponentCamera* newCamera = new ComponentCamera(nullptr);
@@ -1081,7 +1079,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 
 	gameObjects.clear();
 
-	CreateGameObject(nullptr);
+	CreateGameObject(nullptr, false);
 
 	uint numMeshes = 0u;
 	bytes = sizeof(uint);
