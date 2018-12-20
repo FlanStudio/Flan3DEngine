@@ -18,8 +18,8 @@ public:
 	void OnEnable();
 	void OnDisable();
 	void OnStop();
-	void onEnable()override;
-	void onDisable()override;
+	void onEnable() override;
+	void onDisable() override;
 
 	void OnInspector();
 

@@ -829,8 +829,4 @@ void ResourceManager::LoadResources()
 			}
 		}
 	}
-
-
-
-
 }

@@ -140,7 +140,7 @@ void ComponentScript::PostUpdate()
 	}
 }
 
-void ComponentScript::OnEnable()
+void ComponentScript::OnEnableMethod()
 {
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
@@ -174,7 +174,7 @@ void ComponentScript::OnEnable()
 	}
 }
 
-void ComponentScript::OnDisable()
+void ComponentScript::OnDisableMethod()
 {
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
@@ -231,12 +231,12 @@ void ComponentScript::OnStop()
 
 void ComponentScript::onEnable()
 {
-	OnEnable();
+	OnEnableMethod();
 }
 
 void ComponentScript::onDisable()
 {
-	OnDisable();
+	OnDisableMethod();
 }
 
 void ComponentScript::OnInspector()
@@ -246,12 +246,12 @@ void ComponentScript::OnInspector()
 		if (this->isActive())
 		{
 			if (IN_GAME)
-				this->OnEnable();
+				this->OnEnableMethod();
 		}
 		else
 		{
 			if (IN_GAME)
-				this->OnDisable();
+				this->OnDisableMethod();
 		}
 	}
 	ImGui::SameLine();
