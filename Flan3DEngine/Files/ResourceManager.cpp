@@ -691,6 +691,7 @@ void ResourceManager::LoadResources()
 					scriptRes->Compile();
 					resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
 				}
+
 				delete metaBuffer;
 			}
 		}
@@ -746,6 +747,7 @@ void ResourceManager::LoadResources()
 		}
 	}
 
+	//Export meshes
 	for (int i = 0; i < fullPaths.size(); ++i)
 	{
 		//Detect the extension and call the right exporter
@@ -791,4 +793,44 @@ void ResourceManager::LoadResources()
 		}
 		//TODO: Materials, audio, animations, etc?
 	}
+
+	//Load the Prefabs at the end in order to all meshes, materials etc are already loaded
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+		if (extension == ".flanPrefab" && App->fs->Exists(fullPaths[i] + ".meta"))
+		{
+			char* metaBuffer;
+			int metaSize;
+			if (!App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaSize))
+				continue;
+
+			char* cursor = metaBuffer;
+
+			//Getting the UID from the .meta
+			UID uid;
+			memcpy(&uid, cursor, sizeof(UID));
+
+			char* prefabBuffer;
+			int size;
+
+			if (App->fs->OpenRead(fullPaths[i], &prefabBuffer, size, false))
+			{
+				char* cursor = prefabBuffer;
+				ResourcePrefab* prefab = new ResourcePrefab(nullptr);
+
+				prefab->DeSerializeFromBuffer(cursor);
+				prefab->setUID(uid);
+
+				resources.insert(std::pair<UID, Resource*>(uid, prefab));
+
+				delete prefabBuffer;
+			}
+		}
+	}
+
+
+
+
 }
