@@ -808,7 +808,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		GameObject* goInstance = App->scene->CreateGameObject(App->scene->getRootNode());
 		*goInstance = *templateGO;
-		goInstance->ReRandomizeUIDs();
+		goInstance->ReGenerate();
 
 		//Instantiating Events: Send Meshes to the mesh vector, set the main camera, send scripts to the scripts vector, etc
 		goInstance->InstantiateEvents();

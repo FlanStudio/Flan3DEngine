@@ -7,6 +7,8 @@
 class Resource;
 class ResourceScript;
 
+class GameObject;
+
 class ResourceManager : public Module
 {
 public:
@@ -26,6 +28,8 @@ public:
 
 	void PushResourceScript(ResourceScript* script);
 	ResourceScript* findScriptByName(const std::string& scriptName) const;
+
+	void SavePrefab(GameObject* root);
 
 private:
 	void deleteEvent(Event event);

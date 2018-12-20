@@ -5,6 +5,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceScript.h"
+#include "ResourcePrefab.h"
 
 #include "Brofiler/Brofiler.h"
 
@@ -12,8 +13,6 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
-
-
 
 ResourceManager::~ResourceManager()
 {
@@ -308,6 +307,31 @@ ResourceScript* ResourceManager::findScriptByName(const std::string& scriptName)
 	}
 
 	return nullptr;
+}
+
+void ResourceManager::SavePrefab(GameObject* root)
+{
+	ResourcePrefab* prefab = new ResourcePrefab(root);
+
+	char* buffer;
+	uint size;
+	prefab->SerializeToBuffer(buffer, size);
+
+	App->fs->OpenWriteBuffer("Assets/Prefabs/" + root->name + ".flanPrefab", buffer, size);
+
+	prefab->setFile("Assets/Prefabs/" + root->name + ".flanPrefab");
+
+	resources.insert(std::pair<UID, Resource*>(prefab->getUUID(), prefab));
+
+	//Create the .meta containing the UID
+	char* metaBuffer = new char[sizeof(UID)];
+	UID uid = prefab->getUUID();
+	memcpy(metaBuffer, &uid, sizeof(UID));
+
+	App->fs->OpenWriteBuffer("Assets/Prefabs/" + root->name + ".flanPrefab" + ".meta", metaBuffer, sizeof(UID));
+
+	delete buffer;
+	delete metaBuffer;
 }
 
 void ResourceManager::deleteEvent(Event event)

@@ -541,22 +541,17 @@ void ModuleFileSystem::fileSystemGUI()
 		{
 			GameObject* gameObject = *(GameObject**)payload->Data;
 
-			//Save this gameObject into a binary format prefab
-
-			int a = 2;
-
+			if (ImGui::IsMouseReleased(0))
+			{
+				App->resources->SavePrefab(gameObject);
+			}
 		}
-
-
-
 		ImGui::EndDragDropTarget();
 	}
 
 	ImGui::SetCursorScreenPos(drawingPos);
 	
 	recursiveDirectory(AssetsDirSystem);
-
-	
 }
 
 bool ModuleFileSystem::Exists(std::string file) const
@@ -736,6 +731,7 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 					ImGui::Text(directory.files[i].name.data());
 					ImGui::EndTooltip();
 				}
+
 				ImGui::EndDragDropSource();
 			}
 

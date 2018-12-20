@@ -49,7 +49,7 @@ public:
 	void SetActive(bool boolean);
 	bool isActive()const{ return active; }
 	bool areParentsActives()const;
-	void ReRandomizeUIDs();
+	void ReGenerate();
 	void InstantiateEvents();
 	void onEnableChilds();
 	void onDisableChilds();

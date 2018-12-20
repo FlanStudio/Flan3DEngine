@@ -10,7 +10,7 @@ class ResourceTexture;
 class ModuleTime : public Module
 {
 public:
-	ModuleTime(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
+	ModuleTime(bool start_enabled = true) : Module("ModuleTime", start_enabled) {}
 	~ModuleTime() {}
 
 	bool Start();
