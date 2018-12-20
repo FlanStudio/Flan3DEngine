@@ -15,8 +15,8 @@ public:
 	void PreUpdate();
 	void Update();
 	void PostUpdate();
-	void OnEnable();
-	void OnDisable();
+	void OnEnableMethod();
+	void OnDisableMethod();
 	void OnStop();
 	void onEnable() override;
 	void onDisable() override;
