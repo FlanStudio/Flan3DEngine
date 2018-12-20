@@ -11,6 +11,9 @@
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
 
+#include "ResourceTexture.h"
+#include "ResourceMesh.h"
+
 
 GameObject::~GameObject()
 {
@@ -27,16 +30,10 @@ bool GameObject::Update(float dt)
 	{
 		if (childs[i]->isActive())
 			childs[i]->Update(dt);
-		//else
-		//	for each (Component* component in childs[i]->components)
-		//	{
-		//		component->Disable();
-		//		int j = 98;
-		//	}
 	}
 	for (int i = 0; i < components.size(); ++i)
 	{
- 			components[i]->Update(dt);
+ 		components[i]->Update(dt);
 	}
 	return true;
 }
@@ -452,18 +449,79 @@ bool GameObject::areParentsActives() const
 	return ret;
 }
 
-void GameObject::ReRandomizeUIDs()
+void GameObject::ReGenerate()
 {
 	uuid = FLAN::randomUINT32_Range();
 
+	AABBvertex = nullptr;
+	numAABBvertex = 0u;
+	bufferIndex = 0u;
+
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->UUID = FLAN::randomUINT32_Range();
+		Component* compTemplate = components[i];
+		components.erase(components.begin() + i);
+
+		Component* newComponent = nullptr;
+		switch (compTemplate->type)
+		{
+			case ComponentType::CAMERA:
+			{
+				newComponent = new ComponentCamera(this);
+
+				*(ComponentCamera*)newComponent = *(ComponentCamera*)compTemplate;
+				ComponentCamera* camComp = (ComponentCamera*)newComponent;
+				camComp->ResetPtrs();
+				break;
+			}
+			case ComponentType::MATERIAL:
+			{
+				newComponent = new ComponentMaterial(this);
+				*(ComponentMaterial*)newComponent = *(ComponentMaterial*)compTemplate;
+				ComponentMaterial* matComp = (ComponentMaterial*)newComponent;
+				if(matComp->texture)
+					matComp->texture->Referenced();
+				break;
+			}
+			case ComponentType::MESH:
+			{
+				newComponent = new ComponentMesh(this);
+				*(ComponentMesh*)newComponent = *(ComponentMesh*)compTemplate;
+				ComponentMesh* meshComp = (ComponentMesh*)newComponent;
+				meshComp->mesh->Referenced();
+				break;
+			}
+			case ComponentType::SCRIPT:
+			{
+				newComponent = new ComponentScript("", this);
+				*(ComponentScript*)newComponent = *(ComponentScript*)compTemplate;
+				break;
+			}
+			case ComponentType::TRANSFORM:
+			{
+				newComponent = new ComponentTransform(this);
+				transform = (ComponentTransform*)newComponent;
+
+				*(ComponentTransform*)newComponent = *(ComponentTransform*)compTemplate;
+				break;
+			}
+		}
+
+		newComponent->gameObject = this;
+		newComponent->UUID = FLAN::randomUINT32_Range();
+
+		components.insert(components.begin() + i, newComponent);
 	}
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		childs[i]->ReRandomizeUIDs();
+		GameObject* childTemplate = childs[i];
+
+		childs[i] = new GameObject(this);
+		*childs[i] = *childTemplate;
+		childs[i]->parent = this;
+
+		childs[i]->ReGenerate();
 	}
 }
 

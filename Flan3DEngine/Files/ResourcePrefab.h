@@ -8,14 +8,17 @@ class GameObject;
 class ResourcePrefab : public Resource
 {
 public:
-	ResourcePrefab() : Resource(ResourceType::PREFAB) {}
+	ResourcePrefab(GameObject* root);
 	virtual ~ResourcePrefab() {}
 
 	bool LoadToMemory() { return true; }
 	bool UnLoadFromMemory() { return true; }
+	uint getBytes() const { return sizeof(ResourcePrefab); }
 
 	void SerializeToBuffer(char*& buffer, uint& size);
 	void DeSerializeFromBuffer(char*& buffer);
+
+	inline GameObject* GetRoot() const { return root; }
 
 private:
 	GameObject* root = nullptr;

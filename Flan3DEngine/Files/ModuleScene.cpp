@@ -22,6 +22,9 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_stl.h"
 
+#include "Resource.h"
+#include "ResourcePrefab.h"
+
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
 }
@@ -321,6 +324,32 @@ void ModuleScene::guiHierarchy()
 			other->parent->ClearChild(other);
 			other->parent = gameObjects[0];
 			other->parent->AddChild(other);
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", flags);
+		if (payload)
+		{
+			Resource* res = *(Resource**)payload->Data;
+			if (res->getType() == Resource::ResourceType::PREFAB)
+			{
+				ResourcePrefab* prefab = (ResourcePrefab*)res;
+
+				GameObject* instance = new GameObject(gameObjects[0]);
+				gameObjects[0]->AddChild(instance);		
+
+				*instance = *prefab->GetRoot();
+				instance->ReGenerate();
+				instance->InstantiateEvents();
+
+				instance->initAABB();
+				instance->transformAABB();
+			}
 		}
 		ImGui::EndDragDropTarget();
 	}

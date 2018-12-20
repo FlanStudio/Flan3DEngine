@@ -22,6 +22,8 @@ public:
 	void DeSerialize(char*& cursor, uint32_t& goUUID);
 	inline const Frustum& getFrustum() const { return frustum; }
 	void setMainCamera();
+	void ResetPtrs() { vertex = nullptr; vertexID = 0; }
+
 private:
 	void debugDraw() override;
 
