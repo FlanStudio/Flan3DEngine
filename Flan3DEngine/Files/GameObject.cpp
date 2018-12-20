@@ -457,6 +457,9 @@ void GameObject::ReGenerate()
 	numAABBvertex = 0u;
 	bufferIndex = 0u;
 
+	selected = false;
+	treeOpened = false;
+
 	for (int i = 0; i < components.size(); ++i)
 	{
 		Component* compTemplate = components[i];
@@ -488,7 +491,10 @@ void GameObject::ReGenerate()
 				newComponent = new ComponentMesh(this);
 				*(ComponentMesh*)newComponent = *(ComponentMesh*)compTemplate;
 				ComponentMesh* meshComp = (ComponentMesh*)newComponent;
-				meshComp->mesh->Referenced();
+				
+				if(meshComp->mesh)
+					meshComp->mesh->Referenced();
+
 				break;
 			}
 			case ComponentType::SCRIPT:

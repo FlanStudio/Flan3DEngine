@@ -9,11 +9,12 @@
 
 ResourcePrefab::ResourcePrefab(GameObject* goTemplate) : Resource(ResourceType::PREFAB) 
 {
-	root = new GameObject(nullptr);
-
-	*root = *goTemplate;
-
-	root->ReGenerate();
+	if (goTemplate)
+	{
+		root = new GameObject(nullptr);
+		*root = *goTemplate;
+		root->ReGenerate();
+	}
 }
 
 void ResourcePrefab::SerializeToBuffer(char*& buffer, uint& size)

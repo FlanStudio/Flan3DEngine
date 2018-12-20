@@ -133,7 +133,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 			for (int i = 0; i < scripts.size(); ++i)
 			{
 				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-					scripts[i]->OnEnable();
+					scripts[i]->OnEnableMethod();
 			}
 
 			for (int i = 0; i < scripts.size(); ++i)

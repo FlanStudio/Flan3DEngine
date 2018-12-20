@@ -1,5 +1,6 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
+#include "ResourcePrefab.h"
 
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_stl.h"
@@ -140,7 +141,7 @@ void ComponentScript::PostUpdate()
 	}
 }
 
-void ComponentScript::OnEnable()
+void ComponentScript::OnEnableMethod()
 {
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
@@ -174,7 +175,7 @@ void ComponentScript::OnEnable()
 	}
 }
 
-void ComponentScript::OnDisable()
+void ComponentScript::OnDisableMethod()
 {
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
@@ -231,12 +232,12 @@ void ComponentScript::OnStop()
 
 void ComponentScript::onEnable()
 {
-	OnEnable();
+	OnEnableMethod();
 }
 
 void ComponentScript::onDisable()
 {
-	OnDisable();
+	OnDisableMethod();
 }
 
 void ComponentScript::OnInspector()
@@ -246,12 +247,12 @@ void ComponentScript::OnInspector()
 		if (this->isActive())
 		{
 			if (IN_GAME)
-				this->OnEnable();
+				this->OnEnableMethod();
 		}
 		else
 		{
 			if (IN_GAME)
-				this->OnDisable();
+				this->OnDisableMethod();
 		}
 	}
 	ImGui::SameLine();
@@ -452,8 +453,7 @@ void ComponentScript::OnInspector()
 				{
 					//Characters in C# are 2 bytes, while they are only 1 in C++. We may be losing some data here, since C# chars suppport Unicode and we only support ASCII.
 					char varState;
-					mono_field_get_value(classInstance, field, &varState);
-
+					mono_field_get_value(classInstance, field, &varState);								
 				}
 				else if (typeName == "string")
 				{
@@ -490,6 +490,7 @@ void ComponentScript::OnInspector()
 
 					ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
 
+					//Case 1: Dragging Real GameObjects
 					if (ImGui::BeginDragDropTarget())
 					{
 						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
@@ -502,6 +503,26 @@ void ComponentScript::OnInspector()
 								MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
 								mono_field_set_value(classInstance, field, monoObject);
 							}
+						}
+						ImGui::EndDragDropTarget();
+					}
+
+					//Case 2: Dragging Prefabs
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						if (payload)
+						{
+							Resource* resource = *(Resource**)payload->Data;
+							if (resource->getType() == Resource::ResourceType::PREFAB)
+							{
+								if (ImGui::IsMouseReleased(0))
+								{
+									ResourcePrefab* prefab = (ResourcePrefab*)resource;
+									/*MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+									mono_field_set_value(classInstance, field, monoObject);*/
+								}
+							}						
 						}
 						ImGui::EndDragDropTarget();
 					}
