@@ -10,6 +10,8 @@
 
 #define NUM_COMPONENTS 4
 
+class ResourcePrefab;
+
 class GameObject
 {
 public:
@@ -101,6 +103,8 @@ public:
 	std::vector<GameObject*> childs;
 	AABB boundingBox;
 	AABB initialAABB;
+
+	ResourcePrefab* prefab = nullptr;
 
 private:
 	bool active = true;

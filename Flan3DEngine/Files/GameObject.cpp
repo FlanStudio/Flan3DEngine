@@ -460,6 +460,8 @@ void GameObject::ReGenerate()
 	selected = false;
 	treeOpened = false;
 
+	prefab = nullptr;
+
 	for (int i = 0; i < components.size(); ++i)
 	{
 		Component* compTemplate = components[i];

@@ -14,6 +14,7 @@ ResourcePrefab::ResourcePrefab(GameObject* goTemplate) : Resource(ResourceType::
 		root = new GameObject(nullptr);
 		*root = *goTemplate;
 		root->ReGenerate();
+		root->prefab = this;
 	}
 }
 
@@ -311,4 +312,6 @@ void ResourcePrefab::DeSerializeFromBuffer(char*& buffer)
 		delete roots[i];
 	}
 	roots.clear();
+
+	root->prefab = this;
 }

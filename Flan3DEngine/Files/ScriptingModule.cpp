@@ -341,6 +341,21 @@ MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 	return monoInstance;
 }
 
+GameObject* ScriptingModule::GameObjectFrom(_MonoObject* monoObject)
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = gameObjectsMap[i].second;
+
+		if (mono_gchandle_get_target(handleID) == monoObject)
+		{
+			GameObject* ret = gameObjectsMap[i].first;
+			return ret;
+		}
+	}
+	return nullptr;
+}
+
 void ScriptingModule::GameCameraChanged()
 {
 	GameObject* mainCamera = App->camera->gameCamera;

@@ -44,6 +44,7 @@ public:
 	bool DestroyScript(ComponentScript* script);
 	inline void AddScriptComponent(ComponentScript* script){scripts.push_back(script);}
 	_MonoObject* MonoObjectFrom(GameObject* gameObject);
+	GameObject* GameObjectFrom(_MonoObject* monoObject);
 	void GameCameraChanged();
 
 

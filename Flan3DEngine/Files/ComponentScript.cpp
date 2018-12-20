@@ -519,8 +519,9 @@ void ComponentScript::OnInspector()
 								if (ImGui::IsMouseReleased(0))
 								{
 									ResourcePrefab* prefab = (ResourcePrefab*)resource;
-									/*MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
-									mono_field_set_value(classInstance, field, monoObject);*/
+
+									MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
+									mono_field_set_value(classInstance, field, monoObject);
 								}
 							}						
 						}
@@ -561,7 +562,11 @@ void ComponentScript::OnInspector()
 
 							char* nameCpp = mono_string_to_utf8(goName);
 
-							text = nameCpp + std::string(" (GameObject)");
+							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+							if (gameObject->prefab)
+								text = nameCpp + std::string(" (Prefab)");
+							else
+								text = nameCpp + std::string(" (GameObject)");
 
 							mono_free(nameCpp);
 						}
