@@ -286,6 +286,7 @@
     <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="ScriptingModule.h" />
+    <ClInclude Include="TextEditor.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
@@ -377,6 +378,7 @@
     <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="ScriptingModule.cpp" />
+    <ClCompile Include="TextEditor.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

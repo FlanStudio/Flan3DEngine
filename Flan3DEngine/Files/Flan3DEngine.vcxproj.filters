@@ -76,6 +76,9 @@
     <Filter Include="Sources\Tools\Pugui">
       <UniqueIdentifier>{9df41843-67c1-4262-b66f-8000bee5fc12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\TextEditor">
+      <UniqueIdentifier>{9bf82834-9515-459a-9bd0-96dba1cdd983}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -693,6 +696,9 @@
     <ClInclude Include="ResourcePrefab.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="TextEditor.h">
+      <Filter>Sources\Tools\TextEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -958,6 +964,9 @@
     </ClCompile>
     <ClCompile Include="ResourcePrefab.cpp">
       <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextEditor.cpp">
+      <Filter>Sources\Tools\TextEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
