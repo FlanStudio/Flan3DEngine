@@ -83,16 +83,16 @@ public class TestScript : FlanScript
 
     public override void OnEnable()
     {
-        //Debug.Log("Instantiating GameObject");
-        //GameObject instance = GameObject.Instantiate();
-        //instance.name = "OnEnable " + childs.Count.ToString();
+        Debug.Log("Instantiating GameObject");
+        GameObject instance = GameObject.Instantiate();
+        instance.name = "OnEnable " + childs.Count.ToString();
     }
 
     public override void OnDisable()
     {
-        //Debug.Log("Instantiating GameObject");
-        //GameObject instance = GameObject.Instantiate();
-        //instance.name = "OnDisable " + childs.Count.ToString();
+        Debug.Log("Instantiating GameObject");
+        GameObject instance = GameObject.Instantiate();
+        instance.name = "OnDisable " + childs.Count.ToString();
     }
 
     public override void OnStop()

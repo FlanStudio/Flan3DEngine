@@ -81,10 +81,12 @@ Application::Application()
 	AddModule(camera);
 	AddModule(fbxexporter);
 	AddModule(resources);
-	AddModule(scripting);
 
 	// Scenes
 	AddModule(scene);
+
+	//Scripting
+	AddModule(scripting);
 
 	//Editor
 	AddModule(editor);
