@@ -381,7 +381,7 @@ void ModuleScene::guiHierarchy()
 		ImGui::EndPopup();
 	}
 
-	//Dropping FBX (prefabs when implemented)
+	//Dropping FBX
 	if (ImGui::BeginDragDropTarget())
 	{
 		ImGuiDragDropFlags flags = 0;
