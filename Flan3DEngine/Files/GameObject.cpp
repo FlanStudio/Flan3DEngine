@@ -503,6 +503,11 @@ void GameObject::ReGenerate()
 			{
 				newComponent = new ComponentScript("", this);
 				*(ComponentScript*)newComponent = *(ComponentScript*)compTemplate;
+
+				ComponentScript* scriptComp = (ComponentScript*)newComponent;
+				scriptComp->handleID = 0;
+				scriptComp->classInstance = nullptr;
+				scriptComp->awaked = false;
 				break;
 			}
 			case ComponentType::TRANSFORM:

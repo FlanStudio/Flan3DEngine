@@ -5,7 +5,7 @@ using FlanEngine;
 public class TestScript : FlanScript
 {
     bool firstTime = true;
-    List<GameObject> childs = new List<GameObject>();
+    List<GameObject> bullets = new List<GameObject>();
 
     public float rotSpeed = 150f;
     public float movSpeed = 50f;
@@ -13,15 +13,12 @@ public class TestScript : FlanScript
     public GameObject instance;
     public GameObject instance2;
 
-
     public Transform transformTest;
 
     //Use this method for initialization
     public override void Awake()
     {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "Awake " + childs.Count.ToString();
+    
     }
 
     //Called every frame
@@ -47,19 +44,19 @@ public class TestScript : FlanScript
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
             Debug.Log("Instantiating GameObject");
-            GameObject instance = GameObject.Instantiate();
-            childs.Add(instance);
-            instance.name = "Child: " + childs.Count.ToString();
+            GameObject instantiated = GameObject.Instantiate(instance);
+            bullets.Add(instantiated);
+            instantiated.name = "Child: " + bullets.Count.ToString();
         }
 
         if (Input.GetKeyDown(KeyCode.KEY_2))
         {
-            if(childs.Count != 0)
+            if(bullets.Count != 0)
             {
                 Debug.Log("Deleting GameObject");
-                GameObject toDelete = childs[childs.Count - 1];
+                GameObject toDelete = bullets[bullets.Count - 1];
                 Destroy(toDelete);
-                childs.Remove(toDelete);
+                bullets.Remove(toDelete);
             }
         }
 
@@ -80,26 +77,4 @@ public class TestScript : FlanScript
             transform.position -= transform.right * movSpeed * Time.deltaTime;
         }
     }
-
-    public override void OnEnable()
-    {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "OnEnable " + childs.Count.ToString();
-    }
-
-    public override void OnDisable()
-    {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "OnDisable " + childs.Count.ToString();
-    }
-
-    public override void OnStop()
-    {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "onStop " + childs.Count.ToString();
-    }
-
 }

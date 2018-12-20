@@ -4,15 +4,10 @@ using FlanEngine;
 
 public class TurretRotator : FlanScript
 {
-    public GameObject instance;
-    List<GameObject> childs = new List<GameObject>();
-
     //Use this method for initialization
     public override void Awake()
     {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "Awake " + childs.Count.ToString();
+
     }
 
     //Called every frame
@@ -23,13 +18,6 @@ public class TurretRotator : FlanScript
         {
             transform.rotation.Rotate(Vector3.up, 20 * Time.deltaTime * -mouseDX);
         }
-    }
-
-    public override void OnStop()
-    {
-        Debug.Log("Instantiating GameObject");
-        GameObject instance = GameObject.Instantiate();
-        instance.name = "onstop " + childs.Count.ToString();
     }
 }
 

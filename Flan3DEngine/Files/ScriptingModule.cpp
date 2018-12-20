@@ -807,7 +807,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 			if (temp == templateMO)
 			{
-				templateGO == App->scripting->gameObjectsMap[i].first;
+				templateGO = App->scripting->gameObjectsMap[i].first;
 				break;
 			}
 		}
@@ -821,12 +821,17 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 			return nullptr;
 		}
 
-		GameObject* goInstance = App->scene->CreateGameObject(App->scene->getRootNode());
+		GameObject* goInstance = new GameObject(App->scene->getRootNode());
+		App->scene->AddGameObject(goInstance);
+
 		*goInstance = *templateGO;
 		goInstance->ReGenerate();
-
-		//Instantiating Events: Send Meshes to the mesh vector, set the main camera, send scripts to the scripts vector, etc
 		goInstance->InstantiateEvents();
+
+		goInstance->initAABB();
+		goInstance->transformAABB();
+
+		//App->scene->UpdateQuadtree();
 
 		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
 

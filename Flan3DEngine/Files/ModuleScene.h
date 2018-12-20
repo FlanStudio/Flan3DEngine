@@ -70,6 +70,7 @@ public:
 
 public:
 	Quadtree quadtree;
+	void UpdateQuadtree();
 
 private:
 	void PrintHierarchy(GameObject* go);
@@ -82,8 +83,7 @@ private:
 	void _ReorderGameObject_Pre(GameObject* go);
 	void _ReorderGameObject_Post(GameObject* go);
 
-	void InitQuadtree();
-	void UpdateQuadtree();
+	void InitQuadtree();	
 
 	void DrawGuizmos();
 
