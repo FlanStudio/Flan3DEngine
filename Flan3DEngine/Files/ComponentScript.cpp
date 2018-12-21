@@ -441,8 +441,10 @@ void ComponentScript::OnInspector()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
 
-					if (ImGui::InputInt(("##" + fieldName).data(), (int *)&varState))
+					int varState_int = (int)varState;
+					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
 					{
+						varState = varState_int;
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}
@@ -459,8 +461,10 @@ void ComponentScript::OnInspector()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
 
-					if (ImGui::InputInt(("##" + fieldName).data(), (int*)&varState))
+					int varState_int = (int)varState;
+					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
 					{
+						varState = varState_int;
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}			
@@ -477,8 +481,10 @@ void ComponentScript::OnInspector()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
 
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState))
+					int varState_int = (int)varState;
+					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState_int))
 					{
+						varState = varState_int;
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}
@@ -495,8 +501,10 @@ void ComponentScript::OnInspector()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
 
-					if (ImGui::InputInt(("##" + fieldName).data(), (int*)&varState))
+					int varState_int = (int)varState;
+					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
 					{
+						varState = varState_int;
 						mono_field_set_value(classInstance, field, &varState);
 					}
 				}
@@ -575,56 +583,10 @@ void ComponentScript::OnInspector()
 				
 				else if (typeName == "char")
 				{
-					
+					//char varState;
+					//mono_field_get_value(classInstance, field, &varState);
+					//varState = 99;
 
-					////Characters in C# are 2 bytes, while they are only 1 in C++. We may be losing some data here, since C# chars suppport Unicode and we only support ASCII.
-					char varState;
-					mono_field_get_value(classInstance, field, &varState);	
-
-					char* charModified = &varState;
-
-					if (ImGui::InputText(mono_field_get_name(field),&varState,1))
-					{
-						MonoString* newString = mono_string_new(App->scripting->domain, charModified);
-						mono_field_set_value(classInstance, field, newString);
-					}
-
-					//mono_free(convertedChar);
-
-
-
-
-
-
-					//ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					//ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					//ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					//cursorPos = ImGui::GetCursorScreenPos();
-					//ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					//if (ImGui::InputText(("##" + fieldName).data(), &varState))
-					//{
-					//	mono_field_set_value(classInstance, field, &varState);
-					//}
-
-
-
-
-
-
-
-					//char* convertedChar = mono_string_to_utf8(varState);
-
-					//std::string stringToModify = convertedChar;
-					//if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
-					//{
-					//	MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
-					//	mono_field_set_value(classInstance, field, newString);
-					//}
-
-					//mono_free(convertedChar);
 				}
 				else if (typeName == "string")
 				{

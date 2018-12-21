@@ -24,6 +24,7 @@ public class TestScript : FlanScript
     public ulong p_ulong = 1;
     public char p_char = 'c';
 
+    public string p_string = "papapapapapa";
 
     public Transform transformTest;
 
