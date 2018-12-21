@@ -843,6 +843,8 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		goInstance->initAABB();
 		goInstance->transformAABB();
 
+		goInstance->parent = App->scene->getRootNode();
+
 		//App->scene->UpdateQuadtree();
 
 		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
@@ -948,6 +950,60 @@ MonoArray* RotateAxisAngle(MonoArray* axis, float deg)
 	return ret;
 }
 
+MonoArray* GetGlobalPos(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = App->scripting->gameObjectsMap[i].second;		
+
+		if (monoObject == mono_gchandle_get_target(handleID))
+		{
+			gameObject = App->scripting->gameObjectsMap[i].first;
+		}
+	}
+
+	if (!gameObject)
+		return nullptr;
+
+	ComponentTransform global = gameObject->transform->getGlobal();
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, global.position.x);
+	mono_array_set(ret, float, 1, global.position.y);
+	mono_array_set(ret, float, 2, global.position.z);
+
+	return ret;
+}
+
+MonoArray* GetGlobalRotation(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = App->scripting->gameObjectsMap[i].second;
+		if (mono_gchandle_get_target(handleID) == monoObject)
+		{
+			gameObject = App->scripting->gameObjectsMap[i].first;
+		}
+	}
+
+	if (!gameObject)
+		return nullptr;
+
+	ComponentTransform global = gameObject->transform->getGlobal();
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, global.rotation.x);
+	mono_array_set(ret, float, 1, global.rotation.y);
+	mono_array_set(ret, float, 2, global.rotation.z);
+	mono_array_set(ret, float, 3, global.rotation.w);
+
+	return ret;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1002,6 +1058,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
 	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
 	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
+	mono_add_internal_call("FlanEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
+	mono_add_internal_call("FlanEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
 
 	//Empty the GameObjects map
 	for(int i = 0; i < gameObjectsMap.size(); ++i)

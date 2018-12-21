@@ -15,10 +15,14 @@
 
 ComponentScript::~ComponentScript()
 {
-	scriptRes->deReferenced();
+	if(scriptRes)
+		scriptRes->deReferenced();
 
-	mono_gchandle_free(handleID);
-	handleID = 0;
+	if (handleID != 0)
+	{
+		mono_gchandle_free(handleID);
+		handleID = 0;
+	}
 }
 
 void ComponentScript::Awake()

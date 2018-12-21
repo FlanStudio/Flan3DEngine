@@ -350,6 +350,8 @@ void ModuleScene::guiHierarchy()
 
 				instance->initAABB();
 				instance->transformAABB();
+
+				instance->parent = gameObjects[0];
 			}
 		}
 		ImGui::EndDragDropTarget();

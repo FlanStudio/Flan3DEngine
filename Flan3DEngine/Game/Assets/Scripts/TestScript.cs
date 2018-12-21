@@ -5,15 +5,15 @@ using FlanEngine;
 public class TestScript : FlanScript
 {
     bool firstTime = true;
+
     List<GameObject> bullets = new List<GameObject>();
 
     public float rotSpeed = 150f;
     public float movSpeed = 50f;
 
-    public GameObject instance;
-    public GameObject instance2;
+    public GameObject bulletPrefab;
 
-    public Transform transformTest;
+    public Transform BulletSpawningPoint;
 
     //Use this method for initialization
     public override void Awake()
@@ -24,13 +24,6 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
-        if(transformTest != null)
-        {
-            Debug.ClearConsole();
-            Debug.Log("My transformTest's name is " + transformTest.gameObject.name);
-            Debug.Log("My transformTest's position is " + transformTest.position.ToString());
-        }
-
         if(Input.GetKey(KeyCode.KEY_E))
         {
             transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);
@@ -41,12 +34,19 @@ public class TestScript : FlanScript
             transform.rotation.Rotate(Vector3.up, +rotSpeed * Time.deltaTime);
         }
 
-        if(Input.GetKeyDown(KeyCode.KEY_1))
+        if(Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
-            Debug.Log("Instantiating GameObject");
-            GameObject instantiated = GameObject.Instantiate(instance);
-            bullets.Add(instantiated);
-            instantiated.name = "Child: " + bullets.Count.ToString();
+            if(bulletPrefab != null)
+            {
+                Debug.Log("Instantiating GameObject");
+
+                GameObject instantiated = GameObject.Instantiate(bulletPrefab);
+                bullets.Add(instantiated);
+                instantiated.name = "Child: " + bullets.Count.ToString();
+
+                instantiated.transform.position = BulletSpawningPoint.globalPosition;
+                instantiated.transform.rotation = BulletSpawningPoint.globalRotation;
+            }        
         }
 
         if (Input.GetKeyDown(KeyCode.KEY_2))
