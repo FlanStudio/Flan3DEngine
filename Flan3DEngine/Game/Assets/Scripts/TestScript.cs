@@ -5,13 +5,13 @@ using FlanEngine;
 public class TestScript : FlanScript
 {
     bool firstTime = true;
+
     List<GameObject> bullets = new List<GameObject>();
 
     public float rotSpeed = 150f;
     public float movSpeed = 50f;
 
-    public GameObject instance;
-    public GameObject instance2;
+    public GameObject bulletPrefab;
 
     public double patata_double = 1;
     public sbyte p_sbyte = 1;
@@ -27,6 +27,7 @@ public class TestScript : FlanScript
     public string p_string = "papapapapapa";
 
     public Transform transformTest;
+    public Transform BulletSpawningPoint;
 
     //Use this method for initialization
     public override void Awake()
@@ -64,12 +65,19 @@ public class TestScript : FlanScript
             transform.rotation.Rotate(Vector3.up, +rotSpeed * Time.deltaTime);
         }
 
-        if(Input.GetKeyDown(KeyCode.KEY_1))
+        if(Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
-            Debug.Log("Instantiating GameObject");
-            GameObject instantiated = GameObject.Instantiate(instance);
-            bullets.Add(instantiated);
-            instantiated.name = "Child: " + bullets.Count.ToString();
+            if(bulletPrefab != null)
+            {
+                Debug.Log("Instantiating GameObject");
+
+                GameObject instantiated = GameObject.Instantiate(bulletPrefab);
+                bullets.Add(instantiated);
+                instantiated.name = "Child: " + bullets.Count.ToString();
+
+                instantiated.transform.position = BulletSpawningPoint.globalPosition;
+                instantiated.transform.rotation = BulletSpawningPoint.globalRotation;
+            }        
         }
 
         if (Input.GetKeyDown(KeyCode.KEY_2))

@@ -63,7 +63,10 @@ public:
 	void CreateDomain();
 	void ReInstance();
 
+	void UpdateMonoObjects();
 	void GameObjectChanged(GameObject* gameObject);
+
+	void UpdateGameObjects();
 	void MonoObjectChanged(uint32_t handleID);
 
 	void ClearMap();

@@ -564,6 +564,18 @@ void GameObject::InstantiateEvents()
 				ComponentScript* scriptComp = (ComponentScript*)components[i];
 				App->scripting->AddScriptComponent(scriptComp);
 				scriptComp->InstanceClass();
+
+				if (IN_GAME)
+				{
+					//A script has been instantiated during playMode. Execute the right callback methods.
+					if (scriptComp->isActive() && scriptComp->gameObject->areParentsActives())
+					{
+						//Execute the OnEnable, Awake and Start methods
+
+						
+					}
+				}
+				
 				break;
 			}
 		}
