@@ -536,6 +536,14 @@ void ScriptingModule::ReInstance()
 	}
 }
 
+void ScriptingModule::UpdateMonoObjects()
+{
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
+	}
+}
+
 void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 {
 	MonoObject* monoObject = nullptr;
@@ -597,6 +605,14 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 			//TODO: CONTINUE UPDATING THINGS
 			break;
 		}
+	}
+}
+
+void ScriptingModule::UpdateGameObjects()
+{
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
 	}
 }
 
@@ -838,8 +854,6 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		*goInstance = *templateGO;
 		goInstance->ReGenerate();
-		goInstance->InstantiateEvents();
-
 		goInstance->initAABB();
 		goInstance->transformAABB();
 
@@ -848,6 +862,8 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		//App->scene->UpdateQuadtree();
 
 		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
+
+		goInstance->InstantiateEvents();
 
 		return moInstance;
 	}
