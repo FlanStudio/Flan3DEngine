@@ -125,10 +125,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{
 			//Check if some files have compile errors and don't let the user hit the play.
 
-			for (int i = 0; i < gameObjectsMap.size(); ++i)
-			{
-				GameObjectChanged(gameObjectsMap[i].first);
-			}
+			void UpdateMonoObjects();
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -148,10 +145,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 					scripts[i]->Start();
 			}
 		
-			for (int i = 0; i < gameObjectsMap.size(); ++i)
-			{
-				MonoObjectChanged(gameObjectsMap[i].second);
-			}
+			void UpdateGameObjects();
 
 
 			//Call the Awake and Start for all the Enabled script in the Play instant.
@@ -160,10 +154,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 	
 		case EventType::STOP:
 		{
-			for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-			{
-				App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
-			}
+			void UpdateMonoObjects();
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -174,10 +165,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 				}
 			}
 
-			for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-			{
-				App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
-			}
+			void UpdateGameObjects();
 
 			ClearMap();
 
