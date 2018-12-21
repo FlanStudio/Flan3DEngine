@@ -47,7 +47,6 @@ public:
 	GameObject* GameObjectFrom(_MonoObject* monoObject);
 	void GameCameraChanged();
 
-
 	bool alreadyCreated(std::string scriptName);
 
 	void CreateScriptingProject();

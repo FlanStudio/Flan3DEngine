@@ -221,6 +221,7 @@ void ModuleScene::ReceiveEvent(Event event)
 		}
 		case EventType::STOP:
 		{
+			selectedGO = nullptr;
 			deserialize = true;
 			break;
 		}

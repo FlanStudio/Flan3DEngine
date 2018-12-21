@@ -763,5 +763,5 @@ void ComponentScript::InstanceClass()
 	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
 
 	//Create the handle storage to make sure the garbage collector doesn't delete the classInstance
-	handleID = mono_gchandle_new(classInstance, false);
+	handleID = mono_gchandle_new(classInstance, true);
 }
