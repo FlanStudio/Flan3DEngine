@@ -178,6 +178,9 @@ void ScriptingModule::ReceiveEvent(Event event)
 			{
 				App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
 			}
+
+			ClearMap();
+
 			break;
 		}
 
@@ -332,13 +335,28 @@ MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 	mono_runtime_object_init(monoInstance);
 
-	uint32_t handleID = mono_gchandle_new(monoInstance, false);
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
 	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
 
 	App->scripting->GameObjectChanged(gameObject);
 
 	return monoInstance;
+}
+
+GameObject* ScriptingModule::GameObjectFrom(_MonoObject* monoObject)
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = gameObjectsMap[i].second;
+
+		if (mono_gchandle_get_target(handleID) == monoObject)
+		{
+			GameObject* ret = gameObjectsMap[i].first;
+			return ret;
+		}
+	}
+	return nullptr;
 }
 
 void ScriptingModule::GameCameraChanged()
@@ -652,6 +670,15 @@ void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 	}
 }
 
+void ScriptingModule::ClearMap()
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		mono_gchandle_free(gameObjectsMap[i].second);
+	}
+	gameObjectsMap.clear();
+}
+
 void ScriptingModule::UpdateMethods()
 {
 	for (int i = 0; i < gameObjectsMap.size(); ++i)
@@ -769,7 +796,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 		mono_runtime_object_init(monoInstance);
 
-		uint32_t handleID = mono_gchandle_new(monoInstance, false);
+		uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
 		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
 
@@ -792,7 +819,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 			if (temp == templateMO)
 			{
-				templateGO == App->scripting->gameObjectsMap[i].first;
+				templateGO = App->scripting->gameObjectsMap[i].first;
 				break;
 			}
 		}
@@ -806,12 +833,17 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 			return nullptr;
 		}
 
-		GameObject* goInstance = App->scene->CreateGameObject(App->scene->getRootNode());
+		GameObject* goInstance = new GameObject(App->scene->getRootNode());
+		App->scene->AddGameObject(goInstance);
+
 		*goInstance = *templateGO;
 		goInstance->ReGenerate();
-
-		//Instantiating Events: Send Meshes to the mesh vector, set the main camera, send scripts to the scripts vector, etc
 		goInstance->InstantiateEvents();
+
+		goInstance->initAABB();
+		goInstance->transformAABB();
+
+		//App->scene->UpdateQuadtree();
 
 		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
 

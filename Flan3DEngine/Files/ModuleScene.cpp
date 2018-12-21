@@ -221,6 +221,7 @@ void ModuleScene::ReceiveEvent(Event event)
 		}
 		case EventType::STOP:
 		{
+			selectedGO = nullptr;
 			deserialize = true;
 			break;
 		}
@@ -632,6 +633,8 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	int size = 0u;
 	if (!App->fs->OpenRead(path + extension, &buffer, size))
 		return;
+
+	App->scripting->ClearMap();
 
 	int pos = path.find_last_of("/") != std::string::npos ? path.find_last_of("/") : path.find_last_of("\\");
 	currentSceneName = path.substr(pos + 1);

@@ -460,6 +460,8 @@ void GameObject::ReGenerate()
 	selected = false;
 	treeOpened = false;
 
+	prefab = nullptr;
+
 	for (int i = 0; i < components.size(); ++i)
 	{
 		Component* compTemplate = components[i];
@@ -501,6 +503,11 @@ void GameObject::ReGenerate()
 			{
 				newComponent = new ComponentScript("", this);
 				*(ComponentScript*)newComponent = *(ComponentScript*)compTemplate;
+
+				ComponentScript* scriptComp = (ComponentScript*)newComponent;
+				scriptComp->handleID = 0;
+				scriptComp->classInstance = nullptr;
+				scriptComp->awaked = false;
 				break;
 			}
 			case ComponentType::TRANSFORM:

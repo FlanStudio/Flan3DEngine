@@ -44,8 +44,8 @@ public:
 	bool DestroyScript(ComponentScript* script);
 	inline void AddScriptComponent(ComponentScript* script){scripts.push_back(script);}
 	_MonoObject* MonoObjectFrom(GameObject* gameObject);
+	GameObject* GameObjectFrom(_MonoObject* monoObject);
 	void GameCameraChanged();
-
 
 	bool alreadyCreated(std::string scriptName);
 
@@ -65,6 +65,8 @@ public:
 
 	void GameObjectChanged(GameObject* gameObject);
 	void MonoObjectChanged(uint32_t handleID);
+
+	void ClearMap();
 
 private:
 	void UpdateMethods();
