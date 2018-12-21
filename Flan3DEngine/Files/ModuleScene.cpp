@@ -1034,6 +1034,12 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 	{
 		scripts[i]->Serialize(cursor);
 	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		//Serialize public variables here
+
+	}
 }
 
 void ModuleScene::DeSerializeFromBuffer(char*& buffer)
@@ -1240,6 +1246,8 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 				scripts[i]->InstanceClass();
 			}
 		}
+
+		//DeSerialize Public variables here
 	}
 
 	std::vector<GameObject*> roots;

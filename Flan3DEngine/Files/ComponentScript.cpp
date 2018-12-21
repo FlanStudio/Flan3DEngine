@@ -571,8 +571,7 @@ void ComponentScript::OnInspector()
 					{
 						mono_field_set_value(classInstance, field, &varState);
 					}
-				}
-				
+				}			
 				else if (typeName == "char")
 				{
 					int temp;
@@ -604,7 +603,6 @@ void ComponentScript::OnInspector()
 
 					mono_free(convertedString);
 				}
-
 				else if (typeName == "FlanEngine.GameObject")
 				{
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
@@ -720,7 +718,6 @@ void ComponentScript::OnInspector()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
 				}
-
 				else if (typeName == "FlanEngine.Transform")
 				{
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
@@ -870,6 +867,468 @@ void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
 	}		
 	else
 		Debug.LogError("A ComponentScript lost his ResourceScript reference!");
+}
+
+void ComponentScript::SerializePublicVars(char*& cursor) const
+{
+	uint numVars = 0;
+
+	void* iterator = 0;
+	MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+	while (field != nullptr)
+	{
+		uint32_t flags = mono_field_get_flags(field);
+		if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+		{
+			numVars++;
+		}
+	}
+
+	uint bytes = sizeof(uint);
+	memcpy(cursor, &numVars, bytes);
+	cursor += bytes;
+
+	iterator = 0;
+	field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+	while (field != nullptr)
+	{
+		uint32_t flags = mono_field_get_flags(field);
+		if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+		{
+			MonoType* type = mono_field_get_type(field);
+			std::string typeName = mono_type_full_name(type);
+			std::string fieldName = mono_field_get_name(field);
+
+			VarType varType;
+
+			if (typeName == "bool")
+			{
+				varType = VarType::BOOL;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+				
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(bool);
+				bool varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "single")
+			{
+				varType = VarType::FLOAT;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(float);
+				float varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "double")
+			{
+				varType = VarType::DOUBLE;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(double);
+				double varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "sbyte")
+			{
+				varType = VarType::INT8;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(int8_t);
+				int8_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "byte")
+			{
+				varType = VarType::UINT8;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(uint8_t);
+				uint8_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "int16")
+			{
+				varType = VarType::INT16;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(int16_t);
+				int16_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "uint16")
+			{
+				varType = VarType::UINT16;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(uint16_t);
+				uint16_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "int")
+			{
+				varType = VarType::INT;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(int32_t);
+				int32_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "uint")
+			{
+				varType = VarType::UINT;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(uint32_t);
+				uint32_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "long")
+			{
+				varType = VarType::INT64;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(int64_t);
+				int64_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "ulong")
+			{
+				varType = VarType::UINT64;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(uint64_t);
+				uint64_t varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "char")
+			{
+				varType = VarType::CHAR;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+				bytes = sizeof(char);
+				char varState; mono_field_get_value(classInstance, field, &varState);
+				memcpy(cursor, &varState, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "string")
+			{
+				varType = VarType::STRING;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value				
+				MonoString* varState; mono_field_get_value(classInstance, field, &varState);
+				char* cString = mono_string_to_utf8(varState);
+
+				std::string defString(cString);
+
+				bytes = sizeof(uint);
+
+				uint stringLenght = defString.size();
+				memcpy(cursor, &stringLenght, bytes);
+				cursor += bytes;
+
+				bytes = stringLenght;
+				memcpy(cursor, defString.c_str(), bytes);
+				cursor += bytes;
+
+				delete cString;
+			}
+			else if (typeName == "FlanEngine.GameObject")
+			{
+				varType = VarType::GAMEOBJECT;
+				
+				bytes = sizeof(UID);
+
+				MonoObject* monoObject; mono_field_get_value(classInstance, field, &monoObject);
+
+				GameObject* serializableGO = App->scripting->GameObjectFrom(monoObject);
+
+				if (!serializableGO)
+					continue;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Here save the UID of the gameObject you have referenced
+				UID uid = serializableGO->uuid;
+				memcpy(cursor, &uid, bytes);
+				cursor += bytes;
+
+			}
+			else if (typeName == "FlanEngine.Transform")
+			{
+				varType = VarType::TRANSFORM;
+
+				bytes = sizeof(UID);
+
+				MonoObject* transformObj; mono_field_get_value(classInstance, field, &transformObj);
+
+				MonoObject* monoObject; mono_field_get_value(transformObj, mono_class_get_field_from_name(mono_object_get_class(transformObj), "gameObject"), &monoObject);
+
+				GameObject* serializableGO = App->scripting->GameObjectFrom(monoObject);
+
+				if (!serializableGO)
+					continue;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (lenght + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Here save the UID of the transform->gameObject you have referenced
+				UID uid = serializableGO->uuid;
+				memcpy(cursor, &uid, bytes);
+				cursor += bytes;
+			}
+		}
+	}
+}
+
+void ComponentScript::deSerializePublicVars(char *& cursor)
+{
+
 }
 
 void ComponentScript::InstanceClass()

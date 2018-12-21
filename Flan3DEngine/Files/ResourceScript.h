@@ -7,6 +7,27 @@ struct _MonoMethod;
 struct _MonoImage;
 struct _MonoAssembly;
 
+
+enum class VarType
+{
+	NO_TYPE = -1,
+	BOOL,
+	FLOAT, 
+	DOUBLE,
+	INT8,
+	UINT8,
+	INT16,
+	UINT16,
+	INT,
+	UINT,
+	INT64,
+	UINT64,
+	CHAR,
+	STRING,
+	GAMEOBJECT,
+	TRANSFORM
+};
+
 class ResourceScript : public Resource
 {
 public:

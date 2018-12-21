@@ -27,6 +27,9 @@ public:
 	void Serialize(char*& cursor) const;
 	void deSerialize(char*& cursor, uint32_t& goUUID);
 
+	void SerializePublicVars(char*& cursor) const;
+	void deSerializePublicVars(char*& cursor);
+
 public:
 	void InstanceClass();
 
