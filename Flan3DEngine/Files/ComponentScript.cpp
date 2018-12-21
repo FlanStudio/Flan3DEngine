@@ -216,20 +216,20 @@ void ComponentScript::OnStop()
 
 void ComponentScript::onEnable()
 {
-	void UpdateMonoObjects();
+	App->scripting->UpdateMonoObjects();
 
 	OnEnableMethod();
 
-	void UpdateGameObjects();
+	App->scripting->UpdateGameObjects();
 }
 
 void ComponentScript::onDisable()
 {
-	void UpdateMonoObjects();
+	App->scripting->UpdateMonoObjects();
 
 	OnDisableMethod();
 
-	void UpdateGameObjects();
+	App->scripting->UpdateGameObjects();
 }
 
 void ComponentScript::OnInspector()
@@ -735,12 +735,6 @@ void ComponentScript::InstanceClass()
 {
 	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
 		return;
-
-	if (handleID != 0)
-	{
-		mono_gchandle_free(handleID);
-		handleID = 0;
-	}
 
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
 	classInstance = mono_object_new(App->scripting->domain, klass);

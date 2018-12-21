@@ -94,7 +94,6 @@ update_status ScriptingModule::Update()
 	{
 		UpdateMethods();
 	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -125,7 +124,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{
 			//Check if some files have compile errors and don't let the user hit the play.
 
-			void UpdateMonoObjects();
+			UpdateMonoObjects();
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -145,8 +144,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 					scripts[i]->Start();
 			}
 		
-			void UpdateGameObjects();
-
+			UpdateGameObjects();
 
 			//Call the Awake and Start for all the Enabled script in the Play instant.
 			break;
@@ -154,7 +152,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 	
 		case EventType::STOP:
 		{
-			void UpdateMonoObjects();
+			UpdateMonoObjects();
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -165,7 +163,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 				}
 			}
 
-			void UpdateGameObjects();
+			UpdateGameObjects();
 
 			ClearMap();
 
@@ -543,7 +541,7 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 			monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
 
 			if (!monoObject)
-				return;
+				continue;
 
 			//SetUp all the GameObject* fields to the MonoObject
 
@@ -618,7 +616,7 @@ void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 		{
 			MonoObject* monoObject = mono_gchandle_get_target(handleID);
 			if (!monoObject)
-				return;
+				continue;
 
 			gameObject = gameObjectsMap[i].first;
 
@@ -1029,7 +1027,10 @@ void ScriptingModule::CreateDomain()
 	
 	//Make sure we do not delete the main domain
 	if (!firstDomain)
-		mono_domain_unload(domain);
+	{
+		mono_domain_unload(domain);		
+	}
+		
 
 	domain = nextDom;
 
@@ -1071,12 +1072,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
 	mono_add_internal_call("FlanEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
 
-	//Empty the GameObjects map
-	for(int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		mono_gchandle_free(gameObjectsMap[i].second);
-	}
-	gameObjectsMap.clear();
+	ClearMap();
 
 	firstDomain = false;
 }

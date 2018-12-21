@@ -69,6 +69,7 @@ bool ModuleFileSystem::Init()
 			if (newDirectory != AssetsDirSystem)
 			{
 				SendEvents(newDirectory);
+				AssetsDirSystem = newDirectory;
 			}
 
 			delete buffer;
