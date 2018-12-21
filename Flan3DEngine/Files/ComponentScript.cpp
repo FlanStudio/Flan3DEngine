@@ -587,10 +587,18 @@ void ComponentScript::OnInspector()
 				
 				else if (typeName == "char")
 				{
-					//char varState;
-					//mono_field_get_value(classInstance, field, &varState);
-					//varState = 99;
+					int temp;
+					mono_field_get_value(classInstance, field, &temp);
 
+					char varState = (char)temp;
+
+					std::string stringToModify = std::string(1,varState);
+					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
+					{
+						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
+						temp = (int)stringToModify[0];
+						mono_field_set_value(classInstance, field, &temp);
+					}
 				}
 				else if (typeName == "string")
 				{
