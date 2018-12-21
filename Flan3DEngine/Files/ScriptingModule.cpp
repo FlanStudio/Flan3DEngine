@@ -335,7 +335,7 @@ MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 	mono_runtime_object_init(monoInstance);
 
-	uint32_t handleID = mono_gchandle_new(monoInstance, false);
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
 	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
 
@@ -796,7 +796,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 		mono_runtime_object_init(monoInstance);
 
-		uint32_t handleID = mono_gchandle_new(monoInstance, false);
+		uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
 		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
 

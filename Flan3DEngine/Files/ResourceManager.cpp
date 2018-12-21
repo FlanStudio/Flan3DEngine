@@ -311,7 +311,30 @@ ResourceScript* ResourceManager::findScriptByName(const std::string& scriptName)
 
 void ResourceManager::SavePrefab(GameObject* root)
 {
-	ResourcePrefab* prefab = new ResourcePrefab(root);
+	//Check if there is already an old loaded version of the prefab
+
+	ResourcePrefab* prefab; 
+
+	if (App->fs->Exists("Assets/Prefabs/" + root->name + ".flanPrefab"))
+	{
+		//Read the meta, get the UID and the loaded prefab
+		char* metaBuffer; int size;
+		App->fs->OpenRead("Assets/Prefabs/" + root->name + ".flanPrefab" + ".meta", &metaBuffer, size, false);
+
+		UID uid;
+		memcpy(&uid, metaBuffer, sizeof(UID));
+
+		prefab = (ResourcePrefab*)resources.at(uid);
+		*prefab->root = *root;
+		prefab->root->ReGenerate();
+		prefab->root->prefab = prefab;
+
+		delete metaBuffer;
+	}
+	else
+	{
+		prefab = new ResourcePrefab(root);
+	}
 
 	char* buffer;
 	uint size;

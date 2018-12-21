@@ -7,6 +7,7 @@ class GameObject;
 
 class ResourcePrefab : public Resource
 {
+	friend class ResourceManager;
 public:
 	ResourcePrefab(GameObject* root);
 	virtual ~ResourcePrefab() {}
