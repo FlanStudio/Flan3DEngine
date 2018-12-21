@@ -13,6 +13,17 @@ public class TestScript : FlanScript
     public GameObject instance;
     public GameObject instance2;
 
+    public double patata_double = 1;
+    public sbyte p_sbyte = 1;
+    public byte p_byte = 1;
+    public short p_int16 = 1;
+    public ushort p_uint16 = 1;
+    public int p_int = 1;
+    public uint p_uint = 1;
+    public long p_long = 1;
+    public ulong p_ulong = 1;
+    public char p_char = 'c';
+
 
     public Transform transformTest;
 
@@ -27,7 +38,17 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
-        if(transformTest != null)
+        Debug.Log(patata_double.ToString());
+        Debug.Log(p_byte.ToString());
+        Debug.Log(p_int.ToString());
+        Debug.Log(p_int16.ToString());
+        Debug.Log(p_long.ToString());
+        Debug.Log(p_sbyte.ToString());
+        Debug.Log(p_uint.ToString());
+        Debug.Log(p_uint16.ToString());
+        Debug.Log(p_ulong.ToString());
+
+        if (transformTest != null)
         {
             Debug.ClearConsole();
             Debug.Log("My transformTest's name is " + transformTest.gameObject.name);
