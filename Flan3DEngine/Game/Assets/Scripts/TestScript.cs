@@ -11,6 +11,7 @@ public class TestScript : FlanScript
 
     public GameObject bulletPrefab;
 
+    public Transform transformTest;
     public Transform BulletSpawningPoint;
 
     //Use this method for initialization
@@ -22,6 +23,13 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
+        if (transformTest != null)
+        {
+            Debug.ClearConsole();
+            Debug.Log("My transformTest's name is " + transformTest.gameObject.name);
+            Debug.Log("My transformTest's position is " + transformTest.position.ToString());
+        }
+
         if(Input.GetKey(KeyCode.KEY_E))
         {
             transform.rotation.Rotate(Vector3.up, -rotSpeed * Time.deltaTime);

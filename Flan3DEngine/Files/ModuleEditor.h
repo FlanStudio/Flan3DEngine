@@ -32,6 +32,7 @@ public:
 
 private:
 	void customStyle();
+	void showTextEditor();
 
 private:
 
@@ -45,5 +46,6 @@ private:
 	bool hierarchy = true;
 	bool inspector = true;
 	bool fileSystem = true;
+	bool textEditor = true;
 };
 #endif
