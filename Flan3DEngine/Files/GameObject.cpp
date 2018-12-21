@@ -568,12 +568,14 @@ void GameObject::InstantiateEvents()
 				if (IN_GAME)
 				{
 					//A script has been instantiated during playMode. Execute the right callback methods.
-					if (scriptComp->isActive() && scriptComp->gameObject->areParentsActives())
-					{
-						//Execute the OnEnable, Awake and Start methods
 
-						
-					}
+					App->scripting->UpdateMonoObjects();
+
+					scriptComp->OnEnableMethod();
+					scriptComp->Awake();
+					scriptComp->Start();
+
+					App->scripting->UpdateGameObjects();					
 				}
 				
 				break;
