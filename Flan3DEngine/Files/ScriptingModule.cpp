@@ -542,6 +542,9 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 		{
 			monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
 
+			if (!monoObject)
+				return;
+
 			//SetUp all the GameObject* fields to the MonoObject
 
 			MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
@@ -614,6 +617,9 @@ void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 		if (gameObjectsMap[i].second == handleID)
 		{
 			MonoObject* monoObject = mono_gchandle_get_target(handleID);
+			if (!monoObject)
+				return;
+
 			gameObject = gameObjectsMap[i].first;
 
 			//SetUp the name
