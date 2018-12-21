@@ -13,19 +13,6 @@ public class TestScript : FlanScript
 
     public GameObject bulletPrefab;
 
-    public double patata_double = 1;
-    public sbyte p_sbyte = 1;
-    public byte p_byte = 1;
-    public short p_int16 = 1;
-    public ushort p_uint16 = 1;
-    public int p_int = 1;
-    public uint p_uint = 1;
-    public long p_long = 1;
-    public ulong p_ulong = 1;
-    public char p_char = 'c';
-
-    public string p_string = "papapapapapa";
-
     public Transform transformTest;
     public Transform BulletSpawningPoint;
 
@@ -38,16 +25,6 @@ public class TestScript : FlanScript
     //Called every frame
     public override void Update()
     {
-        Debug.Log(patata_double.ToString());
-        Debug.Log(p_byte.ToString());
-        Debug.Log(p_int.ToString());
-        Debug.Log(p_int16.ToString());
-        Debug.Log(p_long.ToString());
-        Debug.Log(p_sbyte.ToString());
-        Debug.Log(p_uint.ToString());
-        Debug.Log(p_uint16.ToString());
-        Debug.Log(p_ulong.ToString());
-
         if (transformTest != null)
         {
             Debug.ClearConsole();
