@@ -179,11 +179,7 @@ void ScriptingModule::ReceiveEvent(Event event)
 				App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
 			}
 
-			for (int i = 0; i < gameObjectsMap.size(); ++i)
-			{
-				mono_gchandle_free(gameObjectsMap[i].second);
-			}
-			gameObjectsMap.clear();
+			ClearMap();
 
 			break;
 		}
@@ -672,6 +668,15 @@ void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 			//TODO: CONTINUE UPDATING THINGS
 		}
 	}
+}
+
+void ScriptingModule::ClearMap()
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		mono_gchandle_free(gameObjectsMap[i].second);
+	}
+	gameObjectsMap.clear();
 }
 
 void ScriptingModule::UpdateMethods()

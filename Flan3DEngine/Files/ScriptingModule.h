@@ -66,6 +66,8 @@ public:
 	void GameObjectChanged(GameObject* gameObject);
 	void MonoObjectChanged(uint32_t handleID);
 
+	void ClearMap();
+
 private:
 	void UpdateMethods();
 
