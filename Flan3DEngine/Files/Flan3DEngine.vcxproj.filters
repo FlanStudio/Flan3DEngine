@@ -696,19 +696,7 @@
     <ClInclude Include="ResourcePrefab.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\Game\ColorTextEditor\imconfig.h">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\ColorTextEditor\imgui_impl_dx11.h">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\ColorTextEditor\imgui_impl_win32.h">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\ColorTextEditor\ImGuiColorTextEdit\ImGuiColorTextEdit-26f463ca5bb097b8d738460930d5e224981936b1\TextEditor.h">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\ColorTextEditor\imp.h">
+    <ClInclude Include="TextEditor.h">
       <Filter>Sources\Tools\TextEditor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -977,16 +965,7 @@
     <ClCompile Include="ResourcePrefab.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Game\ColorTextEditor\imgui_impl_dx11.cpp">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Game\ColorTextEditor\imgui_impl_win32.cpp">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Game\ColorTextEditor\imp.cpp">
-      <Filter>Sources\Tools\TextEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Game\ColorTextEditor\ImGuiColorTextEdit\ImGuiColorTextEdit\TextEditor.cpp">
+    <ClCompile Include="TextEditor.cpp">
       <Filter>Sources\Tools\TextEditor</Filter>
     </ClCompile>
   </ItemGroup>

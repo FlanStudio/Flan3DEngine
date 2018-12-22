@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -83,11 +83,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Game\ColorTextEditor\imconfig.h" />
-    <ClInclude Include="..\Game\ColorTextEditor\ImGuiColorTextEdit\ImGuiColorTextEdit-26f463ca5bb097b8d738460930d5e224981936b1\TextEditor.h" />
-    <ClInclude Include="..\Game\ColorTextEditor\imgui_impl_dx11.h" />
-    <ClInclude Include="..\Game\ColorTextEditor\imgui_impl_win32.h" />
-    <ClInclude Include="..\Game\ColorTextEditor\imp.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
     <ClInclude Include="Assimp\include\anim.h" />
@@ -291,14 +286,11 @@
     <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="ScriptingModule.h" />
+    <ClInclude Include="TextEditor.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Game\ColorTextEditor\ImGuiColorTextEdit\ImGuiColorTextEdit\TextEditor.cpp" />
-    <ClCompile Include="..\Game\ColorTextEditor\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Game\ColorTextEditor\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\Game\ColorTextEditor\imp.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -386,6 +378,7 @@
     <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="ScriptingModule.cpp" />
+    <ClCompile Include="TextEditor.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
