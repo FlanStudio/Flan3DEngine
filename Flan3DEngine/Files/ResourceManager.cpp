@@ -710,7 +710,7 @@ void ResourceManager::LoadResources()
 					scriptRes->DeSerializeFromMeta(cursor);
 
 					scriptRes->setFile((char*)fullPaths[i].data());
-					scriptRes->Compile();
+					scriptRes->referenceMethods();
 					resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
 				}
 

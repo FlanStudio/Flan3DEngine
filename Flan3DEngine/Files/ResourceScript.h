@@ -54,6 +54,7 @@ public:
 
 	bool preCompileErrors();
 	bool Compile();
+	bool referenceMethods();
 
 private:
 	std::string pathToWindowsNotation(const std::string& path) const;

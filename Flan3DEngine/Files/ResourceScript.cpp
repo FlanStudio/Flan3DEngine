@@ -164,63 +164,73 @@ bool ResourceScript::Compile()
 		if (!App->fs->MoveFileInto(dllPath, ("Library/Scripts/" + fileNameNoExt + ".dll").data(), false))
 			return false;
 		
-		exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
-
-		//Referencing the assembly from memory
-		char* buffer;
-		int size;
-		if (!App->fs->OpenRead(exportedFile, &buffer, size, false))
-			return false;
-
-		//Loading assemblies from data instead of from file
-		MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
-		image = mono_image_open_from_data(buffer, size, 1, &status);
-
-		assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(uuid)).data(), &status, false);
-
-		delete buffer;
-
-		if (!assembly || ! image)
-		{
-			//Somehow the .dll could not be found.
-			return false;
-		}
-
-		//Referencing callback methods
-		MonoMethodDesc* desc = mono_method_desc_new ((scriptName + ":Awake()").data(), false);
-		awakeMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new ((scriptName + ":Start()").data(), false);
-		startMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new ((scriptName + ":PreUpdate()").data(), false);
-		preUpdateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new ((scriptName + ":Update()").data(), false);
-		updateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new ((scriptName + ":PostUpdate()").data(), false);
-		postUpdateMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnEnable()").data(), false);
-		enableMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnDisable()").data(), false);
-		disableMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
-
-		desc = mono_method_desc_new((scriptName + ":OnStop()").data(), false);
-		stopMethod = mono_method_desc_search_in_image(desc, image);
-		mono_method_desc_free(desc);
+		referenceMethods();
 	}
 
 	return ret;
+}
+
+bool ResourceScript::referenceMethods()
+{
+	state = ScriptState::COMPILED_FINE;
+
+	std::string fileNameNoExt = file.substr(file.find_last_of("/") + 1);
+	fileNameNoExt = fileNameNoExt.substr(0, fileNameNoExt.find("."));
+
+	exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
+
+	//Referencing the assembly from memory
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead(exportedFile, &buffer, size, false))
+		return false;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	image = mono_image_open_from_data(buffer, size, 1, &status);
+
+	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(uuid)).data(), &status, false);
+
+	delete buffer;
+
+	if (!assembly || !image)
+	{
+		//Somehow the .dll could not be found.
+		return false;
+	}
+
+	//Referencing callback methods
+	MonoMethodDesc* desc = mono_method_desc_new((scriptName + ":Awake()").data(), false);
+	awakeMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":Start()").data(), false);
+	startMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":PreUpdate()").data(), false);
+	preUpdateMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":Update()").data(), false);
+	updateMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":PostUpdate()").data(), false);
+	postUpdateMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":OnEnable()").data(), false);
+	enableMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":OnDisable()").data(), false);
+	disableMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
+
+	desc = mono_method_desc_new((scriptName + ":OnStop()").data(), false);
+	stopMethod = mono_method_desc_search_in_image(desc, image);
+	mono_method_desc_free(desc);
 }
 
 std::string ResourceScript::pathToWindowsNotation(const std::string& path) const
