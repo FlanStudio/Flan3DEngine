@@ -7,8 +7,7 @@
 #include "TextEditor.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui/imgui.h"
-// for imGui::GetCurrentWindow()
+#include "../../../../Files/imgui/imgui.h"
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML
@@ -1850,7 +1849,7 @@ void TextEditor::ColorizeInternal()
 				auto& g = line[currentCoord.mColumn];
 				auto c = g.mChar;
 
-				if (c != mLanguageDefinition.mPreprocChar/* && !isspace(c)*/)
+				if (c != mLanguageDefinition.mPreprocChar && !isspace(c))
 					firstChar = false;
 
 				if (currentCoord.mColumn == line.size() - 1 && line[line.size() - 1].mChar == '\\')
@@ -2310,7 +2309,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::CPlusPlus(
 		{
 			paletteIndex = PaletteIndex::Max;
 
-			while (in_begin < in_end /*&& isblank(*in_begin)*/)
+			while (in_begin < in_end && isblank(*in_begin))
 				in_begin++;
 
 			if (in_begin == in_end)
