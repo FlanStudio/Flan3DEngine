@@ -24,6 +24,8 @@ public:
 	void OnInspector();
 
 	static uint bytesToSerialize() { return sizeof(UID) * 3 + (sizeof(bool)); }
+	uint bytesToSerializePublicVars() const;
+
 	void Serialize(char*& cursor) const;
 	void deSerialize(char*& cursor, uint32_t& goUUID);
 

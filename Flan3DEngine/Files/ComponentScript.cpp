@@ -823,6 +823,12 @@ void ComponentScript::OnInspector()
 	}
 }
 
+uint ComponentScript::bytesToSerializePublicVars() const
+{
+	//Get all the public fields in this script and return the needed size in bytes to serialize all the data.
+	return 0;
+}
+
 void ComponentScript::Serialize(char*& cursor) const
 {
 	uint bytes = sizeof(UID);
