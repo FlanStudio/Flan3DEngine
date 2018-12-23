@@ -14,6 +14,14 @@ You have all the required files in the Github Releases page.
 
 Let's build some games!
 
+## If you find a bug or a weird behavior, follow the following steps:
+1. Delete the Library folder.
+2. Delete all the .meta files in Assets.
+3. Press the Windows key and write %appdata%, after that press enter
+4. Search for the FlanStudio/Flan3DEngine/lastAssetsState.f file and delete it.
+
+If you followed those steps and the problem didn't solve, feel free to post an issue at the following link, indicating the most accurately possible the steps you have followed until arriving there. Thank you for your feedback!
+
 ## Game Engine Instructions:
 
 ### Main Menu Bar
@@ -74,17 +82,43 @@ Let's build some games!
   
 **Time**
 
-  * _**Play**_: Puts the scene in playmode using an scalated dt and showing the view of the main camera.
+  * _**Play**_: Join in Game Mode, where all the game-relative subsystems will start working.
    
   * _**Stop**_: Returns to the Editor mode and discards all the changes maked in the Play mode.
   
-  * _**Pause**_: Pauses the scene (puts dt to 0) when you are in the Play mode (press it again for resuming).
+  * _**Pause**_: Pause the game relative subsystems execution.
   
-  * _**Step**_: Makes one loop and pauses again.
+  * _**Step**_: Advances 1 frame all the paused game relative subsystems
   
  **Other functionalities**
   * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
  
+## Main Subsystem: Scripting with C#
+  ### Create new Scripts
+    Select a GameObject in the Hierarchy, go to the Inspector window and click AddNewComponent. Select Script and choose a name for it. Flan3DEngine will create automatically your .cs file in Assets/Scripts.
+    In the Root folder you will have a VisualStudio project for all your Scripts, included automatically.
+  ### Coding Scripts
+    Once you press Play, the logic inside your scripts will start executing. Flan3DEngine will automatically call some default callback methods you can override from FlanScript. For now, those callback methods are:
+      - **OnEnable:** Called every time you enable a ComponentScript (or it's GameObject or one of it's parents).
+      - **Awake:** Called only once when the Script is Enabled.
+      - **Start:** Called after Awake only if the Script is enabled at the right moment you press Play.
+      - **PreUpdate:** Called before Update (once by frame). 
+      - **Update:** Called once by frame.
+      - **PostUpdate:** Called after Update (once by frame).
+      - **OnStop:** Called when you exit the Play Mode.
+      - **OnDisable:** Called every time you disable a ComponentScript (or it's GameObject or one of it's parents).
+  ### Edit public fields
+    All your supported public and non-Static fields declared in the script will be serialized in the ComponentScript's OnInspector.        
+    Their values can be changed in real-time, and they are relatives to each ComponentScript. You can have different values for them in different ComponentScripts using the same .cs file.
+  ### Hot Reloading
+    You can edit a .cs file while the Engine is executing. These will reset all the edited public fields through the oninspector. Doing this while the Play Mode is Active can cause some weird errors depending of your script. 
+  ### Referencing GameObjects, Transforms and Prefabs
+    If you create a public GameObject or Transform field in your script, you will be able to drag there other GameObjects in the Hierarchy or a Prefab through the Filesystem window.
+  ### Utilities implemented in C#
+    Through a Script you can instanciate an delete GameObjects using Prefabs or another GameObject as a template or simply creating default ones. You can access their names and edit them, also like their transforms (move, rotate and scale them).
+    You have convenient methods to rotate quaternions, converting Objects to String, accessing the global transformation values and so on.
+    You can access to the Input class to get user inputs from the keyboard and the mouse. You also have the Time Class for accessing time-related data.    
+
 ## Innovation:
 
 - **ImGui_Tabs** module from [HERE](https://github.com/scottmudge/imgui_tabs), implemented in the Log Window and updated to the actual version of ImGui.
@@ -93,11 +127,14 @@ Let's build some games!
 - **Serializing in Binary Files**
 - **Materials tinting plain colors and textures**
 - **HotReloading Scripts**
+- **Prefabs** without Apply/Revert functionality.
 
 ## Assets
 
-- **Trex** from [HERE](https://www.turbosquid.com/3d-models/t-rex-fbx-free/933905) by [joel3d](https://www.turbosquid.com/Search/Artists/joel3d).
-- **Gun** from [HERE](https://www.turbosquid.com/3d-models/3d-model-pbr-flare-gun-1303070) by [soidev](https://www.turbosquid.com/Search/Artists/soidev).
+- **Tank & Bullet** from [HERE](https://assetstore.unity.com/packages/essentials/tutorial-projects/tanks-tutorial-46209) by [Tutorial Projects](https://assetstore.unity.com/categories/essentials/tutorial-projects).
+
+## FlanStudio Stuff
+![fst](https://user-images.githubusercontent.com/25585362/50057843-59702f00-0170-11e9-82d3-4bb33034a5a6.png)
 
 ## License
 MIT License
