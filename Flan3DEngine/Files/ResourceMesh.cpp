@@ -102,9 +102,9 @@ void ResourceMesh::Draw()
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void ResourceMesh::UpdateNormalsLenght(uint lenght)
+void ResourceMesh::UpdateNormalsLenght(uint length)
 {
-	normalsLenght = lenght;
+	normalsLenght = length;
 
 	if (!normalLines)
 		return;
@@ -117,9 +117,9 @@ void ResourceMesh::UpdateNormalsLenght(uint lenght)
 		normalLines[i * 6 + 2] = vertex[i * 3 + 2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3] = normals[i * 3] * lenght + normalLines[i * 6];				//x
-		normalLines[i * 6 + 4] = normals[i * 3 + 1] * lenght + normalLines[i * 6 + 1];		//y
-		normalLines[i * 6 + 5] = normals[i * 3 + 2] * lenght + normalLines[i * 6 + 2];		//z
+		normalLines[i * 6 + 3] = normals[i * 3] * length + normalLines[i * 6];				//x
+		normalLines[i * 6 + 4] = normals[i * 3 + 1] * length + normalLines[i * 6 + 1];		//y
+		normalLines[i * 6 + 5] = normals[i * 3 + 2] * length + normalLines[i * 6 + 2];		//z
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalLines_ID);
@@ -186,7 +186,7 @@ uint ResourceMesh::bytesToSerialize() const
 	return size;
 }
 
-void ResourceMesh::genNormalLines(uint lenght)
+void ResourceMesh::genNormalLines(uint length)
 {
 	normalLines = new float[num_vertex * 3 * 2];
 	for (int i = 0; i < num_vertex; i++)
@@ -197,9 +197,9 @@ void ResourceMesh::genNormalLines(uint lenght)
 		normalLines[i * 6 + 2] = vertex[i * 3 + 2];								//z
 
 		//destination coordinates
-		normalLines[i * 6 + 3] = normals[i * 3] * lenght + normalLines[i * 6];				//x
-		normalLines[i * 6 + 4] = normals[i * 3 + 1] * lenght + normalLines[i * 6 + 1];		//y
-		normalLines[i * 6 + 5] = normals[i * 3 + 2] * lenght + normalLines[i * 6 + 2];		//z
+		normalLines[i * 6 + 3] = normals[i * 3] * length + normalLines[i * 6];				//x
+		normalLines[i * 6 + 4] = normals[i * 3 + 1] * length + normalLines[i * 6 + 1];		//y
+		normalLines[i * 6 + 5] = normals[i * 3 + 2] * length + normalLines[i * 6 + 2];		//z
 	}
 }
 

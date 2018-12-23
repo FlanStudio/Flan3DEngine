@@ -182,8 +182,8 @@ struct Directory
 	uint bytesToSerialize() const
 	{
 		uint ret =
-			sizeof(uint) + fullPath.size() +	//Fullpath lenght + fullpath
-			sizeof(uint) + name.size() +		//Name lenght + Name
+			sizeof(uint) + fullPath.size() +	//Fullpath length + fullpath
+			sizeof(uint) + name.size() +		//Name length + Name
 			sizeof(uint) * 2;					//Num files / directories
 
 		for (int i = 0; i < files.size(); ++i)

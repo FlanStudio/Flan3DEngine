@@ -285,7 +285,7 @@ void ModuleRenderer3D::guiRenderer()
 	}
 
 	ImGui::Checkbox("draw normals", &drawNormals);
-	if(ImGui::DragFloat("normals lenght", &normalsLenght, 0.2, 0.1, 30, "%.1f"))
+	if(ImGui::DragFloat("normals length", &normalsLenght, 0.2, 0.1, 30, "%.1f"))
 	{
 		UpdateNormalsLenght(normalsLenght);
 	}

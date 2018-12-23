@@ -16,9 +16,9 @@ void EulerAxis::Init()
 	vertex2.resize(SIZE_ARRAY);
 	vertex3.resize(SIZE_ARRAY);
 
-	vertex = { 0,0,0 ,lenght,0,0 };
-	vertex2 = { 0,0,0 ,0,lenght,0 };
-	vertex3 = { 0,0,0 ,0,0,lenght };
+	vertex = { 0,0,0 ,length,0,0 };
+	vertex2 = { 0,0,0 ,0,length,0 };
+	vertex3 = { 0,0,0 ,0,0,length };
 
 	glGenBuffers(1, &vertexID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexID);

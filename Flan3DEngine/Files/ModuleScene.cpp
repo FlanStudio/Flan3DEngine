@@ -677,7 +677,7 @@ void ModuleScene::SerializeToBuffer(GameObject* gameObject, char*& buffer, uint&
 		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
 	}
 
-	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
+	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name length
 		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
@@ -973,7 +973,7 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
 	}
 
-	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
+	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name length
 		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
