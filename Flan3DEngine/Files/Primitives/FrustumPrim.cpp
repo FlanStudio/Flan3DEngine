@@ -10,9 +10,9 @@ FrustumPrim::~FrustumPrim()
 void FrustumPrim::Init()
 {
 	float a = firstSquareHigh;//First square height
-	float b = firstSquareLength;//First square length
+	float b = firstSquareLength;//First square lenght
 	float c = secondSquareHigh;//Second square height
-	float d = secondSquareLength;//Second square length
+	float d = secondSquareLength;//Second square lenght
 	float e = frustumDepth;//Frustum depth
 	float f = (c - a) / 2;
 	float g = (d - b) / 2;

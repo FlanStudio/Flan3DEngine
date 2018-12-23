@@ -14,7 +14,7 @@ public:
 	void genBuffers();
 	void destroyBuffers();
 	void Draw();
-	void UpdateNormalsLenght(uint length);
+	void UpdateNormalsLenght(uint lenght);
 	void drawNormals();
 
 	void Serialize(char*& cursor) const;
@@ -24,7 +24,7 @@ public:
 
 	uint bytesToSerialize()const;
 
-	void genNormalLines(uint length);
+	void genNormalLines(uint lenght);
 
 private:
 	bool LoadToMemory() override;

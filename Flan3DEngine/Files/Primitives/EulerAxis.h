@@ -16,7 +16,7 @@ public:
 	void pRender();
 
 public:
-	float length = 1.5f;
+	float lenght = 1.5f;
 
 private:
 	uint vertexID = 0;

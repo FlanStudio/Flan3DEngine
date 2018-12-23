@@ -35,7 +35,7 @@ void ResourcePrefab::SerializeToBuffer(char*& buffer, uint& size)
 		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
 	}
 
-	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name length
+	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
 		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
