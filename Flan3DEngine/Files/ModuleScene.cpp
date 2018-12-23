@@ -275,6 +275,20 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent, bool createMonoObj
 	return ret;
 }
 
+GameObject * ModuleScene::FindGameObjectByID(UID uid)
+{
+	std::vector<GameObject*> _gameObjects;
+	decomposeScene(_gameObjects);
+
+	for (int i = 0; i < _gameObjects.size(); i++)
+	{
+		if (_gameObjects[i]->uuid == uid)
+			return _gameObjects[i];
+	}
+
+	return nullptr;
+}
+
 void ModuleScene::DestroyGameObject(GameObject* gameObject)
 {
 	if (selectedGO == gameObject)
@@ -1246,8 +1260,6 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 				scripts[i]->InstanceClass();
 			}
 		}
-
-		//DeSerialize Public variables here
 	}
 
 	std::vector<GameObject*> roots;
@@ -1267,6 +1279,9 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	}
 
 	UpdateQuadtree();
+
+	//DeSerialize Public variables here
+
 }
 
 void ModuleScene::TransformGUI()

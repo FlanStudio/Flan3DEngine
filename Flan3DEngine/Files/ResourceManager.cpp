@@ -356,6 +356,26 @@ void ResourceManager::SavePrefab(GameObject* root)
 	delete metaBuffer;
 }
 
+GameObject * ResourceManager::FindPrefabGObyID(UID uid)
+{
+	std::map<UID, Resource*>::iterator it;
+
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* resource = it->second;
+
+		if (resource->getType() == Resource::ResourceType::PREFAB)
+		{
+			ResourcePrefab* prefab = (ResourcePrefab*)resource;
+			GameObject* root = prefab->GetRoot();
+			if (root->uuid == uid)
+				return root;
+		}
+	}
+
+	return nullptr;
+}
+
 void ResourceManager::deleteEvent(Event event)
 {
 	std::string ext = App->fs->getExt(event.fileEvent.file);

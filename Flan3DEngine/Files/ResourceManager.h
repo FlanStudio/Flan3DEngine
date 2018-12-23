@@ -31,6 +31,7 @@ public:
 
 	void SavePrefab(GameObject* root);
 
+	GameObject* FindPrefabGObyID(UID uid);
 private:
 	void deleteEvent(Event event);
 	void createEvent(Event event);

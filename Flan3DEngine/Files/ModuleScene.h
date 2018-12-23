@@ -35,6 +35,7 @@ public:
 
 public:
 	GameObject* CreateGameObject(GameObject* parent, bool createMonoObject = true);
+	GameObject* FindGameObjectByID(UID uid);
 	void DestroyGameObject(GameObject* gameObject);
 	void AddGameObject(GameObject* gameObject);
 	void ClearGameObjects();
