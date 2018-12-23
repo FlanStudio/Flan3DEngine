@@ -10,7 +10,7 @@ class ResourceTexture;
 class ModuleTime : public Module
 {
 public:
-	ModuleTime(bool start_enabled = true) : Module("TextureLoader", start_enabled) {}
+	ModuleTime(bool start_enabled = true) : Module("ModuleTime", start_enabled) {}
 	~ModuleTime() {}
 
 	bool Start();
@@ -31,12 +31,13 @@ public:
 
 	Timer dtTimer;
 
+	bool paused = false;
+
 private:
 	Uint32 lastSecFramesCounter = 0;
 
 	uint TimeAtlasID = 0;
-	
-	bool paused = false;
+
 	bool steped = false;
 };
 

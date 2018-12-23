@@ -37,8 +37,10 @@ public:
 	virtual void debugDraw() {}
 	virtual void Enable() {}
 	virtual void Disable() {}
-	virtual bool isActive() { return true; }
+	virtual bool isActive()const { return active; }
 	virtual void Serialize(char*& cursor) const {}
+	virtual void onEnable() {}
+	virtual void onDisable() {}
 
 public:
 	ComponentType type = ComponentType::NO_TYPE;

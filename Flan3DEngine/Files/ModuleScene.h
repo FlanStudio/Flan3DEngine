@@ -18,6 +18,7 @@ class ComponentTransform;
 class ComponentMesh;
 class ComponentCamera;
 class ComponentMaterial;
+class ComponentScript;
 
 class ModuleScene : public Module
 {
@@ -33,7 +34,9 @@ public:
 	bool CleanUp();
 
 public:
-	GameObject* CreateGameObject(GameObject* parent);
+	GameObject* CreateGameObject(GameObject* parent, bool createMonoObject = true);
+	GameObject* FindGameObjectByID(UID uid);
+	void DestroyGameObject(GameObject* gameObject);
 	void AddGameObject(GameObject* gameObject);
 	void ClearGameObjects();
 	void guiHierarchy();
@@ -46,6 +49,15 @@ public:
 
 	void Serialize() const;
 	void DeSerialize(std::string path, std::string extension);
+
+	//Generic method for serializing Scenes/Prefabs. Use this one as much as posible instead of others, they will be deleted in a future
+	void SerializeToBuffer(GameObject* gameObject, char*& buffer, uint& size, bool includeRoot = false) const;
+
+	//Generic method for deserializing Scenes/Prefabs. Use this one as much as posible instead of others, they will be deleted in a future
+	//  //* root is filled and allocated as a tree containing the hierarchy. 
+	//  //* this method does not include the loaded gameObject in the Engine's hierarchy
+	void DeSerializeFromBuffer(GameObject*& root, char*& buffer);
+
 	void SerializeToBuffer(char*& buffer, uint& size) const;
 	void DeSerializeFromBuffer(char*& buffer);
 
@@ -59,20 +71,20 @@ public:
 
 public:
 	Quadtree quadtree;
+	void UpdateQuadtree();
 
 private:
 	void PrintHierarchy(GameObject* go);
 	void DragDrop(GameObject* go);
 	void decomposeScene(std::vector<GameObject*>& gameObject_s = std::vector<GameObject*>(), std::vector<ComponentTransform*>&transforms = std::vector<ComponentTransform*>(), 
 		std::vector<ComponentMesh*>&meshes = std::vector<ComponentMesh*>(), std::vector<ComponentCamera*>&cameras = std::vector<ComponentCamera*>(), 
-		std::vector<ComponentMaterial*>&materials = std::vector<ComponentMaterial*>()) const;
+		std::vector<ComponentMaterial*>&materials = std::vector<ComponentMaterial*>(), std::vector<ComponentScript*>& scripts = std::vector<ComponentScript*>()) const;
 
 	//Internal methods to reorder GameObjects in the hierarchy
 	void _ReorderGameObject_Pre(GameObject* go);
 	void _ReorderGameObject_Post(GameObject* go);
 
-	void InitQuadtree();
-	void UpdateQuadtree();
+	void InitQuadtree();	
 
 	void DrawGuizmos();
 

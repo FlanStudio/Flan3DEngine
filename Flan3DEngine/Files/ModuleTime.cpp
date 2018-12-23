@@ -17,7 +17,8 @@ update_status ModuleTime::PreUpdate()
 	dtTimer.Start();
 
 	//play Dt calculations--------------
-	playDt = dt * timeScale;
+	playDt = IN_GAME ? dt * timeScale : 0;
+	timer += dt;
 
 	if (IN_GAME)
 	{
@@ -25,7 +26,7 @@ update_status ModuleTime::PreUpdate()
 		{
 			playDt = 0.0f;
 		}
-		if (steped)
+		else if (steped)//if steped ignore playDt = 0.0f during 1 frame
 		{
 			paused = true;
 			steped = false;

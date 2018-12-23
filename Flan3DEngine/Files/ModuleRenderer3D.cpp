@@ -361,14 +361,16 @@ void ModuleRenderer3D::UpdateNormalsLenght(uint normalsLenght)
 
 void ModuleRenderer3D::DrawMeshes() const
 {
-	if (App->camera->gameCamComponent)
+	if (/*App->camera->gameCamComponent && App->camera->gameCamComponent->isActive() 
+		&& App->camera->gameCamComponent->gameObject->isActive() 
+		&& App->camera->gameCamComponent->gameObject->areParentsActives()*/0)
 	{
 		std::vector<GameObject*> intersected;
 		App->scene->quadtree.Intersect(intersected, App->camera->gameCamComponent->getFrustum()); //TODO: NON-STATIC OBJECTS?
 		for (int i = 0; i < intersected.size(); ++i)
 		{
 			ComponentMesh* mesh = (ComponentMesh*)intersected[i]->getComponentByType(ComponentType::MESH);
-			if (mesh)
+			if (mesh && mesh->gameObject->isActive() && mesh->isActive() && mesh->gameObject->areParentsActives())
 			{
 				mesh->Draw();
 				if (drawNormals)
@@ -381,10 +383,13 @@ void ModuleRenderer3D::DrawMeshes() const
 	{
 		for (int i = 0; i < meshes.size(); ++i)
 		{
-			meshes[i]->Draw();
+			if (meshes[i]->gameObject->isActive() && meshes[i]->isActive() && meshes[i]->gameObject->areParentsActives())
+			{
+				meshes[i]->Draw();
 
-			if (drawNormals)
-				meshes[i]->drawNormals();
+				if (drawNormals)
+					meshes[i]->drawNormals();
+			}
 		}
 	}
 }

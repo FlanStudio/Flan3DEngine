@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Brofiler\Brofiler.h"
+#include "GameObject.h"
 
 LogWindow Debug;
 
@@ -24,22 +25,27 @@ void Application::SendEvents()
 		//Deallocate memory
 		switch (event.type)
 		{
-		case EventType::FILE_CREATED:
-		case EventType::FILE_DELETED:
-		{
-			if (event.fileEvent.file)
-				delete event.fileEvent.file;
-			break;
-		}
-		case EventType::FILE_MOVED:
-		{
-			if (event.fileEvent.file)
-				delete event.fileEvent.file;
+			case EventType::FILE_CREATED:
+			case EventType::FILE_DELETED:
+			{
+				if (event.fileEvent.file)
+					delete event.fileEvent.file;
+				break;
+			}
+			case EventType::FILE_MOVED:
+			{
+				if (event.fileEvent.file)
+					delete event.fileEvent.file;
 
-			if (event.fileEvent.oldLocation)
-				delete event.fileEvent.oldLocation;
-			break;
-		}
+				if (event.fileEvent.oldLocation)
+					delete event.fileEvent.oldLocation;
+				break;
+			}
+			case EventType::GO_DESTROYED:
+			{
+				delete event.goEvent.gameObject;
+				break;
+			}
 		}
 		events.pop();
 	}
@@ -75,10 +81,12 @@ Application::Application()
 	AddModule(camera);
 	AddModule(fbxexporter);
 	AddModule(resources);
-	AddModule(scripting);
 
 	// Scenes
 	AddModule(scene);
+
+	//Scripting
+	AddModule(scripting);
 
 	//Editor
 	AddModule(editor);

@@ -5,6 +5,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceScript.h"
+#include "ResourcePrefab.h"
 
 #include "Brofiler/Brofiler.h"
 
@@ -12,8 +13,6 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
-
-
 
 ResourceManager::~ResourceManager()
 {
@@ -87,8 +86,19 @@ void ResourceManager::ReceiveEvent(Event event)
 					if (script->preCompileErrors())
 						return;
 
-					App->scripting->CreateDomain();				
-					script->Compile();					
+					App->scripting->CreateDomain();		
+
+					std::map<UID, Resource*>::iterator it;
+					for (it = resources.begin(); it != resources.end(); ++it)
+					{
+						res = it->second;
+						if (res->getType() == Resource::ResourceType::SCRIPT)
+						{
+							ResourceScript* toRecompile = (ResourceScript*)res;
+							toRecompile->Compile();
+						}
+					}
+
 					App->scripting->ReInstance();
 				}
 
@@ -277,6 +287,93 @@ void ResourceManager::InstanciateFBX(const std::string& path) const
 void ResourceManager::PushResourceScript(ResourceScript* script)
 {
 	resources.insert(std::pair<UID, Resource*>(script->getUUID(), script));
+}
+
+ResourceScript* ResourceManager::findScriptByName(const std::string& scriptName) const
+{
+	std::map<UID, Resource*>::const_iterator it;
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* res = it->second;
+		if (res->getType() == Resource::ResourceType::SCRIPT)
+		{
+			ResourceScript* script = (ResourceScript*)res;
+			if (script->scriptName == scriptName)
+			{
+				return script;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+void ResourceManager::SavePrefab(GameObject* root)
+{
+	//Check if there is already an old loaded version of the prefab
+
+	ResourcePrefab* prefab; 
+
+	if (App->fs->Exists("Assets/Prefabs/" + root->name + ".flanPrefab"))
+	{
+		//Read the meta, get the UID and the loaded prefab
+		char* metaBuffer; int size;
+		App->fs->OpenRead("Assets/Prefabs/" + root->name + ".flanPrefab" + ".meta", &metaBuffer, size, false);
+
+		UID uid;
+		memcpy(&uid, metaBuffer, sizeof(UID));
+
+		prefab = (ResourcePrefab*)resources.at(uid);
+		*prefab->root = *root;
+		prefab->root->ReGenerate();
+		prefab->root->prefab = prefab;
+
+		delete metaBuffer;
+	}
+	else
+	{
+		prefab = new ResourcePrefab(root);
+	}
+
+	char* buffer;
+	uint size;
+	prefab->SerializeToBuffer(buffer, size);
+
+	App->fs->OpenWriteBuffer("Assets/Prefabs/" + root->name + ".flanPrefab", buffer, size);
+
+	prefab->setFile("Assets/Prefabs/" + root->name + ".flanPrefab");
+
+	resources.insert(std::pair<UID, Resource*>(prefab->getUUID(), prefab));
+
+	//Create the .meta containing the UID
+	char* metaBuffer = new char[sizeof(UID)];
+	UID uid = prefab->getUUID();
+	memcpy(metaBuffer, &uid, sizeof(UID));
+
+	App->fs->OpenWriteBuffer("Assets/Prefabs/" + root->name + ".flanPrefab" + ".meta", metaBuffer, sizeof(UID));
+
+	delete buffer;
+	delete metaBuffer;
+}
+
+GameObject * ResourceManager::FindPrefabGObyID(UID uid)
+{
+	std::map<UID, Resource*>::iterator it;
+
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* resource = it->second;
+
+		if (resource->getType() == Resource::ResourceType::PREFAB)
+		{
+			ResourcePrefab* prefab = (ResourcePrefab*)resource;
+			GameObject* root = prefab->GetRoot();
+			if (root->uuid == uid)
+				return root;
+		}
+	}
+
+	return nullptr;
 }
 
 void ResourceManager::deleteEvent(Event event)
@@ -624,6 +721,19 @@ void ResourceManager::LoadResources()
 
 					resources.insert(std::pair<UID, Resource*>(resourceUID, textureRes));
 				}
+				else if (extension == ".cs")
+				{
+					char* cursor = metaBuffer;
+
+					//Loading script resource from .meta
+					ResourceScript* scriptRes = new ResourceScript();
+					scriptRes->DeSerializeFromMeta(cursor);
+
+					scriptRes->setFile((char*)fullPaths[i].data());
+					scriptRes->referenceMethods();
+					resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
+				}
+
 				delete metaBuffer;
 			}
 		}
@@ -652,10 +762,34 @@ void ResourceManager::LoadResources()
 			{
 				continue; //Let the fbx to the end so all the other resources can be loaded first
 			}
+			else if (extension == ".cs")
+			{
+				std::string scriptName = fullPaths[i].substr(fullPaths[i].find_last_of("/")+1);
+				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
+
+				//Creating script resource and .meta
+				ResourceScript* scriptRes = new ResourceScript();
+				scriptRes->scriptName = scriptName;
+				scriptRes->setFile(fullPaths[i]);
+
+				//Create the .meta
+				uint bytes = scriptRes->bytesToSerializeMeta();
+				char* buffer = new char[bytes];
+				char* cursor = buffer;
+				scriptRes->SerializeToMeta(cursor);
+
+				App->fs->OpenWriteBuffer(fullPaths[i] + ".meta", buffer, bytes);
+
+				delete buffer;
+
+				scriptRes->Compile();
+				resources.insert(std::pair<UID, Resource*>(scriptRes->getUUID(), scriptRes));
+			}
 			//TODO: Materials, audio, animations, etc?
 		}
 	}
 
+	//Export meshes
 	for (int i = 0; i < fullPaths.size(); ++i)
 	{
 		//Detect the extension and call the right exporter
@@ -700,5 +834,41 @@ void ResourceManager::LoadResources()
 			}
 		}
 		//TODO: Materials, audio, animations, etc?
+	}
+
+	//Load the Prefabs at the end in order to all meshes, materials etc are already loaded
+	for (int i = 0; i < fullPaths.size(); ++i)
+	{
+		//Detect the extension and call the right exporter
+		std::string extension = App->fs->getExt(fullPaths[i]);
+		if (extension == ".flanPrefab" && App->fs->Exists(fullPaths[i] + ".meta"))
+		{
+			char* metaBuffer;
+			int metaSize;
+			if (!App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaSize))
+				continue;
+
+			char* cursor = metaBuffer;
+
+			//Getting the UID from the .meta
+			UID uid;
+			memcpy(&uid, cursor, sizeof(UID));
+
+			char* prefabBuffer;
+			int size;
+
+			if (App->fs->OpenRead(fullPaths[i], &prefabBuffer, size, false))
+			{
+				char* cursor = prefabBuffer;
+				ResourcePrefab* prefab = new ResourcePrefab(nullptr);
+
+				prefab->DeSerializeFromBuffer(cursor);
+				prefab->setUID(uid);
+
+				resources.insert(std::pair<UID, Resource*>(uid, prefab));
+
+				delete prefabBuffer;
+			}
+		}
 	}
 }

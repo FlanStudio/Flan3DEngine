@@ -1,8 +1,8 @@
 #include "ScriptingModule.h"
 #include "ComponentScript.h"
 #include "ResourceScript.h"
-
-#include "pugui/pugixml.hpp"
+#include "ComponentTransform.h"
+#include "ModuleInput.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -57,27 +57,9 @@ bool ScriptingModule::Init()
 
 	CreateDomain();
 
-	//Reference the internal compiled project
-	//internalAssembly = mono_domain_assembly_open(domain, R"(FlanCS.dll)");
-
-	char* buffer;
-	int size;
-	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size))
-		return false;
-
-	//Loading assemblies from data instead of from file
-	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
-	MonoImage* image = mono_image_open_from_data(buffer, size, 1, &status);
-
-	internalAssembly = mono_assembly_load_from(image, "InternalAssembly", &status);
-
-	
-
 	char* args[1];
 	args[0] == "InternalAssembly";
 	mono_jit_exec(domain, internalAssembly, 1, args);
-
-	delete buffer;
 
 	if (!internalAssembly)
 		return false;
@@ -88,7 +70,7 @@ bool ScriptingModule::Init()
 bool ScriptingModule::Start()
 {
 	CreateScriptingProject();
-	IncludecsFiles();
+	IncludeCSFiles();
 	return true;
 }
 
@@ -97,27 +79,21 @@ update_status ScriptingModule::PreUpdate()
 	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		CreateInternalCSProject();
 
-	for (int i = 0; i < scripts.size(); ++i)
-	{
-		scripts[i]->Awake();
-	}
+	//Update Time.deltaTime and Time.realDeltaTime values
+	mono_field_static_set_value(timeVTable, deltaTime, &App->time->playDt);
+	mono_field_static_set_value(timeVTable, realDeltaTime, &App->time->dt);
+	mono_field_static_set_value(timeVTable, time, &App->time->gameTime);
+	mono_field_static_set_value(timeVTable, realTime, &App->time->timer);
 
 	return UPDATE_CONTINUE;
 }
 
 update_status ScriptingModule::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	if (IN_GAME && !App->time->paused)
 	{
-		CreateScriptingProject();
-		IncludecsFiles();
+		UpdateMethods();
 	}
-
-	for (int i = 0; i < scripts.size(); ++i)
-	{
-		scripts[i]->Update();
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -148,17 +124,49 @@ void ScriptingModule::ReceiveEvent(Event event)
 		{
 			//Check if some files have compile errors and don't let the user hit the play.
 
+			UpdateMonoObjects();
+
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
+					scripts[i]->OnEnableMethod();
+			}
+
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives() && !scripts[i]->awaked)
+					scripts[i]->Awake();
+			}
+
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
+					scripts[i]->Start();
+			}
+		
+			UpdateGameObjects();
+
 			//Call the Awake and Start for all the Enabled script in the Play instant.
 			break;
 		}
-		case EventType::PAUSE:
-		{
-			//Stop calling the PreUpdate, Update, PostUpdate methods in the active ComponentScripts.
-			break;
-		}
+	
 		case EventType::STOP:
 		{
-			//Call the CleanUp method for all the scripts which where enabled at this point.
+			UpdateMonoObjects();
+
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
+				{
+					scripts[i]->OnStop();
+					scripts[i]->awaked = true;
+				}
+			}
+
+			UpdateGameObjects();
+
+			ClearMap();
+
 			break;
 		}
 
@@ -178,12 +186,47 @@ void ScriptingModule::ReceiveEvent(Event event)
 				}
 				if (somethingDestroyed)
 				{
-					IncludecsFiles();
+					IncludeCSFiles();
+				}
+			}			
+		}
+
+		case EventType::GO_DESTROYED:
+		{
+			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			{
+				GameObject* gameObject = gameObjectsMap[i].first;
+				bool destroyed = false;
+				while (gameObject)
+				{
+					if (gameObject == event.goEvent.gameObject)
+					{
+						destroyed = true;
+						break;
+					}
+					gameObject = gameObject->parent;
+				}
+
+				if (destroyed)				
+				{
+					MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
+					MonoClass* monoObjectClass = mono_object_get_class(monoObject);
+
+					MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
+
+					bool temp = true;
+					mono_field_set_value(monoObject, deletedField, &temp);
+
+					mono_gchandle_free(gameObjectsMap[i].second);
+
+					gameObjectsMap.erase(gameObjectsMap.begin() + i);
+					i--;
 				}
 			}			
 		}
 
 		//TODO: Create and receive the ComponentEnabled event, check if the component is an script, Awake him during runtime and start calling the Update's methods.
+
 	}
 }
 
@@ -212,7 +255,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
 
-		IncludecsFiles();
+		IncludeCSFiles();
 
 		delete buffer;
 	}
@@ -227,10 +270,10 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		scriptRes->scriptName = scriptName;
 
 		//Create the .meta, to make faster the search in the map storing the uid.
-		uint bytes = sizeof(UID);
+		uint bytes = scriptRes->bytesToSerializeMeta();
 		char* buffer = new char[bytes];
-		UID uid = scriptRes->getUUID();
-		memcpy(buffer, &uid, bytes);
+		char* cursor = buffer;
+		scriptRes->SerializeToMeta(cursor);
 
 		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
@@ -242,12 +285,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 	script->scriptRes = scriptRes;
 
-	script->InstanceClass();
-
 	scripts.push_back(script);
-
-	//TODO: MOVE IT TO THE PLAY AND ENABLED EVENTS
-	script->Awake();
 
 	return script;
 }
@@ -265,6 +303,82 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	}
 
 	return false;
+}
+
+MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].first == gameObject)
+		{
+			MonoObject* ret = mono_gchandle_get_target(gameObjectsMap[i].second);
+			GameObjectChanged(gameObject);
+			return ret;
+		}
+	}
+
+	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+	mono_runtime_object_init(monoInstance);
+
+	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+
+	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
+
+	App->scripting->GameObjectChanged(gameObject);
+
+	return monoInstance;
+}
+
+GameObject* ScriptingModule::GameObjectFrom(_MonoObject* monoObject)
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = gameObjectsMap[i].second;
+
+		if (mono_gchandle_get_target(handleID) == monoObject)
+		{
+			GameObject* ret = gameObjectsMap[i].first;
+			return ret;
+		}
+	}
+	return nullptr;
+}
+
+void ScriptingModule::GameCameraChanged()
+{
+	GameObject* mainCamera = App->camera->gameCamera;
+	if (mainCamera == nullptr)
+	{
+		MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+		MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+		MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+		mono_field_static_set_value(cameraClassvTable, mainCamField, NULL);
+		return;
+	}
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		if (App->scripting->gameObjectsMap[i].first == mainCamera)
+		{
+			MonoObject* monoObject = mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second);
+
+			MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+			MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+			MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+
+			mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+
+			return;
+		}
+	}
+
+	//This gameObject is not saved in the map
+	MonoObject* monoObject = MonoObjectFrom(mainCamera);
+	MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
+	MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
+	MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
+	mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
 }
 
 bool ScriptingModule::alreadyCreated(std::string scriptName)
@@ -324,7 +438,7 @@ void ScriptingModule::ExecuteScriptingProject()
 #endif
 }
 
-void ScriptingModule::IncludecsFiles()
+void ScriptingModule::IncludeCSFiles()
 {
 	Directory scripts = App->fs->getDirFiles("Assets/Scripts");
 
@@ -355,17 +469,27 @@ void ScriptingModule::IncludecsFiles()
 		compile = next;
 	}
 
-	for (int i = 0; i < scripts.files.size(); ++i)
-	{	
-		if (App->fs->getExt(scripts.files[i].name) != ".cs")
-			continue;
-
-		itemGroup.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + scripts.files[i].name).data());
-	}
+	IncludeCSFiles(itemGroup, scripts);
 
 	std::ostringstream stream;
 	configFile.save(stream, "\r\n");
 	App->fs->OpenWriteBuffer("Assembly-CSharp.csproj", (char*)stream.str().data(), stream.str().size());	
+}
+
+void ScriptingModule::IncludeCSFiles(pugi::xml_node& nodeToAppend, const Directory& dir)
+{
+	for (int i = 0; i < dir.files.size(); ++i)
+	{
+		if (App->fs->getExt(dir.files[i].name) != ".cs")
+			continue;
+
+		nodeToAppend.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + dir.files[i].name).data());
+	}
+
+	for (int i = 0; i < dir.directories.size(); ++i)
+	{
+		IncludeCSFiles(nodeToAppend, dir.directories[i]);
+	}
 }
 
 void ScriptingModule::CreateInternalCSProject()
@@ -397,6 +521,200 @@ void ScriptingModule::ReInstance()
 		scripts[i]->InstanceClass();
 	}
 }
+
+void ScriptingModule::UpdateMonoObjects()
+{
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
+	}
+}
+
+void ScriptingModule::GameObjectChanged(GameObject* gameObject)
+{
+	MonoObject* monoObject = nullptr;
+	//Find for a pair coincidence in the map
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].first == gameObject)
+		{
+			monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
+
+			if (!monoObject)
+				continue;
+
+			//SetUp all the GameObject* fields to the MonoObject
+
+			MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+
+			//SetUp the name
+			MonoClassField* name = mono_class_get_field_from_name(gameObjectClass, "name");
+			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->name.data());
+			mono_field_set_value(monoObject, name, (void*)nameCS);
+
+			//SetUp the transform
+			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
+			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
+
+			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
+			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
+			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
+
+			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
+			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
+			
+			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
+			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
+			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
+
+			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
+			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
+			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
+			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
+
+			MonoObject* transformOBJ;
+			mono_field_get_value(monoObject, transformField, &transformOBJ);
+
+			MonoObject* positionOBJ; mono_field_get_value(transformOBJ, positionField, &positionOBJ);
+			mono_field_set_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
+			mono_field_set_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
+			mono_field_set_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
+
+			MonoObject* rotationOBJ; mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
+			mono_field_set_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
+			mono_field_set_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
+			mono_field_set_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
+			mono_field_set_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
+
+			MonoObject* scaleOBJ; mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
+			mono_field_set_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
+			mono_field_set_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
+			mono_field_set_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
+
+			//TODO: CONTINUE UPDATING THINGS
+			break;
+		}
+	}
+}
+
+void ScriptingModule::UpdateGameObjects()
+{
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
+	}
+}
+
+void ScriptingModule::MonoObjectChanged(uint32_t handleID)
+{
+	//Find for a coincidence in the map.
+
+	GameObject* gameObject = nullptr;
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		if (gameObjectsMap[i].second == handleID)
+		{
+			MonoObject* monoObject = mono_gchandle_get_target(handleID);
+			if (!monoObject)
+				continue;
+
+			gameObject = gameObjectsMap[i].first;
+
+			//SetUp the name
+			MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
+			MonoClassField* nameCS = mono_class_get_field_from_name(gameObjectClass, "name");
+
+			MonoString* name = (MonoString*)mono_field_get_value_object(domain, nameCS, monoObject);
+			char* newName = mono_string_to_utf8(name);
+			gameObject->name = newName;
+
+			//SetUp the transform
+			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
+			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
+
+			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
+			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
+			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
+
+			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
+			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
+
+			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
+			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
+			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
+
+			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
+			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
+			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
+			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
+
+			MonoObject* transformOBJ; 
+			mono_field_get_value(monoObject, transformField, &transformOBJ);
+
+			MonoObject* positionOBJ;
+			mono_field_get_value(transformOBJ, positionField, &positionOBJ);
+
+			mono_field_get_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
+			mono_field_get_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
+			mono_field_get_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
+
+			MonoObject* rotationOBJ;
+			mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
+
+			mono_field_get_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
+			mono_field_get_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
+			mono_field_get_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
+			mono_field_get_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
+
+			MonoObject* scaleOBJ;
+			mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
+
+			mono_field_get_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
+			mono_field_get_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
+			mono_field_get_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
+
+			//TODO: CONTINUE UPDATING THINGS
+		}
+	}
+}
+
+void ScriptingModule::ClearMap()
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		mono_gchandle_free(gameObjectsMap[i].second);
+	}
+	gameObjectsMap.clear();
+}
+
+void ScriptingModule::UpdateMethods()
+{
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		GameObjectChanged(gameObjectsMap[i].first);
+	}
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->PreUpdate();
+	}
+	
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Update();
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->PostUpdate();
+	}
+
+	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	{
+		MonoObjectChanged(gameObjectsMap[i].second);
+	}
+}
+
+//-----------------------------
 
 void DebugLogTranslator(MonoString* msg)
 {
@@ -439,6 +757,263 @@ void DebugLogErrorTranslator(MonoString* msg)
 
 void ClearConsole() { Debug.Clear(); }
 
+int32_t GetKeyStateCS(int32_t key)
+{
+	return App->input->GetKey(key);
+}
+
+int32_t GetMouseStateCS(int32_t button)
+{
+	return App->input->GetMouseButton(button);
+}
+
+MonoArray* GetMousePosCS()
+{
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 2);
+	int x = App->input->GetMouseX();
+	int y = App->input->GetMouseY();
+	mono_array_set(ret, float, 0, x);
+	mono_array_set(ret, float, 1, y);
+
+	return ret;
+}
+
+MonoArray* GetMouseDeltaPosCS()
+{
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 2);
+	mono_array_set(ret, float, 0, App->input->GetMouseXMotion());
+	mono_array_set(ret, float, 1, App->input->GetMouseYMotion());
+
+	return ret;
+}
+
+int  GetWheelMovementCS()
+{
+	return App->input->GetMouseZ();
+}
+
+MonoObject* InstantiateGameObject(MonoObject* templateMO)
+{
+	if (!templateMO)
+	{
+		//Instantiate an empty GameObject and returns the MonoObject
+
+		GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
+
+		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
+		mono_runtime_object_init(monoInstance);
+
+		uint32_t handleID = mono_gchandle_new(monoInstance, true);
+
+		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
+
+		App->scripting->GameObjectChanged(instance);
+
+		return monoInstance;
+	}
+
+	else
+	{
+		//Search for the monoTemplate and his GameObject representation in the map, create 2 new copies,
+		//add the GameObject to the Scene Hierarchy and returns the monoObject. Store this new Instantiated objects in the map.
+
+		GameObject* templateGO = nullptr;
+
+		for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+		{
+			uint32_t handleID = App->scripting->gameObjectsMap[i].second;
+			MonoObject* temp = mono_gchandle_get_target(handleID);
+
+			if (temp == templateMO)
+			{
+				templateGO = App->scripting->gameObjectsMap[i].first;
+				break;
+			}
+		}
+
+		if (!templateGO)
+		{
+			//The user may be trying to instantiate a GameObject created through script. 
+			//This feature is not implemented for now.
+			Debug.LogError(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
+							"Instantiating from a GameObject created through script is not supported for now.\n");
+			return nullptr;
+		}
+
+		GameObject* goInstance = new GameObject(App->scene->getRootNode());
+		App->scene->AddGameObject(goInstance);
+
+		*goInstance = *templateGO;
+		goInstance->ReGenerate();
+		goInstance->initAABB();
+		goInstance->transformAABB();
+
+		goInstance->parent = App->scene->getRootNode();
+
+		//App->scene->UpdateQuadtree();
+
+		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
+
+		goInstance->InstantiateEvents();
+
+		return moInstance;
+	}
+}
+
+void DestroyObj(MonoObject* obj)
+{
+	bool found = false;
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		if (obj == mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second))
+		{
+			found = true;
+
+			MonoClass* monoClass = mono_object_get_class(obj);
+			MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
+			mono_field_set_value(obj, destroyed, &found);
+
+			GameObject* toDelete = App->scripting->gameObjectsMap[i].first;
+
+			mono_gchandle_free(App->scripting->gameObjectsMap[i].second);
+
+			App->scripting->gameObjectsMap.erase(App->scripting->gameObjectsMap.begin() + i);
+
+			App->scene->DestroyGameObject(toDelete);
+
+			break;
+		}
+	}
+}
+
+MonoArray* QuatMult(MonoArray* q1, MonoArray* q2)
+{
+	Quat _q1(mono_array_get(q1, float, 0), mono_array_get(q1, float, 1), mono_array_get(q1, float, 2), mono_array_get(q1, float, 3));
+	Quat _q2(mono_array_get(q2, float, 0), mono_array_get(q2, float, 1), mono_array_get(q2, float, 2), mono_array_get(q2, float, 3));
+
+	_q1.Normalize();
+	_q2.Normalize();
+
+	Quat result = _q1 * _q2;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, result.x);
+	mono_array_set(ret, float, 1, result.y);
+	mono_array_set(ret, float, 2, result.z);
+	mono_array_set(ret, float, 3, result.w);
+
+	return ret;
+}
+
+MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
+{
+	Quat _q(mono_array_get(q, float, 0), mono_array_get(q, float, 1), mono_array_get(q, float, 2), mono_array_get(q, float, 3));
+	_q.Normalize();
+
+	float3 _vec(mono_array_get(vec, float, 0), mono_array_get(vec, float, 1), mono_array_get(vec, float, 2));
+
+	float3 res = _q * _vec;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, res.x);
+	mono_array_set(ret, float, 1, res.y);
+	mono_array_set(ret, float, 2, res.z);
+
+	return ret;
+}
+
+MonoArray* ToEuler(MonoArray* quat)
+{
+	Quat _q(mono_array_get(quat, float, 0), mono_array_get(quat, float, 1), mono_array_get(quat, float, 2), mono_array_get(quat, float, 3));
+
+	float3 axis;
+	float angle;
+	_q.ToAxisAngle(axis, angle);
+
+	float3 euler = axis * RadToDeg(angle);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, euler.x);
+	mono_array_set(ret, float, 1, euler.y);
+	mono_array_set(ret, float, 2, euler.z);
+
+	return ret;
+}
+
+MonoArray* RotateAxisAngle(MonoArray* axis, float deg)
+{
+	float3 _axis({ mono_array_get(axis, float, 0), mono_array_get(axis, float, 1), mono_array_get(axis, float, 2)});
+
+	float rad = DegToRad(deg);
+
+	Quat rotation = Quat::RotateAxisAngle(_axis, rad);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, rotation.x);
+	mono_array_set(ret, float, 1, rotation.y);
+	mono_array_set(ret, float, 2, rotation.z);
+	mono_array_set(ret, float, 3, rotation.w);
+
+	return ret;
+}
+
+MonoArray* GetGlobalPos(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = App->scripting->gameObjectsMap[i].second;		
+
+		if (monoObject == mono_gchandle_get_target(handleID))
+		{
+			gameObject = App->scripting->gameObjectsMap[i].first;
+		}
+	}
+
+	if (!gameObject)
+		return nullptr;
+
+	ComponentTransform global = gameObject->transform->getGlobal();
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, global.position.x);
+	mono_array_set(ret, float, 1, global.position.y);
+	mono_array_set(ret, float, 2, global.position.z);
+
+	return ret;
+}
+
+MonoArray* GetGlobalRotation(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	{
+		uint32_t handleID = App->scripting->gameObjectsMap[i].second;
+		if (mono_gchandle_get_target(handleID) == monoObject)
+		{
+			gameObject = App->scripting->gameObjectsMap[i].first;
+		}
+	}
+
+	if (!gameObject)
+		return nullptr;
+
+	ComponentTransform global = gameObject->transform->getGlobal();
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, global.rotation.x);
+	mono_array_set(ret, float, 1, global.rotation.y);
+	mono_array_set(ret, float, 2, global.rotation.z);
+	mono_array_set(ret, float, 3, global.rotation.w);
+
+	return ret;
+}
+
+//---------------------------------
+
 void ScriptingModule::CreateDomain()
 {
 	static bool firstDomain = true;
@@ -452,14 +1027,52 @@ void ScriptingModule::CreateDomain()
 	
 	//Make sure we do not delete the main domain
 	if (!firstDomain)
-		mono_domain_unload(domain);
+	{
+		mono_domain_unload(domain);		
+	}
+		
 
 	domain = nextDom;
-	firstDomain = false;
+
+	char* buffer;
+	int size;
+	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size, false))
+		return;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	internalImage = mono_image_open_from_data(buffer, size, 1, &status);
+	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
+
+	delete buffer;
+
+	timeClass = mono_class_from_name(internalImage, "FlanEngine", "Time");
+	deltaTime = mono_class_get_field_from_name(timeClass, "deltaTime");
+	realDeltaTime = mono_class_get_field_from_name(timeClass, "realDeltaTime");
+	time = mono_class_get_field_from_name(timeClass, "time");
+	realTime = mono_class_get_field_from_name(timeClass, "realTime");
+	timeVTable = mono_class_vtable(domain, timeClass);
 
 	//SetUp Internal Calls
 	mono_add_internal_call("FlanEngine.Debug::Log", (const void*)&DebugLogTranslator);
 	mono_add_internal_call("FlanEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
 	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
 	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
+	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
+	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
+	mono_add_internal_call("FlanEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
+	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS);
+	mono_add_internal_call("FlanEngine.Input::GetWheelMovement", (const void*)&GetWheelMovementCS);
+	mono_add_internal_call("FlanEngine.Input::GetMouseDeltaPos", (const void*)&GetMouseDeltaPosCS);
+	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
+	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
+	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
+	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
+	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
+	mono_add_internal_call("FlanEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
+	mono_add_internal_call("FlanEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
+
+	ClearMap();
+
+	firstDomain = false;
 }

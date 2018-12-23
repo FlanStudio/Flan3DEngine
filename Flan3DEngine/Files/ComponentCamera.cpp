@@ -4,9 +4,6 @@
 
 ComponentCamera::ComponentCamera(GameObject* gameObject, bool active) : Component(ComponentType::CAMERA, gameObject, active)
 {
-	if (!gameObject)
-		Debug.LogWarning("No gameObject attached to this camera component");
-
 	width = height = 50.0f;
 	aspectRatio = width / height;
 	horizontalFOV = DegToRad(60);
@@ -156,6 +153,10 @@ void ComponentCamera::Serialize(char*& cursor) const
 	bytes = sizeof(bool);
 	memcpy(cursor, &isMainCamera, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -193,6 +194,10 @@ void ComponentCamera::DeSerialize(char*& cursor, uint32_t& goUUID)
 	bytes = sizeof(bool);
 	memcpy(&isMainCamera, cursor, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
+	cursor += bytes;
 }
 
 void ComponentCamera::setMainCamera()
@@ -219,6 +224,7 @@ void ComponentCamera::debugDraw()
 
 void ComponentCamera::OnInspector()
 {
+	ImGui::Checkbox(("###ACTIVE_CAMERA" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Camera"); ImGui::SameLine();
 
@@ -308,6 +314,7 @@ void ComponentCamera::OnInspector()
 			{
 				App->camera->setGameCamera(nullptr);
 			}
+			App->scripting->GameCameraChanged();
 		}
 
 		ImGui::ColorEdit3("Background Color", &backgroundColor.x, 0);

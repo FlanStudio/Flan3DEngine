@@ -69,6 +69,7 @@ bool ModuleFileSystem::Init()
 			if (newDirectory != AssetsDirSystem)
 			{
 				SendEvents(newDirectory);
+				AssetsDirSystem = newDirectory;
 			}
 
 			delete buffer;
@@ -525,6 +526,32 @@ Directory ModuleFileSystem::getDirFiles(char* dir) const
 
 void ModuleFileSystem::fileSystemGUI()
 {
+	ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+
+	ImGui::SetCursorScreenPos(windowPos);
+	ImGui::Dummy(ImGui::GetWindowSize());
+	
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptBeforeDelivery;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", flags);
+		if (payload)
+		{
+			GameObject* gameObject = *(GameObject**)payload->Data;
+
+			if (ImGui::IsMouseReleased(0))
+			{
+				App->resources->SavePrefab(gameObject);
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(drawingPos);
+	
 	recursiveDirectory(AssetsDirSystem);
 }
 
@@ -705,6 +732,7 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 					ImGui::Text(directory.files[i].name.data());
 					ImGui::EndTooltip();
 				}
+
 				ImGui::EndDragDropSource();
 			}
 
@@ -714,7 +742,10 @@ void ModuleFileSystem::recursiveDirectory(Directory& directory)
 				std::string extension = directory.files[i].name.substr(pos);
 				if (extension == SCENES_EXTENSION)
 				{				
-					ImGui::OpenPopup("CAUTION");
+					if (!IN_GAME)
+						ImGui::OpenPopup("CAUTION");
+					else
+						Debug.LogWarning("Exit Play Mode before loading a new scene!");
 				}
 			}
 			//TODO: Rename files and folders from assets window?

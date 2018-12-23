@@ -7,6 +7,27 @@ struct _MonoMethod;
 struct _MonoImage;
 struct _MonoAssembly;
 
+
+enum class VarType
+{
+	NO_TYPE = -1,
+	BOOL,
+	FLOAT, 
+	DOUBLE,
+	INT8,
+	UINT8,
+	INT16,
+	UINT16,
+	INT,
+	UINT,
+	INT64,
+	UINT64,
+	CHAR,
+	STRING,
+	GAMEOBJECT,
+	TRANSFORM
+};
+
 class ResourceScript : public Resource
 {
 public:
@@ -33,6 +54,7 @@ public:
 
 	bool preCompileErrors();
 	bool Compile();
+	bool referenceMethods();
 
 private:
 	std::string pathToWindowsNotation(const std::string& path) const;
@@ -47,6 +69,9 @@ public:
 	_MonoMethod* preUpdateMethod = nullptr;
 	_MonoMethod* updateMethod = nullptr;
 	_MonoMethod* postUpdateMethod = nullptr;
+	_MonoMethod* enableMethod = nullptr;
+	_MonoMethod* disableMethod = nullptr;
+	_MonoMethod* stopMethod = nullptr;
 
 	//The assembly and image containing all the .cs code
 	_MonoAssembly* assembly = nullptr;

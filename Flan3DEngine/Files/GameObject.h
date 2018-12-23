@@ -10,6 +10,8 @@
 
 #define NUM_COMPONENTS 4
 
+class ResourcePrefab;
+
 class GameObject
 {
 public:
@@ -17,7 +19,7 @@ public:
 	{
 		boundingBox.SetNegativeInfinity();
 		initialAABB.SetNegativeInfinity();
-		genUUID();	
+		genUUID();
 	}
 	virtual ~GameObject();
 	virtual bool Update(float dt);
@@ -34,9 +36,9 @@ public:
 
 	//Component-related methods
 	Component* CreateComponent(ComponentType type);
-	void AddComponent(Component* component);	
+	void AddComponent(Component* component);
 	void InsertComponent(Component* component, int pos);
-	Component* getComponentByType(ComponentType type) const;	
+	Component* getComponentByType(ComponentType type) const;
 	void deleteComponent(Component* component);
 	void ClearComponent(Component* component);
 	void ClearComponentAt(int i);
@@ -47,7 +49,13 @@ public:
 	void OnInspector();
 	void ReceiveEvent(Event event);
 	void SetActive(bool boolean);
-	
+	bool isActive()const{ return active; }
+	bool areParentsActives()const;
+	void ReGenerate();
+	void InstantiateEvents();
+	void onEnableChilds();
+	void onDisableChilds();
+
 	//AABB drawing data-----------------
 	void drawAABB()const;
 	void updateAABBbuffers();	
@@ -57,10 +65,11 @@ public:
 	AABB getAABBChildsEnclosed();
 
 	//----------Serializing methods------------
-	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&);
+	void Decompose(std::vector<GameObject*>&, std::vector<ComponentTransform*>&, 
+		std::vector<ComponentMesh*>&, std::vector<ComponentCamera*>&, std::vector<ComponentMaterial*>&, std::vector<ComponentScript*>&, bool);
 	
 	//UUID, parent UUID, name (Up to 50 chars)
-	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char); };
+	uint bytesToSerialize() { return sizeof(uint32_t) * 2 + sizeof(uint) + name.length() * sizeof(char) + (sizeof(bool)); };
 	void Serialize(char*& cursor);
 	void DeSerialize(char*& cursor, uint32_t& parentUUID);
 	void ReorderComponents();
@@ -94,6 +103,8 @@ public:
 	std::vector<GameObject*> childs;
 	AABB boundingBox;
 	AABB initialAABB;
+
+	ResourcePrefab* prefab = nullptr;
 
 private:
 	bool active = true;

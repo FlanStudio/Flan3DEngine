@@ -22,6 +22,9 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_stl.h"
 
+#include "Resource.h"
+#include "ResourcePrefab.h"
+
 ModuleScene::ModuleScene(bool start_enabled) : Module("ModuleSceneIntro", start_enabled)
 {
 }
@@ -37,13 +40,8 @@ bool ModuleScene::Start()
 
 	TransformAtlasID = App->textures->getInternalTextureID("transBtnTex.dds");
 
-	//Temp
-	GameObject* camera = new GameObject(gameObjects.size() > 0 ? gameObjects[0] : nullptr);
-	camera->CreateComponent(ComponentType::TRANSFORM);
-	ComponentCamera* camcomp = (ComponentCamera*)camera->CreateComponent(ComponentType::CAMERA);
-	camcomp->setMainCamera();
-	camera->name = "MainCamera";
-	gameObjects[0]->AddChild(camera);
+	//TODO: LOAD THE SCENE LOADED WHEN THE ENGINE CLOSED
+	DeSerialize("Assets/Scenes/defaultScene", ".flanScene");
 
 
 	//----------------------INITIAL GRID------------------------
@@ -57,7 +55,7 @@ bool ModuleScene::Init()
 {
 	if (gameObjects.size() == 0)
 	{
-		GameObject* root = CreateGameObject(nullptr);
+		GameObject* root = CreateGameObject(nullptr, false);
 		root->name = "RootNode";
 	}
 	return true;
@@ -116,9 +114,10 @@ update_status ModuleScene::PostUpdate()
 			event.goEvent.type = EventType::GO_DESTROYED;
 			event.goEvent.gameObject = selectedGO;
 			gameObjects[0]->ReceiveEvent(event);
+			
+			App->SendEvent(event);
 
-			delete selectedGO;
-			selectedGO = nullptr;	
+			UpdateQuadtree();
 		}
 	}
 
@@ -222,13 +221,24 @@ void ModuleScene::ReceiveEvent(Event event)
 		}
 		case EventType::STOP:
 		{
+			selectedGO = nullptr;
 			deserialize = true;
 			break;
 		}
 		case EventType::GO_DESTROYED:
 		{
-			if (event.goEvent.gameObject == selectedGO)
-				selectedGO = nullptr;
+			bool selectedDestroyed = false;
+			GameObject* gameObject = selectedGO;
+			while (gameObject)
+			{
+				if (event.goEvent.gameObject == gameObject)
+				{
+					selectedGO = nullptr;
+					break;
+				}
+					
+				gameObject = gameObject->parent;
+			}
 
 			gameObjects[0]->ReceiveEvent(event);
 
@@ -242,7 +252,7 @@ void ModuleScene::ReceiveEvent(Event event)
 	}
 }
 
-GameObject* ModuleScene::CreateGameObject(GameObject* parent)
+GameObject* ModuleScene::CreateGameObject(GameObject* parent, bool createMonoObject)
 {
 	GameObject* ret = new GameObject(parent);
 
@@ -257,7 +267,40 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 	ret->transformAABB();
 	ret->updateAABBbuffers();
 
+	if (createMonoObject)
+	{
+		App->scripting->MonoObjectFrom(ret);
+	}
+
 	return ret;
+}
+
+GameObject * ModuleScene::FindGameObjectByID(UID uid)
+{
+	std::vector<GameObject*> _gameObjects;
+	decomposeScene(_gameObjects);
+
+	for (int i = 0; i < _gameObjects.size(); i++)
+	{
+		if (_gameObjects[i]->uuid == uid)
+			return _gameObjects[i];
+	}
+
+	return nullptr;
+}
+
+void ModuleScene::DestroyGameObject(GameObject* gameObject)
+{
+	if (selectedGO == gameObject)
+		selectedGO = nullptr;
+
+	Event event;
+	event.goEvent.type = EventType::GO_DESTROYED;
+	event.goEvent.gameObject = gameObject;
+	gameObjects[0]->ReceiveEvent(event);
+
+	delete gameObject;
+	gameObject = nullptr;
 }
 
 void ModuleScene::AddGameObject(GameObject* gameObject)
@@ -300,6 +343,34 @@ void ModuleScene::guiHierarchy()
 		ImGui::EndDragDropTarget();
 	}
 
+	if (ImGui::BeginDragDropTarget())
+	{
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", flags);
+		if (payload)
+		{
+			Resource* res = *(Resource**)payload->Data;
+			if (res->getType() == Resource::ResourceType::PREFAB)
+			{
+				ResourcePrefab* prefab = (ResourcePrefab*)res;
+
+				GameObject* instance = new GameObject(gameObjects[0]);
+				gameObjects[0]->AddChild(instance);		
+
+				*instance = *prefab->GetRoot();
+				instance->ReGenerate();
+				instance->InstantiateEvents();
+
+				instance->initAABB();
+				instance->transformAABB();
+
+				instance->parent = gameObjects[0];
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
 	//Hierarchy menu
 
 	if (ImGui::IsItemClicked(1))
@@ -320,13 +391,14 @@ void ModuleScene::guiHierarchy()
 				GameObject* gameObject = CreateGameObject(gameObjects[0]);
 				gameObject->name = "Camera";
 				gameObject->CreateComponent(ComponentType::CAMERA);
+
 			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndPopup();
 	}
 
-	//Dropping FBX (prefabs when implemented)
+	//Dropping FBX
 	if (ImGui::BeginDragDropTarget())
 	{
 		ImGuiDragDropFlags flags = 0;
@@ -369,7 +441,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 			_ReorderGameObject_Pre(go);
 			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
 		
-			if (ImGui::IsItemClicked(0) && !go->selected)
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && !go->selected)
 				App->scene->selectGO(go);
 
 			if (!opened)
@@ -398,7 +470,7 @@ void ModuleScene::PrintHierarchy(GameObject* go)
 
 			bool opened = ImGui::TreeNodeEx(std::string(go->name.data() + std::string("##") + std::to_string(go->uuid)).data(), flags);
 			
-			if (ImGui::IsItemClicked(0) && ImGui::IsItemHovered(0) && !go->selected)
+			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && !go->selected)
 				App->scene->selectGO(go);
 			
 			DragDrop(go);
@@ -521,18 +593,12 @@ void ModuleScene::AddComponentGUI()
 		{					
 			App->scripting->clearSpaces(scriptName);
 
-			bool alreadyCreated = App->scripting->alreadyCreated(scriptName);
-			
-			if (!alreadyCreated)
-			{
-				Debug.Log("New Script Created: %s", scriptName.data());				
-				ComponentScript* script = App->scripting->CreateScriptComponent(scriptName);
-				selectedGO->AddComponent(script);
-			}
-			else
-			{
-				Debug.LogError("Error creating the script \"%s\": Scripts must have different names", scriptName.data());
-			}
+			ResourceScript* res = App->resources->findScriptByName(scriptName);
+						
+			Debug.Log("New Script Created: %s", scriptName.data());
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
+			selectedGO->AddComponent(script);
+			script->InstanceClass();		
 
 			scriptName = "";
 			ImGui::CloseCurrentPopup();
@@ -584,6 +650,8 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	if (!App->fs->OpenRead(path + extension, &buffer, size))
 		return;
 
+	App->scripting->ClearMap();
+
 	int pos = path.find_last_of("/") != std::string::npos ? path.find_last_of("/") : path.find_last_of("\\");
 	currentSceneName = path.substr(pos + 1);
 
@@ -592,15 +660,16 @@ void ModuleScene::DeSerialize(std::string path, std::string extension)
 	delete buffer;
 }
 
-void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
+void ModuleScene::SerializeToBuffer(GameObject* gameObject, char*& buffer, uint& size, bool includeRoot) const
 {
 	std::vector<GameObject*> gameObject_s;
 	std::vector<ComponentTransform*> transforms;
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
 
-	decomposeScene(gameObject_s, transforms, meshes, cameras, materials);
+	gameObject->Decompose(gameObject_s, transforms, meshes, cameras, materials, scripts, includeRoot);
 
 	uint gameObjectsSize = 0u;
 	for (int i = 0; i < gameObject_s.size(); ++i)
@@ -612,7 +681,9 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
 		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
 		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
-		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size();
+		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size() +
+		sizeof(uint) + ComponentScript::bytesToSerialize() * scripts.size();
+
 
 	buffer = new char[size];
 	char* cursor = buffer;
@@ -671,6 +742,321 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		materials[i]->Serialize(cursor);
 	}
 
+	uint numScripts = scripts.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numScripts, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Serialize(cursor);
+	}
+}
+
+void ModuleScene::DeSerializeFromBuffer(GameObject*& root, char*& buffer)
+{
+	char* cursor = buffer;
+
+	std::vector<GameObject*> gameObject_s;
+	std::vector<ComponentTransform*> transforms;
+	std::vector<ComponentMesh*> meshes;
+	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
+
+	uint numGOs = 0;
+	uint bytes = sizeof(uint);
+
+	memcpy(&numGOs, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<uint32_t> parentUUIDs;
+	for (int i = 0; i < numGOs; ++i)
+	{
+		GameObject* newGO = new GameObject(nullptr);
+		uint32_t parentUUID;
+		newGO->DeSerialize(cursor, parentUUID);
+		parentUUIDs.push_back(parentUUID);
+		gameObject_s.push_back(newGO);
+	}
+
+	for (int i = 0; i < gameObject_s.size(); ++i) //For each gameobject
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (parentUUIDs[i] == gameObject_s[j]->uuid) //Look for a gameobject whose UUID is the same as your parent
+			{
+				gameObject_s[i]->parent = gameObject_s[j]; //Create this parent-child relationship
+				gameObject_s[j]->AddChild(gameObject_s[i]);
+			}
+		}
+	}
+
+	uint numTransforms = 0u;
+	bytes = sizeof(uint);
+	memcpy(&numTransforms, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<uint32_t> goUUIDs;
+
+	for (int i = 0; i < numTransforms; ++i)
+	{
+		ComponentTransform* newTransform = new ComponentTransform();
+		uint32_t goUUID;
+		newTransform->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		transforms.push_back(newTransform);
+	}
+
+	for (int i = 0; i < transforms.size(); ++i) //For each transform
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid) //Look for a gameobject whose UUID is the same as your one
+			{
+				transforms[i]->gameObject = gameObject_s[j]; //Create this gameobject-component relationship
+				gameObject_s[j]->AddComponent(transforms[i]);
+				gameObject_s[j]->transform = transforms[i];
+			}
+		}
+	}
+
+	uint numMeshes = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numMeshes, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numMeshes; ++i)
+	{
+		ComponentMesh* newMesh = new ComponentMesh(nullptr);
+		uint32_t goUUID;
+		newMesh->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		meshes.push_back(newMesh);
+	}
+
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				meshes[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(meshes[i]);
+			}
+		}
+	}
+
+	uint numCameras = 0u;
+	bytes = sizeof(uint);
+	memcpy(&numCameras, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numCameras; ++i)
+	{
+		ComponentCamera* newCamera = new ComponentCamera(nullptr);
+		uint32_t goUUID;
+		newCamera->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		cameras.push_back(newCamera);
+	}
+
+	for (int i = 0; i < cameras.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				cameras[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(cameras[i]);
+				cameras[i]->updateFrustum();
+			}
+		}
+	}
+
+	uint numMaterials = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numMaterials, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		ComponentMaterial* newMaterial = new ComponentMaterial(nullptr);
+		uint32_t goUUID;
+		newMaterial->DeSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		materials.push_back(newMaterial);
+	}
+
+	for (int i = 0; i < materials.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				materials[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(materials[i]);
+			}
+		}
+	}
+
+	uint numScripts = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numScripts, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numScripts; ++i)
+	{
+		ComponentScript* newScript = new ComponentScript("");
+		uint32_t goUUID;
+		newScript->deSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		scripts.push_back(newScript);
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				scripts[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(scripts[i]);
+			}
+		}
+	}
+
+	std::vector<GameObject*> roots;
+	for (int i = 0; i < gameObject_s.size(); ++i)
+	{
+		if (gameObject_s[i]->parent == nullptr)
+		{
+			roots.push_back(gameObject_s[i]);
+		}
+	}
+
+	Debug.LogWarning("Multiple roots found inside a serialized buffer. Some data will be missing.");
+
+	root = roots[0];
+	roots[0]->initAABB();
+	roots[0]->transformAABB();
+
+	for (int i = 1; i < roots.size(); ++i)
+	{
+		delete roots[i];
+	}
+	roots.clear();
+}
+
+void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
+{
+	std::vector<GameObject*> gameObject_s;
+	std::vector<ComponentTransform*> transforms;
+	std::vector<ComponentMesh*> meshes;
+	std::vector <ComponentCamera*> cameras;
+	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
+
+	decomposeScene(gameObject_s, transforms, meshes, cameras, materials, scripts);
+
+	uint gameObjectsSize = 0u;
+	for (int i = 0; i < gameObject_s.size(); ++i)
+	{
+		gameObjectsSize += gameObject_s[i]->bytesToSerialize();
+	}
+
+	size = sizeof(uint) + gameObjectsSize + //Each gameobject's name has a different name lenght
+		sizeof(uint) + ComponentTransform::bytesToSerialize() * transforms.size() +
+		sizeof(uint) + ComponentMesh::bytesToSerialize() * meshes.size() +
+		sizeof(uint) + ComponentCamera::bytesToSerialize() * cameras.size() +
+		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size() +
+		sizeof(uint) + ComponentScript::bytesToSerialize() * scripts.size();
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		size += scripts[i]->bytesToSerializePublicVars();
+	}
+	
+	buffer = new char[size];
+	char* cursor = buffer;
+
+	uint numGOs = gameObject_s.size();
+
+	uint bytes = sizeof(uint);
+	memcpy(cursor, &numGOs, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < gameObject_s.size(); ++i)
+	{
+		gameObject_s[i]->Serialize(cursor);
+	}
+
+	uint numTransforms = transforms.size();
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &numTransforms, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < transforms.size(); ++i)
+	{
+		transforms[i]->Serialize(cursor);
+	}
+
+	uint numMeshes = meshes.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numMeshes, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numMeshes; ++i)
+	{
+		meshes[i]->Serialize(cursor);
+	}
+
+	uint numCameras = cameras.size();
+	bytes = sizeof(uint);
+	memcpy(cursor, &numCameras, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numCameras; ++i)
+	{
+		cameras[i]->Serialize(cursor);
+	}
+
+	uint numMaterials = materials.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numMaterials, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < numMaterials; ++i)
+	{
+		materials[i]->Serialize(cursor);
+	}
+
+	uint numScripts = scripts.size();
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &numScripts, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->Serialize(cursor);
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->SerializePublicVars(cursor);
+	}
 }
 
 void ModuleScene::DeSerializeFromBuffer(char*& buffer)
@@ -682,6 +1068,7 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	std::vector<ComponentMesh*> meshes;
 	std::vector <ComponentCamera*> cameras;
 	std::vector<ComponentMaterial*> materials;
+	std::vector<ComponentScript*> scripts;
 
 	uint numGOs = 0;
 	uint bytes = sizeof(uint);
@@ -742,9 +1129,14 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		}
 	}
 
-	delete gameObjects[0];
+	Event event;
+	event.goEvent.type = EventType::GO_DESTROYED;
+	event.goEvent.gameObject = gameObjects[0];
+	App->SendEvent(event);
+
 	gameObjects.clear();
-	CreateGameObject(nullptr);
+
+	CreateGameObject(nullptr, false);
 
 	uint numMeshes = 0u;
 	bytes = sizeof(uint);
@@ -810,6 +1202,11 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 
 	App->camera->setGameCamera(mainCamera);
 
+	if(mainCamera)
+		App->scripting->MonoObjectFrom(mainCamera->gameObject);
+
+	App->scripting->GameCameraChanged();
+
 	uint numMaterials = 0u;
 	bytes = sizeof(uint);
 
@@ -838,6 +1235,36 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 		}
 	}
 
+	uint numScripts = 0u;
+	bytes = sizeof(uint);
+
+	memcpy(&numScripts, cursor, bytes);
+	cursor += bytes;
+	goUUIDs.clear();
+
+	for (int i = 0; i < numScripts; ++i)
+	{
+		ComponentScript* newScript = new ComponentScript("");
+		uint32_t goUUID;
+		newScript->deSerialize(cursor, goUUID);
+		goUUIDs.push_back(goUUID);
+		scripts.push_back(newScript);
+	}
+
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		for (int j = 0; j < gameObject_s.size(); ++j)
+		{
+			if (goUUIDs[i] == gameObject_s[j]->uuid)
+			{
+				scripts[i]->gameObject = gameObject_s[j];
+				gameObject_s[j]->AddComponent(scripts[i]);
+				App->scripting->AddScriptComponent(scripts[i]);
+				scripts[i]->InstanceClass();
+			}
+		}
+	}
+
 	std::vector<GameObject*> roots;
 	for (int i = 0; i < gameObject_s.size(); ++i)
 	{
@@ -855,6 +1282,12 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	}
 
 	UpdateQuadtree();
+
+	//DeSerialize Public variables here
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->deSerializePublicVars(cursor);
+	}
 }
 
 void ModuleScene::TransformGUI()
@@ -1001,9 +1434,9 @@ void ModuleScene::DragDrop(GameObject* go)
 }
 
 void ModuleScene::decomposeScene(std::vector<GameObject*>&gameObject_s, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
-								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials) const
+								 std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>&materials, std::vector<ComponentScript*>&scripts) const
 {
-	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials);
+	gameObjects[0]->Decompose(gameObject_s, transforms, meshes, cameras, materials, scripts, false);
 }
 
 void ModuleScene::_ReorderGameObject_Pre(GameObject* go)

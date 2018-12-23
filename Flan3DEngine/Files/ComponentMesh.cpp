@@ -26,13 +26,13 @@ void ComponentMesh::Draw()
 	glMultMatrixf(myMatrix.ptr());
 
 	ComponentMaterial* material = (ComponentMaterial*)gameObject->getComponentByType(ComponentType::MATERIAL);
-	if (material)
+	if (material && material->isActive() && material->gameObject->areParentsActives())
 	{
 		if (material->texture && mesh->textureCoords_ID == 0)
 		{
 			Debug.LogWarning("WARNING: GameObject %s asociated Mesh has no UVs set! This may cause weird behavior", gameObject->name.data());
 		}
-			
+		
 		glBindTexture(GL_TEXTURE_2D, material->texture ? material->texture->id : 0);
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glColor4f(material->colorTint.x, material->colorTint.y, material->colorTint.z, material->colorTint.w);
@@ -57,6 +57,8 @@ void ComponentMesh::drawNormals()
 
 void ComponentMesh::OnInspector()
 {
+	ImGui::Checkbox(("###ACTIVE_MESH" + std::to_string(UUID)).data(), &this->active); ImGui::SameLine();
+
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader("##Mesh"); ImGui::SameLine();
 
@@ -220,6 +222,10 @@ void ComponentMesh::Serialize(char*& cursor) const
 	UID meshUID = mesh ? mesh->getUUID() : 0;
 	memcpy(cursor, &meshUID, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
@@ -238,4 +244,8 @@ void ComponentMesh::DeSerialize(char*& cursor, uint32_t& goUUID)
 	mesh = (ResourceMesh*)App->resources->Get(meshUID);
 	if (mesh)
 		mesh->Referenced();
+
+	bytes = sizeof(bool);
+	memcpy(&active,cursor, bytes);
+	cursor += bytes;
 }

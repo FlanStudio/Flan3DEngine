@@ -7,6 +7,8 @@
 class Resource;
 class ResourceScript;
 
+class GameObject;
+
 class ResourceManager : public Module
 {
 public:
@@ -25,7 +27,11 @@ public:
 	void InstanciateFBX(const std::string& path) const;
 
 	void PushResourceScript(ResourceScript* script);
+	ResourceScript* findScriptByName(const std::string& scriptName) const;
 
+	void SavePrefab(GameObject* root);
+
+	GameObject* FindPrefabGObyID(UID uid);
 private:
 	void deleteEvent(Event event);
 	void createEvent(Event event);

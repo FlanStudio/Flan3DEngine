@@ -4,20 +4,19 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentScript.h"
 
 #include "Brofiler\Brofiler.h"
 
 #include "imgui/imgui_stl.h"
 #include "imgui/imgui_internal.h"
 
+#include "ResourceTexture.h"
+#include "ResourceMesh.h"
+
 
 GameObject::~GameObject()
 {
-	Event event;
-	event.goEvent.type = EventType::GO_DESTROYED;
-	event.goEvent.gameObject = this;
-	App->SendEvent(event);
-
 	destroyAABBbuffers();
 	ClearChilds();
 	ClearComponents();
@@ -29,11 +28,12 @@ bool GameObject::Update(float dt)
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		childs[i]->Update(dt);
+		if (childs[i]->isActive())
+			childs[i]->Update(dt);
 	}
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->Update(dt);
+ 		components[i]->Update(dt);
 	}
 	return true;
 }
@@ -128,6 +128,12 @@ void GameObject::ClearComponents()
 				transform = nullptr;
 				break;
 			}
+			case ComponentType::SCRIPT:
+			{
+				App->scripting->DestroyScript((ComponentScript*)components[0]);
+				ClearComponent(components[0]);
+				break;
+			}
 			default:
 			{
 				delete components[0];
@@ -209,15 +215,48 @@ void GameObject::OnInspector()
 		ImGui::EndTooltip();
 	}
 
-	ImGui::SameLine(); ImGui::Text("active"); ImGui::SameLine(); ImGui::Checkbox("##ACTIVE", &active);
+	if (ImGui::Checkbox("##ACTIVE", &active))
+	{
+		if (this->isActive())
+		{
+			if (IN_GAME)
+			{
+				onEnableChilds();
+				for (int i = 0; i < components.size(); ++i)
+				{
+					components[i]->onEnable();
+				}
+			}
+		}
+		else
+		{
+			if (IN_GAME)
+			{
+				onDisableChilds();
+				for (int i = 0; i < components.size(); ++i)
+				{
+					components[i]->onDisable();
+				}
+			}
+		}
+	}
+	
+	ImGui::SameLine(); ImGui::Text("Active");
 
-	ImGui::NewLine();
+	//ImGui::NewLine();
 
 	posY = ImGui::GetCursorPosY();
 	ImGui::SetCursorPosY(posY + 3);
-	ImGui::Text("DrawAABBs"); ImGui::SameLine();
+	ImGui::Checkbox("##DrawAABBs", &drawAABBs);	
+	if (ImGui::IsItemHovered() && !ImGui::IsItemEdited())
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("This option can only be changed in the root parent object");
+		ImGui::EndTooltip();
+	}
+	ImGui::SameLine();
 	ImGui::SetCursorPosY(posY);
-	ImGui::Checkbox("##DrawAABBs", &drawAABBs);
+	ImGui::Text("DrawAABBs");
 
 	int postoreorder = -1;
 	Component* compToReorder = nullptr;
@@ -340,9 +379,11 @@ void GameObject::OnInspector()
 				scriptName = scriptName.substr(scriptName.find_last_of("/")+1);
 				scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
-				Component* script = (Component*)App->scripting->CreateScriptComponent(scriptName, false);
+				ComponentScript* script = (ComponentScript*)App->scripting->CreateScriptComponent(scriptName, false);
 				App->scene->getSelectedGO()->AddComponent(script);
 				script->gameObject = App->scene->getSelectedGO();
+
+				script->InstanceClass();
 			}
 		}
 		ImGui::EndDragDropTarget();
@@ -360,6 +401,7 @@ void GameObject::ReceiveEvent(Event event)
 			{
 				if (childs[i] == event.goEvent.gameObject)
 				{
+					childs[i]->parent = nullptr;
 					childs.erase(childs.begin() + i);
 					i--;
 				}
@@ -389,6 +431,189 @@ void GameObject::SetActive(bool boolean)
 	}
 }
 
+bool GameObject::areParentsActives() const
+{
+	bool ret = true;
+
+	GameObject* go = (GameObject*)this;
+	while (go)
+	{
+		if (!go->isActive())
+		{
+			ret = false;
+			break;
+		}
+		go = go->parent;
+	}
+
+	return ret;
+}
+
+void GameObject::ReGenerate()
+{
+	uuid = FLAN::randomUINT32_Range();
+
+	AABBvertex = nullptr;
+	numAABBvertex = 0u;
+	bufferIndex = 0u;
+
+	selected = false;
+	treeOpened = false;
+
+	prefab = nullptr;
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		Component* compTemplate = components[i];
+		components.erase(components.begin() + i);
+
+		Component* newComponent = nullptr;
+		switch (compTemplate->type)
+		{
+			case ComponentType::CAMERA:
+			{
+				newComponent = new ComponentCamera(this);
+
+				*(ComponentCamera*)newComponent = *(ComponentCamera*)compTemplate;
+				ComponentCamera* camComp = (ComponentCamera*)newComponent;
+				camComp->ResetPtrs();
+				break;
+			}
+			case ComponentType::MATERIAL:
+			{
+				newComponent = new ComponentMaterial(this);
+				*(ComponentMaterial*)newComponent = *(ComponentMaterial*)compTemplate;
+				ComponentMaterial* matComp = (ComponentMaterial*)newComponent;
+				if(matComp->texture)
+					matComp->texture->Referenced();
+				break;
+			}
+			case ComponentType::MESH:
+			{
+				newComponent = new ComponentMesh(this);
+				*(ComponentMesh*)newComponent = *(ComponentMesh*)compTemplate;
+				ComponentMesh* meshComp = (ComponentMesh*)newComponent;
+				
+				if(meshComp->mesh)
+					meshComp->mesh->Referenced();
+
+				break;
+			}
+			case ComponentType::SCRIPT:
+			{
+				newComponent = new ComponentScript("", this);
+				*(ComponentScript*)newComponent = *(ComponentScript*)compTemplate;
+
+				ComponentScript* scriptComp = (ComponentScript*)newComponent;
+				scriptComp->handleID = 0;
+				scriptComp->classInstance = nullptr;
+				scriptComp->awaked = false;
+				break;
+			}
+			case ComponentType::TRANSFORM:
+			{
+				newComponent = new ComponentTransform(this);
+				transform = (ComponentTransform*)newComponent;
+
+				*(ComponentTransform*)newComponent = *(ComponentTransform*)compTemplate;
+				break;
+			}
+		}
+
+		newComponent->gameObject = this;
+		newComponent->UUID = FLAN::randomUINT32_Range();
+
+		components.insert(components.begin() + i, newComponent);
+	}
+
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		GameObject* childTemplate = childs[i];
+
+		childs[i] = new GameObject(this);
+		*childs[i] = *childTemplate;
+		childs[i]->parent = this;
+
+		childs[i]->ReGenerate();
+	}
+}
+
+void GameObject::InstantiateEvents()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		switch (components[i]->type)
+		{
+			case ComponentType::MESH:
+			{
+				ComponentMesh* meshcomp = (ComponentMesh*)components[i];
+				App->renderer3D->AddMesh(meshcomp);
+				break;
+			}
+			case ComponentType::CAMERA:
+			{
+				ComponentCamera* camcomp = (ComponentCamera*)components[i];
+				if (camcomp->isMainCamera)
+				{
+					App->camera->setGameCamera(camcomp);
+				}
+				break;
+			}
+			case ComponentType::SCRIPT:
+			{
+				ComponentScript* scriptComp = (ComponentScript*)components[i];
+				App->scripting->AddScriptComponent(scriptComp);
+				scriptComp->InstanceClass();
+
+				if (IN_GAME)
+				{
+					//A script has been instantiated during playMode. Execute the right callback methods.
+
+					App->scripting->UpdateMonoObjects();
+
+					scriptComp->OnEnableMethod();
+					scriptComp->Awake();
+					scriptComp->Start();
+
+					App->scripting->UpdateGameObjects();					
+				}
+				
+				break;
+			}
+		}
+	}
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->InstantiateEvents();
+	}
+}
+
+void GameObject::onEnableChilds()
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->onEnableChilds();
+
+		for (int j = 0; j < childs[i]->components.size(); ++j)
+		{
+			childs[i]->components[j]->onEnable();
+		}
+	}
+}
+
+void GameObject::onDisableChilds()
+{
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		childs[i]->onDisableChilds();
+
+		for (int j = 0; j < childs[i]->components.size(); ++j)
+		{
+			childs[i]->components[j]->onDisable();
+		}
+	}
+}
+
 void GameObject::InsertChild(GameObject* child, int pos)
 {
 	childs.insert(childs.begin() + pos, child);
@@ -404,26 +629,34 @@ int GameObject::getChildPos(const GameObject* child) const
 }
 
 void GameObject::Decompose(std::vector<GameObject*>& gameObjects, std::vector<ComponentTransform*>&transforms, std::vector<ComponentMesh*>&meshes, 
-						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials)
+						   std::vector<ComponentCamera*>&cameras, std::vector<ComponentMaterial*>& materials, std::vector<ComponentScript*>& scripts, bool includeRoot)
 {	
-	transforms.push_back(transform);
+	if (includeRoot)
+	{
+		gameObjects.push_back(this);
 
-	ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
-	if (mesh)
-		meshes.push_back(mesh);
+		transforms.push_back(transform);
 
-	ComponentCamera* camera = (ComponentCamera*)getComponentByType(ComponentType::CAMERA);
-	if (camera)
-		cameras.push_back(camera);
+		ComponentMesh* mesh = (ComponentMesh*)getComponentByType(ComponentType::MESH);
+		if (mesh)
+			meshes.push_back(mesh);
 
-	ComponentMaterial* material = (ComponentMaterial*)getComponentByType(ComponentType::MATERIAL);
-	if (material)
-		materials.push_back(material);
+		ComponentCamera* camera = (ComponentCamera*)getComponentByType(ComponentType::CAMERA);
+		if (camera)
+			cameras.push_back(camera);
+
+		ComponentMaterial* material = (ComponentMaterial*)getComponentByType(ComponentType::MATERIAL);
+		if (material)
+			materials.push_back(material);
+
+		ComponentScript* script = (ComponentScript*)getComponentByType(ComponentType::SCRIPT);
+		if (script)
+			scripts.push_back(script);
+	}
 
 	for (int i = 0; i < childs.size(); ++i)
 	{
-		gameObjects.push_back(childs[i]);
-		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials);
+		childs[i]->Decompose(gameObjects, transforms, meshes, cameras, materials, scripts, true);
 	}
 }
 
@@ -445,6 +678,10 @@ void GameObject::Serialize(char*& cursor)
 	bytes = nameLenght;
 	memcpy(cursor, name.c_str(), bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &active, bytes);
+	cursor += bytes;
 }
 
 void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
@@ -463,6 +700,10 @@ void GameObject::DeSerialize(char*& cursor, uint32_t& parentUUID)
 	
 	bytes = nameLenght;
 	name.assign(cursor, cursor + bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&active, cursor, bytes);
 	cursor += bytes;
 }
 
@@ -660,12 +901,13 @@ AABB GameObject::getAABBChildsEnclosed()
 
 void GameObject::debugDraw() const
 {
-	if(drawAABBs && this != App->scene->getRootNode())
+	if(drawAABBs && this != App->scene->getRootNode() && isActive() && areParentsActives())
 		drawAABB();
 
 	for (int i = 0; i < components.size(); ++i)
 	{
-		components[i]->debugDraw();
+		if(components[i]->isActive() && components[i]->gameObject->areParentsActives() && components[i]->gameObject->isActive())
+			components[i]->debugDraw();
 	}
 }
 
