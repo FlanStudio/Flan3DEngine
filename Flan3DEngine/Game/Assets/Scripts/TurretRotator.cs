@@ -4,6 +4,8 @@ using FlanEngine;
 
 public class TurretRotator : FlanScript
 {
+    public float speed = 20f;
+
     //Use this method for initialization
     public override void Awake()
     {
@@ -16,7 +18,7 @@ public class TurretRotator : FlanScript
         float mouseDX = Input.GetMouseDeltaPosition().x;
         if(mouseDX != 0)
         {
-            transform.rotation.Rotate(Vector3.up, 20 * Time.deltaTime * -mouseDX);
+            transform.rotation.Rotate(Vector3.up, speed * Time.deltaTime * -mouseDX);
         }
     }
 }
