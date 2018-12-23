@@ -6,6 +6,8 @@ public class TestScript : FlanScript
 {
     bool firstTime = true;
 
+    List<GameObject> bullets = new List<GameObject>();
+
     public float rotSpeed = 150f;
     public float movSpeed = 50f;
 
@@ -36,11 +38,26 @@ public class TestScript : FlanScript
         {
             if(bulletPrefab != null)
             {
+                Debug.Log("Instantiating GameObject");
+
                 GameObject instantiated = GameObject.Instantiate(bulletPrefab);
+                bullets.Add(instantiated);
+                instantiated.name = "Child: " + bullets.Count.ToString();
 
                 instantiated.transform.position = BulletSpawningPoint.globalPosition;
                 instantiated.transform.rotation = BulletSpawningPoint.globalRotation;
             }        
+        }
+
+        if (Input.GetKeyDown(KeyCode.KEY_2))
+        {
+            if(bullets.Count != 0)
+            {
+                Debug.Log("Deleting GameObject");
+                GameObject toDelete = bullets[bullets.Count - 1];
+                Destroy(toDelete);
+                bullets.Remove(toDelete);
+            }
         }
 
         if (Input.GetKey(KeyCode.KEY_W))

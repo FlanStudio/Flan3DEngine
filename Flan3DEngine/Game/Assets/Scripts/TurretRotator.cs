@@ -7,7 +7,7 @@ public class TurretRotator : FlanScript
     //Use this method for initialization
     public override void Awake()
     {
-    
+
     }
 
     //Called every frame

@@ -825,9 +825,13 @@ void ComponentScript::OnInspector()
 
 uint ComponentScript::bytesToSerializePublicVars() const
 {
-	uint bytes = 0;
+	uint bytes = sizeof(uint);
 
 	void* iterator = 0;
+
+	if (!classInstance)
+		return 0;
+
 	MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
 	while (field != nullptr)
@@ -1009,9 +1013,13 @@ void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
 
 void ComponentScript::SerializePublicVars(char*& cursor) const
 {
-	uint numVars = sizeof(uint);
+	uint numVars = 0;
 
 	void* iterator = 0;
+
+	if (!classInstance)
+		return;
+
 	MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 	while (field != nullptr)
 	{
@@ -1462,6 +1470,9 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 
 void ComponentScript::deSerializePublicVars(char *& cursor)
 {
+	if (!classInstance)
+		return ;
+
 	uint numVars = 0;
 	uint bytes = sizeof(uint);
 	memcpy(&numVars, cursor, bytes);
@@ -1481,6 +1492,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 		memcpy(&nameLenght, cursor, bytes);
 		cursor += bytes;
 
+		bytes = nameLenght;
 		std::string varName;
 		varName.resize(nameLenght);
  		memcpy((void*)varName.c_str(), cursor, bytes);
@@ -1537,7 +1549,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					std::string typeName = mono_type_full_name(type);
 					std::string fieldName = mono_field_get_name(field);
 
-					if (typeName == "float" && fieldName == varName)
+					if (typeName == "single" && fieldName == varName)
 					{
 						mono_field_set_value(classInstance, field, &var);
 						break;
@@ -1871,19 +1883,23 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 			memcpy(&uid, cursor, bytes);
 			cursor += bytes;
 			
-			GameObject* go = App->resources->FindPrefabGObyID(uid);
+			GameObject* go = nullptr;
 
-			if (!go)
+			if (uid != 0)
 			{
-				go = App->scene->FindGameObjectByID(uid);
+				go = App->resources->FindPrefabGObyID(uid);
+
 				if (!go)
 				{
-					Debug.LogError("A Script lost a Gameobject reference");
-					continue;
+					go = App->scene->FindGameObjectByID(uid);
+					if (!go)
+					{
+						Debug.LogError("A Script lost a Gameobject reference");
+					}
 				}
 			}
 
-			MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
 
 			void* iterator = 0;
 			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
@@ -1916,19 +1932,23 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 			memcpy(&uid, cursor, bytes);
 			cursor += bytes;
 
-			GameObject* go = App->resources->FindPrefabGObyID(uid);
+			GameObject* go = nullptr;
 
-			if (!go)
+			if (uid != 0)
 			{
-				go = App->scene->FindGameObjectByID(uid);
+				go = App->resources->FindPrefabGObyID(uid);
+
 				if (!go)
 				{
-					Debug.LogError("A Script lost a Transform reference");
-					continue;
+					go = App->scene->FindGameObjectByID(uid);
+					if (!go)
+					{
+						Debug.LogError("A Script lost a Transform reference");
+					}
 				}
 			}
 
-			MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
 
 			void* iterator = 0;
 			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
@@ -1942,13 +1962,20 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					std::string typeName = mono_type_full_name(type);
 					std::string fieldName = mono_field_get_name(field);
 
-					if (typeName == "FlanEngine.Transform" && fieldName == varName)
-					{
-						MonoObject* monoTransform;
-						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "transform"),&monoTransform);
-						mono_field_set_value(classInstance, field, monoTransform);
-						break;
-					}
+						if (typeName == "FlanEngine.Transform" && fieldName == varName)
+						{
+							if (monoObject)
+							{
+								MonoObject* monoTransform;
+								mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "transform"), &monoTransform);
+								mono_field_set_value(classInstance, field, monoTransform);
+							}
+							else
+							{
+								mono_field_set_value(classInstance, field, nullptr);
+							}
+							break;
+						}
 				}
 				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 			}
