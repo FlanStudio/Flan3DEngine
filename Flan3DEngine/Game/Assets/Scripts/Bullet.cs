@@ -4,7 +4,7 @@ using FlanEngine;
 public class Bullet : FlanScript
 {
     public float speed = 50f;
-    public float secondsToDestroy = 3f;
+    public float secondsToDestroy = 300f;
 
     private float timeStarted = 0f;
 
