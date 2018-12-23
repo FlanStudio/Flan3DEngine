@@ -980,7 +980,11 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 		sizeof(uint) + ComponentMaterial::bytesToSerialize() * materials.size() +
 		sizeof(uint) + ComponentScript::bytesToSerialize() * scripts.size();
 
-
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		size += scripts[i]->bytesToSerializePublicVars();
+	}
+	
 	buffer = new char[size];
 	char* cursor = buffer;
 
@@ -1051,8 +1055,7 @@ void ModuleScene::SerializeToBuffer(char*& buffer, uint& size) const
 
 	for (int i = 0; i < scripts.size(); ++i)
 	{
-		//Serialize public variables here
-
+		scripts[i]->SerializePublicVars(cursor);
 	}
 }
 
@@ -1281,7 +1284,10 @@ void ModuleScene::DeSerializeFromBuffer(char*& buffer)
 	UpdateQuadtree();
 
 	//DeSerialize Public variables here
-
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->deSerializePublicVars(cursor);
+	}
 }
 
 void ModuleScene::TransformGUI()
