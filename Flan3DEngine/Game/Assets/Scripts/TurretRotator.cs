@@ -16,7 +16,7 @@ public class TurretRotator : FlanScript
     public override void Update()
     {
         float mouseDX = Input.GetMouseDeltaPosition().x;
-        if(mouseDX != 0)
+        if (mouseDX != 0)
         {
             transform.rotation.Rotate(Vector3.up, speed * Time.deltaTime * -mouseDX);
         }
