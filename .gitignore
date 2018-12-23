@@ -334,6 +334,7 @@ ASALocalRun/
 [Ss]ettings/
 [Ii]nternal/
 **/[Mm]ono/
+**/Game/FlanCS/
 
 **/Game/LogError.txt
 *.sln
