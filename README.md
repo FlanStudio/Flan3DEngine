@@ -161,7 +161,7 @@ If you followed those steps and the problem didn't solve, feel free to post an i
     
 Check Flan3DEngine's web [here:](https://flanstudio.github.io/Flan3DEngine/)
 
-Check Flan3DEngine's features [Video:](https://youtu.be/Xg8YHI1n5Qk)
+Check Flan3DEngine's features [Video:](https://flanstudio.github.io/Flan3DEngine/)
 
 ## License
 MIT License
