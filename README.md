@@ -92,8 +92,7 @@ If you followed those steps and the problem didn't solve, feel free to post an i
   
  **Other functionalities**
   * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
-## Game Engine Instructions:
-### Main Menu Bar
+
 ## Main Subsystem: Scripting with C#
 
 ### Create new Scripts
