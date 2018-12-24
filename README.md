@@ -94,30 +94,47 @@ If you followed those steps and the problem didn't solve, feel free to post an i
   * _**Drag and Drop**_: FBX meshes and textures (in formats DevIL supports) dropped into the engine are loaded. 
  
 ## Main Subsystem: Scripting with C#
+
   ### Create new Scripts
-    Select a GameObject in the Hierarchy, go to the Inspector window and click AddNewComponent. Select Script and choose a name for it. Flan3DEngine will create automatically your .cs file in Assets/Scripts.
-    In the Root folder you will have a VisualStudio project for all your Scripts, included automatically.
+  
+   Select a GameObject in the Hierarchy, go to the Inspector window and click AddNewComponent. Select Script and choose a name for it. Flan3DEngine will create automatically your .cs file in Assets/Scripts.
+   
+   In the Root folder you will have a VisualStudio project for all your Scripts, included automatically.
+  
   ### Coding Scripts
-    Once you press Play, the logic inside your scripts will start executing. Flan3DEngine will automatically call some default callback methods you can override from FlanScript. For now, those callback methods are:
-      - **OnEnable:** Called every time you enable a ComponentScript (or it's GameObject or one of it's parents).
-      - **Awake:** Called only once when the Script is Enabled.
-      - **Start:** Called after Awake only if the Script is enabled at the right moment you press Play.
-      - **PreUpdate:** Called before Update (once by frame). 
-      - **Update:** Called once by frame.
-      - **PostUpdate:** Called after Update (once by frame).
-      - **OnStop:** Called when you exit the Play Mode.
-      - **OnDisable:** Called every time you disable a ComponentScript (or it's GameObject or one of it's parents).
+   
+   Once you press Play, the logic inside your scripts will start executing. Flan3DEngine will automatically call some default callback methods you can override from FlanScript. For now, those callback methods are:
+      
+   - **OnEnable:** Called every time you enable a ComponentScript (or it's GameObject or one of it's parents).
+   - **Awake:** Called only once when the Script is Enabled.
+   - **Start:** Called after Awake only if the Script is enabled at the right moment you press Play.
+   - **PreUpdate:** Called before Update (once by frame). 
+   - **Update:** Called once by frame.
+   - **PostUpdate:** Called after Update (once by frame).
+   - **OnStop:** Called when you exit the Play Mode.
+   - **OnDisable:** Called every time you disable a ComponentScript (or it's GameObject or one of it's parents).
+   
   ### Edit public fields
-    All your supported public and non-Static fields declared in the script will be serialized in the ComponentScript's OnInspector.        
-    Their values can be changed in real-time, and they are relatives to each ComponentScript. You can have different values for them in different ComponentScripts using the same .cs file.
+  
+   All your supported public and non-Static fields declared in the script will be serialized in the ComponentScript's OnInspector.        
+   
+   Their values can be changed in real-time, and they are relatives to each ComponentScript. You can have different values for them in different ComponentScripts using the same .cs file.
+   
   ### Hot Reloading
-    You can edit a .cs file while the Engine is executing. These will reset all the edited public fields through the oninspector. Doing this while the Play Mode is Active can cause some weird errors depending of your script. 
+  
+   You can edit a .cs file while the Engine is executing. These will reset all the edited public fields through the oninspector. Doing this while the Play Mode is Active can cause some weird errors depending of your script. 
+  
   ### Referencing GameObjects, Transforms and Prefabs
-    If you create a public GameObject or Transform field in your script, you will be able to drag there other GameObjects in the Hierarchy or a Prefab through the Filesystem window.
+  
+   If you create a public GameObject or Transform field in your script, you will be able to drag there other GameObjects in the Hierarchy or a Prefab through the Filesystem window.
+  
   ### Utilities implemented in C#
-    Through a Script you can instanciate an delete GameObjects using Prefabs or another GameObject as a template or simply creating default ones. You can access their names and edit them, also like their transforms (move, rotate and scale them).
-    You have convenient methods to rotate quaternions, converting Objects to String, accessing the global transformation values and so on.
-    You can access to the Input class to get user inputs from the keyboard and the mouse. You also have the Time Class for accessing time-related data.    
+  
+   Through a Script you can instanciate an delete GameObjects using Prefabs or another GameObject as a template or simply creating default ones. You can access their names and edit them, also like their transforms (move, rotate and scale them).
+   
+   You have convenient methods to rotate quaternions, converting Objects to String, accessing the global transformation values and so on.
+   
+   You can access to the Input class to get user inputs from the keyboard and the mouse. You also have the Time Class for accessing time-related data.    
 
 ## Innovation:
 
@@ -136,7 +153,14 @@ If you followed those steps and the problem didn't solve, feel free to post an i
 ## FlanStudio Stuff
 ![fst](https://user-images.githubusercontent.com/25585362/50057843-59702f00-0170-11e9-82d3-4bb33034a5a6.png)
 
+  ### Tasks distribution:
+   **Jonathan Molina-Prados:** GameObject system, Prefabs, Mono Domain Management, Scripts Compilation, Detect Script Changes, Textures, Textures tint, parent/unparent gameobjects, gameobjects instanciation from C#, destroy gameobjects, refresh gameobjects, management/storagement of gameobject/monoObjects, drawing meshes, FBX exportation, scene serialization, creation and refreshment of the VisualStudio's project including .cs file every time new one is created...
+   
+   **Oriol de Dios:** Implementing PCG - Random Num Generator, editor Camera Controls, windows Layout/custom theme, enablig/disabling GameObjects/Components behaviour, AABB system for GameObjects, time Module (Play, Pause, Step, all dt calculation and more time stuff...), Mouse Input functionality in C#, calling C# callback methods, Standard C# variables OnInspector, Serializing/deSerializing public fields in ComponentScripts.
+    
 Check Flan3DEngine's web here: https://flanstudio.github.io/Flan3DEngine/
+
+Check Flan3DEngine's features Video: https://youtu.be/Xg8YHI1n5Qk
 
 ## License
 MIT License
