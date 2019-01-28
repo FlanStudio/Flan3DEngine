@@ -14,6 +14,8 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 
+#include "ResourcePrefab.h"
+
 ResourceManager::~ResourceManager()
 {
 }
@@ -871,6 +873,36 @@ void ResourceManager::LoadResources()
 
 					delete prefabBuffer;
 				}
+			}
+			else
+			{
+				char* prefabBuffer;
+				int size;
+
+				if (App->fs->OpenRead(fullPaths[i], &prefabBuffer, size, false))
+				{
+					char* cursor = prefabBuffer;
+					ResourcePrefab* prefab = new ResourcePrefab(nullptr);
+
+					prefab->DeSerializeFromBuffer(cursor);
+
+					GameObject* root = prefab->GetRoot();
+					resources.insert(std::pair<UID, Resource*>(root->uuid, prefab));
+
+					delete prefabBuffer;
+
+					//Creating the .meta file
+
+					char* metaBuffer;
+					int metaSize = sizeof(UID);
+
+					metaBuffer = new char[metaSize];
+
+					memcpy(metaBuffer, &root->uuid, metaSize);
+
+					if (!App->fs->OpenWriteBuffer(fullPaths[i] + ".meta", &metaBuffer, metaSize))
+						continue;
+				}				
 			}
 		}
 	}
