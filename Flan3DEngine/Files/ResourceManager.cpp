@@ -314,7 +314,7 @@ void ResourceManager::SavePrefab(GameObject* root)
 
 	ResourcePrefab* prefab; 
 
-	if (App->fs->Exists("Assets/Prefabs/" + root->name + ".flanPrefab"))
+	if (App->fs->Exists("Assets/Prefabs/" + root->name + ".flanPrefab.meta"))
 	{
 		//Read the meta, get the UID and the loaded prefab
 		char* metaBuffer; int size;
@@ -841,33 +841,36 @@ void ResourceManager::LoadResources()
 	{
 		//Detect the extension and call the right exporter
 		std::string extension = App->fs->getExt(fullPaths[i]);
-		if (extension == ".flanPrefab" && App->fs->Exists(fullPaths[i] + ".meta"))
+		if (extension == ".flanPrefab")
 		{
-			char* metaBuffer;
-			int metaSize;
-			if (!App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaSize))
-				continue;
-
-			char* cursor = metaBuffer;
-
-			//Getting the UID from the .meta
-			UID uid;
-			memcpy(&uid, cursor, sizeof(UID));
-
-			char* prefabBuffer;
-			int size;
-
-			if (App->fs->OpenRead(fullPaths[i], &prefabBuffer, size, false))
+			if (App->fs->Exists(fullPaths[i] + ".meta"))
 			{
-				char* cursor = prefabBuffer;
-				ResourcePrefab* prefab = new ResourcePrefab(nullptr);
+				char* metaBuffer;
+				int metaSize;
+				if (!App->fs->OpenRead(fullPaths[i] + ".meta", &metaBuffer, metaSize))
+					continue;
 
-				prefab->DeSerializeFromBuffer(cursor);
-				prefab->setUID(uid);
+				char* cursor = metaBuffer;
 
-				resources.insert(std::pair<UID, Resource*>(uid, prefab));
+				//Getting the UID from the .meta
+				UID uid;
+				memcpy(&uid, cursor, sizeof(UID));
 
-				delete prefabBuffer;
+				char* prefabBuffer;
+				int size;
+
+				if (App->fs->OpenRead(fullPaths[i], &prefabBuffer, size, false))
+				{
+					char* cursor = prefabBuffer;
+					ResourcePrefab* prefab = new ResourcePrefab(nullptr);
+
+					prefab->DeSerializeFromBuffer(cursor);
+					prefab->setUID(uid);
+
+					resources.insert(std::pair<UID, Resource*>(uid, prefab));
+
+					delete prefabBuffer;
+				}
 			}
 		}
 	}
